@@ -1,0 +1,69 @@
+.player-board {
+  background-color: white;
+
+  &.spectator-mode {
+    color: black;
+    * {
+      background: white !important;
+    }
+  }
+
+  .icon {
+    margin-right: 5px;
+
+    &.vp {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .counters {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+
+    >div {
+      flex: 1;
+
+      &:last-child {
+        flex: 2;
+      }
+    }
+  }
+
+  .player-hand-card {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-image: url('img/cards.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    vertical-align: middle;
+  }
+
+  .reputation-legend {
+    .icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 2px;
+    }
+
+    font-size: 75%;
+    vertical-align: middle;
+  }
+
+}
+
+#first-player {
+  background: #6199b0;
+  color: white;
+  height: 20px;
+  font-size: 14px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  user-select: none;
+  padding: 0 10px;
+}

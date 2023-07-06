@@ -1,0 +1,287 @@
+$playerColors: '6f3766', 'bc6328', '597f9e', '929f40';
+
+$artifactColor: #734073;
+$cityColor: #d66b2a;
+$megalithColor: #4a82a3;
+$pyramidColor: #87a04f;
+
+$ancientColor: #3c857f;
+$secretColor: #b8a222;
+$writingColor: #633c37;
+
+@import '../node_modules/bga-help/bga-help';
+@import '../node_modules/bga-zoom/bga-zoom';
+@import '../node_modules/bga-jump-to/bga-jump-to';
+@import '../node_modules/bga-cards/bga-cards';
+@import 'cards';
+@import 'builder-cards';
+@import 'technology-tiles';
+@import 'table-center';
+@import 'playerboards';
+@import 'player-table';
+@import 'help';
+
+/* make space between buttons on touch devices */
+@media (hover: none) {
+  #page-title .action-button.bgabutton, #page-title .bgabutton {
+    margin-bottom: 8px;
+    margin-top: 8px;
+  }
+}
+
+html, .mode_3d #game_play_area_background {
+  background: url('img/background.jpg') #b5b4b4;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: top;
+}
+
+#bga-zoom-wrapper {
+  padding-top: 32px;
+}
+
+.icon {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+  
+  &.knowledge {
+    background-image: url('img/knowledge-icon.svg');
+  }
+  &.lost-knowledge {
+    background-image: url('img/lost-knowledge-icon.svg');
+  }
+  &.vp {
+    background-image: url('img/vp-icon.svg');
+  }
+  &.city {
+    background-image: url('img/monument-icon-city.svg');
+  }
+  &.megalith {
+    background-image: url('img/monument-icon-megalith.svg');
+  }
+  &.pyramid {
+    background-image: url('img/monument-icon-pyramid.svg');
+  }
+  &.artifact {
+    background-image: url('img/artifact-icon.svg');
+  }
+  &.ancient {
+    background-image: url('img/technology-icon-ancient.svg');
+  }
+  &.secret {
+      background-image: url('img/technology-icon-secret.svg');
+  }
+  &.writing {
+      background-image: url('img/technology-icon-writing.svg');
+  }
+  &.starting-space {
+    background-image: url('img/starting-space-icon.svg');
+  }
+}
+
+.action-icon {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+  
+  &.create {
+    background-image: url('img/action-create-white.svg');
+  }  
+  &.learn {
+    background-image: url('img/action-learn-white.svg');
+  }  
+  &.archive {
+    background-image: url('img/action-archive-white.svg');
+  }
+  &.excavate {
+    background-image: url('img/action-excavate-white.svg');
+  }
+  &.search {
+    background-image: url('img/action-search-white.svg');
+  }
+}
+
+.action-button, .log {
+  .icon, .color {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.dijitTooltipContents {
+  .icon, .color {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+
+#tables-and-center {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 20px;
+  flex-direction: column;
+  margin-right: 10px;
+
+  #tables {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    flex-direction: column;
+  }
+
+  &.double-column {
+    flex-direction: row;
+    justify-content: center;
+    align-items: start;
+
+    &>div {
+      flex: 1;
+    }
+  }
+}
+
+.artifact-tooltip {
+  &>div {
+    padding: 5px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid gray;
+    }
+  }
+}
+
+.knowledge-token {
+  display: inline-block;
+  width: 25px;
+  height: 38px;
+  background-size: auto 100%;
+  vertical-align: middle;
+  background-image: url('img/knowledge-tokens.png');
+  background-position-x: 0%;
+
+  &.golden {
+    background-position-x: 100%;
+  }
+
+  &.selectable {
+    &:not(.selected) {
+      box-shadow: 0 0 5px 5px white;
+    }
+    cursor: pointer;
+  }
+
+  &.selected {
+    box-shadow: 0 0 5px 5px red;
+  }
+}
+
+#last-round {
+    margin: 5px -5px -5px;
+    text-align: center;
+    background-color: #900;
+    color: white;
+    text-shadow: 0 0 1px #900, 0 0 5px #900, 0 0 6px #900, 0 0 7px #900;
+
+    .last-round-text {
+        display: inline-block;
+
+        &.animate {
+            animation: last-round-animation 2s 1 forwards ease-in-out;
+        }
+    }
+}
+
+@keyframes last-round-animation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(3);
+  }
+  100% { 
+    transform: scale(1);
+  }
+}
+
+#logs .log.notif_newUndoableStep {
+  margin-top: 0;
+
+  .roundedbox {
+    background-color: #c4c2c2;
+    cursor: pointer;
+    // TODO!!! display: none;
+    font-size: 12px;
+    padding: 2px 5px;
+    text-align: center
+  }
+
+  &.selectable .roundedbox {
+    display: block;
+  }
+}
+
+
+#logs .log.notif_newUndoableStep .roundedbox:after,#logs .log.notif_newUndoableStep .roundedbox:before {
+  content: "\f0e2";
+  font: normal normal normal 12px/1 FontAwesome;
+  margin: 0 10px;
+}
+
+.chatwindowlogs_zone .log.notif_newUndoableStep {
+  // TODO!!! display: none !important;
+  margin-bottom: -4px;
+  padding: 0;
+
+  &.selectable {
+    display: block !important; 
+    
+    .roundedboxinner {
+      background-color: #c4c2c2;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 2px 5px;
+      text-align: center
+    }
+  }
+}
+
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:after,.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:before {
+  content: "\f0e2";
+  font: normal normal normal 12px/1 FontAwesome;
+  margin: 0 10px;
+}
+
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner .msgtime {
+  display: none;
+}
+
+/* Cancelled notification messages */
+.log.cancel {
+  color: #c62828 !important;
+  text-decoration: line-through;
+}
+
+/* Desktop logs */
+.log.cancel .roundedbox {
+  background-color: rgba(240, 186, 117, 0.6) !important;
+}
+
+/* Mobile logs */
+.log.cancel.roundedbox {
+  background-color: #ef9a9a;
+}

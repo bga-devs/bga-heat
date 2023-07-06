@@ -1,0 +1,184 @@
+$cardBackground: #f8f4f0;
+
+.card {
+    display: inline-block;
+    position: relative;
+    border-radius: 8px;
+    font-family: "apotek-comp", sans-serif;
+
+    .card-sides {
+        .card-side {
+            border-radius: 8px;
+
+            &>* {
+                pointer-events: none;
+                user-select: none;
+            }
+        }
+    }
+
+    .front {
+      color: white;
+      font-size: 14px;
+      background-color: $cardBackground;
+
+      &>* {
+        position: absolute;
+      }
+
+      // TODO TEMP
+      .implemented {
+        top: 50px;
+        left: 50px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: transparent;
+
+        &[data-implemented="false"] {
+            background: red;
+        }
+      }
+
+      .type-box {
+        top: 8px;
+        left: 8px;
+        padding: 0 3px 3px 0;
+        border-radius: 0 0 12px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: $cardBackground;
+        gap: 4px;
+
+        .type {
+            width: 22px;
+            height: 22px;
+            border-radius: 5px 0 5px 5px;
+            background: var(--card-color);
+
+            .type-icon {
+                width: 100%;
+                height: 100%;
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-size: 70%;
+            }
+        }
+      }  
+
+      .center-box {
+
+        &>* {            
+            position: absolute;
+        }
+        
+        .activation-box {
+            background: $cardBackground;
+        }
+
+        .line {
+            background: var(--card-color);
+            width: 2px;
+            height: 2px;
+            padding: 0;
+        }
+
+        .activation {
+            background-repeat: no-repeat;
+            background-position: center center;
+    
+            &[data-type="anytime"] {
+                background-image: url('img/anytime-icon.svg');
+                background-size: 80%;
+            }
+            &[data-type="decline"] {
+                background-image: url('img/decline-icon.svg');
+                background-size: 80%;
+            }
+            &[data-type="immediate"] {
+                background-image: url('img/immediate-icon.svg');
+                background-size: 50%;
+            }
+            &[data-type="timeline"] {
+                background-image: url('img/timeline-icon.svg');
+                background-size: 80%;
+            }
+            &[data-type="endgame"] {
+                background-image: url('img/vp-icon.svg');
+                background-size: 80%;
+            }
+    
+            &::after {
+                content: '';
+                position: absolute;
+                width: 0px;
+                height: 0px;
+                border-style: solid;
+            }
+          }
+      }
+
+      .name-box {  
+        $nameHeight: 24px;
+        $nameBoxHeight: 27px;
+
+        background: $cardBackground;
+        padding-bottom: 4px;
+
+        text-align: left;
+        height: $nameHeight;
+
+        &::before {
+            position: absolute;
+            content: "";
+            top: 0;
+            right: -$nameBoxHeight;
+            width: 0;
+            height: 0;
+            border-width: $nameBoxHeight $nameBoxHeight 0 0;
+            border-color: $cardBackground transparent transparent transparent;
+            border-style: solid;
+        }
+
+        .name {
+          background: var(--card-color);
+          white-space: nowrap;
+          text-overflow: clip;
+          height: $nameHeight;
+          padding: 2px;
+    
+          &::after {
+              position: absolute;
+              content: "";
+              top: 0;
+              right: -$nameHeight;
+              width: 0;
+              height: 0;
+              border-width: $nameHeight $nameHeight 0 0;
+              border-color: var(--card-color) transparent transparent transparent;
+              border-style: solid;
+          }
+        }
+      }
+
+      .effect {
+        color: #404040;
+        text-align: center;
+        font-size: 13px;
+        font-family: "quador-display", serif;
+        
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+      }
+    }
+
+    .icon.starting-space {
+      display: inline-flex;
+      justify-content: center;
+      font-size: 12px;
+      line-height: 14px;
+    }
+}
