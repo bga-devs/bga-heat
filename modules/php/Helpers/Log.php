@@ -1,9 +1,9 @@
 <?php
-namespace AK\Helpers;
-use AK\Core\Game;
-use AK\Core\Globals;
-use AK\Core\Notifications;
-use AK\Managers\Players;
+namespace HEAT\Helpers;
+use HEAT\Core\Game;
+use HEAT\Core\Globals;
+use HEAT\Core\Notifications;
+use HEAT\Managers\Players;
 
 /**
  * Class that allows to log DB change: useful for undo feature

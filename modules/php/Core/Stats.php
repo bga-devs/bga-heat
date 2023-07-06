@@ -1,11 +1,11 @@
 <?php
-namespace AK\Core;
-use AK\Managers\Players;
+namespace HEAT\Core;
+use HEAT\Managers\Players;
 
 /*
  * Statistics
  */
-class Stats extends \AK\Helpers\DB_Manager
+class Stats extends \HEAT\Helpers\DB_Manager
 {
   protected static $table = 'stats';
   protected static $primary = 'stats_id';

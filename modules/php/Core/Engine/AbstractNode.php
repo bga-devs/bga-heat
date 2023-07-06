@@ -1,7 +1,7 @@
 <?php
-namespace AK\Core\Engine;
-use AK\Core\Globals;
-use AK\Managers\Players;
+namespace HEAT\Core\Engine;
+use HEAT\Core\Globals;
+use HEAT\Managers\Players;
 
 /*
  * AbstractNode: a class that represent an abstract Node
@@ -73,8 +73,8 @@ class AbstractNode
       throw new \BgaVisibleSystemException('Trying to insert a brother of the root');
     }
     // Ensure parent is a seq node
-    if (!$this->parent instanceof \AK\Core\Engine\SeqNode) {
-      $newParent = new \AK\Core\Engine\SeqNode([], []);
+    if (!$this->parent instanceof \HEAT\Core\Engine\SeqNode) {
+      $newParent = new \HEAT\Core\Engine\SeqNode([], []);
       $newParent = $this->parent->replaceAtPos($newParent, $index);
       $newParent->pushChild($this);
     }
@@ -369,7 +369,7 @@ class AbstractNode
   {
     $this->infos['choice'] = $childIndex;
     $child = $this->childs[$this->infos['choice']];
-    if (!$auto && !($child instanceof \AK\Core\Engine\LeafNode)) {
+    if (!$auto && !($child instanceof \HEAT\Core\Engine\LeafNode)) {
       $child->enforceMandatory();
     }
   }

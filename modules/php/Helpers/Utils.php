@@ -1,7 +1,7 @@
 <?php
-namespace AK\Helpers;
-use AK\Managers\ZooCards;
-use AK\Managers\ActionCards;
+namespace HEAT\Helpers;
+use HEAT\Managers\ZooCards;
+use HEAT\Managers\ActionCards;
 
 abstract class Utils extends \APP_DbObject
 {

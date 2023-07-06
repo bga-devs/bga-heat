@@ -1,5 +1,5 @@
 <?php
-namespace AK\Helpers;
+namespace HEAT\Helpers;
 
 class Collection extends \ArrayObject
 {

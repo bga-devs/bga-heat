@@ -1,14 +1,14 @@
 <?php
-namespace AK\States;
-use AK\Core\Globals;
-use AK\Core\Notifications;
-use AK\Core\Engine;
-use AK\Core\Stats;
-use AK\Helpers\Log;
-use AK\Managers\Players;
-use AK\Managers\Meeples;
-use AK\Managers\Cards;
-use AK\Managers\Actions;
+namespace HEAT\States;
+use HEAT\Core\Globals;
+use HEAT\Core\Notifications;
+use HEAT\Core\Engine;
+use HEAT\Core\Stats;
+use HEAT\Helpers\Log;
+use HEAT\Managers\Players;
+use HEAT\Managers\Meeples;
+use HEAT\Managers\Cards;
+use HEAT\Managers\Actions;
 
 trait TurnTrait
 {

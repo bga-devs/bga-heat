@@ -1,11 +1,11 @@
 <?php
-namespace AK\Core;
-use AK\Core\Game;
+namespace HEAT\Core;
+use HEAT\Core\Game;
 
 /*
  * User preferences
  */
-class Preferences extends \AK\Helpers\DB_Manager
+class Preferences extends \HEAT\Helpers\DB_Manager
 {
   protected static $table = 'user_preferences';
   protected static $primary = 'id';

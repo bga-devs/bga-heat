@@ -1,16 +1,16 @@
 <?php
-namespace AK\States;
-use AK\Core\Globals;
-use AK\Core\Notifications;
-use AK\Core\Engine;
-use AK\Core\Stats;
-use AK\Core\Preferences;
-use AK\Managers\Players;
-use AK\Managers\Cards;
-use AK\Managers\Technologies;
-use AK\Managers\Actions;
-use AK\Helpers\Utils;
-use AK\Helpers\Log;
+namespace HEAT\States;
+use HEAT\Core\Globals;
+use HEAT\Core\Notifications;
+use HEAT\Core\Engine;
+use HEAT\Core\Stats;
+use HEAT\Core\Preferences;
+use HEAT\Managers\Players;
+use HEAT\Managers\Cards;
+use HEAT\Managers\Technologies;
+use HEAT\Managers\Actions;
+use HEAT\Helpers\Utils;
+use HEAT\Helpers\Log;
 
 trait SetupTrait
 {
@@ -53,7 +53,7 @@ trait SetupTrait
     Technologies::initialDraw();
 
     // Start infinite turns loop
-    $this->initCustomDefaultTurnOrder('turn', ST_TURNACTION, ST_BREAK_MULTIACTIVE, true);
+    $this->initCustomDefaultTurnOrder('turn', ST_TURNACTION, ST_BREHEAT_MULTIACTIVE, true);
   }
 
   /////////////////////////////////////////////////

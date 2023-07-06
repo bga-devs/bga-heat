@@ -1,15 +1,15 @@
 <?php
-namespace AK;
-use AK\Managers\Players;
-use AK\Managers\Meeples;
-use AK\Managers\Cards;
-use AK\Core\Globals;
-use AK\Core\Engine;
-use AK\Core\Game;
-use AK\Core\Notifications;
-use AK\Helpers\Utils;
-use AK\Helpers\Log;
-use AK\Helpers\Collection;
+namespace HEAT;
+use HEAT\Managers\Players;
+use HEAT\Managers\Meeples;
+use HEAT\Managers\Cards;
+use HEAT\Core\Globals;
+use HEAT\Core\Engine;
+use HEAT\Core\Game;
+use HEAT\Core\Notifications;
+use HEAT\Helpers\Utils;
+use HEAT\Helpers\Log;
+use HEAT\Helpers\Collection;
 
 trait DebugTrait
 {

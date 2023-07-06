@@ -1,13 +1,13 @@
 <?php
-namespace AK\Models;
-use AK\Core\Engine;
-use AK\Core\Game;
-use AK\Core\Globals;
-use AK\Core\Notifications;
-use AK\Managers\ZooCards;
-use AK\Managers\Players;
-use AK\Helpers\Log;
-use AK\Helpers\FlowConvertor;
+namespace HEAT\Models;
+use HEAT\Core\Engine;
+use HEAT\Core\Game;
+use HEAT\Core\Globals;
+use HEAT\Core\Notifications;
+use HEAT\Managers\ZooCards;
+use HEAT\Managers\Players;
+use HEAT\Helpers\Log;
+use HEAT\Helpers\FlowConvertor;
 
 /*
  * Action: base class to handle atomic action

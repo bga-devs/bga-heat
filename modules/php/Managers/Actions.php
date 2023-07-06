@@ -1,9 +1,9 @@
 <?php
-namespace AK\Managers;
-use AK\Core\Game;
-use AK\Core\Engine;
-use AK\Managers\Players;
-use AK\Core\Globals;
+namespace HEAT\Managers;
+use HEAT\Core\Game;
+use HEAT\Core\Engine;
+use HEAT\Managers\Players;
+use HEAT\Core\Globals;
 
 /* Class to manage all the cards for Agricola */
 
@@ -34,7 +34,7 @@ class Actions
       // throw new \feException(print_r(Globals::getEngine()));
       throw new \BgaVisibleSystemException('Trying to get an atomic action not defined in Actions.php : ' . $actionId);
     }
-    $name = '\AK\Actions\\' . self::$classes[$actionId];
+    $name = '\HEAT\Actions\\' . self::$classes[$actionId];
     return new $name($ctx);
   }
 

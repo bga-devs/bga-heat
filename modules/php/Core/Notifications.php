@@ -1,10 +1,10 @@
 <?php
-namespace AK\Core;
-use AK\Managers\Players;
-use AK\Helpers\Utils;
-use AK\Helpers\Collection;
-use AK\Core\Globals;
-use AK\Managers\Effects;
+namespace HEAT\Core;
+use HEAT\Managers\Players;
+use HEAT\Helpers\Utils;
+use HEAT\Helpers\Collection;
+use HEAT\Core\Globals;
+use HEAT\Managers\Effects;
 
 class Notifications
 {
@@ -56,8 +56,8 @@ class Notifications
     // // Keep only the thing that matters
     $fDatas = [
       'players' => $datas['players'],
-      'cards' => \AK\Managers\Cards::getUiData(),
-      'techs' => \AK\Managers\Technologies::getUiData(),
+      'cards' => \HEAT\Managers\Cards::getUiData(),
+      'techs' => \HEAT\Managers\Technologies::getUiData(),
     ];
 
     self::notifyAll('refreshUI', '', [

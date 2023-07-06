@@ -1,13 +1,13 @@
 <?php
-namespace AK\Actions;
-use AK\Managers\Meeples;
-use AK\Managers\Players;
-use AK\Managers\Technologies;
-use AK\Core\Notifications;
-use AK\Core\Stats;
-use AK\Helpers\Utils;
+namespace HEAT\Actions;
+use HEAT\Managers\Meeples;
+use HEAT\Managers\Players;
+use HEAT\Managers\Technologies;
+use HEAT\Core\Notifications;
+use HEAT\Core\Stats;
+use HEAT\Helpers\Utils;
 
-class Learn extends \AK\Models\Action
+class Learn extends \HEAT\Models\Action
 {
   public function getState()
   {

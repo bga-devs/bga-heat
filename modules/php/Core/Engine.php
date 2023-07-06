@@ -1,12 +1,12 @@
 <?php
-namespace AK\Core;
-use AK\Managers\Players;
-use AK\Managers\Actions;
-use AK\Managers\Scores;
-use AK\Managers\ZooCards;
-use AK\Helpers\Log;
-use AK\Helpers\QueryBuilder;
-use AK\Helpers\UserException;
+namespace HEAT\Core;
+use HEAT\Managers\Players;
+use HEAT\Managers\Actions;
+use HEAT\Managers\Scores;
+use HEAT\Managers\ZooCards;
+use HEAT\Helpers\Log;
+use HEAT\Helpers\QueryBuilder;
+use HEAT\Helpers\UserException;
 
 /*
  * Engine: a class that allows to handle complex flow
@@ -37,8 +37,8 @@ class Engine
    */
   protected function ensureSeqRootNode()
   {
-    if (!self::$tree instanceof \AK\Core\Engine\SeqNode) {
-      self::$tree = new \AK\Core\Engine\SeqNode([], [self::$tree]);
+    if (!self::$tree instanceof \HEAT\Core\Engine\SeqNode) {
+      self::$tree = new \HEAT\Core\Engine\SeqNode([], [self::$tree]);
       self::save();
     }
   }
@@ -71,7 +71,7 @@ class Engine
       $childs[] = self::buildTree($child);
     }
 
-    $className = '\AK\Core\Engine\\' . ucfirst($type) . 'Node';
+    $className = '\HEAT\Core\Engine\\' . ucfirst($type) . 'Node';
     unset($t['childs']);
     return new $className($t, $childs);
   }

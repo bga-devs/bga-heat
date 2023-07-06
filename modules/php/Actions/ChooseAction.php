@@ -1,15 +1,15 @@
 <?php
-namespace AK\Actions;
-use AK\Managers\Meeples;
-use AK\Managers\Players;
-use AK\Core\Notifications;
-use AK\Managers\ActionCards;
-use AK\Core\Engine;
-use AK\Core\Globals;
-use AK\Core\Stats;
-use AK\Helpers\Utils;
+namespace HEAT\Actions;
+use HEAT\Managers\Meeples;
+use HEAT\Managers\Players;
+use HEAT\Core\Notifications;
+use HEAT\Managers\ActionCards;
+use HEAT\Core\Engine;
+use HEAT\Core\Globals;
+use HEAT\Core\Stats;
+use HEAT\Helpers\Utils;
 
-class ChooseAction extends \AK\Models\Action
+class ChooseAction extends \HEAT\Models\Action
 {
   public function getState()
   {

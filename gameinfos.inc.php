@@ -12,35 +12,32 @@
 
 $gameinfos = [
   // Name of the game in English (will serve as the basis for translation)
-  'game_name' => 'Ancient Knowledge',
+  'game_name' => 'Heat: Pedal to the Metal',
 
   // Game designer (or game designers, separated by commas)
-  'designer' => 'Rémi Mathieu',
+  'designer' => 'Asger Harding Granerud, Daniel Skjold Pedersen',
 
   // Game artist (or game artists, separated by commas)
-  'artist' => 'Pierre Ples, Adrien Rives, Emilien Rotival',
+  'artist' => 'Vincent Dutrait',
 
   // Year of FIRST publication of this game. Can be negative.
-  'year' => 2023,
+  'year' => 2022,
 
   // Url of game publisher website
-  'publisher_website' => 'https://www.iello.fr/co.uk',
+  'publisher_website' => 'daysofwonder.com/',
 
   // Board Game Geek ID of the publisher
-  'publisher_bgg_id' => 8923,
+  'publisher_bgg_id' => 1027,
 
   // Board game geek ID of the game
-  'bgg_id' => 380105,
-
-  // Board game geek ID of the game
-  'bgg_id' => 338093,
+  'bgg_id' => 366013,
 
   // Players configuration that can be played (ex: 2 to 4 players)
-  'players' => [2, 3, 4],
+  'players' => [1, 2, 3, 4, 5, 6],
 
   // Suggest players to play with this number of players. Must be null if there is no such advice, or if there is only one possible player configuration.
   // NB: the automatic lobby will try first the lowest number of players if this is not specified. So you _have to_ specify this parameter if the lowest player number is not compatible with the default options.
-  'suggest_player_number' => null,
+  'suggest_player_number' => 5,
 
   // Discourage players to play with these numbers of players. Must be null if there is no such advice.
   'not_recommend_player_number' => null,
@@ -129,19 +126,11 @@ $gameinfos = [
   // A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
   'presentation' => [
     totranslate(
-      'Heirs to an exceptional knowledge that has survived the ages, it is now up to you to preserve the vestige of your civilization.'
+      'Based on simple and intuitive hand management, Heat: Pedal to the Metal puts players in the driver\'s seat of intense car races, jockeying for position to cross the finish line first, while managing their car\'s speed if they don\'t want to overheat. Selecting the right upgrades for their car will help them hug the curves and keep their engine cool enough to maintain top speeds. Ultimately, their driving skills will be the key to victory!'
     ),
 
     totranslate(
-      'Ancient Knowledge is a strategic card game in which you erect monuments and build artefacts to pass on your knowledge. Time will make your constructions ephemeral,so make the right decision and combine the many cards at your disposal, because all knowledge is doomed to disappear…'
-    ),
-
-    totranslate(
-      "It's up to you to find the best synergy so that you can pass down knowledge before the decline of the emblematic monuments you have constructed, monuments we still find nowadays in the four corners of the globe. From Mexican pyramids to the Sphinx of Giza, passing through the famous cities of Tiwanaku and Babylon, only the cleverest builder will shine through the ages and seize victory. In this game, your only enemy is time."
-    ),
-
-    totranslate(
-      'Prove to your opponents that you are the worthly representative of your Legacy! Will your monuments withstand the trial of time?'
+      'Drivers can compete in a single race or use the "Championship System" to play a whole season in one game night, customizing their car before each race to claim the top spot of the podium. They have to be careful as the weather, road conditions, and events will change every race to spice up their championship. Players can also enjoy a solo mode with the Legends Module or add automated drivers as additional opponents in multiplayer games.'
     ),
   ],
 

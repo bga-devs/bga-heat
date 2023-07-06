@@ -1,5 +1,5 @@
 <?php
-namespace AK\Core\Engine;
+namespace HEAT\Core\Engine;
 
 /*
  * OrNode: a class that represent an Node with a choice (parallel)

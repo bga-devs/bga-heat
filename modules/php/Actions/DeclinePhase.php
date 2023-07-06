@@ -1,11 +1,11 @@
 <?php
-namespace AK\Actions;
-use AK\Managers\Players;
-use AK\Core\Notifications;
-use AK\Core\Stats;
-use AK\Helpers\Utils;
+namespace HEAT\Actions;
+use HEAT\Managers\Players;
+use HEAT\Core\Notifications;
+use HEAT\Core\Stats;
+use HEAT\Helpers\Utils;
 
-class DeclinePhase extends \AK\Models\Action
+class DeclinePhase extends \HEAT\Models\Action
 {
   public function getState()
   {

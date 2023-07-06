@@ -1,20 +1,20 @@
 <?php
-namespace AK\Models;
-use AK\Core\Stats;
-use AK\Core\Notifications;
-use AK\Core\Preferences;
-use AK\Managers\Actions;
-use AK\Managers\Meeples;
-use AK\Core\Globals;
-use AK\Core\Engine;
-use AK\Helpers\FlowConvertor;
-use AK\Helpers\Utils;
+namespace HEAT\Models;
+use HEAT\Core\Stats;
+use HEAT\Core\Notifications;
+use HEAT\Core\Preferences;
+use HEAT\Managers\Actions;
+use HEAT\Managers\Meeples;
+use HEAT\Core\Globals;
+use HEAT\Core\Engine;
+use HEAT\Helpers\FlowConvertor;
+use HEAT\Helpers\Utils;
 
 /*
  * Technology: all utility functions concerning a tech
  */
 
-class Technology extends \AK\Helpers\DB_Model
+class Technology extends \HEAT\Helpers\DB_Model
 {
   protected $table = 'technologies';
   protected $primary = 'technology_id';

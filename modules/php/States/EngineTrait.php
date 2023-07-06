@@ -1,14 +1,14 @@
 <?php
-namespace AK\States;
-use AK\Core\Globals;
-use AK\Core\Engine;
-use AK\Core\Game;
-use AK\Core\Notifications;
-use AK\Managers\Players;
-use AK\Managers\Meeples;
-use AK\Managers\Actions;
-use AK\Managers\Effects;
-use AK\Helpers\Log;
+namespace HEAT\States;
+use HEAT\Core\Globals;
+use HEAT\Core\Engine;
+use HEAT\Core\Game;
+use HEAT\Core\Notifications;
+use HEAT\Managers\Players;
+use HEAT\Managers\Meeples;
+use HEAT\Managers\Actions;
+use HEAT\Managers\Effects;
+use HEAT\Helpers\Log;
 
 trait EngineTrait
 {
@@ -150,7 +150,7 @@ trait EngineTrait
       'choices' => Engine::getNextChoice($player),
       'allChoices' => Engine::getNextChoice($player, true),
     ]);
-    if ($node instanceof \AK\Core\Engine\XorNode) {
+    if ($node instanceof \HEAT\Core\Engine\XorNode) {
       $args['descSuffix'] = 'xor';
     }
     $sourceId = $node->getSourceId() ?? null;

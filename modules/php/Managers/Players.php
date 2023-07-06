@@ -1,22 +1,22 @@
 <?php
-namespace AK\Managers;
-use AK\Core\Game;
-use AK\Core\Globals;
-use AK\Core\Stats;
-use AK\Helpers\Utils;
-use AK\Core\Notifications;
+namespace HEAT\Managers;
+use HEAT\Core\Game;
+use HEAT\Core\Globals;
+use HEAT\Core\Stats;
+use HEAT\Helpers\Utils;
+use HEAT\Core\Notifications;
 
 /*
  * Players manager : allows to easily access players ...
  *  a player is an instance of Player class
  */
-class Players extends \AK\Helpers\DB_Manager
+class Players extends \HEAT\Helpers\DB_Manager
 {
   protected static $table = 'player';
   protected static $primary = 'player_id';
   protected static function cast($row)
   {
-    return new \AK\Models\Player($row);
+    return new \HEAT\Models\Player($row);
   }
 
   public function setupNewGame($players, $options)

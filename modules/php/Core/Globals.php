@@ -1,13 +1,13 @@
 <?php
-namespace AK\Core;
+namespace HEAT\Core;
 
-use AK\Core\Game;
-use AK\Helpers\Utils;
+use HEAT\Core\Game;
+use HEAT\Helpers\Utils;
 
 /*
  * Globals
  */
-class Globals extends \AK\Helpers\DB_Manager
+class Globals extends \HEAT\Helpers\DB_Manager
 {
   protected static $initialized = false;
   protected static $variables = [

@@ -1,5 +1,5 @@
 <?php
-namespace AK\Core\Engine;
+namespace HEAT\Core\Engine;
 
 /*
  * ParallelNode: a class that represent an Node with a choice (parallel), some of them being optional, other are mandatory

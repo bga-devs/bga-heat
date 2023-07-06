@@ -1,15 +1,15 @@
 <?php
-namespace AK\Managers;
+namespace HEAT\Managers;
 
 use BgaVisibleSystemException;
-use AK\Core\Stats;
-use AK\Core\Globals;
-use AK\Helpers\UserException;
-use AK\Helpers\Collection;
+use HEAT\Core\Stats;
+use HEAT\Core\Globals;
+use HEAT\Helpers\UserException;
+use HEAT\Helpers\Collection;
 
 /* Class to manage all the meeples for Federation */
 
-class Meeples extends \AK\Helpers\Pieces
+class Meeples extends \HEAT\Helpers\Pieces
 {
   protected static $table = 'meeples';
   protected static $prefix = 'meeple_';
@@ -24,7 +24,7 @@ class Meeples extends \AK\Helpers\Pieces
       ASSISTANT => 'Assistant',
       MEDAL => 'Medal',
     ];
-    $class = '\AK\Models\\' . ($classes[$meeple['type']] ?? 'Meeple');
+    $class = '\HEAT\Models\\' . ($classes[$meeple['type']] ?? 'Meeple');
     return new $class($meeple);
   }
 

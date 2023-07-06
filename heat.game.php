@@ -2,7 +2,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * Ancient Knowledge implementation : © Timothée Pecatte <tim.pecatte@gmail.com>, Guy Baudin <guy.thoun@gmail.com>
+ * Heat implementation : © Timothée Pecatte <tim.pecatte@gmail.com>, Guy Baudin <guy.thoun@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -18,7 +18,7 @@
 
 $swdNamespaceAutoload = function ($class) {
   $classParts = explode('\\', $class);
-  if ($classParts[0] == 'AK') {
+  if ($classParts[0] == 'HEAT') {
     array_shift($classParts);
     $file = dirname(__FILE__) . '/modules/php/' . implode(DIRECTORY_SEPARATOR, $classParts) . '.php';
     if (file_exists($file)) {
@@ -32,22 +32,22 @@ spl_autoload_register($swdNamespaceAutoload, true, true);
 
 require_once APP_GAMEMODULE_PATH . 'module/table/table.game.php';
 
-use AK\Managers\Meeples;
-use AK\Managers\Cards;
-use AK\Managers\Players;
-use AK\Managers\Technologies;
-use AK\Helpers\Log;
-use AK\Core\Globals;
-use AK\Core\Preferences;
-use AK\Core\Stats;
-use AK\Core\Engine;
+use HEAT\Managers\Meeples;
+use HEAT\Managers\Cards;
+use HEAT\Managers\Players;
+use HEAT\Managers\Technologies;
+use HEAT\Helpers\Log;
+use HEAT\Core\Globals;
+use HEAT\Core\Preferences;
+use HEAT\Core\Stats;
+use HEAT\Core\Engine;
 
 class Heat extends Table
 {
-  use AK\DebugTrait;
-  use AK\States\SetupTrait;
-  use AK\States\EngineTrait;
-  use AK\States\TurnTrait;
+  use HEAT\DebugTrait;
+  use HEAT\States\SetupTrait;
+  use HEAT\States\EngineTrait;
+  use HEAT\States\TurnTrait;
 
   public static $instance = null;
   function __construct()

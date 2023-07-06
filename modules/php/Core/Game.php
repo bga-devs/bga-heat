@@ -1,5 +1,5 @@
 <?php
-namespace AK\Core;
+namespace HEAT\Core;
 use Heat;
 
 /*

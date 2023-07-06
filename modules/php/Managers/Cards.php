@@ -1,16 +1,16 @@
 <?php
-namespace AK\Managers;
+namespace HEAT\Managers;
 
 use BgaVisibleSystemException;
-use AK\Core\Stats;
-use AK\Core\Globals;
-use AK\Core\Notifications;
-use AK\Helpers\UserException;
-use AK\Helpers\Collection;
+use HEAT\Core\Stats;
+use HEAT\Core\Globals;
+use HEAT\Core\Notifications;
+use HEAT\Helpers\UserException;
+use HEAT\Helpers\Collection;
 
-/* Class to manage all the cards for Ancient Knowledge */
+/* Class to manage all the cards for Heat */
 
-class Cards extends \AK\Helpers\Pieces
+class Cards extends \HEAT\Helpers\Pieces
 {
   protected static $table = 'cards';
   protected static $prefix = 'card_';
@@ -36,7 +36,7 @@ class Cards extends \AK\Helpers\Pieces
       'A' => 'Artefacts',
     ];
     $prefix = $prefixes[$t[0][0]];
-    $className = "\AK\Cards\\$prefix\\$id";
+    $className = "\HEAT\Cards\\$prefix\\$id";
     return new $className($data);
   }
 

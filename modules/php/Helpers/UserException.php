@@ -1,6 +1,6 @@
 <?php
-namespace AK\Helpers;
-use AK\Core\Game;
+namespace HEAT\Helpers;
+use HEAT\Core\Game;
 
 class UserException extends \BgaUserException
 {

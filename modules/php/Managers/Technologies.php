@@ -1,16 +1,16 @@
 <?php
-namespace AK\Managers;
+namespace HEAT\Managers;
 
 use BgaVisibleSystemException;
-use AK\Core\Stats;
-use AK\Core\Globals;
-use AK\Core\Notifications;
-use AK\Helpers\UserException;
-use AK\Helpers\Collection;
+use HEAT\Core\Stats;
+use HEAT\Core\Globals;
+use HEAT\Core\Notifications;
+use HEAT\Helpers\UserException;
+use HEAT\Helpers\Collection;
 
-/* Class to manage all the tech cards for Ancient Knowledge */
+/* Class to manage all the tech cards for Heat */
 
-class Technologies extends \AK\Helpers\Pieces
+class Technologies extends \HEAT\Helpers\Pieces
 {
   protected static $table = 'technologies';
   protected static $prefix = 'technology_';
@@ -27,7 +27,7 @@ class Technologies extends \AK\Helpers\Pieces
 
   public static function getCardInstance($id, $data = null)
   {
-    $className = "\AK\Technologies\\$id";
+    $className = "\HEAT\Technologies\\$id";
     return new $className($data);
   }
 

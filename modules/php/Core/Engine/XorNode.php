@@ -1,5 +1,5 @@
 <?php
-namespace AK\Core\Engine;
+namespace HEAT\Core\Engine;
 
 /*
  * XorNode: a class that represent an Node with a choice (parallel) with a unique possibility

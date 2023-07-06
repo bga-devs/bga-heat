@@ -1,12 +1,12 @@
 <?php
-namespace AK\Actions;
-use AK\Managers\Cards;
-use AK\Managers\Players;
-use AK\Core\Notifications;
-use AK\Core\Stats;
-use AK\Helpers\Utils;
+namespace HEAT\Actions;
+use HEAT\Managers\Cards;
+use HEAT\Managers\Players;
+use HEAT\Core\Notifications;
+use HEAT\Core\Stats;
+use HEAT\Helpers\Utils;
 
-class Excavate extends \AK\Models\Action
+class Excavate extends \HEAT\Models\Action
 {
   public function getState()
   {

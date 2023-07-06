@@ -1,5 +1,5 @@
 # What is this project ? 
-This project is an adaptation for BoardGameArena of game Ancient Knowledge edited by Iello.
+This project is an adaptation for BoardGameArena of game Heat edited by Iello.
 You can play here : https://boardgamearena.com
 
 # How to install the auto-build stack

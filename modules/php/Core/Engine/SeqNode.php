@@ -1,7 +1,7 @@
 <?php
-namespace AK\Core\Engine;
+namespace HEAT\Core\Engine;
 
-use AK\Core\Engine;
+use HEAT\Core\Engine;
 /*
  * SeqNode: a class that represent a sequence of actions
  */

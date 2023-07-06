@@ -1,6 +1,6 @@
 <?php
-namespace AK\Core\Engine;
-use AK\Managers\Actions;
+namespace HEAT\Core\Engine;
+use HEAT\Managers\Actions;
 
 /*
  * Leaf: a class that represent a Leaf
@@ -89,7 +89,7 @@ class LeafNode extends AbstractNode
       return Actions::getState($this->infos['action'], $this);
     }
 
-    var_dump(\AK\Core\Engine::$tree->toArray());
+    var_dump(\HEAT\Core\Engine::$tree->toArray());
     throw new \BgaVisibleSystemException('Trying to get state on a leaf without state nor action');
   }
 

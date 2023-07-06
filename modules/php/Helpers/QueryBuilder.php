@@ -1,5 +1,5 @@
 <?php
-namespace AK\Helpers;
+namespace HEAT\Helpers;
 
 class QueryBuilder extends \APP_DbObject
 {

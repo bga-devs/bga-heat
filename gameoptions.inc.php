@@ -24,7 +24,7 @@
  *
  */
 
-namespace AK;
+namespace HEAT;
 
 require_once 'modules/php/constants.inc.php';
 
