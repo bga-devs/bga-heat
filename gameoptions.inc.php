@@ -26,43 +26,8 @@
 
 namespace HEAT;
 
-require_once 'modules/php/constants.inc.php';
+require_once 'modules/php/gameoptions.inc.php';
 
-$game_options = [
-  OPTION_FIRST_GAME => [
-    'name' => totranslate('First game'),
-    'values' => [
-      OPTION_FIRST_GAME_ENABLED => [
-        'name' => totranslate('Enabled'),
-        'tmdisplay' => totranslate('First game'),
-        'description' => totranslate('Each player will receive a pre-made starting hand'),
-      ],
-      OPTION_FIRST_GAME_DISABLED => [
-        'name' => totranslate('Disabled'),
-      ],
-    ],
-  ],
-];
+$game_options = [];
 
-$game_preferences = [
-  OPTION_CONFIRM => [
-    'name' => totranslate('Turn confirmation'),
-    'needReload' => false,
-    'default' => OPTION_CONFIRM_ENABLED,
-    'values' => [
-      OPTION_CONFIRM_ENABLED => ['name' => totranslate('Enabled')],
-      OPTION_CONFIRM_DISABLED => ['name' => totranslate('Disabled')],
-      OPTION_CONFIRM_TIMER => [
-        'name' => totranslate('Enabled with timer'),
-      ],
-    ],
-  ],
-  OPTION_CONFIRM_UNDOABLE => [
-    'name' => totranslate('Undoable actions confirmation'),
-    'needReload' => false,
-    'values' => [
-      OPTION_CONFIRM_ENABLED => ['name' => totranslate('Enabled')],
-      OPTION_CONFIRM_DISABLED => ['name' => totranslate('Disabled')],
-    ],
-  ],
-];
+$game_preferences = [];

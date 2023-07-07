@@ -10,28 +10,24 @@
 -- dbmodel.sql
 
 
--- Additional player's info
-ALTER TABLE `player` ADD `lost_knowledge` int(10) NOT NULL DEFAULT 0;
-
+CREATE TABLE IF NOT EXISTS `constructors` (
+  `id` int(10) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `no` int(10),
+  `player_id` int(10),
+  `car_position` varchar(32),
+  `turn` int(10),
+  `score` int(10) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- PIECES TABLES
-
 CREATE TABLE IF NOT EXISTS `cards` (
   `card_id` varchar(50) NOT NULL,
   `card_location` varchar(32) NOT NULL,
   `card_state` int(10),
-  `player_id` int(10) NULL,
-  `knowledge` int(10) NOT NULL DEFAULT 0,
+  `type` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`card_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE IF NOT EXISTS `technologies` (
-  `technology_id` varchar(50) NOT NULL,
-  `technology_location` varchar(32) NOT NULL,
-  `technology_state` int(10),
-  `player_id` int(10) NULL,
-  PRIMARY KEY (`technology_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -49,7 +45,6 @@ CREATE TABLE IF NOT EXISTS `user_preferences` (
   `pref_value` int(10) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE IF NOT EXISTS `log` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

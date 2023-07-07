@@ -43,6 +43,7 @@ class Heat extends Table
 {
   use HEAT\DebugTrait;
   use HEAT\States\SetupTrait;
+  use HEAT\States\RaceTrait;
 
   public static $instance = null;
   function __construct()
@@ -74,7 +75,7 @@ class Heat extends Table
     return [
       'prefs' => Preferences::getUiData($pId),
       'players' => Players::getUiData($pId),
-      'cards' => Cards::getUiData(),
+      // 'cards' => Cards::getUiData(),
     ];
   }
 

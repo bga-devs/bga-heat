@@ -37,222 +37,48 @@ $machinestates = [
     'description' => '',
     'type' => 'game',
     'action' => 'stSetupBranch',
-    'transitions' => ['selection' => ST_INITIAL_SELECTION, 'done' => ST_FINISH_SETUP],
-  ],
-
-  ST_INITIAL_SELECTION => [
-    'name' => 'initialSelection',
-    'description' => clienttranslate('Waiting for others to choose the 6 cards they want to keep'),
-    'descriptionmyturn' => clienttranslate('${you} must select the 6 cards you want to keep'),
-    'type' => 'multipleactiveplayer',
-    'args' => 'argsInitialSelection',
-    'possibleactions' => ['actSelectCardsToDiscard', 'actCancelSelection'],
-    'transitions' => ['done' => ST_FINISH_SETUP, 'zombiePass' => ST_FINISH_SETUP],
-  ],
-
-  ST_FINISH_SETUP => [
-    'name' => 'finishSetup',
-    'type' => 'game',
-    'action' => 'stFinishSetup',
-    'transitions' => [],
+    'transitions' => ['done' => ST_START_RACE],
   ],
 
   //////////////////////////////
-  //  _____
-  // |_   _|   _ _ __ _ __
-  //   | || | | | '__| '_ \
-  //   | || |_| | |  | | | |
-  //   |_| \__,_|_|  |_| |_|
+  //  ____
+  // |  _ \ __ _  ___ ___
+  // | |_) / _` |/ __/ _ \
+  // |  _ < (_| | (_|  __/
+  // |_| \_\__,_|\___\___|
   //////////////////////////////
 
-  ST_TURNACTION => [
-    'name' => 'turnAction',
+  ST_START_RACE => [
+    'name' => 'startRace',
     'description' => '',
     'type' => 'game',
-    'action' => 'stTurnAction',
-    'transitions' => [],
+    'action' => 'stStartRace',
     'updateGameProgression' => true,
+    'transitions' => ['planification' => ST_PLANIFICATION],
   ],
 
-  ST_TIMELINE_PHASE => [
-    'name' => 'timelinePhase',
-    'type' => 'game',
-    'action' => 'stAtomicAction',
-  ],
-
-  ST_DECLINE_PHASE => [
-    'name' => 'declinePhase',
-    'type' => 'game',
-    'action' => 'stAtomicAction',
-  ],
-
-  ST_DECLINE_CARD => [
-    'name' => 'declineCard',
-    'type' => 'game',
-    'action' => 'stAtomicAction',
-  ],
-
-  ////////////////////////////////////
-  //  _____             _
-  // | ____|_ __   __ _(_)_ __   ___
-  // |  _| | '_ \ / _` | | '_ \ / _ \
-  // | |___| | | | (_| | | | | |  __/
-  // |_____|_| |_|\__, |_|_| |_|\___|
-  //              |___/
-  ////////////////////////////////////
-
-  // Used just to change active player....
-  ST_GENERIC_NEXT_PLAYER => [
-    'name' => 'genericNextPlayer',
-    'type' => 'game',
-  ],
-
-  ST_RESOLVE_STACK => [
-    'name' => 'resolveStack',
-    'type' => 'game',
-    'action' => 'stResolveStack',
+  ST_PLANIFICATION => [
+    'name' => 'planification',
+    'description' => clienttranslate('Waiting for others to their gear and card(s)'),
+    'descriptionmyturn' => clienttranslate('${you} must select the gear and card(s) to play'),
+    'type' => 'multipleactiveplayer',
+    'args' => 'argsPlanification',
+    'possibleactions' => ['actPlan'],
     'transitions' => [],
   ],
 
-  ST_CONFIRM_TURN => [
-    'name' => 'confirmTurn',
-    'description' => clienttranslate('${actplayer} must confirm or restart their turn'),
-    'descriptionmyturn' => clienttranslate('${you} must confirm or restart your turn'),
-    'type' => 'activeplayer',
-    'args' => 'argsConfirmTurn',
-    'action' => 'stConfirmTurn',
-    'possibleactions' => ['actConfirmTurn', 'actRestart'],
-    'transitions' => [],
-  ],
-
-  ST_CONFIRM_PARTIAL_TURN => [
-    'name' => 'confirmPartialTurn',
-    'description' => clienttranslate('${actplayer} must confirm the switch of player'),
-    'descriptionmyturn' => clienttranslate('${you} must confirm the switch of player. You will not be able to restart turn'),
-    'type' => 'activeplayer',
-    'args' => 'argsConfirmTurn',
-    // 'action' => 'stConfirmPartialTurn',
-    'possibleactions' => ['actConfirmPartialTurn', 'actRestart'],
-  ],
-
-  ST_RESOLVE_CHOICE => [
-    'name' => 'resolveChoice',
-    'description' => clienttranslate('${actplayer} must choose which effect to resolve'),
-    'descriptionmyturn' => clienttranslate('${you} must choose which effect to resolve'),
-    'descriptionxor' => clienttranslate('${actplayer} must choose exactly one effect'),
-    'descriptionmyturnxor' => clienttranslate('${you} must choose exactly one effect'),
-    'type' => 'activeplayer',
-    'args' => 'argsResolveChoice',
-    'action' => 'stResolveChoice',
-    'possibleactions' => ['actChooseAction', 'actRestart'],
-    'transitions' => [],
-  ],
-
-  ST_IMPOSSIBLE_MANDATORY_ACTION => [
-    'name' => 'impossibleAction',
-    'description' => clienttranslate('${actplayer} can\'t take the mandatory action and must restart his turn or exchange/cook'),
-    'descriptionmyturn' => clienttranslate(
-      '${you} can\'t take the mandatory action. Restart your turn or exchange/cook to make it possible'
-    ),
-    'type' => 'activeplayer',
-    'args' => 'argsImpossibleAction',
-    'possibleactions' => ['actRestart'],
-  ],
-
-  ////////////////////////////////////////////////////////////////////////////
-  //     _   _                  _         _        _   _
-  //    / \ | |_ ___  _ __ ___ (_) ___   / \   ___| |_(_) ___  _ __  ___
-  //   / _ \| __/ _ \| '_ ` _ \| |/ __| / _ \ / __| __| |/ _ \| '_ \/ __|
-  //  / ___ \ || (_) | | | | | | | (__ / ___ \ (__| |_| | (_) | | | \__ \
-  // /_/   \_\__\___/|_| |_| |_|_|\___/_/   \_\___|\__|_|\___/|_| |_|___/
-  //
-  ////////////////////////////////////////////////////////////////////////////
-  ST_CHOOSE_ACTION => [
-    'name' => 'chooseAction',
-    'type' => 'activeplayer',
-    'description' => clienttranslate('${actplayer} must choose an action'),
-    'descriptionmyturn' => clienttranslate('${you} must choose an action'),
-    'args' => 'argsAtomicAction',
-    'possibleactions' => ['actChooseAction', 'actRestart'],
-  ],
-
-  ST_CREATE => [
-    'name' => 'create',
-    'type' => 'activeplayer',
-    'description' => clienttranslate('${actplayer} must choose a monument or an artifact to create'),
-    'descriptionmyturn' => clienttranslate('${you} must choose a monument or an artifact to create'),
-    'descriptionmyturnSelectSlot' => clienttranslate('${you} must choose a place for the selected monument'),
-    'descriptionmyturnSelectDiscard' => clienttranslate('${you} must choose ${discard_number} card(s) to discard'),
-    'descriptionmyturnConfirm' => clienttranslate('${you} must confirm creation'),
-    'args' => 'argsAtomicAction',
-    'possibleactions' => ['actCreate', 'actRestart'],
-  ],
-
-  ST_LEARN => [
-    'name' => 'learn',
-    'type' => 'activeplayer',
-    'description' => clienttranslate('${actplayer} must choose a technology to learn'),
-    'descriptionmyturn' => clienttranslate('${you} must choose a technology to learn'),
-    'args' => 'argsAtomicAction',
-    'possibleactions' => ['actLearn', 'actRestart'],
-  ],
-
-  ST_EXCAVATE => [
-    'name' => 'excavate',
-    'type' => 'activeplayer',
-    'description' => clienttranslate('${actplayer} must choose cards in their past to rotate'),
-    'descriptionmyturn' => clienttranslate('${you} must choose cards in your past to rotate'),
-    'args' => 'argsAtomicAction',
-    'possibleactions' => ['actExcavate', 'actRestart'],
-  ],
-
-  ST_ARCHIVE => [
-    'name' => 'archive',
-    'type' => 'activeplayer',
-    'description' => clienttranslate('${actplayer} must choose cards to discard before removing <KNOWLEDGE> on their timeline'),
-    'descriptionmyturn' => clienttranslate('${you} must choose cards to discard before removing <KNOWLEDGE> on your timeline'),
-    'descriptionmyturnSelectDiscardTokens' => clienttranslate('${you} must choose ${discard_number} <KNOWLEDGE> to discard'),
-    'descriptionmyturnConfirm' => clienttranslate('${you} must confirm archive'),
-    'args' => 'argsAtomicAction',
-    'possibleactions' => ['actArchive', 'actRestart'],
-  ],
-
-  ST_DRAW => [
-    'name' => 'drawCard',
-    'type' => 'game',
-    'action' => 'stAtomicAction',
-  ],
-
-  ST_DISCARD_LOST_KNOWLEDGE => [
-    'name' => 'discardLostKnowledge',
-    'type' => 'game',
-    'action' => 'stAtomicAction',
-  ],
-
-  ST_ACTIVATE_CARD => [
-    'name' => 'activateCard',
-    'type' => 'game',
-    'action' => 'stAtomicAction',
-  ],
-
-  ST_REMOVE_KNOWLEDGE => [
-    'name' => 'removeKnowledge',
-    'type' => 'activeplayer',
-    'description' => clienttranslate('${actplayer} must remove ${n} <KNOWLEDGE> on their timeline'),
-    'descriptionmyturn' => clienttranslate('${you} must remove ${n} <KNOWLEDGE> on your timeline'),
-    'args' => 'argsAtomicAction',
-    'action' => 'stAtomicAction',
-    'possibleactions' => ['actRemoveKnowledge', 'actRestart'],
-  ],
-
-  ST_DISCARD => [
-    'name' => 'discard',
-    'type' => 'activeplayer',
-    'description' => clienttranslate('${actplayer} must choose ${n} card(s) to discard'),
-    'descriptionmyturn' => clienttranslate('${you} must choose ${n} card(s) to discard'),
-    'args' => 'argsAtomicAction',
-    'possibleactions' => ['actDiscard', 'actRestart'],
-  ],
+  // ST_RESOLVE_CHOICE => [
+  //   'name' => 'resolveChoice',
+  //   'description' => clienttranslate('${actplayer} must choose which effect to resolve'),
+  //   'descriptionmyturn' => clienttranslate('${you} must choose which effect to resolve'),
+  //   'descriptionxor' => clienttranslate('${actplayer} must choose exactly one effect'),
+  //   'descriptionmyturnxor' => clienttranslate('${you} must choose exactly one effect'),
+  //   'type' => 'activeplayer',
+  //   'args' => 'argsResolveChoice',
+  //   'action' => 'stResolveChoice',
+  //   'possibleactions' => ['actChooseAction', 'actRestart'],
+  //   'transitions' => [],
+  // ],
 
   //////////////////////////////////////////////////////////////////
   //  _____           _    ___   __    ____

@@ -15,18 +15,14 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'engineChoices' => 'int', // DO NOT MODIFY, USED IN ENGINE MODULE
     'callbackEngineResolved' => 'obj', // DO NOT MODIFY, USED IN ENGINE MODULE
     'anytimeRecursion' => 'int', // DO NOT MODIFY, USED IN ENGINE MODULE
+
     'customTurnOrders' => 'obj', // DO NOT MODIFY, USED FOR CUSTOM TURN ORDER FEATURE
-
-    'initialSelection' => 'obj',
-
-    'endOfGameTriggered' => 'bool',
-    'firstHalf' => 'bool',
-
-    'firstPlayer' => 'int',
-    'skippedPlayers' => 'obj',
+    'turnOrder' => 'obj', // store the current turn order
+    'activeConstructor' => 'int', // store the id of active company
 
     // Game options
-    'startingHands' => 'bool',
+    'board' => 'str',
+    'countConstructors' => 'int', // Useful when companies DB is not filled up yet
   ];
 
   protected static $table = 'global_variables';
@@ -155,7 +151,6 @@ class Globals extends \HEAT\Helpers\DB_Manager
    */
   public static function setupNewGame($players, $options)
   {
-    Globals::setStartingHands($options[OPTION_FIRST_GAME] == OPTION_FIRST_GAME_ENABLED);
-    Globals::setFirstHalf(true);
+    self::setCountConstructors(count($players) + ($options[\HEAT\OPTION_AUTOMA] ?? 0));
   }
 }
