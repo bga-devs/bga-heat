@@ -27,13 +27,19 @@ trait SetupTrait
     // Setup constructors
     $gameInfos = self::getGameinfos();
     $colors = $gameInfos['player_colors'];
+    $nos = [];
+    for ($i = 0; $i < Constructors::count(); $i++) {
+      $nos[] = $i;
+    }
+    shuffle($nos);
 
     $i = 1;
     $constructors = [];
     foreach (Players::getAll() as $pId => $player) {
+      $no = array_shift($nos);
       $cId = array_search($player->getColor(), $colors);
-      $constructors[] = $cId;
-      Constructors::assignConstructor($player, $cId);
+      $constructors[$no] = $cId;
+      Constructors::assignConstructor($player, $cId, $no);
       $i++;
     }
     $this->reloadPlayersBasicInfos();
@@ -41,11 +47,15 @@ trait SetupTrait
     // Handle Legends
     $nAutoma = 0;
     for (; $i <= Constructors::count(); $i++) {
+      $no = array_shift($nos);
       $cId = min(array_diff(CONSTRUCTORS, $constructors));
+      $constructors[$no] = $cId;
       $fakePId = ($nAutoma + 1) * -5;
-      $company = Constructors::assignConstructorAutoma($fakePId, $cId);
+      Constructors::assignConstructorAutoma($fakePId, $cId, $no);
       $nAutoma++;
     }
+
+    Globals::setTurnOrder($constructors);
 
     $this->setGameStateInitialValue('logging', true);
     $this->activeNextPlayer();

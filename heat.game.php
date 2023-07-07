@@ -34,6 +34,7 @@ require_once APP_GAMEMODULE_PATH . 'module/table/table.game.php';
 
 use HEAT\Managers\Cards;
 use HEAT\Managers\Players;
+use HEAT\Managers\Constructors;
 use HEAT\Helpers\Log;
 use HEAT\Core\Globals;
 use HEAT\Core\Preferences;
@@ -75,6 +76,7 @@ class Heat extends Table
     return [
       'prefs' => Preferences::getUiData($pId),
       'players' => Players::getUiData($pId),
+      'constructors' => Constructors::getUiData($pId),
       // 'cards' => Cards::getUiData(),
     ];
   }

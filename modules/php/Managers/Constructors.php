@@ -16,7 +16,7 @@ class Constructors extends \HEAT\Helpers\DB_Manager
   protected static $primary = 'id';
   protected static function cast($row)
   {
-    return $row;
+    return new \HEAT\Models\Constructor($row);
   }
 
   ///////////////////////////////////
@@ -28,20 +28,19 @@ class Constructors extends \HEAT\Helpers\DB_Manager
   //                      |_|
   ///////////////////////////////////
 
-  public function assignConstructor($player, $cId)
+  public function assignConstructor($player, $cId, $no)
   {
     self::DB()->insert([
       'id' => $cId,
       'name' => $player->getName(),
-      'no' => self::count() - self::getAll()->count(),
+      'no' => $no,
       'player_id' => $player->getId(),
       'turn' => 0,
       'score' => 0,
     ]);
-    return self::get($cId);
   }
 
-  public function assignConstructorAutoma($fakePId, $cId)
+  public function assignConstructorAutoma($fakePId, $cId, $no)
   {
     $name = clienttranslate('Legend I');
     if ($fakePId < -5) {
@@ -50,15 +49,21 @@ class Constructors extends \HEAT\Helpers\DB_Manager
     if ($fakePId < -10) {
       $name = clienttranslate('Legend III');
     }
+    if ($fakePId < -15) {
+      $name = clienttranslate('Legend IV');
+    }
+    if ($fakePId < -20) {
+      $name = clienttranslate('Legend V');
+    }
 
     self::DB()->insert([
       'id' => $cId,
       'name' => $name,
-      'no' => self::count() - self::getAll()->count(),
+      'no' => $no,
       'player_id' => $fakePId,
+      'turn' => 0,
       'score' => 0,
     ]);
-    return self::get($cId);
   }
 
   /*
@@ -66,9 +71,17 @@ class Constructors extends \HEAT\Helpers\DB_Manager
    */
   public function count()
   {
-    // TODO : remove
-    $n = Globals::getCountConstructors();
-    return $n == 0 ? self::getAll()->count() : $n;
+    return Globals::getCountConstructors();
+  }
+
+  /*
+   * getUiData : get all ui data of all players
+   */
+  public function getUiData($pId)
+  {
+    return self::getAll()->map(function ($player) use ($pId) {
+      return $player->getUiData($pId);
+    });
   }
 
   public function getAll()

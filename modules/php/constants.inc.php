@@ -37,9 +37,6 @@ const CONSTRUCTORS = [
  * MISC
  */
 
-const KNOWLEDGE = 'knowledge';
-const LOST_KNOWLEDGE = 'lost-knowledge';
-
 /******************
  ****** STATS ******
  ******************/

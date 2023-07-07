@@ -151,6 +151,6 @@ class Globals extends \HEAT\Helpers\DB_Manager
    */
   public static function setupNewGame($players, $options)
   {
-    self::setCountConstructors(count($players) + ($options[\HEAT\OPTION_AUTOMA] ?? 0));
+    self::setCountConstructors(count($players) + ($options[\HEAT\OPTION_LEGEND] ?? 0));
   }
 }

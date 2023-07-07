@@ -15,9 +15,9 @@ CREATE TABLE IF NOT EXISTS `constructors` (
   `name` varchar(50) NOT NULL,
   `no` int(10),
   `player_id` int(10),
+  `score` int(10) NOT NULL DEFAULT 0,
   `car_position` varchar(32),
   `turn` int(10),
-  `score` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
