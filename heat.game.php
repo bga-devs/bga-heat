@@ -32,22 +32,17 @@ spl_autoload_register($swdNamespaceAutoload, true, true);
 
 require_once APP_GAMEMODULE_PATH . 'module/table/table.game.php';
 
-use HEAT\Managers\Meeples;
 use HEAT\Managers\Cards;
 use HEAT\Managers\Players;
-use HEAT\Managers\Technologies;
 use HEAT\Helpers\Log;
 use HEAT\Core\Globals;
 use HEAT\Core\Preferences;
 use HEAT\Core\Stats;
-use HEAT\Core\Engine;
 
 class Heat extends Table
 {
   use HEAT\DebugTrait;
   use HEAT\States\SetupTrait;
-  use HEAT\States\EngineTrait;
-  use HEAT\States\TurnTrait;
 
   public static $instance = null;
   function __construct()
@@ -57,7 +52,6 @@ class Heat extends Table
     self::initGameStateLabels([
       'logging' => 10,
     ]);
-    Engine::boot();
     Stats::checkExistence();
   }
 
@@ -81,7 +75,6 @@ class Heat extends Table
       'prefs' => Preferences::getUiData($pId),
       'players' => Players::getUiData($pId),
       'cards' => Cards::getUiData(),
-      'techs' => Technologies::getUiData(),
     ];
   }
 
@@ -177,37 +170,6 @@ class Heat extends Table
     }
   }
 
-  /********************************************
-   ******* GENERIC CARD LISTENERS CHECK ********
-   ********************************************/
-  /*
-   * A lot of time you want to loop through all the player to see if a card react or not
-   *  => this is achieved using custom turn order with an arg containing the eventType
-   *  => the custom order will call the genericPlayerCheckListeners that will getReaction from cards if any
-   */
-  public function checkCardListeners($typeEvent, $endCallback, $event = [], $order = null)
-  {
-    $event['type'] = $typeEvent;
-    $event['method'] = $typeEvent;
-    $this->initCustomTurnOrder($typeEvent, $order, 'genericPlayerCheckListeners', $endCallback, false, true, $event);
-  }
-
-  function genericPlayerCheckListeners($event)
-  {
-    $pId = Players::getActiveId();
-    $event['pId'] = $pId;
-    $reaction = ZooCards::getReaction($event);
-
-    if (is_null($reaction)) {
-      // No reaction => just go to next player
-      $this->nextPlayerCustomOrder($event['type']);
-    } else {
-      // Reaction => boot up the Engine
-      Engine::setup($reaction, ['order' => $event['type']]);
-      Engine::proceed();
-    }
-  }
-
   ////////////////////////////////////
   ////////////   Zombie   ////////////
   ////////////////////////////////////
@@ -226,18 +188,18 @@ class Heat extends Table
 
     $stateName = $state['name'];
     if ($state['type'] == 'activeplayer') {
-      if ($stateName == 'confirmTurn') {
-        $this->actConfirmTurn();
-      } elseif ($stateName == 'confirmPartialTurn') {
-        $this->actConfirmPartialTurn();
-      }
-      // Clear all node of player
-      elseif (Engine::getNextUnresolved() != null) {
-        Engine::clearZombieNodes($activePlayer);
-        Engine::proceed();
-      } else {
-        $this->gamestate->nextState('zombiePass');
-      }
+      // if ($stateName == 'confirmTurn') {
+      //   $this->actConfirmTurn();
+      // } elseif ($stateName == 'confirmPartialTurn') {
+      //   $this->actConfirmPartialTurn();
+      // }
+      // // Clear all node of player
+      // elseif (Engine::getNextUnresolved() != null) {
+      //   Engine::clearZombieNodes($activePlayer);
+      //   Engine::proceed();
+      // } else {
+      $this->gamestate->nextState('zombiePass');
+      // }
     } elseif ($state['type'] == 'multipleactiveplayer') {
       // TODO
       // Make sure player is in a non blocking status for role turn
