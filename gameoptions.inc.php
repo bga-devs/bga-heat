@@ -29,6 +29,28 @@ namespace HEAT;
 require_once 'modules/php/gameoptions.inc.php';
 
 $game_options = [
+  OPTION_CIRCUIT => [
+    'name' => totranslate('Circuit'),
+    'values' => [
+      OPTION_CIRCUIT_USA => [
+        'name' => clienttranslate('USA'),
+        'tmdisplay' => clienttranslate('[USA]'),
+      ],
+      OPTION_CIRCUIT_ITALIA => [
+        'name' => clienttranslate('Italia'),
+        'tmdisplay' => clienttranslate('[Italia]'),
+      ],
+      OPTION_CIRCUIT_GB => [
+        'name' => clienttranslate('Great-Britain'),
+        'tmdisplay' => clienttranslate('[GB]'),
+      ],
+      OPTION_CIRCUIT_FRANCE => [
+        'name' => clienttranslate('France'),
+        'tmdisplay' => clienttranslate('[France]'),
+      ],
+    ],
+  ],
+
   OPTION_LEGEND => [
     'name' => totranslate('Legends'),
     'values' => [

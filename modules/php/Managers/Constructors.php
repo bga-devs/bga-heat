@@ -37,6 +37,7 @@ class Constructors extends \HEAT\Helpers\DB_Manager
       'player_id' => $player->getId(),
       'turn' => 0,
       'score' => 0,
+      'gear' => 1,
     ]);
   }
 
@@ -63,6 +64,7 @@ class Constructors extends \HEAT\Helpers\DB_Manager
       'player_id' => $fakePId,
       'turn' => 0,
       'score' => 0,
+      'gear' => 1,
     ]);
   }
 

@@ -23,14 +23,17 @@ class Constructor extends \HEAT\Helpers\DB_Model
     'score' => ['score', 'int'],
     'carPosition' => ['car_position', 'int'],
     'turn' => ['turn', 'int'],
+    'gear' => ['gear', 'int'],
   ];
 
   public function getUiData($currentPlayerId = null)
   {
-    $current = $this->id == $currentPlayerId;
+    $current = $this->pId == $currentPlayerId;
     return array_merge(parent::getUiData(), [
       'ai' => $this->isAI(),
       'lvl' => $this->getLvlAI(),
+      'hand' => $current ? $this->getHand()->toArray() : [],
+      'handCount' => $this->getHand()->count(),
     ]);
   }
 
@@ -42,5 +45,10 @@ class Constructor extends \HEAT\Helpers\DB_Model
   public function getLvlAI()
   {
     return $this->isAI() ? ($this->pId + 20) % 5 : null;
+  }
+
+  public function getHand()
+  {
+    return Cards::getHand($this->id);
   }
 }

@@ -34,6 +34,31 @@ const CONSTRUCTORS = [
 ];
 
 /*
+ * Cards
+ */
+const SPEED = 'speed';
+const STARTING_UPGRADE = 'starting_upgrade';
+const BASIC_UPGRADE = 'basic_upgrade';
+const ADVANCED_UPGRADE = 'advanced_upgrade';
+
+const HEAT = 'heat';
+const STRESS = 'stress';
+
+/*
+ * Symbols
+ */
+const PLUS = 'plus';
+const COOLDOWN = 'cooldown';
+const REDUCE = 'reduce';
+const SLIPSTREAM = 'slipstream';
+const SCRAP = 'scrap';
+const SALVAGE = 'salvage';
+const DIRECT = 'direct';
+const ACCELERATE = 'accelerate';
+const REFRESH = 'refresh';
+const ADJUST = 'adjust';
+
+/*
  * MISC
  */
 

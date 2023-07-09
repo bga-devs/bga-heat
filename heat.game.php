@@ -78,6 +78,7 @@ class Heat extends Table
       'players' => Players::getUiData($pId),
       'constructors' => Constructors::getUiData($pId),
       // 'cards' => Cards::getUiData(),
+      'circuit' => Globals::getCircuit(),
     ];
   }
 

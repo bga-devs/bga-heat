@@ -22,7 +22,6 @@ trait SetupTrait
     Globals::setupNewGame($players, $options);
     Players::setupNewGame($players, $options);
     // Preferences::setupNewGame($players, $this->player_preferences);
-    Cards::setupNewGame($players, $options);
 
     // Setup constructors
     $gameInfos = self::getGameinfos();
@@ -59,6 +58,11 @@ trait SetupTrait
 
     $this->setGameStateInitialValue('logging', true);
     $this->activeNextPlayer();
+  }
+
+  public function setupCards()
+  {
+    Cards::setupNewGame();
   }
 
   public function stSetupBranch()

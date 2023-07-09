@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `constructors` (
   `no` int(10),
   `player_id` int(10),
   `score` int(10) NOT NULL DEFAULT 0,
+  `gear` int(10),
   `car_position` varchar(32),
   `turn` int(10),
   PRIMARY KEY (`id`)
@@ -23,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `constructors` (
 
 -- PIECES TABLES
 CREATE TABLE IF NOT EXISTS `cards` (
-  `card_id` varchar(50) NOT NULL,
+  `card_id` int(10) NOT NULL AUTO_INCREMENT,
   `card_location` varchar(32) NOT NULL,
   `card_state` int(10),
   `type` int(10) NOT NULL DEFAULT 0,

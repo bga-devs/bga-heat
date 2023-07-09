@@ -21,7 +21,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'activeConstructor' => 'int', // store the id of active company
 
     // Game options
-    'board' => 'str',
+    'circuit' => 'str',
     'countConstructors' => 'int', // Useful when companies DB is not filled up yet
   ];
 
@@ -152,5 +152,13 @@ class Globals extends \HEAT\Helpers\DB_Manager
   public static function setupNewGame($players, $options)
   {
     self::setCountConstructors(count($players) + ($options[\HEAT\OPTION_LEGEND] ?? 0));
+
+    $circuits = [
+      \HEAT\OPTION_CIRCUIT_USA => 'usa',
+      \HEAT\OPTION_CIRCUIT_ITALIA => 'italia',
+      \HEAT\OPTION_CIRCUIT_GB => 'gb',
+      \HEAT\OPTION_CIRCUIT_FRANCE => 'france',
+    ];
+    self::setCircuit($circuits[$options[\HEAT\OPTION_CIRCUIT]]);
   }
 }
