@@ -56,13 +56,11 @@ trait SetupTrait
 
     Globals::setTurnOrder($constructors);
 
+    // TODO : move somewhere else
+    Cards::setupNewGame();
+
     $this->setGameStateInitialValue('logging', true);
     $this->activeNextPlayer();
-  }
-
-  public function setupCards()
-  {
-    Cards::setupNewGame();
   }
 
   public function stSetupBranch()
