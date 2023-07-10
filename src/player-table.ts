@@ -49,7 +49,7 @@ class PlayerTable {
 
         dojo.place(html, document.getElementById('tables'));
 
-        if (this.currentPlayer) {
+        /*if (this.currentPlayer) {
             this.hand = new LineStock<BuilderCard>(this.game.builderCardsManager, document.getElementById(`player-table-${this.playerId}-hand`), {
                 sort: (a: BuilderCard, b: BuilderCard) => a.id[0] == b.id[0] ? a.number - b.number : a.id.charCodeAt(0) - b.id.charCodeAt(0),
             });
@@ -91,7 +91,7 @@ class PlayerTable {
             });
             const tiles = this.game.technologyTilesManager.getFullCards(player.techs).filter(tile => tile.type == type);
             this.technologyTilesDecks[type].addCards(tiles);
-        });
+        });*/
     }
 
     public setHandSelectable(selectionMode: CardSelectionMode, selectableCards: BuilderCard[] | null = null, stockState: string = '', reinitSelection: boolean = false) {

@@ -5,7 +5,7 @@ class TableCenter {
     public cardDeck: Deck<BuilderCard>;
         
     constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
-        [1, 2].forEach(level => {
+        /*TODO [1, 2].forEach(level => {
             this.technologyTilesDecks[level] = new Deck<TechnologyTile>(game.technologyTilesManager, document.getElementById(`technology-deck-${level}`), {
                 // TODO cardNumber: gamedatas.centerDestinationsDeckCount[level],
                 // TODO topCard: gamedatas.centerDestinationsDeckTop[level],
@@ -28,7 +28,7 @@ class TableCenter {
             // TODO cardNumber: gamedatas.cardDeckCount,
             // TODO topCard: gamedatas.cardDeckTop,
             // TODO counter: { counterId: 'deck-counter', },
-        });
+        });*/
     }
     
     public setTechnologyTilesSelectable(selectable: boolean, selectableCards: TechnologyTile[] | null = null) {
