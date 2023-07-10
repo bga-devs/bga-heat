@@ -6,16 +6,16 @@ const timelineSlotsIds = [];
 
 class PlayerTable {
     public playerId: number;
-    public hand?: LineStock<BuilderCard>;
+    public hand?: LineStock<Card>;
     public handTech?: LineStock<TechnologyTile>;
-    public timeline: SlotStock<BuilderCard>;
-    public past: AllVisibleDeck<BuilderCard>;
-    public artifacts: SlotStock<BuilderCard>;
+    public timeline: SlotStock<Card>;
+    public past: AllVisibleDeck<Card>;
+    public artifacts: SlotStock<Card>;
     public technologyTilesDecks: AllVisibleDeck<TechnologyTile>[] = [];
 
     private currentPlayer: boolean;
 
-    constructor(private game: HeatGame, player: HeatPlayer) {
+    constructor(private game: HeatGame, player: HeatPlayer, constructor: Constructor) {
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
 
@@ -49,17 +49,17 @@ class PlayerTable {
 
         dojo.place(html, document.getElementById('tables'));
 
-        /*if (this.currentPlayer) {
-            this.hand = new LineStock<BuilderCard>(this.game.builderCardsManager, document.getElementById(`player-table-${this.playerId}-hand`), {
-                sort: (a: BuilderCard, b: BuilderCard) => a.id[0] == b.id[0] ? a.number - b.number : a.id.charCodeAt(0) - b.id.charCodeAt(0),
+        if (this.currentPlayer) {
+            this.hand = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-hand`), {
+                sort: (a: Card, b: Card) => a.id[0] == b.id[0] ? a.number - b.number : a.id.charCodeAt(0) - b.id.charCodeAt(0),
             });
-            this.hand.onCardClick = (card: BuilderCard) => this.game.onHandCardClick(card);   
-            this.hand.onSelectionChange = (selection: BuilderCard[]) => this.game.onHandCardSelectionChange(selection);     
-            this.refreshHand(player.hand);
+            this.hand.onCardClick = (card: Card) => this.game.onHandCardClick(card);   
+            this.hand.onSelectionChange = (selection: Card[]) => this.game.onHandCardSelectionChange(selection);     
+            this.refreshHand(constructor.hand);
         }
 
-        const timelineDiv = document.getElementById(`player-table-${this.playerId}-timeline`);
-        this.timeline = new SlotStock<BuilderCard>(this.game.builderCardsManager, timelineDiv, {
+        /*const timelineDiv = document.getElementById(`player-table-${this.playerId}-timeline`);
+        this.timeline = new SlotStock<Card>(this.game.builderCardsManager, timelineDiv, {
             slotsIds: timelineSlotsIds,
             mapCardToSlot: card => card.location,
         });
@@ -73,7 +73,7 @@ class PlayerTable {
         const artifactsSlotsIds = [];
         [0,1,2,3,4].forEach(space => artifactsSlotsIds.push(`artefact-${space}`)); // TODO artifact ?
         const artifactsDiv = document.getElementById(`player-table-${this.playerId}-artifacts`);
-        this.artifacts = new SlotStock<BuilderCard>(this.game.builderCardsManager, artifactsDiv, {
+        this.artifacts = new SlotStock<Card>(this.game.builderCardsManager, artifactsDiv, {
             slotsIds: artifactsSlotsIds,
             mapCardToSlot: card => card.location,
             gap: '36px',
@@ -81,7 +81,7 @@ class PlayerTable {
         // TODO this.artifacts.addCards(player.artifacts);
 
         const pastDiv = document.getElementById(`player-table-${this.playerId}-past`);
-        this.past = new AllVisibleDeck<BuilderCard>(this.game.builderCardsManager, pastDiv, {
+        this.past = new AllVisibleDeck<Card>(this.game.builderCardsManager, pastDiv, {
         });
         this.past.addCards(this.game.builderCardsManager.getFullCards(player.past));
         
@@ -94,7 +94,7 @@ class PlayerTable {
         });*/
     }
 
-    public setHandSelectable(selectionMode: CardSelectionMode, selectableCards: BuilderCard[] | null = null, stockState: string = '', reinitSelection: boolean = false) {
+    public setHandSelectable(selectionMode: CardSelectionMode, selectableCards: Card[] | null = null, stockState: string = '', reinitSelection: boolean = false) {
         this.hand.setSelectionMode(selectionMode);
         if (selectableCards) {
             this.hand.setSelectableCards(selectableCards);
@@ -105,7 +105,7 @@ class PlayerTable {
         }
     }
     
-    public setInitialSelection(cards: BuilderCard[]) {
+    public setInitialSelection(cards: Card[]) {
         this.hand.addCards(cards);
         this.setHandSelectable('multiple', null, 'initial-selection');
     }
@@ -114,16 +114,16 @@ class PlayerTable {
         this.setHandSelectable('none');
     }
     
-    public createCard(card: BuilderCard): Promise<any> {
+    public createCard(card: Card): Promise<any> {
         if (card.id[0] == 'A') {
             return this.artifacts.addCard(card);
         } else {
-            this.game.builderCardsManager.updateCardInformations(card); // in case card is already on timeline, to update location
+            this.game.cardsManager.updateCardInformations(card); // in case card is already on timeline, to update location
             return this.createTimelineCard(card);
         }
     }
     
-    private createTimelineCard(card: BuilderCard): Promise<any> {
+    private createTimelineCard(card: Card): Promise<any> {
         const promise = this.timeline.addCard(card);
         this.setCardKnowledge(card.id, card.knowledge);
         return promise;
@@ -133,9 +133,13 @@ class PlayerTable {
         return this.technologyTilesDecks[card.type].addCard(card);
     }
     
-    public refreshHand(hand: BuilderCard[]): Promise<any> {
+    public refreshHand(hand: Card[]): Promise<any> {
         this.hand.removeAll();
-        return this.hand.addCards(this.game.builderCardsManager.getFullCards(hand));
+        const promise = this.hand.addCards(this.game.cardsManager.getFullCards(hand));
+
+        hand.forEach(card => this.game.cardsManager.getCardElement(card).dataset.playerColor = this.game.getPlayer(this.playerId).color);
+
+        return promise;
     }    
 
     public setCardKnowledge(cardId: string, knowledge: number) {
@@ -156,7 +160,7 @@ class PlayerTable {
             div.addEventListener('click', () => {
                 if (div.classList.contains('selectable')) {
                     div.classList.toggle('selected');
-                    const card = div.closest('.builder-card');
+                    const card = div.closest('.personal-card');
                     //this.game.onTimelineKnowledgeClick(card.id, card.querySelectorAll('.knowledge-token.selected').length);
                 }
             });
@@ -187,8 +191,8 @@ class PlayerTable {
         });
     }
     
-    public declineCard(card: BuilderCard): Promise<any> {
-        return this.past.addCard(this.game.builderCardsManager.getFullCard(card));
+    public declineCard(card: Card): Promise<any> {
+        return this.past.addCard(this.game.cardsManager.getFullCard(card));
     }
     
     public declineSlideLeft(): Promise<any> {

@@ -14,7 +14,7 @@ const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
 class Heat implements HeatGame {
     public animationManager: AnimationManager;
-    public builderCardsManager: BuilderCardsManager;
+    public cardsManager: CardsManager;
     public technologyTilesManager: TechnologyTilesManager;
 
     private zoomManager: ZoomManager;
@@ -22,7 +22,6 @@ class Heat implements HeatGame {
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
     private handCounters: Counter[] = [];
-    private lostKnowledgeCounters: Counter[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -74,7 +73,7 @@ class Heat implements HeatGame {
         log('gamedatas', gamedatas);
 
         this.animationManager = new AnimationManager(this);
-        this.builderCardsManager = new BuilderCardsManager(this);
+        this.cardsManager = new CardsManager(this);
         this.technologyTilesManager = new TechnologyTilesManager(this);
         
         new JumpToManager(this, {
@@ -242,7 +241,7 @@ class Heat implements HeatGame {
     }
 
     private onEnteringInitialSelection(args: EnteringInitialSelectionArgs) {
-        const cards = this.builderCardsManager.getFullCardsByIds(args._private.cards);
+        const cards = this.cardsManager.getFullCardsByIds(args._private.cards);
         this.getCurrentPlayerTable().setInitialSelection(cards);
     }
 
@@ -408,7 +407,8 @@ class Heat implements HeatGame {
     private createPlayerPanels(gamedatas: HeatGamedatas) {
 
         Object.values(gamedatas.players).forEach(player => {
-            const playerId = Number(player.id);   
+            const playerId = Number(player.id);
+            const constructor = this.getPlayerConstructor(playerId);
 
             document.getElementById(`player_score_${player.id}`).insertAdjacentHTML('beforebegin', `<div class="vp icon"></div>`);
             document.getElementById(`icon_point_${player.id}`).remove();
@@ -419,37 +419,16 @@ class Heat implements HeatGame {
                     <div class="player-hand-card"></div> 
                     <span id="playerhand-counter-${player.id}"></span>
                 </div>
-            
-                <div id="lost-knowledge-counter-wrapper-${player.id}" class="lost-knowledge-counter">
-                    <div class="lost-knowledge icon"></div>
-                    <span id="lost-knowledge-counter-${player.id}"></span>
-                </div>
 
-            </div><div class="counters">
-            
-                <div id="recruit-counter-wrapper-${player.id}" class="recruit-counter">
-                    <div class="recruit icon"></div>
-                    <span id="recruit-counter-${player.id}"></span>
-                </div>
-            
-                <div id="bracelet-counter-wrapper-${player.id}" class="bracelet-counter">
-                    <div class="bracelet icon"></div>
-                    <span id="bracelet-counter-${player.id}"></span>
-                </div>
-                
             </div>
             <div>${playerId == gamedatas.firstPlayerId ? `<div id="first-player">${_('First player')}</div>` : ''}</div>`;
 
             dojo.place(html, `player_board_${player.id}`);
 
-            const handCounter = new ebg.counter();
-            handCounter.create(`playerhand-counter-${playerId}`);
-            handCounter.setValue(player.handCount);
-            this.handCounters[playerId] = handCounter;
 
-            this.lostKnowledgeCounters[playerId] = new ebg.counter();
-            this.lostKnowledgeCounters[playerId].create(`lost-knowledge-counter-${playerId}`);
-            this.lostKnowledgeCounters[playerId].setValue(player.lostKnowledge);
+            this.handCounters[playerId] = new ebg.counter();
+            this.handCounters[playerId].create(`playerhand-counter-${playerId}`);
+            this.handCounters[playerId].setValue(constructor.handCount);
         });
 
         this.setTooltipToClass('lost-knowledge-counter', _('Lost knowledge'));
@@ -463,8 +442,12 @@ class Heat implements HeatGame {
         );
     }
 
+    private getPlayerConstructor(playerId: number) {
+        return Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == playerId);
+    }
+
     private createPlayerTable(gamedatas: HeatGamedatas, playerId: number) {
-        const table = new PlayerTable(this, gamedatas.players[playerId]);
+        const table = new PlayerTable(this, gamedatas.players[playerId], this.getPlayerConstructor(playerId));
         this.playersTables.push(table);
     }
 
@@ -566,7 +549,7 @@ class Heat implements HeatGame {
         }
     }
 
-    public onHandCardClick(card: BuilderCard): void {
+    public onHandCardClick(card: Card): void {
         if (this.gamedatas.gamestate.name == 'create') {
             /*this.takeAtomicAction('actCreate', [
                 card.id,
@@ -584,7 +567,7 @@ class Heat implements HeatGame {
         }
     }*/
     
-    public onHandCardSelectionChange(selection: BuilderCard[]): void {
+    public onHandCardSelectionChange(selection: Card[]): void {
         if (this.gamedatas.gamestate.name == 'initialSelection') {
             document.getElementById('actSelectCardsToDiscard_button').classList.toggle('disabled', selection.length != 6);
         } else if (this.gamedatas.gamestate.name == 'create') {
@@ -612,7 +595,7 @@ class Heat implements HeatGame {
         ]);
     }
 
-    public onTableCardClick(card: BuilderCard): void {
+    public onTableCardClick(card: Card): void {
         /*if (this.gamedatas.gamestate.name == 'discardTableCard') {
             this.discardTableCard(card.id);
         } else {
@@ -620,7 +603,7 @@ class Heat implements HeatGame {
         }*/
     }
 
-    public onPlayedCardClick(card: BuilderCard): void {
+    public onPlayedCardClick(card: Card): void {
         /*if (this.gamedatas.gamestate.name == 'discardCard') {
             this.discardCard(card.id);
         } else {
@@ -757,7 +740,7 @@ class Heat implements HeatGame {
     notif_discardCards() {}
 
     notif_pDrawCards(args: NotifPDrawCardsArgs) {
-        return this.getPlayerTable(args.player_id).hand.addCards(this.builderCardsManager.getFullCards(args.cards));
+        return this.getPlayerTable(args.player_id).hand.addCards(this.cardsManager.getFullCards(args.cards));
     }
 
     notif_pDiscardCards(args: NotifPDiscardCardsArgs) {
@@ -770,7 +753,7 @@ class Heat implements HeatGame {
             const tile = this.technologyTilesManager.getFullCard(args.card as TechnologyTile);
             return this.getPlayerTable(args.player_id).addTechnologyTile(tile);
         } else {
-            const card = this.builderCardsManager.getFullCard(args.card as BuilderCard);
+            const card = this.cardsManager.getFullCard(args.card as Card);
             return this.getPlayerTable(args.player_id).createCard(card);
         }
     }

@@ -52,6 +52,7 @@ class Cards extends \HEAT\Helpers\Pieces
       $cards[] = ['type' => 101, 'n' => 3, 'location' => "deck_$cId"];
       $cards[] = ['type' => 102, 'n' => 3, 'location' => "deck_$cId"];
       $cards[] = ['type' => 103, 'n' => 3, 'location' => "deck_$cId"];
+      $cards[] = ['type' => 104, 'n' => 3, 'location' => "deck_$cId"];
 
       // Starting upgrades : 0, 5, pesonalized Heat
       $cards[] = ['type' => 100, 'n' => 1, 'location' => "deck_$cId"];

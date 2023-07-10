@@ -1,5 +1,5 @@
 class CreateEngineData {
-    selectedCard: BuilderCard;
+    selectedCard: Card;
 }
 
 class FrontEngineCreate extends FrontEngine<CreateEngineData> {

@@ -3,15 +3,7 @@
  */
 
 interface HeatPlayer extends Player {
-    playerNo: number;
-    lostKnowledge: number;
-
-    hand?: BuilderCard[]; // only set for currentPlayer
-    handCount: number;
-    timeline: BuilderCard[]; // locationArg is slot id. 10 * row + col, or 1 to 12
-    //artifacts: BuilderCard[]; // locationArg is slot id. 1 to 5
-    past: BuilderCard[];
-    techs: TechnologyTile[];
+    no: number;
 }
 
 interface Constructor {
@@ -19,9 +11,14 @@ interface Constructor {
     name: string;
     no: number;
     pId: number;
-    carPosition;
+    ai: boolean;
+    gear: number;
+    carPosition: string;
     turn: number;
     score: number;
+    lvl; // TODO
+    hand: Card[];
+    handCount: number;
 }
 
 interface HeatGamedatas {
@@ -43,7 +40,7 @@ interface HeatGamedatas {
 
 interface HeatGame extends Game {
     animationManager: AnimationManager;
-    builderCardsManager: BuilderCardsManager;
+    cardsManager: CardsManager;
     technologyTilesManager: TechnologyTilesManager;
 
     getPlayerId(): number;
@@ -54,10 +51,10 @@ interface HeatGame extends Game {
 
     setTooltip(id: string, html: string): void;
     onTableTechnologyTileClick(destination: TechnologyTile): void;
-    onHandCardClick(card: BuilderCard): void;
-    onHandCardSelectionChange(selection: BuilderCard[]): void;
-    onTableCardClick(card: BuilderCard): void;
-    onPlayedCardClick(card: BuilderCard): void;
+    onHandCardClick(card: Card): void;
+    onHandCardSelectionChange(selection: Card[]): void;
+    onTableCardClick(card: Card): void;
+    onPlayedCardClick(card: Card): void;
     changePageTitle(suffix?: string, save?: boolean): void;
     addPrimaryActionButton(id, text, callback, zone?): void;
     addSecondaryActionButton(id, text, callback, zone?): void
@@ -91,7 +88,7 @@ interface EnteringLearnArgs {
 }
 
 interface EnteringChooseNewCardArgs {
-    centerCards: BuilderCard[];
+    centerCards: Card[];
     freeColor: number;
     recruits: number;
     allFree: boolean;
@@ -110,20 +107,20 @@ interface EnteringTradeArgs {
 // pDrawCards
 interface NotifPDrawCardsArgs {
     player_id: number;
-    cards: BuilderCard[];
+    cards: Card[];
 }
 
 // pDiscardCards
 interface NotifPDiscardCardsArgs {
     n: number;
     player_id: number;
-    cards: BuilderCard[];
+    cards: Card[];
 }
 
 // createCard
 interface NotifCreateCardsArgs {
     player_id: number;
-    card: BuilderCard | TechnologyTile;
+    card: Card | TechnologyTile;
 }
 
 // fillPool
@@ -167,11 +164,11 @@ interface NotifRefreshUIArgs {
 // refreshHand
 interface NotifRefreshHandArgs {
     player_id: number;
-    hand: BuilderCard[];
+    hand: Card[];
 }
 
 // declineCard
 interface NotifDeclineCardArgs {
     player_id: number;
-    card: BuilderCard;
+    card: Card;
 }

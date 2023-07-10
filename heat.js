@@ -2064,24 +2064,18 @@ function formatTextIcons(rawText) {
         .replace(/<SECRET>/ig, '<span class="icon secret"></span>')
         .replace(/\[n°(\d)\]/ig, function (fullMatch, number) { return "<span class=\"icon starting-space\">".concat(number, "</span>"); });
 }
-var CARD_COLORS = {
-    'A': '#734073',
-    'C': '#d66b2a',
-    'M': '#4a82a3',
-    'P': '#87a04f',
-};
 //console.log(Object.values(CARDS_DATA).map(card => card.startingSpace));
-var BuilderCardsManager = /** @class */ (function (_super) {
-    __extends(BuilderCardsManager, _super);
-    function BuilderCardsManager(game) {
+var CardsManager = /** @class */ (function (_super) {
+    __extends(CardsManager, _super);
+    function CardsManager(game) {
         var _this = _super.call(this, game, {
-            getId: function (card) { return "builder-card-".concat(card.id); },
+            getId: function (card) { return "personal-card-".concat(card.id); },
             setupDiv: function (card, div) {
-                div.classList.add('builder-card');
+                div.classList.add('personal-card');
                 div.dataset.cardId = '' + card.id;
             },
             setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
-            isCardVisible: function (card) { return Boolean(card.number); },
+            isCardVisible: function (card) { return Boolean(card.type); },
             cardWidth: 163,
             cardHeight: 228,
             animationManager: game.animationManager,
@@ -2089,82 +2083,86 @@ var BuilderCardsManager = /** @class */ (function (_super) {
         _this.game = game;
         return _this;
     }
-    BuilderCardsManager.prototype.setupFrontDiv = function (card, div, ignoreTooltip) {
-        var _a, _b, _c, _d, _e, _f, _g, _h;
+    CardsManager.prototype.setupFrontDiv = function (card, div, ignoreTooltip) {
         if (ignoreTooltip === void 0) { ignoreTooltip = false; }
-        var typeLetter = card.id.substring(0, 1);
-        div.style.setProperty('--card-color', CARD_COLORS[typeLetter]);
-        /*
-        div.dataset.type = ''+card.type;
-        div.dataset.number = ''+card.number;*/
-        var backgroundPositionX = ((card.number - 1) % 6) * 100 / 5;
-        var backgroundPositionY = Math.floor((card.number - 1) / 6) * 100 / 5;
-        var html = "\n        <div id=\"".concat(card.id, "-tokens\" class=\"background\" data-type=\"").concat(typeLetter, "\" style=\"background-position: ").concat(backgroundPositionX, "% ").concat(backgroundPositionY, "%\"></div>\n        <div class=\"type-box\" data-type=\"").concat(typeLetter, "\">\n            <div class=\"type\" data-type=\"").concat(typeLetter, "\">\n                <div class=\"type-icon\"></div>\n            </div>\n        ");
-        if (card.startingSpace) {
-            html += "<div class=\"starting-space\">".concat(card.startingSpace, "</div>");
+        var type = Number(card.type);
+        switch (type) {
+            case 110:
+                div.classList.add('stress');
+                break;
+            case 111:
+                div.classList.add('heat');
+                break;
+            default:
+                div.dataset.col = "".concat(type % 100);
+                break;
         }
-        html += "</div>";
-        // TODO TEMP
-        html += "<div class=\"implemented\" data-implemented=\"".concat((_b = (_a = card.implemented) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : 'false', "\"></div>");
-        if (card.discard) {
-            html += "\n            <div class=\"discard\">\n                <div class=\"discard-text\">".concat(card.discard, "</div>\n                <div class=\"discard-icon\"></div>\n            </div>");
-        }
-        else if (card.locked) {
-            html += "\n            <div class=\"discard\">\n                <div class=\"lock-icon\"></div>\n            </div>";
-        }
-        html += "\n        <div class=\"center-box\">\n            <div class=\"activation-box\"></div>\n            <div class=\"line bottom\"></div>\n            <div class=\"line top\"></div>\n            <div class=\"line middle\"></div>";
-        if (typeLetter != 'A') {
-            html += "\n            <div class=\"center-zone\">\n                <div class=\"initial-knowledge\">".concat((_c = card.initialKnowledge) !== null && _c !== void 0 ? _c : '', "</div>\n                <div class=\"knowledge-icon\"></div>\n                <div class=\"victory-point\">").concat((_d = card.victoryPoint) !== null && _d !== void 0 ? _d : '', "</div>\n                <div class=\"vp-icon\"></div>\n            </div>\n            ");
-        }
-        html += "\n            <div class=\"activation\" data-type=\"".concat(card.activation, "\"></div>\n        </div>\n        <div class=\"name-box\">\n            <div class=\"name\">\n                ").concat((_e = card.name) !== null && _e !== void 0 ? _e : '', "\n                <div class=\"country\">").concat((_f = card.country) !== null && _f !== void 0 ? _f : '', "</div>\n            </div>\n        </div>\n        <div class=\"effect\">").concat((_h = (_g = card.effect) === null || _g === void 0 ? void 0 : _g.map(function (text) { return formatTextIcons(text); }).join("<br>")) !== null && _h !== void 0 ? _h : '', "</div>\n        ");
-        div.innerHTML = html;
         if (!ignoreTooltip) {
             this.game.setTooltip(div.id, this.getTooltip(card));
         }
     };
-    BuilderCardsManager.prototype.getType = function (cardId) {
-        var typeLetter = cardId.substring(0, 1);
-        switch (typeLetter) {
-            case 'C': return _('City');
-            case 'M': return _('Megalith');
-            case 'P': return _('Pyramid');
-            case 'A': return _('Artifact');
-        }
-    };
-    BuilderCardsManager.prototype.getTooltip = function (card) {
-        var _a, _b;
-        var typeLetter = card.id.substring(0, 1);
-        var message = "\n        <strong>".concat(card.name, "</strong>\n        <br>\n        <i>").concat(card.country, "</i>\n        <br>\n        <br>\n        <strong>").concat(_("Type:"), "</strong> ").concat(this.getType(card.id), "\n        ");
+    CardsManager.prototype.getTooltip = function (card) {
+        /*const typeLetter = card.id.substring(0, 1);
+
+        let message = `
+        <strong>${card.name}</strong>
+        <br>
+        <i>${card.country}</i>
+        <br>
+        <br>
+        <strong>${_("Type:")}</strong> ${this.getType(card.id)}
+        `;
         if (card.startingSpace) {
-            message += "\n            <br>\n            <strong>".concat(_("Starting space:"), "</strong> ").concat(card.startingSpace, "\n            ");
+            message += `
+            <br>
+            <strong>${_("Starting space:")}</strong> ${card.startingSpace}
+            `;
         }
         if (card.discard) {
-            message += "\n            <br>\n            <strong>".concat(_("Discard cards:"), "</strong> ").concat(card.discard, "\n            ");
+            message += `
+            <br>
+            <strong>${_("Discard cards:")}</strong> ${card.discard}
+            `;
         }
         if (card.locked) {
-            message += "\n            <br>\n            <strong>".concat(_("Locked card"), "</strong>\n            ");
+            message += `
+            <br>
+            <strong>${_("Locked card")}</strong>
+            `;
         }
         if (typeLetter != 'A') {
-            message += "\n            <br>\n            <strong>".concat(_("Initial knowledge:"), "</strong> ").concat(card.initialKnowledge, "\n            <br>\n            <strong>").concat(_("Victory point:"), "</strong> ").concat(card.victoryPoint, "\n            ");
+            message += `
+            <br>
+            <strong>${_("Initial knowledge:")}</strong> ${card.initialKnowledge}
+            <br>
+            <strong>${_("Victory point:")}</strong> ${card.victoryPoint}
+            `;
         }
-        message += "\n        <br>\n        <strong>".concat(_("Activation:"), "</strong> ").concat(this.game.getTooltipActivation(card.activation), "\n        <br>\n        <br>\n        <strong>").concat(_("Effect:"), "</strong> ").concat((_b = (_a = card.effect) === null || _a === void 0 ? void 0 : _a.map(function (text) { return formatTextIcons(text); }).join("<br>")) !== null && _b !== void 0 ? _b : '', "\n        ");
+        message += `
+        <br>
+        <strong>${_("Activation:")}</strong> ${this.game.getTooltipActivation(card.activation)}
+        <br>
+        <br>
+        <strong>${_("Effect:")}</strong> ${card.effect?.map(text => formatTextIcons(text)).join(`<br>`) ?? ''}
+        `;*/
+        var message = 'TODO';
         return message;
     };
-    BuilderCardsManager.prototype.getFullCard = function (card) {
+    CardsManager.prototype.getFullCard = function (card) {
         return __assign(__assign({}, CARDS_DATA[card.id]), { id: card.id, location: card.location, knowledge: card.knowledge });
     };
-    BuilderCardsManager.prototype.getFullCards = function (cards) {
-        var _this = this;
-        return cards.map(function (card) { return _this.getFullCard(card); });
+    CardsManager.prototype.getFullCards = function (cards) {
+        return cards; // TODO?
+        //return cards.map(card => this.getFullCard(card));
     };
-    BuilderCardsManager.prototype.getFullCardById = function (id) {
+    CardsManager.prototype.getFullCardById = function (id) {
         return __assign(__assign({}, CARDS_DATA[id]), { id: id });
     };
-    BuilderCardsManager.prototype.getFullCardsByIds = function (ids) {
+    CardsManager.prototype.getFullCardsByIds = function (ids) {
         var _this = this;
         return ids.map(function (id) { return _this.getFullCardById(id); });
     };
-    return BuilderCardsManager;
+    return CardsManager;
 }(CardManager));
 var TILE_COLORS = {
     'ancient': '#3c857f',
@@ -2278,7 +2276,7 @@ var TableCenter = /** @class */ (function () {
         this.refreshTechnologyTiles(gamedatas.techs);
 
         const cardDeckDiv = document.getElementById(`builder-deck`);
-        this.cardDeck = new Deck<BuilderCard>(game.builderCardsManager, cardDeckDiv, {
+        this.cardDeck = new Deck<Card>(game.builderCardsManager, cardDeckDiv, {
             // TODO cardNumber: gamedatas.cardDeckCount,
             // TODO topCard: gamedatas.cardDeckTop,
             // TODO counter: { counterId: 'deck-counter', },
@@ -2306,7 +2304,7 @@ var log = isDebug ? console.log.bind(window.console) : function () { };
 var timelineSlotsIds = [];
 [1, 0].forEach(function (line) { return [1, 2, 3, 4, 5, 6].forEach(function (space) { return timelineSlotsIds.push("timeline-".concat(space, "-").concat(line)); }); });
 var PlayerTable = /** @class */ (function () {
-    function PlayerTable(game, player) {
+    function PlayerTable(game, player, constructor) {
         var _this = this;
         this.game = game;
         this.technologyTilesDecks = [];
@@ -2322,17 +2320,16 @@ var PlayerTable = /** @class */ (function () {
         });
         html += "\n            </div>\n            </div>\n        </div>\n        ";
         dojo.place(html, document.getElementById('tables'));
-        /*if (this.currentPlayer) {
-            this.hand = new LineStock<BuilderCard>(this.game.builderCardsManager, document.getElementById(`player-table-${this.playerId}-hand`), {
-                sort: (a: BuilderCard, b: BuilderCard) => a.id[0] == b.id[0] ? a.number - b.number : a.id.charCodeAt(0) - b.id.charCodeAt(0),
+        if (this.currentPlayer) {
+            this.hand = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-hand")), {
+                sort: function (a, b) { return a.id[0] == b.id[0] ? a.number - b.number : a.id.charCodeAt(0) - b.id.charCodeAt(0); },
             });
-            this.hand.onCardClick = (card: BuilderCard) => this.game.onHandCardClick(card);
-            this.hand.onSelectionChange = (selection: BuilderCard[]) => this.game.onHandCardSelectionChange(selection);
-            this.refreshHand(player.hand);
+            this.hand.onCardClick = function (card) { return _this.game.onHandCardClick(card); };
+            this.hand.onSelectionChange = function (selection) { return _this.game.onHandCardSelectionChange(selection); };
+            this.refreshHand(constructor.hand);
         }
-
-        const timelineDiv = document.getElementById(`player-table-${this.playerId}-timeline`);
-        this.timeline = new SlotStock<BuilderCard>(this.game.builderCardsManager, timelineDiv, {
+        /*const timelineDiv = document.getElementById(`player-table-${this.playerId}-timeline`);
+        this.timeline = new SlotStock<Card>(this.game.builderCardsManager, timelineDiv, {
             slotsIds: timelineSlotsIds,
             mapCardToSlot: card => card.location,
         });
@@ -2346,7 +2343,7 @@ var PlayerTable = /** @class */ (function () {
         const artifactsSlotsIds = [];
         [0,1,2,3,4].forEach(space => artifactsSlotsIds.push(`artefact-${space}`)); // TODO artifact ?
         const artifactsDiv = document.getElementById(`player-table-${this.playerId}-artifacts`);
-        this.artifacts = new SlotStock<BuilderCard>(this.game.builderCardsManager, artifactsDiv, {
+        this.artifacts = new SlotStock<Card>(this.game.builderCardsManager, artifactsDiv, {
             slotsIds: artifactsSlotsIds,
             mapCardToSlot: card => card.location,
             gap: '36px',
@@ -2354,7 +2351,7 @@ var PlayerTable = /** @class */ (function () {
         // TODO this.artifacts.addCards(player.artifacts);
 
         const pastDiv = document.getElementById(`player-table-${this.playerId}-past`);
-        this.past = new AllVisibleDeck<BuilderCard>(this.game.builderCardsManager, pastDiv, {
+        this.past = new AllVisibleDeck<Card>(this.game.builderCardsManager, pastDiv, {
         });
         this.past.addCards(this.game.builderCardsManager.getFullCards(player.past));
         
@@ -2391,7 +2388,7 @@ var PlayerTable = /** @class */ (function () {
             return this.artifacts.addCard(card);
         }
         else {
-            this.game.builderCardsManager.updateCardInformations(card); // in case card is already on timeline, to update location
+            this.game.cardsManager.updateCardInformations(card); // in case card is already on timeline, to update location
             return this.createTimelineCard(card);
         }
     };
@@ -2404,8 +2401,11 @@ var PlayerTable = /** @class */ (function () {
         return this.technologyTilesDecks[card.type].addCard(card);
     };
     PlayerTable.prototype.refreshHand = function (hand) {
+        var _this = this;
         this.hand.removeAll();
-        return this.hand.addCards(this.game.builderCardsManager.getFullCards(hand));
+        var promise = this.hand.addCards(this.game.cardsManager.getFullCards(hand));
+        hand.forEach(function (card) { return _this.game.cardsManager.getCardElement(card).dataset.playerColor = _this.game.getPlayer(_this.playerId).color; });
+        return promise;
     };
     PlayerTable.prototype.setCardKnowledge = function (cardId, knowledge) {
         //const golden = Math.floor(knowledge / 5);
@@ -2423,7 +2423,7 @@ var PlayerTable = /** @class */ (function () {
             div.addEventListener('click', function () {
                 if (div.classList.contains('selectable')) {
                     div.classList.toggle('selected');
-                    var card = div.closest('.builder-card');
+                    var card = div.closest('.personal-card');
                     //this.game.onTimelineKnowledgeClick(card.id, card.querySelectorAll('.knowledge-token.selected').length);
                 }
             });
@@ -2454,7 +2454,7 @@ var PlayerTable = /** @class */ (function () {
         });
     };
     PlayerTable.prototype.declineCard = function (card) {
-        return this.past.addCard(this.game.builderCardsManager.getFullCard(card));
+        return this.past.addCard(this.game.cardsManager.getFullCard(card));
     };
     PlayerTable.prototype.declineSlideLeft = function () {
         var shiftedCards = this.timeline.getCards().map(function (card) { return (__assign(__assign({}, card), { location: card.location.replace(/(\d)/, function (a) { return "".concat(Number(a) - 1); }) })); });
@@ -2510,13 +2510,13 @@ var CreateEngine = /** @class */ (function (_super) {
                 var _a;
                 _this.game.changePageTitle(null);
                 if (engine.data.selectedCard) {
-                    (_a = _this.game.builderCardsManager.getCardElement(engine.data.selectedCard)) === null || _a === void 0 ? void 0 : _a.classList.remove('created-card');
+                    (_a = _this.game.cardsManager.getCardElement(engine.data.selectedCard)) === null || _a === void 0 ? void 0 : _a.classList.remove('created-card');
                     _this.game.getCurrentPlayerTable().hand.addCard(engine.data.selectedCard);
                 }
                 engine.data.selectedCard = null;
                 engine.data.selectedSlot = null;
                 engine.data.discardCards = [];
-                var selectableCards = Object.keys(_this.possibleCardsLocations).map(function (id) { return _this.game.builderCardsManager.getFullCardById(id); });
+                var selectableCards = Object.keys(_this.possibleCardsLocations).map(function (id) { return _this.game.cardsManager.getFullCardById(id); });
                 _this.game.getCurrentPlayerTable().setHandSelectable('single', selectableCards, 'create-init', true);
             }, function () {
                 _this.game.getCurrentPlayerTable().setHandSelectable('none');
@@ -2561,7 +2561,7 @@ var CreateEngine = /** @class */ (function (_super) {
                 _this.removeCancel();
             }),
             new FrontState('confirm', function (engine) {
-                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.builderCardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('discarded-card'); });
+                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('discarded-card'); });
                 _this.game.changePageTitle("Confirm", true);
                 var card = engine.data.selectedCard;
                 var artifact = card.id[0] == 'A';
@@ -2580,7 +2580,7 @@ var CreateEngine = /** @class */ (function (_super) {
                 _this.addCancel();
             }, function (engine) {
                 var _a;
-                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.builderCardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.remove('discarded-card'); });
+                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.remove('discarded-card'); });
                 _this.removeCancel();
                 (_a = document.getElementById('confirmCreate_btn')) === null || _a === void 0 ? void 0 : _a.remove();
             }),
@@ -2605,7 +2605,7 @@ var CreateEngine = /** @class */ (function (_super) {
     CreateEngine.prototype.selectCard = function (card) {
         var _a;
         this.data.selectedCard = card;
-        (_a = this.game.builderCardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('created-card');
+        (_a = this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('created-card');
         this.game.getCurrentPlayerTable().hand.unselectCard(card);
         this.nextState('slot');
     };
@@ -2689,14 +2689,14 @@ var ArchiveEngine = /** @class */ (function (_super) {
             }),
             new FrontState('confirm', function (engine) {
                 var discardCount = _this.data.discardCards.length;
-                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.builderCardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('discarded-card'); });
+                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('discarded-card'); });
                 _this.game.changePageTitle("Confirm", true);
                 var label = formatTextIcons(_('Confirm discard of ${number} cards to remove ${number} <KNOWLEDGE>')).replace(/\${number}/g, '' + discardCount);
                 _this.game.addPrimaryActionButton('confirmArchive_btn', label, function () { return _this.game.onArchiveCardConfirm(engine.data); });
                 _this.addCancel();
             }, function (engine) {
                 var _a;
-                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.builderCardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.remove('discarded-card'); });
+                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.remove('discarded-card'); });
                 _this.removeCancel();
                 (_a = document.getElementById('confirmArchive_btn')) === null || _a === void 0 ? void 0 : _a.remove();
             }),
@@ -2765,7 +2765,6 @@ var Heat = /** @class */ (function () {
     function Heat() {
         this.playersTables = [];
         this.handCounters = [];
-        this.lostKnowledgeCounters = [];
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         this._notif_uid_to_log_id = [];
         this._notif_uid_to_mobile_log_id = [];
@@ -2802,7 +2801,7 @@ var Heat = /** @class */ (function () {
         dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
         log('gamedatas', gamedatas);
         this.animationManager = new AnimationManager(this);
-        this.builderCardsManager = new BuilderCardsManager(this);
+        this.cardsManager = new CardsManager(this);
         this.technologyTilesManager = new TechnologyTilesManager(this);
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
@@ -2946,7 +2945,7 @@ var Heat = /** @class */ (function () {
         this.updatePageTitle();
     };
     Heat.prototype.onEnteringInitialSelection = function (args) {
-        var cards = this.builderCardsManager.getFullCardsByIds(args._private.cards);
+        var cards = this.cardsManager.getFullCardsByIds(args._private.cards);
         this.getCurrentPlayerTable().setInitialSelection(cards);
     };
     Heat.prototype.onEnteringCreate = function (args) {
@@ -3090,18 +3089,15 @@ var Heat = /** @class */ (function () {
         var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
+            var constructor = _this.getPlayerConstructor(playerId);
             document.getElementById("player_score_".concat(player.id)).insertAdjacentHTML('beforebegin', "<div class=\"vp icon\"></div>");
             document.getElementById("icon_point_".concat(player.id)).remove();
             /**/
-            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n            \n                <div id=\"lost-knowledge-counter-wrapper-").concat(player.id, "\" class=\"lost-knowledge-counter\">\n                    <div class=\"lost-knowledge icon\"></div>\n                    <span id=\"lost-knowledge-counter-").concat(player.id, "\"></span>\n                </div>\n\n            </div><div class=\"counters\">\n            \n                <div id=\"recruit-counter-wrapper-").concat(player.id, "\" class=\"recruit-counter\">\n                    <div class=\"recruit icon\"></div>\n                    <span id=\"recruit-counter-").concat(player.id, "\"></span>\n                </div>\n            \n                <div id=\"bracelet-counter-wrapper-").concat(player.id, "\" class=\"bracelet-counter\">\n                    <div class=\"bracelet icon\"></div>\n                    <span id=\"bracelet-counter-").concat(player.id, "\"></span>\n                </div>\n                \n            </div>\n            <div>").concat(playerId == gamedatas.firstPlayerId ? "<div id=\"first-player\">".concat(_('First player'), "</div>") : '', "</div>");
+            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n\n            </div>\n            <div>").concat(playerId == gamedatas.firstPlayerId ? "<div id=\"first-player\">".concat(_('First player'), "</div>") : '', "</div>");
             dojo.place(html, "player_board_".concat(player.id));
-            var handCounter = new ebg.counter();
-            handCounter.create("playerhand-counter-".concat(playerId));
-            handCounter.setValue(player.handCount);
-            _this.handCounters[playerId] = handCounter;
-            _this.lostKnowledgeCounters[playerId] = new ebg.counter();
-            _this.lostKnowledgeCounters[playerId].create("lost-knowledge-counter-".concat(playerId));
-            _this.lostKnowledgeCounters[playerId].setValue(player.lostKnowledge);
+            _this.handCounters[playerId] = new ebg.counter();
+            _this.handCounters[playerId].create("playerhand-counter-".concat(playerId));
+            _this.handCounters[playerId].setValue(constructor.handCount);
         });
         this.setTooltipToClass('lost-knowledge-counter', _('Lost knowledge'));
     };
@@ -3112,8 +3108,11 @@ var Heat = /** @class */ (function () {
             return _this.createPlayerTable(gamedatas, Number(player.id));
         });
     };
+    Heat.prototype.getPlayerConstructor = function (playerId) {
+        return Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == playerId; });
+    };
     Heat.prototype.createPlayerTable = function (gamedatas, playerId) {
-        var table = new PlayerTable(this, gamedatas.players[playerId]);
+        var table = new PlayerTable(this, gamedatas.players[playerId], this.getPlayerConstructor(playerId));
         this.playersTables.push(table);
     };
     Heat.prototype.updateGains = function (playerId, gains) {
@@ -3340,7 +3339,7 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_discardCards = function () { };
     Heat.prototype.notif_pDrawCards = function (args) {
-        return this.getPlayerTable(args.player_id).hand.addCards(this.builderCardsManager.getFullCards(args.cards));
+        return this.getPlayerTable(args.player_id).hand.addCards(this.cardsManager.getFullCards(args.cards));
     };
     Heat.prototype.notif_pDiscardCards = function (args) {
         this.getPlayerTable(args.player_id).hand.removeCards(args.cards);
@@ -3352,7 +3351,7 @@ var Heat = /** @class */ (function () {
             return this.getPlayerTable(args.player_id).addTechnologyTile(tile);
         }
         else {
-            var card = this.builderCardsManager.getFullCard(args.card);
+            var card = this.cardsManager.getFullCard(args.card);
             return this.getPlayerTable(args.player_id).createCard(card);
         }
     };

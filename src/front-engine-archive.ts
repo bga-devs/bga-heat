@@ -1,6 +1,6 @@
 class ArchiveEngineData {
     constructor(
-        public discardCards: BuilderCard[] = [],
+        public discardCards: Card[] = [],
         public discardTokens: {[cardId: string]: number} = {},
     ) {}
 }
@@ -46,7 +46,7 @@ class ArchiveEngine extends FrontEngine<ArchiveEngineData> {
                 'confirm',
                 engine => {
                     const discardCount = this.data.discardCards.length;
-                    engine.data.discardCards.forEach(card => this.game.builderCardsManager.getCardElement(card)?.classList.add('discarded-card'));
+                    engine.data.discardCards.forEach(card => this.game.cardsManager.getCardElement(card)?.classList.add('discarded-card'));
                     this.game.changePageTitle(`Confirm`, true);
 
                     const label = formatTextIcons(_('Confirm discard of ${number} cards to remove ${number} <KNOWLEDGE>')).replace(/\${number}/g, ''+discardCount);
@@ -55,7 +55,7 @@ class ArchiveEngine extends FrontEngine<ArchiveEngineData> {
                     this.addCancel();
                 },
                 engine => {
-                    engine.data.discardCards.forEach(card => this.game.builderCardsManager.getCardElement(card)?.classList.remove('discarded-card'));
+                    engine.data.discardCards.forEach(card => this.game.cardsManager.getCardElement(card)?.classList.remove('discarded-card'));
                     this.removeCancel();
                     document.getElementById('confirmArchive_btn')?.remove();
                 }
@@ -65,7 +65,7 @@ class ArchiveEngine extends FrontEngine<ArchiveEngineData> {
         this.enterState('discard');
     }
     
-    public cardSelectionChange(selection: BuilderCard[]) {
+    public cardSelectionChange(selection: Card[]) {
         if (this.currentState == 'discard') {
             this.data.discardCards = selection;
             this.setConfirmDiscardSelectionState();

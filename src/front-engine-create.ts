@@ -1,8 +1,8 @@
 class CreateEngineData {
     constructor(
-        public selectedCard: BuilderCard = null,
+        public selectedCard: Card = null,
         public selectedSlot: string = null,
-        public discardCards: BuilderCard[] = [],
+        public discardCards: Card[] = [],
     ) {}
 }
 
@@ -16,13 +16,13 @@ class CreateEngine extends FrontEngine<CreateEngineData> {
                 engine => {
                     this.game.changePageTitle(null);
                     if (engine.data.selectedCard) {
-                        this.game.builderCardsManager.getCardElement(engine.data.selectedCard)?.classList.remove('created-card');
+                        this.game.cardsManager.getCardElement(engine.data.selectedCard)?.classList.remove('created-card');
                         this.game.getCurrentPlayerTable().hand.addCard(engine.data.selectedCard);
                     }
                     engine.data.selectedCard = null;
                     engine.data.selectedSlot = null;
                     engine.data.discardCards = [];
-                    const selectableCards = Object.keys(this.possibleCardsLocations).map(id => this.game.builderCardsManager.getFullCardById(id));
+                    const selectableCards = Object.keys(this.possibleCardsLocations).map(id => this.game.cardsManager.getFullCardById(id));
                     this.game.getCurrentPlayerTable().setHandSelectable('single', selectableCards, 'create-init', true);
                 },
                 () => {
@@ -85,7 +85,7 @@ class CreateEngine extends FrontEngine<CreateEngineData> {
             new FrontState<CreateEngineData>(
                 'confirm',
                 engine => {
-                    engine.data.discardCards.forEach(card => this.game.builderCardsManager.getCardElement(card)?.classList.add('discarded-card'));
+                    engine.data.discardCards.forEach(card => this.game.cardsManager.getCardElement(card)?.classList.add('discarded-card'));
                     this.game.changePageTitle(`Confirm`, true);
 
                     const card = engine.data.selectedCard;
@@ -107,7 +107,7 @@ class CreateEngine extends FrontEngine<CreateEngineData> {
                     this.addCancel();
                 },
                 engine => {
-                    engine.data.discardCards.forEach(card => this.game.builderCardsManager.getCardElement(card)?.classList.remove('discarded-card'));
+                    engine.data.discardCards.forEach(card => this.game.cardsManager.getCardElement(card)?.classList.remove('discarded-card'));
                     this.removeCancel();
                     document.getElementById('confirmCreate_btn')?.remove();
                 }
@@ -117,7 +117,7 @@ class CreateEngine extends FrontEngine<CreateEngineData> {
         this.enterState('init');
     }
     
-    public cardSelectionChange(selection: BuilderCard[]) {
+    public cardSelectionChange(selection: Card[]) {
         if (this.currentState == 'init') {
             if (selection.length == 1) {
                 this.selectCard(selection[0]);
@@ -128,9 +128,9 @@ class CreateEngine extends FrontEngine<CreateEngineData> {
         }
     }
 
-    public selectCard(card: BuilderCard) {
+    public selectCard(card: Card) {
         this.data.selectedCard = card;
-        this.game.builderCardsManager.getCardElement(card)?.classList.add('created-card');
+        this.game.cardsManager.getCardElement(card)?.classList.add('created-card');
         this.game.getCurrentPlayerTable().hand.unselectCard(card);
         this.nextState('slot');
     }

@@ -14,7 +14,7 @@
   flex-direction: column;
   align-items: center;
   
-  .builder-card {
+  .personal-card {
     &.created-card {
       box-shadow: unset;
       outline: 4px solid green;
@@ -110,7 +110,7 @@
     .hand {
 
       &[data-state="initial-selection"] {
-        .builder-card {
+        .personal-card {
           &.bga-cards_selectable-card:not(.bga-cards_disabled-card) {
               &:not(.bga-cards_selected-card) {
                   animation: unset;
@@ -124,7 +124,7 @@
       }
 
       &[data-state="create-init"] {
-        .builder-card {
+        .personal-card {
           &.bga-cards_selected-card:not(.bga-cards_disabled-card) {
             box-shadow: 0 0 5px 5px green;
           }
@@ -132,7 +132,7 @@
       }
 
       &[data-state="create-discard"], &[data-state="archive-discard"] {
-        .builder-card {
+        .personal-card {
           &.bga-cards_selected-card:not(.bga-cards_disabled-card) {
             box-shadow: 0 0 5px 5px red;
           }

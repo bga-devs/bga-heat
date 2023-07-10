@@ -1,20 +1,10 @@
-$playerColors: '6f3766', 'bc6328', '597f9e', '929f40';
-
-$artifactColor: #734073;
-$cityColor: #d66b2a;
-$megalithColor: #4a82a3;
-$pyramidColor: #87a04f;
-
-$ancientColor: #3c857f;
-$secretColor: #b8a222;
-$writingColor: #633c37;
+$playerColors: '12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d';
 
 @import '../node_modules/bga-help/bga-help';
 @import '../node_modules/bga-zoom/bga-zoom';
 @import '../node_modules/bga-jump-to/bga-jump-to';
 @import '../node_modules/bga-cards/bga-cards';
-@import 'cards';
-@import 'builder-cards';
+@import 'personal-cards';
 @import 'technology-tiles';
 @import 'table-center';
 @import 'playerboards';

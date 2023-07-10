@@ -1,0 +1,77 @@
+.personal-card {
+    position: relative;
+    /*width: 225px;
+    height: 362px; 
+    width: 150px;
+    height: 241px; */
+    width: 112px;
+    height: 181px;
+    
+
+    .card-sides {
+        .card-side {
+            border-radius: 8px;
+            background-image: url('img/personal-cards.jpg');  
+            background-size: auto 700%; 
+
+            &>* {
+                pointer-events: all !important;
+                user-select: none;
+            }
+
+            &.back {
+                background-position: #{2 * 100% / 6} 100%;
+            }
+
+            &.front {
+                &.stress {
+                    background-position: #{0 * 100% / 6} 100%;
+                }
+                &.heat {
+                    background-position: #{1 * 100% / 6} 100%;
+                }
+
+                
+                @for $col from 0 through 6 {
+                    &[data-col="#{$col}"]  {
+                        background-position-x: #{$col * 100% / 6};
+                    }
+                }
+            }
+        }
+    }
+
+    @each $playerColor in $playerColors {
+      $i: index($playerColors, $playerColor) - 1;
+      &[data-player-color="#{$playerColor}"] .front { 
+        background-position-y: #{$i * 100% / 6};
+      }
+    } 
+
+    &.bga-cards_selectable-card:not(.bga-cards_disabled-card) {
+        &:not(.bga-cards_selected-card) {
+            animation: selectable-card-animation 1s alternate infinite ease-in-out;
+        }
+
+        .card-side {
+            box-shadow: unset;
+        }
+    }    
+
+    &.bga-cards_selected-card:not(.bga-cards_disabled-card) {
+        box-shadow: 0 0 5px 5px orange;
+
+        .card-side {
+            box-shadow: unset;
+        }
+    }
+}
+
+@keyframes selectable-card-animation {
+    0% {
+      box-shadow: 0 0 3px 2px white;
+    }
+    100% { 
+      box-shadow: 0 0 5px 3px white;
+    }
+}

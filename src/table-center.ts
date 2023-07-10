@@ -2,7 +2,7 @@ class TableCenter {
     public technologyTilesDecks: Deck<TechnologyTile>[] = [];
     public technologyTilesStocks: LineStock<TechnologyTile>[] = [];
     //public technologyTilesStocks: SlotStock<TechnologyTile>[] = [];
-    public cardDeck: Deck<BuilderCard>;
+    public cardDeck: Deck<Card>;
         
     constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
         document.getElementById('circuit').style.backgroundImage = `url('${g_gamethemeurl}img/Circuits/${gamedatas.circuit}.jpg')`;
@@ -25,7 +25,7 @@ class TableCenter {
         this.refreshTechnologyTiles(gamedatas.techs);
 
         const cardDeckDiv = document.getElementById(`builder-deck`);
-        this.cardDeck = new Deck<BuilderCard>(game.builderCardsManager, cardDeckDiv, {
+        this.cardDeck = new Deck<Card>(game.builderCardsManager, cardDeckDiv, {
             // TODO cardNumber: gamedatas.cardDeckCount,
             // TODO topCard: gamedatas.cardDeckTop,
             // TODO counter: { counterId: 'deck-counter', },
