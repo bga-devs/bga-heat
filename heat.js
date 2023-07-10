@@ -2793,9 +2793,9 @@ var Heat = /** @class */ (function () {
             //}
             //player.handCount = gamedatas.cards.filter(card => card.location == 'hand' && card.pId == playerId).length;
         });
-        g_img_preload.push.apply(g_img_preload, [
+        g_img_preload.push.apply(g_img_preload, __spreadArray(__spreadArray([], [
             "Circuits/".concat(gamedatas.circuit, ".jpg"),
-        ]);
+        ], false), Object.values(gamedatas.players).map(function (player) { return "mats/player-board-".concat(player.color, ".jpg"); }), false));
         // Create a new div for buttons to avoid BGA auto clearing it
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
         dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');

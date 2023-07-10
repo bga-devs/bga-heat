@@ -498,12 +498,12 @@ body > .card {
 
 .personal-card {
   position: relative;
-  /*width: 225px;
-  height: 362px; 
-  width: 150px;
-  height: 241px; */
-  width: 112px;
-  height: 181px;
+  width: 225px;
+  height: 362px; /*
+width: 150px;
+height: 241px; */
+  /*width: 112px;
+  height: 181px;*/
 }
 .personal-card .card-sides .card-side {
   border-radius: 8px;
@@ -865,29 +865,28 @@ body > .card {
 .player-table .player-board {
   position: relative;
   width: 1200px;
-  height: 453px;
+  height: 793px;
   padding: 0;
   margin: 0;
-  margin-left: 180px;
-  margin-right: 180px;
+  background-size: contain;
 }
 .player-table .player-board[data-color="12151a"] {
-  background: url("img/player-board-12151a.jpg");
+  background-image: url("img/mats/player-board-12151a.jpg");
 }
 .player-table .player-board[data-color="376bbe"] {
-  background: url("img/player-board-376bbe.jpg");
+  background-image: url("img/mats/player-board-376bbe.jpg");
 }
 .player-table .player-board[data-color="26a54e"] {
-  background: url("img/player-board-26a54e.jpg");
+  background-image: url("img/mats/player-board-26a54e.jpg");
 }
 .player-table .player-board[data-color=e52927] {
-  background: url("img/player-board-e52927.jpg");
+  background-image: url("img/mats/player-board-e52927.jpg");
 }
 .player-table .player-board[data-color="979797"] {
-  background: url("img/player-board-979797.jpg");
+  background-image: url("img/mats/player-board-979797.jpg");
 }
 .player-table .player-board[data-color=face0d] {
-  background: url("img/player-board-face0d.jpg");
+  background-image: url("img/mats/player-board-face0d.jpg");
 }
 .player-table .player-board .past {
   position: absolute;

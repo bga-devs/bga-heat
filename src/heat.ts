@@ -64,7 +64,8 @@ class Heat implements HeatGame {
 
         g_img_preload.push(...[
             `Circuits/${gamedatas.circuit}.jpg`,
-        ]);
+        ], 
+        ...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
 
         // Create a new div for buttons to avoid BGA auto clearing it
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');

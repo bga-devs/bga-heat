@@ -39,15 +39,14 @@
   .player-board {
     position: relative;
     width: 1200px;
-    height: 453px;
+    height: 793px;
     padding: 0;
     margin: 0;
-    margin-left: 180px;
-    margin-right: 180px;
+    background-size: contain;
 
     @each $playerColor in $playerColors {
       &[data-color="#{$playerColor}"] { 
-        background: url('img/player-board-#{$playerColor}.jpg');
+        background-image: url('img/mats/player-board-#{$playerColor}.jpg');
       }
     } 
 
