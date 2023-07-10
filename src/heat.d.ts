@@ -14,6 +14,16 @@ interface HeatPlayer extends Player {
     techs: TechnologyTile[];
 }
 
+interface Constructor {
+    id: number;
+    name: string;
+    no: number;
+    pId: number;
+    carPosition;
+    turn: number;
+    score: number;
+}
+
 interface HeatGamedatas {
     current_player_id: string;
     decision: {decision_type: string};
@@ -26,11 +36,9 @@ interface HeatGamedatas {
     players: { [playerId: number]: HeatPlayer };
     tablespeed: string;
 
-    techs: TechnologyTile[];
     // Add here variables you set up in getAllDatas
-    /*tableTiles: { [type: number]: TechnologyTile[] }; // row 1..3
-    firstPlayerId: number;
-    // TODO deck counters ? discard counters ?*/
+    circuit: string;
+    constructors: { [id: number]: Constructor };
 }
 
 interface HeatGame extends Game {

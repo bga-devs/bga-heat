@@ -5,6 +5,7 @@ class TableCenter {
     public cardDeck: Deck<BuilderCard>;
         
     constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
+        document.getElementById('circuit').style.backgroundImage = `url('${g_gamethemeurl}img/Circuits/${gamedatas.circuit}.jpg')`;
         /*TODO [1, 2].forEach(level => {
             this.technologyTilesDecks[level] = new Deck<TechnologyTile>(game.technologyTilesManager, document.getElementById(`technology-deck-${level}`), {
                 // TODO cardNumber: gamedatas.centerDestinationsDeckCount[level],

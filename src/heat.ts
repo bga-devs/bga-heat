@@ -4,6 +4,7 @@ declare const $;
 declare const dojo: Dojo;
 declare const _;
 declare const g_gamethemeurl;
+declare const g_img_preload;
 
 const ANIMATION_MS = 500;
 const ACTION_TIMER_DURATION = 5;
@@ -62,6 +63,10 @@ class Heat implements HeatGame {
             //player.handCount = gamedatas.cards.filter(card => card.location == 'hand' && card.pId == playerId).length;
         });
 
+        g_img_preload.push(...[
+            `Circuits/${gamedatas.circuit}.jpg`,
+        ]);
+
         // Create a new div for buttons to avoid BGA auto clearing it
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
         dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
@@ -92,11 +97,6 @@ class Heat implements HeatGame {
                 color: 'black',
             },
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
-            onDimensionsChange: () => {
-                const tablesAndCenter = document.getElementById('tables-and-center');
-                const clientWidth = tablesAndCenter.clientWidth;
-                tablesAndCenter.classList.toggle('double-column', clientWidth > 2478); // TODO player board size + table size
-            },
         });
 
         new HelpManager(this, { 

@@ -2258,6 +2258,7 @@ var TableCenter = /** @class */ (function () {
         this.game = game;
         this.technologyTilesDecks = [];
         this.technologyTilesStocks = [];
+        document.getElementById('circuit').style.backgroundImage = "url('".concat(g_gamethemeurl, "img/Circuits/").concat(gamedatas.circuit, ".jpg')");
         /*TODO [1, 2].forEach(level => {
             this.technologyTilesDecks[level] = new Deck<TechnologyTile>(game.technologyTilesManager, document.getElementById(`technology-deck-${level}`), {
                 // TODO cardNumber: gamedatas.centerDestinationsDeckCount[level],
@@ -2793,6 +2794,9 @@ var Heat = /** @class */ (function () {
             //}
             //player.handCount = gamedatas.cards.filter(card => card.location == 'hand' && card.pId == playerId).length;
         });
+        g_img_preload.push.apply(g_img_preload, [
+            "Circuits/".concat(gamedatas.circuit, ".jpg"),
+        ]);
         // Create a new div for buttons to avoid BGA auto clearing it
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
         dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
@@ -2818,11 +2822,6 @@ var Heat = /** @class */ (function () {
                 color: 'black',
             },
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
-            onDimensionsChange: function () {
-                var tablesAndCenter = document.getElementById('tables-and-center');
-                var clientWidth = tablesAndCenter.clientWidth;
-                tablesAndCenter.classList.toggle('double-column', clientWidth > 2478); // TODO player board size + table size
-            },
         });
         new HelpManager(this, {
             buttons: [

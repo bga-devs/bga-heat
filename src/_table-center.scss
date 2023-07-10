@@ -4,24 +4,12 @@
 }
 
 #table-center {
-  #table-technology-tiles {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  //min-width: 818px;
 
-    .table-technology-tiles {
-      width: 730px;
-      height: 139px;
-      padding: 13px 73px;
-      box-sizing: border-box;
-      gap: 27px;
-
-      &[data-level="1"] {
-        background-image: url('img/obelisk1.png');
-      }
-      &[data-level="2"] {
-        background-image: url('img/obelisk2.png');
-      }
-    }
+  #circuit {
+    position: relative;
+    width: 1690px;
+    height: 1256px;
+    background-size: contain;
   }
 }
