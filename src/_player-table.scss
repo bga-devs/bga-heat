@@ -50,33 +50,33 @@
       }
     } 
 
-    .past {
+    .gear {
       position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--player-color);
+      box-shadow: 2px 2px 8px 5px black;
       top: 198px;
-      left: -176px;
-    }
+      right: 52px;
+      transition: top 0.5s;
 
-    .artifacts {
-      position: absolute;
-      top: 198px;
-      left: 176px;
-    
-      .slot {
-        width: 163px;
-        height: 228px;  
-        border-radius: 8px;
+      &::after {
+        content: '';
+        position: absolute;
+        left: 25px;
+        right: 25px;
+        top: 25px;
+        bottom: 25px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 39% 25%, #FFFFFFBB 2px, var(--player-color) 4%, #000000BB 100%);
+        box-shadow: 2px 2px 8px 5px black;
       }
-    }
 
-    .technology-tiles-decks {
-      position: absolute;
-      left: 1200px;
-
-      .technology-tiles-deck {
-        &[data-type="ancient"] { top: 56px; }
-        &[data-type="writing"] { top: 186px; }
-        &[data-type="secret"] { top: 312px; }
-      }
+      &[data-gear="4"] { top: 274px; }
+      &[data-gear="3"] { top: 401px; }
+      &[data-gear="2"] { top: 529px; }
+      &[data-gear="1"] { top: 657px; }
     }
   }
   
@@ -105,88 +105,5 @@
     border-radius: 10px;
     align-self: stretch;
     margin-bottom: 10px;
-
-    .hand {
-
-      &[data-state="initial-selection"] {
-        .personal-card {
-          &.bga-cards_selectable-card:not(.bga-cards_disabled-card) {
-              &:not(.bga-cards_selected-card) {
-                  animation: unset;
-                  box-shadow: 0 0 3px 3px red;
-              }
-          }  
-          &.bga-cards_selected-card:not(.bga-cards_disabled-card) {
-              box-shadow: 0 0 5px 5px green;
-          }
-        }
-      }
-
-      &[data-state="create-init"] {
-        .personal-card {
-          &.bga-cards_selected-card:not(.bga-cards_disabled-card) {
-            box-shadow: 0 0 5px 5px green;
-          }
-        }
-      }
-
-      &[data-state="create-discard"], &[data-state="archive-discard"] {
-        .personal-card {
-          &.bga-cards_selected-card:not(.bga-cards_disabled-card) {
-            box-shadow: 0 0 5px 5px red;
-          }
-        }
-      }
-    }
-  }
-
-  .timeline {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
-    padding-left: 81px;
-    
-    .slot {
-      position: relative;
-      width: 163px;
-      height: 228px;  
-      border-radius: 8px;
-      background: #FFFFFF66;
-      outline: #FFFFFF99 1px solid;
-
-      &.selectable {
-        cursor: pointer;
-        animation: selectable-card-animation 1s alternate infinite ease-in-out;
-      }
-
-      &.selected {
-        outline: 4px solid green;
-      }
-
-      &.discard-cost {
-        &::before {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          right: 0;
-          background-image: url('img/discard-icon.svg');
-          width: 36px;
-          height: 48px;
-          background-repeat: no-repeat;
-          background-position: center center;
-          background-size: contain;
-        }
-
-        &::after {
-          //content: var(--discard-cost);
-          content: attr(data-discard-cost);
-          position: absolute;
-          bottom: -7px;
-          right: 40px;
-          color: white;
-          font-size: 48px;
-        }
-      }
-    }
   }
 }

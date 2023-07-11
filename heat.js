@@ -2301,104 +2301,41 @@ var TableCenter = /** @class */ (function () {
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 var log = isDebug ? console.log.bind(window.console) : function () { };
-var timelineSlotsIds = [];
-[1, 0].forEach(function (line) { return [1, 2, 3, 4, 5, 6].forEach(function (space) { return timelineSlotsIds.push("timeline-".concat(space, "-").concat(line)); }); });
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player, constructor) {
         var _this = this;
         this.game = game;
-        this.technologyTilesDecks = [];
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
+        this.currentGear = constructor.gear;
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" style=\"--player-color: #").concat(player.color, ";\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"name-wrapper\">").concat(player.name, "</div>\n        ");
         if (this.currentPlayer) {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
         }
-        html += "\n            <div id=\"player-table-".concat(this.playerId, "-timeline\" class=\"timeline\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-board\" class=\"player-board\" data-color=\"").concat(player.color, "\">                \n                <div id=\"player-table-").concat(this.playerId, "-past\" class=\"past\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-artifacts\" class=\"artifacts\"></div>\n                <div class=\"technology-tiles-decks\">");
-        ['ancient', 'writing', 'secret'].forEach(function (type) {
-            html += "\n                    <div id=\"player-table-".concat(_this.playerId, "-technology-tiles-deck-").concat(type, "\" class=\"technology-tiles-deck\" data-type=\"").concat(type, "\"></div>\n                    ");
-        });
-        html += "\n            </div>\n            </div>\n        </div>\n        ";
+        html += "\n            <div id=\"player-table-".concat(this.playerId, "-board\" class=\"player-board\" data-color=\"").concat(player.color, "\">                \n                <div id=\"player-table-").concat(this.playerId, "-gear\" class=\"gear\" data-gear=\"").concat(this.currentGear, "\"></div>\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         if (this.currentPlayer) {
             this.hand = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-hand")), {
-                sort: function (a, b) { return a.id[0] == b.id[0] ? a.number - b.number : a.id.charCodeAt(0) - b.id.charCodeAt(0); },
+                sort: function (a, b) { return Number(a.type) - Number(b.type); },
             });
             this.hand.onCardClick = function (card) { return _this.game.onHandCardClick(card); };
             this.hand.onSelectionChange = function (selection) { return _this.game.onHandCardSelectionChange(selection); };
             this.refreshHand(constructor.hand);
         }
-        /*const timelineDiv = document.getElementById(`player-table-${this.playerId}-timeline`);
-        this.timeline = new SlotStock<Card>(this.game.builderCardsManager, timelineDiv, {
-            slotsIds: timelineSlotsIds,
-            mapCardToSlot: card => card.location,
-        });
-        player.timeline.forEach(card => this.createTimelineCard(this.game.builderCardsManager.getFullCard(card)));
-        timelineSlotsIds.map(slotId => timelineDiv.querySelector(`[data-slot-id="${slotId}"]`)).forEach((element: HTMLDivElement) => element.addEventListener('click', () => {
-            if (element.classList.contains('selectable')) {
-                this.game.onTimelineSlotClick(element.dataset.slotId);
-            }
-        }));
-        
-        const artifactsSlotsIds = [];
-        [0,1,2,3,4].forEach(space => artifactsSlotsIds.push(`artefact-${space}`)); // TODO artifact ?
-        const artifactsDiv = document.getElementById(`player-table-${this.playerId}-artifacts`);
-        this.artifacts = new SlotStock<Card>(this.game.builderCardsManager, artifactsDiv, {
-            slotsIds: artifactsSlotsIds,
-            mapCardToSlot: card => card.location,
-            gap: '36px',
-        });
-        // TODO this.artifacts.addCards(player.artifacts);
-
-        const pastDiv = document.getElementById(`player-table-${this.playerId}-past`);
-        this.past = new AllVisibleDeck<Card>(this.game.builderCardsManager, pastDiv, {
-        });
-        this.past.addCards(this.game.builderCardsManager.getFullCards(player.past));
-        
-        ['ancient', 'writing', 'secret'].forEach(type => {
-            const technologyTilesDeckDiv = document.getElementById(`player-table-${this.playerId}-technology-tiles-deck-${type}`);
-            this.technologyTilesDecks[type] = new AllVisibleDeck<TechnologyTile>(this.game.technologyTilesManager, technologyTilesDeckDiv, {
-            });
-            const tiles = this.game.technologyTilesManager.getFullCards(player.techs).filter(tile => tile.type == type);
-            this.technologyTilesDecks[type].addCards(tiles);
-        });*/
     }
-    PlayerTable.prototype.setHandSelectable = function (selectionMode, selectableCards, stockState, reinitSelection) {
+    PlayerTable.prototype.setHandSelectable = function (selectionMode, selectableCards, reinitSelection) {
         if (selectableCards === void 0) { selectableCards = null; }
-        if (stockState === void 0) { stockState = ''; }
         if (reinitSelection === void 0) { reinitSelection = false; }
         this.hand.setSelectionMode(selectionMode);
         if (selectableCards) {
             this.hand.setSelectableCards(selectableCards);
         }
-        document.getElementById("player-table-".concat(this.playerId, "-hand")).dataset.state = stockState;
-        if (reinitSelection) {
+        if (reinitSelection || selectionMode == 'none') {
             this.hand.unselectAll();
         }
     };
-    PlayerTable.prototype.setInitialSelection = function (cards) {
-        this.hand.addCards(cards);
-        this.setHandSelectable('multiple', null, 'initial-selection');
-    };
-    PlayerTable.prototype.endInitialSelection = function () {
-        this.setHandSelectable('none');
-    };
-    PlayerTable.prototype.createCard = function (card) {
-        if (card.id[0] == 'A') {
-            return this.artifacts.addCard(card);
-        }
-        else {
-            this.game.cardsManager.updateCardInformations(card); // in case card is already on timeline, to update location
-            return this.createTimelineCard(card);
-        }
-    };
-    PlayerTable.prototype.createTimelineCard = function (card) {
-        var promise = this.timeline.addCard(card);
-        this.setCardKnowledge(card.id, card.knowledge);
-        return promise;
-    };
-    PlayerTable.prototype.addTechnologyTile = function (card) {
-        return this.technologyTilesDecks[card.type].addCard(card);
+    PlayerTable.prototype.getCurrentGear = function () {
+        return this.currentGear;
     };
     PlayerTable.prototype.refreshHand = function (hand) {
         var _this = this;
@@ -2407,356 +2344,8 @@ var PlayerTable = /** @class */ (function () {
         hand.forEach(function (card) { return _this.game.cardsManager.getCardElement(card).dataset.playerColor = _this.game.getPlayer(_this.playerId).color; });
         return promise;
     };
-    PlayerTable.prototype.setCardKnowledge = function (cardId, knowledge) {
-        //const golden = Math.floor(knowledge / 5);
-        //const basic = knowledge % 5;
-        var golden = 0;
-        var basic = knowledge;
-        var stockDiv = document.getElementById("".concat(cardId, "-tokens"));
-        while (stockDiv.childElementCount > (golden + basic)) {
-            stockDiv.removeChild(stockDiv.lastChild);
-        }
-        var _loop_3 = function () {
-            var div = document.createElement('div');
-            div.classList.add('knowledge-token');
-            stockDiv.appendChild(div);
-            div.addEventListener('click', function () {
-                if (div.classList.contains('selectable')) {
-                    div.classList.toggle('selected');
-                    var card = div.closest('.personal-card');
-                    //this.game.onTimelineKnowledgeClick(card.id, card.querySelectorAll('.knowledge-token.selected').length);
-                }
-            });
-        };
-        while (stockDiv.childElementCount < (golden + basic)) {
-            _loop_3();
-        }
-        for (var i = 0; i < (golden + basic); i++) {
-            stockDiv.children[i].classList.toggle('golden', i < golden);
-        }
-    };
-    PlayerTable.prototype.setTimelineSelectable = function (selectable, possibleCardLocations) {
-        if (possibleCardLocations === void 0) { possibleCardLocations = null; }
-        var slotIds = selectable ? Object.keys(possibleCardLocations) : [];
-        document.getElementById("player-table-".concat(this.playerId, "-timeline")).querySelectorAll(".slot").forEach(function (slot) {
-            var slotId = slot.dataset.slotId;
-            var slotSelectable = selectable && slotIds.includes(slotId);
-            var discardCost = slotSelectable ? possibleCardLocations[slotId] : null;
-            slot.classList.toggle('selectable', slotSelectable);
-            //slot.style.setProperty('--discard-cost', `${discardCost > 0 ? discardCost : ''}`);
-            slot.dataset.discardCost = "".concat(discardCost > 0 ? discardCost : '');
-            slot.classList.toggle('discard-cost', slotSelectable && discardCost > 0);
-        });
-    };
-    PlayerTable.prototype.setTimelineTokensSelectable = function (selectionMode) {
-        document.getElementById("player-table-".concat(this.playerId, "-timeline")).querySelectorAll(".knowledge-token").forEach(function (token) {
-            token.classList.toggle('selectable', selectionMode != 'none');
-        });
-    };
-    PlayerTable.prototype.declineCard = function (card) {
-        return this.past.addCard(this.game.cardsManager.getFullCard(card));
-    };
-    PlayerTable.prototype.declineSlideLeft = function () {
-        var shiftedCards = this.timeline.getCards().map(function (card) { return (__assign(__assign({}, card), { location: card.location.replace(/(\d)/, function (a) { return "".concat(Number(a) - 1); }) })); });
-        return this.timeline.addCards(shiftedCards);
-    };
     return PlayerTable;
 }());
-var FrontState = /** @class */ (function () {
-    function FrontState(name, onEntering, onLeaving) {
-        if (onLeaving === void 0) { onLeaving = function () { }; }
-        this.name = name;
-        this.onEntering = onEntering;
-        this.onLeaving = onLeaving;
-    }
-    return FrontState;
-}());
-var FrontEngine = /** @class */ (function () {
-    function FrontEngine(game, states) {
-        this.game = game;
-        this.states = states;
-    }
-    FrontEngine.prototype.leaveState = function () {
-        var _this = this;
-        var _a;
-        (_a = this.states.find(function (state) { return state.name == _this.currentState; })) === null || _a === void 0 ? void 0 : _a.onLeaving(this);
-    };
-    FrontEngine.prototype.enterState = function (name) {
-        this.currentState = name;
-        this.states.find(function (state) { return state.name == name; }).onEntering(this);
-    };
-    FrontEngine.prototype.nextState = function (name) {
-        this.leaveState();
-        this.enterState(name);
-    };
-    return FrontEngine;
-}());
-var CreateEngineData = /** @class */ (function () {
-    function CreateEngineData(selectedCard, selectedSlot, discardCards) {
-        if (selectedCard === void 0) { selectedCard = null; }
-        if (selectedSlot === void 0) { selectedSlot = null; }
-        if (discardCards === void 0) { discardCards = []; }
-        this.selectedCard = selectedCard;
-        this.selectedSlot = selectedSlot;
-        this.discardCards = discardCards;
-    }
-    return CreateEngineData;
-}());
-var CreateEngine = /** @class */ (function (_super) {
-    __extends(CreateEngine, _super);
-    function CreateEngine(game, possibleCardsLocations) {
-        var _this = _super.call(this, game, [
-            new FrontState('init', function (engine) {
-                var _a;
-                _this.game.changePageTitle(null);
-                if (engine.data.selectedCard) {
-                    (_a = _this.game.cardsManager.getCardElement(engine.data.selectedCard)) === null || _a === void 0 ? void 0 : _a.classList.remove('created-card');
-                    _this.game.getCurrentPlayerTable().hand.addCard(engine.data.selectedCard);
-                }
-                engine.data.selectedCard = null;
-                engine.data.selectedSlot = null;
-                engine.data.discardCards = [];
-                var selectableCards = Object.keys(_this.possibleCardsLocations).map(function (id) { return _this.game.cardsManager.getFullCardById(id); });
-                _this.game.getCurrentPlayerTable().setHandSelectable('single', selectableCards, 'create-init', true);
-            }, function () {
-                _this.game.getCurrentPlayerTable().setHandSelectable('none');
-            }),
-            new FrontState('slot', function (engine) {
-                var card = engine.data.selectedCard;
-                if (card.id[0] == 'A' || card.locked) {
-                    _this.data.selectedSlot = Object.keys(_this.possibleCardsLocations[card.id])[0];
-                    var stock = card.id[0] == 'A' ?
-                        _this.game.getCurrentPlayerTable().artifacts :
-                        _this.game.getCurrentPlayerTable().timeline;
-                    stock.addCard(_this.data.selectedCard, undefined, {
-                        slot: _this.data.selectedSlot,
-                    });
-                    engine.nextState('discard');
-                    return;
-                }
-                _this.game.changePageTitle("SelectSlot", true);
-                engine.data.selectedSlot = null;
-                engine.data.discardCards = [];
-                _this.addCancel();
-                _this.game.getCurrentPlayerTable().setTimelineSelectable(true, _this.possibleCardsLocations[card.id]);
-            }, function () {
-                _this.game.getCurrentPlayerTable().setTimelineSelectable(false);
-                _this.removeCancel();
-            }),
-            new FrontState('discard', function (engine) {
-                var discardCount = _this.getDiscardCount();
-                if (!discardCount) {
-                    _this.nextState('confirm');
-                    return;
-                }
-                _this.game.gamedatas.gamestate.args.discard_number = discardCount;
-                _this.game.changePageTitle("SelectDiscard", true);
-                engine.data.discardCards = [];
-                _this.game.getCurrentPlayerTable().setHandSelectable('multiple', null, 'create-discard', true);
-                _this.addConfirmDiscardSelection();
-                _this.addCancel();
-            }, function () {
-                _this.removeConfirmDiscardSelection();
-                _this.game.getCurrentPlayerTable().setHandSelectable('none');
-                _this.removeCancel();
-            }),
-            new FrontState('confirm', function (engine) {
-                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('discarded-card'); });
-                _this.game.changePageTitle("Confirm", true);
-                var card = engine.data.selectedCard;
-                var artifact = card.id[0] == 'A';
-                var discardedCardsCount = engine.data.discardCards.length;
-                var label = '';
-                if (artifact) {
-                    label = _('Confirm creation of Artifact ${card_name}');
-                }
-                else {
-                    label = discardedCardsCount ?
-                        _('Confirm creation of Monument ${card_name} with ${number} discarded cards').replace('${number}', discardedCardsCount) :
-                        _('Confirm creation of Monument ${card_name}');
-                }
-                label = label.replace('${card_name}', card.name);
-                _this.game.addPrimaryActionButton('confirmCreate_btn', label, function () { return _this.game.onCreateCardConfirm(engine.data); });
-                _this.addCancel();
-            }, function (engine) {
-                var _a;
-                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.remove('discarded-card'); });
-                _this.removeCancel();
-                (_a = document.getElementById('confirmCreate_btn')) === null || _a === void 0 ? void 0 : _a.remove();
-            }),
-        ]) || this;
-        _this.game = game;
-        _this.possibleCardsLocations = possibleCardsLocations;
-        _this.data = new CreateEngineData();
-        _this.enterState('init');
-        return _this;
-    }
-    CreateEngine.prototype.cardSelectionChange = function (selection) {
-        if (this.currentState == 'init') {
-            if (selection.length == 1) {
-                this.selectCard(selection[0]);
-            }
-        }
-        else if (this.currentState == 'discard') {
-            this.data.discardCards = selection;
-            this.setConfirmDiscardSelectionState();
-        }
-    };
-    CreateEngine.prototype.selectCard = function (card) {
-        var _a;
-        this.data.selectedCard = card;
-        (_a = this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('created-card');
-        this.game.getCurrentPlayerTable().hand.unselectCard(card);
-        this.nextState('slot');
-    };
-    CreateEngine.prototype.selectSlot = function (slotId) {
-        this.data.selectedSlot = slotId;
-        this.game.getCurrentPlayerTable().timeline.addCard(this.data.selectedCard, undefined, {
-            slot: slotId,
-        });
-        this.nextState('discard');
-    };
-    CreateEngine.prototype.addCancel = function () {
-        var _this = this;
-        this.game.addSecondaryActionButton('restartCardCreation_btn', _('Restart card creation'), function () { return _this.nextState('init'); });
-    };
-    CreateEngine.prototype.removeCancel = function () {
-        var _a;
-        (_a = document.getElementById('restartCardCreation_btn')) === null || _a === void 0 ? void 0 : _a.remove();
-    };
-    CreateEngine.prototype.addConfirmDiscardSelection = function () {
-        var _this = this;
-        this.game.addPrimaryActionButton('confirmDiscardSelection_btn', _('Confirm discarded cards'), function () { return _this.nextState('confirm'); });
-        this.setConfirmDiscardSelectionState();
-    };
-    CreateEngine.prototype.removeConfirmDiscardSelection = function () {
-        var _a;
-        (_a = document.getElementById('confirmDiscardSelection_btn')) === null || _a === void 0 ? void 0 : _a.remove();
-    };
-    CreateEngine.prototype.setConfirmDiscardSelectionState = function () {
-        var _a;
-        var discardCount = this.getDiscardCount();
-        (_a = document.getElementById('confirmDiscardSelection_btn')) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', discardCount != this.data.discardCards.length);
-    };
-    CreateEngine.prototype.getDiscardCount = function () {
-        var card = this.data.selectedCard;
-        if (!card) {
-            return null;
-        }
-        var slot = card.id[0] == 'A' || card.locked ?
-            Object.keys(this.possibleCardsLocations[card.id])[0] :
-            this.data.selectedSlot;
-        return this.possibleCardsLocations[card.id][slot];
-    };
-    return CreateEngine;
-}(FrontEngine));
-var ArchiveEngineData = /** @class */ (function () {
-    function ArchiveEngineData(discardCards, discardTokens) {
-        if (discardCards === void 0) { discardCards = []; }
-        if (discardTokens === void 0) { discardTokens = {}; }
-        this.discardCards = discardCards;
-        this.discardTokens = discardTokens;
-    }
-    return ArchiveEngineData;
-}());
-var ArchiveEngine = /** @class */ (function (_super) {
-    __extends(ArchiveEngine, _super);
-    function ArchiveEngine(game, possibleCards) {
-        var _this = _super.call(this, game, [
-            new FrontState('discard', function (engine) {
-                engine.data.discardCards = [];
-                var cards = _this.game.getCurrentPlayerTable().hand.getCards().filter(function (card) { return possibleCards.includes(card.id); });
-                _this.game.getCurrentPlayerTable().setHandSelectable('multiple', cards, 'archive-discard', true);
-                _this.addConfirmDiscardSelection();
-                _this.addCancel();
-            }, function () {
-                _this.removeConfirmDiscardSelection();
-                _this.game.getCurrentPlayerTable().setHandSelectable('none');
-                _this.removeCancel();
-            }),
-            new FrontState('discardTokens', function (engine) {
-                var discardCount = _this.data.discardCards.length;
-                _this.game.gamedatas.gamestate.args.discard_number = discardCount;
-                _this.game.changePageTitle("SelectDiscardTokens", true);
-                engine.data.discardTokens = {};
-                _this.game.getCurrentPlayerTable().setTimelineTokensSelectable('multiple');
-                _this.addConfirmDiscardTokenSelection();
-                _this.addCancel();
-            }, function () {
-                _this.removeConfirmDiscardTokenSelection();
-                _this.game.getCurrentPlayerTable().setTimelineTokensSelectable('none');
-                _this.removeCancel();
-            }),
-            new FrontState('confirm', function (engine) {
-                var discardCount = _this.data.discardCards.length;
-                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('discarded-card'); });
-                _this.game.changePageTitle("Confirm", true);
-                var label = formatTextIcons(_('Confirm discard of ${number} cards to remove ${number} <KNOWLEDGE>')).replace(/\${number}/g, '' + discardCount);
-                _this.game.addPrimaryActionButton('confirmArchive_btn', label, function () { return _this.game.onArchiveCardConfirm(engine.data); });
-                _this.addCancel();
-            }, function (engine) {
-                var _a;
-                engine.data.discardCards.forEach(function (card) { var _a; return (_a = _this.game.cardsManager.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.remove('discarded-card'); });
-                _this.removeCancel();
-                (_a = document.getElementById('confirmArchive_btn')) === null || _a === void 0 ? void 0 : _a.remove();
-            }),
-        ]) || this;
-        _this.game = game;
-        _this.possibleCards = possibleCards;
-        _this.data = new ArchiveEngineData();
-        _this.enterState('discard');
-        return _this;
-    }
-    ArchiveEngine.prototype.cardSelectionChange = function (selection) {
-        if (this.currentState == 'discard') {
-            this.data.discardCards = selection;
-            this.setConfirmDiscardSelectionState();
-        }
-    };
-    ArchiveEngine.prototype.cardTokenSelectionChange = function (cardId, knowledge) {
-        if (this.currentState == 'discardTokens') {
-            this.data.discardTokens[cardId] = knowledge;
-            this.setConfirmDiscardTokenSelectionState();
-        }
-    };
-    ArchiveEngine.prototype.addCancel = function () {
-        var _this = this;
-        this.game.addSecondaryActionButton('restartCardCreation_btn', _('Restart card creation'), function () { return _this.nextState('init'); });
-    };
-    ArchiveEngine.prototype.removeCancel = function () {
-        var _a;
-        (_a = document.getElementById('restartCardCreation_btn')) === null || _a === void 0 ? void 0 : _a.remove();
-    };
-    ArchiveEngine.prototype.addConfirmDiscardSelection = function () {
-        var _this = this;
-        //this.game.addPrimaryActionButton('confirmDiscardSelection_btn', _('Confirm discarded cards'), () => this.nextState('discardTokens'));
-        this.game.addPrimaryActionButton('confirmDiscardSelection_btn', _('Confirm discarded cards'), function () { return _this.game.onArchiveCardConfirm(_this.data); });
-        this.setConfirmDiscardSelectionState();
-    };
-    ArchiveEngine.prototype.removeConfirmDiscardSelection = function () {
-        var _a;
-        (_a = document.getElementById('confirmDiscardSelection_btn')) === null || _a === void 0 ? void 0 : _a.remove();
-    };
-    ArchiveEngine.prototype.addConfirmDiscardTokenSelection = function () {
-        var _this = this;
-        this.game.addPrimaryActionButton('confirmDiscardTokenSelection_btn', _('Confirm discarded tokens'), function () { return _this.nextState('confirm'); });
-        this.setConfirmDiscardTokenSelectionState();
-    };
-    ArchiveEngine.prototype.removeConfirmDiscardTokenSelection = function () {
-        var _a;
-        (_a = document.getElementById('confirmDiscardTokenSelection_btn')) === null || _a === void 0 ? void 0 : _a.remove();
-    };
-    ArchiveEngine.prototype.setConfirmDiscardSelectionState = function () {
-        var _a;
-        var discardCount = this.data.discardCards.length;
-        (_a = document.getElementById('confirmDiscardSelection_btn')) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', discardCount == 0);
-    };
-    ArchiveEngine.prototype.setConfirmDiscardTokenSelectionState = function () {
-        /* TODO const discardCount = Object.values(this.data.discardTokens).reduce((a, b) => a + b, 0);
-        document.getElementById('confirmDiscardTokenSelection_btn')?.classList.toggle('disabled', discardCount != this.data.discardCards.length);*/
-    };
-    return ArchiveEngine;
-}(FrontEngine));
 var ANIMATION_MS = 500;
 var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
@@ -2897,14 +2486,8 @@ var Heat = /** @class */ (function () {
             });
         }*/
         switch (stateName) {
-            case 'create':
-                this.onEnteringCreate(args.args);
-                break;
-            case 'archive':
-                this.onEnteringArchive(args.args);
-                break;
-            case 'learn':
-                this.onEnteringLearn(args.args);
+            case 'planificationDISABLEDMULTI':
+                this.onEnteringPlanification(args.args);
                 break;
         }
     };
@@ -2944,23 +2527,9 @@ var Heat = /** @class */ (function () {
             this.gamedatas.gamestate.description = this.gamedatas.gamestate['description' + suffix];
         this.updatePageTitle();
     };
-    Heat.prototype.onEnteringInitialSelection = function (args) {
-        var cards = this.cardsManager.getFullCardsByIds(args._private.cards);
-        this.getCurrentPlayerTable().setInitialSelection(cards);
-    };
-    Heat.prototype.onEnteringCreate = function (args) {
+    Heat.prototype.onEnteringPlanification = function (args) {
         if (this.isCurrentPlayerActive()) {
-            this.createEngine = new CreateEngine(this, args._private.cards);
-        }
-    };
-    Heat.prototype.onEnteringArchive = function (args) {
-        if (this.isCurrentPlayerActive()) {
-            this.archiveEngine = new ArchiveEngine(this, args._private.cardIds);
-        }
-    };
-    Heat.prototype.onEnteringLearn = function (args) {
-        if (this.isCurrentPlayerActive()) {
-            this.tableCenter.setTechnologyTilesSelectable(true /*, args.techs*/);
+            this.getCurrentPlayerTable().setHandSelectable('multiple');
         }
     };
     Heat.prototype.onLeavingState = function (stateName) {
@@ -3005,33 +2574,10 @@ var Heat = /** @class */ (function () {
         var _this = this;
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'initialSelection':
-                    //const initialSelectionArgs = args as EnteringInitialSelectionArgs;
-                    this.onEnteringInitialSelection(args);
-                    this.addActionButton("actSelectCardsToDiscard_button", _('Keep selected cards'), function () { return _this.actSelectCardsToDiscard(); });
-                    document.getElementById('actSelectCardsToDiscard_button').classList.add('disabled');
-                    break;
-                case 'chooseAction':
-                    [
-                        ['create', _('Create')],
-                        ['learn', _('Learn')],
-                        ['excavate', _('Excavate')],
-                        ['archive', _('Archive')],
-                        ['search', _('Search')],
-                    ].forEach(function (codeAndLabel) {
-                        return _this.addActionButton("actChooseAction_".concat(codeAndLabel[0], "_button"), "<div class=\"action-icon ".concat(codeAndLabel[0], "\"></div> ").concat(codeAndLabel[1]), function () { return _this.takeAtomicAction('actChooseAction', [codeAndLabel[0]]); });
-                    });
-                    //(this as any).addActionButton(`actRestart_button`, _("Restart"), () => this.actRestart(), null, null, 'gray');
-                    break;
-                case 'confirmTurn':
-                    this.addActionButton("actConfirmTurn_button", _("Confirm turn"), function () { return _this.actConfirmTurn(); });
-                //(this as any).addActionButton(`actRestart_button`, _("Restart"), () => this.actRestart(), null, null, 'gray');
-            }
-        }
-        else {
-            switch (stateName) {
-                case 'initialSelection':
-                    this.addActionButton("actCancelSelection_button", _('Cancel'), function () { return _this.actCancelSelection(); }, null, null, 'gray');
+                case 'planification':
+                    this.addActionButton("actPlanification_button", '', function () { return _this.actPlanification(); });
+                    this.onHandCardSelectionChange([]);
+                    this.onEnteringPlanification(args);
                     break;
             }
         }
@@ -3191,15 +2737,19 @@ var Heat = /** @class */ (function () {
         }
     }*/
     Heat.prototype.onHandCardSelectionChange = function (selection) {
-        var _a, _b;
-        if (this.gamedatas.gamestate.name == 'initialSelection') {
-            document.getElementById('actSelectCardsToDiscard_button').classList.toggle('disabled', selection.length != 6);
-        }
-        else if (this.gamedatas.gamestate.name == 'create') {
-            (_a = this.createEngine) === null || _a === void 0 ? void 0 : _a.cardSelectionChange(selection);
-        }
-        else if (this.gamedatas.gamestate.name == 'archive') {
-            (_b = this.archiveEngine) === null || _b === void 0 ? void 0 : _b.cardSelectionChange(selection);
+        if (this.gamedatas.gamestate.name == 'planification') {
+            var table = this.getCurrentPlayerTable();
+            var gear = table.getCurrentGear();
+            var minAllowed = Math.max(1, gear - 2);
+            var maxAllowed = Math.min(4, gear + 2);
+            var allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
+            var label = allowed ?
+                _('Set gear to ${gear} an play selected cards').replace('${gear}', "".concat(selection.length)) + (Math.abs(selection.length - gear) == 2 ? ' (+1 [Heat])' : '') :
+                _('Select between ${min} and ${max} cards').replace('${min}', "".concat(minAllowed)).replace('${max}', "".concat(maxAllowed));
+            document.getElementById("player-table-".concat(table.playerId, "-gear")).dataset.gear = "".concat(allowed ? selection.length : gear);
+            var button = document.getElementById('actPlanification_button');
+            button.innerHTML = label;
+            button.classList.toggle('disabled', !allowed);
         }
     };
     Heat.prototype.onTimelineSlotClick = function (slotId) {
@@ -3231,14 +2781,13 @@ var Heat = /** @class */ (function () {
             this.setPayDestinationLabelAndState();
         }*/
     };
-    Heat.prototype.actSelectCardsToDiscard = function () {
-        if (!this.checkAction('actSelectCardsToDiscard')) {
+    Heat.prototype.actPlanification = function () {
+        if (!this.checkAction('actPlan')) {
             return;
         }
         var selectedCards = this.getCurrentPlayerTable().hand.getSelection();
-        var discardCards = this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return !selectedCards.some(function (sc) { return sc.id == card.id; }); });
-        this.takeAction('actSelectCardsToDiscard', {
-            cardIds: JSON.stringify(discardCards.map(function (card) { return card.id; })),
+        this.takeAction('actPlan', {
+            cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
     };
     Heat.prototype.actCancelSelection = function () {

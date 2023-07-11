@@ -37,9 +37,6 @@
         "src/technology-tiles.ts",
         "src/table-center.ts",
         "src/player-table.ts",
-        "src/front-engine.ts",
-        "src/front-engine-create.ts",
-        "src/front-engine-archive.ts",
         "src/heat.ts",
         "src/define.ts"
     ]

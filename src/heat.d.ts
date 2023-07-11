@@ -71,10 +71,7 @@ interface EnteringInitialSelectionArgs {
 
 type PossibleCardLocations = {[slotId: string]: number};
 
-interface EnteringCreateArgs {
-    _private?: {
-        cards: {[id: string]: PossibleCardLocations};
-    }
+interface EnteringPlanificationArgs {
 }
 
 interface EnteringArchiveArgs {

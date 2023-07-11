@@ -29,9 +29,6 @@ class Heat implements HeatGame {
     private _notif_uid_to_mobile_log_id = [];
     private _last_notif;
 
-    private createEngine: CreateEngine;
-    private archiveEngine: ArchiveEngine;
-
     constructor() {
     }
     
@@ -194,14 +191,8 @@ class Heat implements HeatGame {
         }*/
 
         switch (stateName) {
-            case 'create':
-                this.onEnteringCreate(args.args);
-                break;
-            case 'archive':
-                this.onEnteringArchive(args.args);
-                break;
-            case 'learn':
-                this.onEnteringLearn(args.args);
+            case 'planificationDISABLEDMULTI':
+                this.onEnteringPlanification(args.args);
                 break;
         }
     }
@@ -241,26 +232,9 @@ class Heat implements HeatGame {
       (this as any).updatePageTitle();
     }
 
-    private onEnteringInitialSelection(args: EnteringInitialSelectionArgs) {
-        const cards = this.cardsManager.getFullCardsByIds(args._private.cards);
-        this.getCurrentPlayerTable().setInitialSelection(cards);
-    }
-
-    private onEnteringCreate(args: EnteringCreateArgs) {
+    private onEnteringPlanification(args: EnteringPlanificationArgs) {
         if ((this as any).isCurrentPlayerActive()) {
-            this.createEngine = new CreateEngine(this, args._private.cards);
-        }
-    }
-
-    private onEnteringArchive(args: EnteringArchiveArgs) {
-        if ((this as any).isCurrentPlayerActive()) {
-            this.archiveEngine = new ArchiveEngine(this, args._private.cardIds);
-        }
-    }
-
-    private onEnteringLearn(args: EnteringLearnArgs) {
-        if ((this as any).isCurrentPlayerActive()) {
-            this.tableCenter.setTechnologyTilesSelectable(true/*, args.techs*/);
+            this.getCurrentPlayerTable().setHandSelectable('multiple');
         }
     }
 
@@ -312,32 +286,10 @@ class Heat implements HeatGame {
         
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'initialSelection':
-                    //const initialSelectionArgs = args as EnteringInitialSelectionArgs;
-                    this.onEnteringInitialSelection(args);
-                    (this as any).addActionButton(`actSelectCardsToDiscard_button`, _('Keep selected cards'), () => this.actSelectCardsToDiscard());
-                    document.getElementById('actSelectCardsToDiscard_button').classList.add('disabled');
-                    break;
-                case 'chooseAction':
-                    [
-                        ['create', _('Create')], 
-                        ['learn', _('Learn')], 
-                        ['excavate', _('Excavate')], 
-                        ['archive', _('Archive')], 
-                        ['search', _('Search')],
-                    ].forEach(codeAndLabel => 
-                        (this as any).addActionButton(`actChooseAction_${codeAndLabel[0]}_button`, `<div class="action-icon ${codeAndLabel[0]}"></div> ${codeAndLabel[1]}`, () => this.takeAtomicAction('actChooseAction', [codeAndLabel[0]]))
-                    );
-                    //(this as any).addActionButton(`actRestart_button`, _("Restart"), () => this.actRestart(), null, null, 'gray');
-                    break;
-                case 'confirmTurn':
-                    (this as any).addActionButton(`actConfirmTurn_button`, _("Confirm turn"), () => this.actConfirmTurn());
-                    //(this as any).addActionButton(`actRestart_button`, _("Restart"), () => this.actRestart(), null, null, 'gray');
-            }
-        } else {
-            switch (stateName) {
-                case 'initialSelection':
-                    (this as any).addActionButton(`actCancelSelection_button`, _('Cancel'), () => this.actCancelSelection(), null, null, 'gray');
+                case 'planification':
+                    (this as any).addActionButton(`actPlanification_button`, '', () => this.actPlanification());
+                    this.onHandCardSelectionChange([]);
+                    this.onEnteringPlanification(args);
                     break;
             }
         }
@@ -569,12 +521,22 @@ class Heat implements HeatGame {
     }*/
     
     public onHandCardSelectionChange(selection: Card[]): void {
-        if (this.gamedatas.gamestate.name == 'initialSelection') {
-            document.getElementById('actSelectCardsToDiscard_button').classList.toggle('disabled', selection.length != 6);
-        } else if (this.gamedatas.gamestate.name == 'create') {
-            this.createEngine?.cardSelectionChange(selection);
-        } else if (this.gamedatas.gamestate.name == 'archive') {
-            this.archiveEngine?.cardSelectionChange(selection);
+        if (this.gamedatas.gamestate.name == 'planification') {
+            const table = this.getCurrentPlayerTable();
+            const gear = table.getCurrentGear();
+
+            const minAllowed = Math.max(1, gear - 2);
+            const maxAllowed = Math.min(4, gear + 2);
+            const allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
+            const label = allowed ? 
+                _('Set gear to ${gear} an play selected cards').replace('${gear}', `${selection.length}`) + (Math.abs(selection.length - gear) == 2 ? ' (+1 [Heat])' : '') :
+                _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
+
+            document.getElementById(`player-table-${table.playerId}-gear`).dataset.gear = `${allowed ? selection.length : gear}`;
+
+            const button = document.getElementById('actPlanification_button');
+            button.innerHTML = label;
+            button.classList.toggle('disabled', !allowed);
         }
     }
     
@@ -612,16 +574,15 @@ class Heat implements HeatGame {
         }*/
     }
   	
-    public actSelectCardsToDiscard() {
-        if(!(this as any).checkAction('actSelectCardsToDiscard')) {
+    public actPlanification() {
+        if(!(this as any).checkAction('actPlan')) {
             return;
         }
 
         const selectedCards = this.getCurrentPlayerTable().hand.getSelection();
-        const discardCards = this.getCurrentPlayerTable().hand.getCards().filter(card => !selectedCards.some(sc => sc.id == card.id));
 
-        this.takeAction('actSelectCardsToDiscard', {
-            cardIds: JSON.stringify(discardCards.map(card => card.id)),
+        this.takeAction('actPlan', {
+            cardIds: JSON.stringify(selectedCards.map(card => card.id)),
         });
     }
   	
