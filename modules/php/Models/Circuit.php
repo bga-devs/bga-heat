@@ -67,13 +67,14 @@ class Circuit
 
   public function getReachedCell($constructor, $speed)
   {
+    $cId = $constructor->getId();
     $currentCell = $constructor->getCarCell();
     $currentPosition = $this->cells[$currentCell]['pos'];
 
     // Find the first position that is not already full with cars
     $newPosition = $currentPosition + $speed;
     $avoidInfiniteLoop = 0;
-    while ($this->getFreeLane($newPosition) == 0 && $avoidInfiniteLoop++ < 10) {
+    while ($this->getFreeLane($newPosition, $cId) == 0 && $avoidInfiniteLoop++ < 10) {
       $newPosition--;
     }
     if ($avoidInfiniteLoop >= 10) {

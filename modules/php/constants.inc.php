@@ -8,6 +8,8 @@ const ST_GAME_SETUP = 1;
 const ST_SETUP_BRANCH = 2;
 
 const ST_START_RACE = 10;
+
+const ST_START_ROUND = 11;
 const ST_PLANIFICATION = 12;
 
 // END

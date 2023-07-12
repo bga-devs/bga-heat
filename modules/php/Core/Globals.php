@@ -20,6 +20,8 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'turnOrder' => 'obj', // store the current turn order
     'activeConstructor' => 'int', // store the id of active company
 
+    'planification' => 'obj',
+
     // Game options
     'circuit' => 'str',
     'countConstructors' => 'int', // Useful when companies DB is not filled up yet

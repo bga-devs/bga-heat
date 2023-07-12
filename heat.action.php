@@ -35,84 +35,19 @@ class action_heat extends APP_GameAction
     }
   }
 
-  public function actSelectCardsToDiscard()
+  public function actPlan()
   {
     self::setAjaxMode();
     $cardIds = self::getArg('cardIds', AT_json, true);
     $this->validateJSonAlphaNum($cardIds, 'cardIds');
-    $this->game->actSelectCardsToDiscard($cardIds);
+    $this->game->actPlan($cardIds);
     self::ajaxResponse();
   }
 
-  public function actCancelSelection()
+  public function actCancelPlan()
   {
     self::setAjaxMode();
-    $this->game->actCancelSelection();
-    self::ajaxResponse();
-  }
-
-  //////////////////
-  ///// ENGINE  /////
-  //////////////////
-  public function actTakeAtomicAction()
-  {
-    self::setAjaxMode();
-    $action = self::getArg('actionName', AT_alphanum, true);
-    $args = self::getArg('actionArgs', AT_json, true);
-    $this->validateJSonAlphaNum($args, 'actionArgs');
-    $this->game->actTakeAtomicAction($action, $args);
-    self::ajaxResponse();
-  }
-
-  public function actAnytimeAction()
-  {
-    self::setAjaxMode();
-    $choiceId = self::getArg('id', AT_int, true);
-    $result = $this->game->actAnytimeAction($choiceId);
-    self::ajaxResponse();
-  }
-
-  public function actPassOptionalAction()
-  {
-    self::setAjaxMode();
-    $result = $this->game->actPassOptionalAction();
-    self::ajaxResponse();
-  }
-
-  public function actChooseAction()
-  {
-    self::setAjaxMode();
-    $choiceId = self::getArg('id', AT_int, true);
-    $result = $this->game->actChooseAction($choiceId);
-    self::ajaxResponse();
-  }
-
-  public function actConfirmTurn()
-  {
-    self::setAjaxMode();
-    $this->game->actConfirmTurn();
-    self::ajaxResponse();
-  }
-
-  public function actConfirmPartialTurn()
-  {
-    self::setAjaxMode();
-    $this->game->actConfirmPartialTurn();
-    self::ajaxResponse();
-  }
-
-  public function actRestart()
-  {
-    self::setAjaxMode();
-    $this->game->actRestart();
-    self::ajaxResponse();
-  }
-
-  public function actUndoToStep()
-  {
-    self::setAjaxMode();
-    $stepId = self::getArg('stepId', AT_posint, false);
-    $this->game->actUndoToStep($stepId);
+    $this->game->actCancelPlan();
     self::ajaxResponse();
   }
 

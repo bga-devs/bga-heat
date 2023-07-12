@@ -54,6 +54,15 @@ $machinestates = [
     'type' => 'game',
     'action' => 'stStartRace',
     'updateGameProgression' => true,
+    'transitions' => ['startRound' => ST_START_ROUND],
+  ],
+
+  ST_START_ROUND => [
+    'name' => 'startRound',
+    'description' => '',
+    'type' => 'game',
+    'action' => 'stStartRound',
+    'updateGameProgression' => true,
     'transitions' => ['planification' => ST_PLANIFICATION],
   ],
 
@@ -63,7 +72,7 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} must select the gear and card(s) to play'),
     'type' => 'multipleactiveplayer',
     'args' => 'argsPlanification',
-    'possibleactions' => ['actPlan'],
+    'possibleactions' => ['actPlan', 'actCancelPlan'],
     'transitions' => [],
   ],
 
