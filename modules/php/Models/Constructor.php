@@ -21,7 +21,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
     'pId' => ['player_id', 'int'],
     'name' => 'name',
     'score' => ['score', 'int'],
-    'carPosition' => ['car_position', 'int'],
+    'carCell' => ['car_cell', 'int'],
     'turn' => ['turn', 'int'],
     'gear' => ['gear', 'int'],
   ];

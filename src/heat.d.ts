@@ -13,7 +13,7 @@ interface Constructor {
     pId: number;
     ai: boolean;
     gear: number;
-    carPosition: string;
+    carCell: string;
     turn: number;
     score: number;
     lvl; // TODO

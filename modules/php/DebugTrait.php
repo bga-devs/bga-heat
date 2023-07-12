@@ -1,10 +1,8 @@
 <?php
 namespace HEAT;
 use HEAT\Managers\Players;
-use HEAT\Managers\Meeples;
-use HEAT\Managers\Cards;
+use HEAT\Managers\Constructors;
 use HEAT\Core\Globals;
-use HEAT\Core\Engine;
 use HEAT\Core\Game;
 use HEAT\Core\Notifications;
 use HEAT\Helpers\Utils;
@@ -13,19 +11,10 @@ use HEAT\Helpers\Collection;
 
 trait DebugTrait
 {
-  function tp()
+  function move($speed)
   {
-    Cards::setupNewGame([], []);
-  }
-
-  function engDisplay()
-  {
-    var_dump(Globals::getEngine());
-  }
-
-  function engProceed()
-  {
-    Engine::proceed();
+    $constructor = Constructors::getActive();
+    var_dump($this->getCircuit()->getReachedCell($constructor, $speed));
   }
 
   /*

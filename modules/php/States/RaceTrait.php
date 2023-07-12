@@ -31,8 +31,8 @@ trait RaceTrait
     $cells = $circuit->getStartingCells();
     foreach (Constructors::getTurnOrder() as $i => $cId) {
       $constructor = Constructors::get($cId);
-      $constructor->setCarPosition($cells[$i]);
-      $constructor->setTurn(0);
+      $constructor->setCarCell($cells[$i]);
+      $constructor->setTurn(-1);
       $constructor->setGear(1);
     }
 

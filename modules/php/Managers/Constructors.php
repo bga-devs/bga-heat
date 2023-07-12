@@ -10,10 +10,11 @@ use HEAT\Helpers\Collection;
 
 /* Class to manage all the constructors for Heat (and handle legend) */
 
-class Constructors extends \HEAT\Helpers\DB_Manager
+class Constructors extends \HEAT\Helpers\CachedDB_Manager
 {
   protected static $table = 'constructors';
   protected static $primary = 'id';
+  protected static $datas = null;
   protected static function cast($row)
   {
     return new \HEAT\Models\Constructor($row);
@@ -39,6 +40,7 @@ class Constructors extends \HEAT\Helpers\DB_Manager
       'score' => 0,
       'gear' => 1,
     ]);
+    self::invalidate();
   }
 
   public function assignConstructorAutoma($fakePId, $cId, $no)
@@ -66,6 +68,7 @@ class Constructors extends \HEAT\Helpers\DB_Manager
       'score' => 0,
       'gear' => 1,
     ]);
+    self::invalidate();
   }
 
   /*
@@ -79,16 +82,11 @@ class Constructors extends \HEAT\Helpers\DB_Manager
   /*
    * getUiData : get all ui data of all players
    */
-  public function getUiData($pId)
+  public function getUiData($cId)
   {
-    return self::getAll()->map(function ($player) use ($pId) {
-      return $player->getUiData($pId);
+    return self::getAll()->map(function ($constructor) use ($cId) {
+      return $constructor->getUiData($cId);
     });
-  }
-
-  public function getAll()
-  {
-    return self::DB()->get();
   }
 
   /*
@@ -100,14 +98,12 @@ class Constructors extends \HEAT\Helpers\DB_Manager
   }
 
   /*
-   * get : returns the Player object for the given player ID
+   * get : returns the Constructor object for the given player ID
    */
-  public function get($pId = null)
+  public function get($cId = null)
   {
-    $pId = $pId ?: self::getActiveId();
-    return self::DB()
-      ->where($pId)
-      ->getSingle();
+    $cId = is_null($cId) ? $cId : self::getActiveId();
+    return parent::get($cId);
   }
 
   /**
@@ -133,12 +129,5 @@ class Constructors extends \HEAT\Helpers\DB_Manager
     if (!$constructor->isAI()) {
       Game::get()->gamestate->changeActivePlayer($constructor->getPId());
     }
-  }
-
-  public function resetEnergies()
-  {
-    self::DB()
-      ->update(['energy' => 0])
-      ->run();
   }
 }
