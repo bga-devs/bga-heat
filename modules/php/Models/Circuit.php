@@ -65,11 +65,16 @@ class Circuit
     return 0;
   }
 
+  public function getPosition($constructor)
+  {
+    $currentCell = $constructor->getCarCell();
+    $currentPosition = $this->cells[$currentCell]['pos'];
+  }
+
   public function getReachedCell($constructor, $speed)
   {
     $cId = $constructor->getId();
-    $currentCell = $constructor->getCarCell();
-    $currentPosition = $this->cells[$currentCell]['pos'];
+    $currentPosition = $this->getPosition($constructor);
 
     // Find the first position that is not already full with cars
     $newPosition = $currentPosition + $speed;

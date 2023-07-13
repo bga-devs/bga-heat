@@ -17,3 +17,7 @@ Frontend :
   - display "inplay" cards somewhere
 
   - speed state: buttons for selecting speed while highlighting corresponding cells ?
+
+  - react state : list all the symbols + add 'pass' button if canPass = true
+
+  - discard state : make cards selectable (selectable cards sent in args) + call action + notif + notif for public discard (clearPlayedCards)

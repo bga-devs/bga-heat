@@ -17,9 +17,9 @@ class Notifications
     Game::get()->notifyAllPlayers($name, $msg, $data);
   }
 
-  protected static function notify($player, $name, $msg, $data)
+  protected static function notify($constructor, $name, $msg, $data)
   {
-    $pId = is_int($player) ? $player : $player->getId();
+    $pId = is_int($constructor) ? $constructor : $constructor->getPId();
     self::updateArgs($data);
     Game::get()->notifyPlayer($pId, $name, $msg, $data);
   }
@@ -74,6 +74,52 @@ class Notifications
     if ($extraTurns > 0 && $constructor->getTurn() > 0) {
       die('TODO: notif crossing the ending lane');
     }
+  }
+
+  public function gainAdrenaline($constructor, $last)
+  {
+    $msg = $last
+      ? clienttranslate('${constructor_name} is last so they can use adrenaline\'s effects')
+      : clienttranslate('${constructor_name} is second to last so they can use adrenaline\'s effects');
+
+    self::notifyAll('gainAdrenaline', $msg, [
+      'constructor' => $constructor,
+    ]);
+  }
+
+  public function gainGearCooldown($constructor, $gear, $n)
+  {
+    $msg =
+      $gear == 1
+        ? clienttranslate('${constructor_name} gains 3 additional cooldowns for being in 1st gear')
+        : clienttranslate('${constructor_name} gains 1 additional cooldown for being in 2nd gear');
+
+    self::notifyAll('gainGearCooldown', $msg, [
+      'constructor' => $constructor,
+      'cooldown' => $n,
+    ]);
+  }
+
+  public function discard($constructor, $cardIds)
+  {
+    self::notifyAll('discard', clienttranslate('${constructor_name} discards ${n} card(s)'), [
+      'constructor' => $constructor,
+      'n' => count($cardIds),
+    ]);
+
+    self::notify($constructor, 'pDiscard', clienttranslate('You discards ${n} card(s)'), [
+      'constructor' => $constructor,
+      'n' => count($cardIds),
+      'cardIds' => $cardIds,
+    ]);
+  }
+
+  public function clearPlayedCards($constructor, $cardIds)
+  {
+    self::notifyAll('clearPlayedCards', clienttranslate('${constructor_name} discards played card(s)'), [
+      'constructor' => $constructor,
+      'cardIds' => $cardIds,
+    ]);
   }
 
   ///////////////////////////////////////////////////////////////

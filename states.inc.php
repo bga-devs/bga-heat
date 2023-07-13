@@ -106,6 +106,35 @@ $machinestates = [
     'possibleactions' => ['actChooseSpeed'],
   ],
 
+  ST_REACT => [
+    'name' => 'react',
+    'description' => clienttranslate('${actplayer} must/may react'),
+    'descriptionmyturn' => clienttranslate('${you} must/may react'),
+    'type' => 'activeplayer',
+    'args' => 'argsReact',
+    'possibleactions' => ['actReact', 'actPassReact'],
+  ],
+
+  ST_SLIPSTREAM => [
+    'name' => 'slipstream',
+    'description' => clienttranslate('${actplayer} may slipstream'),
+    'descriptionmyturn' => clienttranslate('${you} may slipstream'),
+    'type' => 'activeplayer',
+    'args' => 'argsSlipstream',
+    'action' => 'stSlipstream',
+    'possibleactions' => ['actSlipstream'],
+  ],
+
+  ST_DISCARD => [
+    'name' => 'discard',
+    'description' => clienttranslate('${actplayer} may discard cards from their hand'),
+    'descriptionmyturn' => clienttranslate('${you} may discard cards from your hand'),
+    'type' => 'activeplayer',
+    'args' => 'argsDiscard',
+    'action' => 'stDiscard',
+    'possibleactions' => ['actDiscard'],
+  ],
+
   //////////////////////////////////////////////////////////////////
   //  _____           _    ___   __    ____
   // | ____|_ __   __| |  / _ \ / _|  / ___| __ _ _ __ ___   ___

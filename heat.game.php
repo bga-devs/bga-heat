@@ -45,6 +45,7 @@ class Heat extends Table
   use HEAT\DebugTrait;
   use HEAT\States\SetupTrait;
   use HEAT\States\RaceTrait;
+  use HEAT\States\RoundTrait;
 
   public static $instance = null;
   function __construct()

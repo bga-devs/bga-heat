@@ -6,6 +6,7 @@ use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
 use HEAT\Core\Preferences;
 use HEAT\Core\Stats;
+use HEAT\Core\Game;
 
 /*
  * Constructor: all utility functions concerning a player, real or not
@@ -48,6 +49,13 @@ class Constructor extends \HEAT\Helpers\DB_Model
   public function getLvlAI()
   {
     return $this->isAI() ? ($this->pId + 20) % 5 : null;
+  }
+
+  public function getPosition()
+  {
+    return Game::get()
+      ->getCircuit()
+      ->getPosition($this);
   }
 
   public function getHand()

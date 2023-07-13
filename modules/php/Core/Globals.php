@@ -21,6 +21,8 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'activeConstructor' => 'int', // store the id of active company
 
     'planification' => 'obj',
+    'previousPosition' => 'int',
+    'symbols' => 'obj',
 
     // Game options
     'circuit' => 'str',
