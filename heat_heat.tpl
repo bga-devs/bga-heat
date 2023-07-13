@@ -7,4 +7,8 @@
     <div id="tables"></div>
 </div>
 
+<script type="text/javascript">
+const URL = dojoConfig.packages.reduce((r,p) => p.name == "bgagame" ? p.location : r, null);
+document.write('<script src="' + URL + '/modules/usa-datas.js" type="module"><\/script>');
+</script>
 {OVERALL_GAME_FOOTER}
