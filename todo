@@ -3,7 +3,7 @@ Other :
 
 
 Backend :
-
+ - handle number of heat/stress cards based on circuit
 
 Frontend :
   - change format_string_recursive to handle constructor_name instead of player_name :
@@ -25,4 +25,3 @@ Frontend :
   - display "inplay" cards somewhere
 
   - speed state: buttons for selecting speed while highlighting corresponding cells ?
-  

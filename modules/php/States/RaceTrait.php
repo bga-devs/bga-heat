@@ -236,7 +236,7 @@ trait RaceTrait
     list($newCell, $nSpacesForward, $extraTurns) = $this->getCircuit()->getReachedCell($constructor, $speed);
     $constructor->setCarCell($newCell);
     $constructor->incTurn($extraTurns);
-    Notifications::moveCar($constructor, $speed, $nSpacesForward, $extraTurns);
+    Notifications::moveCar($constructor, $newCell, $speed, $nSpacesForward, $extraTurns);
 
     $this->nextPlayerCustomOrder('reveal');
   }

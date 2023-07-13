@@ -56,7 +56,7 @@ class Notifications
     ]);
   }
 
-  public function moveCar($constructor, $speed, $nSpacesForward, $extraTurns)
+  public function moveCar($constructor, $newCell, $speed, $nSpacesForward, $extraTurns)
   {
     $msg =
       $speed == $nSpacesForward
@@ -66,6 +66,7 @@ class Notifications
         );
     self::notifyAll('moveCar', $msg, [
       'constructor' => $constructor,
+      'cell' => $newCell,
       'speed' => $speed,
       'nForward' => $nSpacesForward,
     ]);
