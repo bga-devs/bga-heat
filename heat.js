@@ -5618,6 +5618,7 @@ var Heat = /** @class */ (function () {
         backgroundSize: '100% 600%',
         backgroundPosition: '0% ' + constructor.id * 20 + '%',
         transform: 'rotate(' + cell.a + 'deg) translateX(-30.5px) translateY(-17px)',
+        transformOrigin: 'top left',
       });
     });
     Object.values(gamedatas.players).forEach(function (player, index) {

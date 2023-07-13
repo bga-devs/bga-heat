@@ -24,6 +24,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
     'carCell' => ['car_cell', 'int'],
     'turn' => ['turn', 'int'],
     'gear' => ['gear', 'int'],
+    'speed' => ['speed', 'int'],
   ];
 
   public function getUiData($currentPlayerId = null)
@@ -34,6 +35,8 @@ class Constructor extends \HEAT\Helpers\DB_Model
       'lvl' => $this->getLvlAI(),
       'hand' => $current ? $this->getHand()->toArray() : [],
       'handCount' => $this->getHand()->count(),
+      'engine' => $this->getEngine(),
+      'discard' => $this->getDiscard(),
     ]);
   }
 
@@ -50,5 +53,20 @@ class Constructor extends \HEAT\Helpers\DB_Model
   public function getHand()
   {
     return Cards::getHand($this->id);
+  }
+
+  public function getPlayedCards()
+  {
+    return Cards::getInPlay($this->id);
+  }
+
+  public function getEngine()
+  {
+    return Cards::getEngine($this->id);
+  }
+
+  public function getDiscard()
+  {
+    return Cards::getDiscard($this->id)->first();
   }
 }

@@ -104,7 +104,7 @@ class Heat extends Table
   {
     $turnOrders = Globals::getCustomTurnOrders();
     $turnOrders[$key] = [
-      'order' => $order ?? Players::getTurnOrder(),
+      'order' => $order ?? Constructors::getTurnOrder(),
       'index' => -1,
       'callback' => $callback,
       'args' => $args, // Useful mostly for auto card listeners
@@ -141,7 +141,7 @@ class Heat extends Table
 
     if ($i < count($o['order'])) {
       $this->gamestate->jumpToState(ST_GENERIC_NEXT_PLAYER);
-      $this->gamestate->changeActivePlayer($o['order'][$i]);
+      Constructors::changeActive($o['order'][$i]);
       $this->jumpToOrCall($o['callback'], $o['args']);
     } else {
       $this->endCustomOrder($key);

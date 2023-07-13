@@ -11,10 +11,16 @@ const ST_START_RACE = 10;
 
 const ST_START_ROUND = 11;
 const ST_PLANIFICATION = 12;
+const ST_REVEAL = 13;
+const ST_CHOOSE_SPEED = 14;
+
+const ST_END_ROUND = 20;
 
 // END
 const ST_PRE_END_OF_GAME = 98;
 const ST_END_GAME = 99;
+
+const ST_GENERIC_NEXT_PLAYER = 97;
 
 /*
  * Constructors

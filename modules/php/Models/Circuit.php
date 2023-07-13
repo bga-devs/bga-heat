@@ -83,13 +83,14 @@ class Circuit
 
     // Compute potential extra turns
     $extraTurn = intdiv($newPosition, $this->getLength());
+    $nSpacesForward = $newPosition - $currentPosition;
     $newPosition = $newPosition % $this->getLength();
     $newLane = $this->getFreeLane($newPosition);
 
     // Now get the cell
     foreach ($this->cells as $cellId => $cellPos) {
       if ($cellPos['pos'] == $newPosition && $cellPos['lane'] == $newLane) {
-        return [$cellId, $extraTurn];
+        return [$cellId, $nSpacesForward, $extraTurn];
       }
     }
   }

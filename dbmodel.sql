@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `constructors` (
   `score` int(10) NOT NULL DEFAULT 0,
   `gear` int(10),
   `car_cell` varchar(32),
+  `speed` int(10),
   `turn` int(10),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

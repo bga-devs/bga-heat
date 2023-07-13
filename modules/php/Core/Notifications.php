@@ -42,6 +42,39 @@ class Notifications
     ]);
   }
 
+  public static function reveal($constructor, $newGear, $cards, $heat)
+  {
+    $msg = is_null($heat)
+      ? clienttranslate('${constructor_name} shifts gear to ${gear}')
+      : clienttranslate('${constructor_name} pays 1 Heat card to shift gear to ${gear}');
+
+    self::notifyAll('reveal', $msg, [
+      'constructor' => $constructor,
+      'gear' => $newGear,
+      'cards' => $cards,
+      'heat' => $heat,
+    ]);
+  }
+
+  public function moveCar($constructor, $speed, $nSpacesForward, $extraTurns)
+  {
+    $msg =
+      $speed == $nSpacesForward
+        ? clienttranslate('${constructor_name} moves their car ${nForward} spaces forward')
+        : clienttranslate(
+          '${constructor_name} moves their car ${nForward} spaces forward out of ${speed} because they are blocked by other cars'
+        );
+    self::notifyAll('moveCar', $msg, [
+      'constructor' => $constructor,
+      'speed' => $speed,
+      'nForward' => $nSpacesForward,
+    ]);
+
+    if ($extraTurns > 0 && $constructor->getTurn() > 0) {
+      die('TODO: notif crossing the ending lane');
+    }
+  }
+
   ///////////////////////////////////////////////////////////////
   //  _   _           _       _            _
   // | | | |_ __   __| | __ _| |_ ___     / \   _ __ __ _ ___
@@ -56,72 +89,15 @@ class Notifications
    */
   protected static function updateArgs(&$data)
   {
-    if (isset($data['player'])) {
-      $data['player_name'] = $data['player']->getName();
-      $data['player_id'] = $data['player']->getId();
-      unset($data['player']);
+    if (isset($data['constructor'])) {
+      $data['constructor_name'] = $data['constructor']->getName();
+      $data['constructor_id'] = $data['constructor']->getId();
+      unset($data['constructor']);
     }
-    if (isset($data['player2'])) {
-      $data['player_name2'] = $data['player2']->getName();
-      $data['player_id2'] = $data['player2']->getId();
-      unset($data['player2']);
-    }
-    if (isset($data['players'])) {
-      $args = [];
-      $logs = [];
-      foreach ($data['players'] as $i => $player) {
-        $logs[] = '${player_name' . $i . '}';
-        $args['player_name' . $i] = $player->getName();
-      }
-      $data['players_names'] = [
-        'log' => join(', ', $logs),
-        'args' => $args,
-      ];
-      $data['i18n'][] = 'players_names';
-      unset($data['players']);
-    }
-
-    if (isset($data['resources'])) {
-      // Get an associative array $resource => $amount
-      $resources = Utils::reduceResources($data['resources']);
-      $data['resources_desc'] = Utils::resourcesToStr($resources);
-    }
-
-    if (isset($data['card'])) {
-      $data['card_id'] = $data['card']->getId();
-      $data['card_name'] = $data['card']->getName();
-      $data['i18n'][] = 'card_name';
-      $data['preserve'][] = 'card_id';
-    }
-
-    if (isset($data['card2'])) {
-      $data['card2_id'] = $data['card2']->getId();
-      $data['card2_name'] = $data['card2']->getName();
-      $data['i18n'][] = 'card2_name';
-      $data['preserve'][] = 'card2_id';
-    }
-
-    if (isset($data['cards'])) {
-      $args = [];
-      $logs = [];
-      foreach ($data['cards'] as $i => $card) {
-        $logs[] = '${card_name_' . $i . '}';
-        $args['i18n'][] = 'card_name_' . $i;
-        $args['card_name_' . $i] = [
-          'log' => '${card_name}',
-          'args' => [
-            'i18n' => ['card_name'],
-            'card_name' => is_array($card) ? $card['name'] : $card->getName(),
-            'card_id' => is_array($card) ? $card['id'] : $card->getId(),
-            'preserve' => ['card_id'],
-          ],
-        ];
-      }
-      $data['card_names'] = [
-        'log' => join(', ', $logs),
-        'args' => $args,
-      ];
-      $data['i18n'][] = 'card_names';
+    if (isset($data['constructor2'])) {
+      $data['constructor_name2'] = $data['constructor2']->getName();
+      $data['constructor_id2'] = $data['constructor2']->getId();
+      unset($data['constructor2']);
     }
   }
 }

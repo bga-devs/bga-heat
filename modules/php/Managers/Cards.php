@@ -21,12 +21,33 @@ class Cards extends \HEAT\Helpers\Pieces
 
   protected static function cast($card)
   {
-    return $card;
+    return array_merge($card, self::getDatas()[$card['type']]);
   }
 
   public static function getHand($cId)
   {
-    return self::getInLocation("hand_$cId");
+    return self::getInLocation(['hand', $cId]);
+  }
+
+  public static function getInPlay($cId)
+  {
+    return self::getInLocation(['inplay', $cId]);
+  }
+
+  public static function getDiscard($cId)
+  {
+    return self::getInLocationOrdered(['discard', $cId]);
+  }
+
+  public static function getEngine($cId)
+  {
+    return self::getInLocation(['engine', $cId]);
+  }
+
+  public function draw($cId, $n)
+  {
+    // Draw them
+    return static::pickForLocation($n, "deck-$cId", "hand-$cId");
   }
 
   ///////////////////////////////////
@@ -49,26 +70,24 @@ class Cards extends \HEAT\Helpers\Pieces
       $cards = [];
 
       // Speed cards
-      $cards[] = ['type' => 101, 'n' => 3, 'location' => "deck_$cId"];
-      $cards[] = ['type' => 102, 'n' => 3, 'location' => "deck_$cId"];
-      $cards[] = ['type' => 103, 'n' => 3, 'location' => "deck_$cId"];
-      $cards[] = ['type' => 104, 'n' => 3, 'location' => "deck_$cId"];
+      $cards[] = ['type' => 101, 'n' => 3, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 102, 'n' => 3, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 103, 'n' => 3, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 104, 'n' => 3, 'location' => "deck-$cId"];
 
       // Starting upgrades : 0, 5, pesonalized Heat
-      $cards[] = ['type' => 100, 'n' => 1, 'location' => "deck_$cId"];
-      $cards[] = ['type' => 105, 'n' => 1, 'location' => "deck_$cId"];
-      $cards[] = ['type' => 106, 'n' => 1, 'location' => "deck_$cId"];
+      $cards[] = ['type' => 100, 'n' => 1, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 105, 'n' => 1, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 106, 'n' => 1, 'location' => "deck-$cId"];
 
       // Stress and heats
-      $cards[] = ['type' => 110, 'n' => 3, 'location' => "deck_$cId"];
-      $cards[] = ['type' => 111, 'n' => 6, 'location' => "engine_$cId"];
+      $cards[] = ['type' => 110, 'n' => 3, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 111, 'n' => 6, 'location' => "engine-$cId"];
 
       // Create the cards
       self::create($cards, null);
-      self::shuffle("deck_$cId");
-
-      // Draw them
-      static::pickForLocation(7, "deck_$cId", "hand_$cId");
+      self::shuffle("deck-$cId");
+      self::draw($cId, 7);
     }
   }
 
@@ -83,7 +102,7 @@ class Cards extends \HEAT\Helpers\Pieces
   {
     $f = function ($type, $speed, $symbols = [], $text = '') {
       return [
-        'type' => $type,
+        'effect' => $type,
         'speed' => $speed,
         'symbols' => $symbols,
         'text' => $text,
@@ -91,17 +110,23 @@ class Cards extends \HEAT\Helpers\Pieces
     };
 
     return [
+      // Personalized card
       100 => $f(STARTING_UPGRADE, 0),
       101 => $f(SPEED, 1),
       102 => $f(SPEED, 2),
       103 => $f(SPEED, 3),
       104 => $f(SPEED, 4),
       105 => $f(STARTING_UPGRADE, 5),
+      106 => $f(HEAT, 0),
+
+      // Generic stress and heats
+      110 => $f(STRESS, 0),
+      111 => $f(HEAT, 0),
 
       // 4 wheel drive
       1 => $f(BASIC_UPGRADE, 4, [PLUS => 1], clienttranslate('4 wheel drive')),
-      2 => $f(BASIC_UPGRADE, null, [PLUS => 3], clienttranslate('4 wheel drive')),
-      3 => $f(BASIC_UPGRADE, null, [PLUS => 1, COOLDOWN => 3], clienttranslate('4 wheel drive')),
+      2 => $f(BASIC_UPGRADE, 0, [PLUS => 3], clienttranslate('4 wheel drive')),
+      3 => $f(BASIC_UPGRADE, 0, [PLUS => 1, COOLDOWN => 3], clienttranslate('4 wheel drive')),
       // Body
       4 => $f(BASIC_UPGRADE, 3, [REDUCE => 2], clienttranslate('Body')),
       5 => $f(BASIC_UPGRADE, 5, [REDUCE => 1], clienttranslate('Body')),
@@ -120,7 +145,7 @@ class Cards extends \HEAT\Helpers\Pieces
       15 => $f(BASIC_UPGRADE, 2, [SLIPSTREAM => 2], clienttranslate('R.P.M.')),
       16 => $f(BASIC_UPGRADE, 3, [SLIPSTREAM => 2], clienttranslate('R.P.M.')),
 
-      17 => $f(HEAT, null),
+      17 => $f(HEAT, 0),
 
       // ADVANCED
       // Body
@@ -164,7 +189,7 @@ class Cards extends \HEAT\Helpers\Pieces
       // 4 wheel drive
       47 => $f(ADVANCED_UPGRADE, 0, [PLUS => 1, ACCELERATE => 1], clienttranslate('4 wheel drive')),
 
-      48 => $f(HEAT, null),
+      48 => $f(HEAT, 0),
     ];
   }
 }

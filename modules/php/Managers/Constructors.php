@@ -4,6 +4,7 @@ namespace HEAT\Managers;
 use BgaVisibleSystemException;
 use HEAT\Core\Stats;
 use HEAT\Core\Globals;
+use HEAT\Core\Game;
 use HEAT\Core\Notifications;
 use HEAT\Helpers\UserException;
 use HEAT\Helpers\Collection;
@@ -102,8 +103,18 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
    */
   public function get($cId = null)
   {
-    $cId = is_null($cId) ? $cId : self::getActiveId();
+    $cId = is_null($cId) ? self::getActiveId() : $cId;
     return parent::get($cId);
+  }
+
+  public function getOfPlayer($pId)
+  {
+    $pId = is_int($pId) ? $pId : $pId->getId();
+    return self::getAll()
+      ->filter(function ($constructor) use ($pId) {
+        return $constructor->getPId() == $pId;
+      })
+      ->first();
   }
 
   /**

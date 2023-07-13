@@ -35,6 +35,7 @@ trait RaceTrait
       $constructor->setCarCell($cells[$i]);
       $constructor->setTurn(-1);
       $constructor->setGear(1);
+      $constructor->setSpeed(null);
     }
 
     $this->gamestate->nextState('startRound');
@@ -53,6 +54,11 @@ trait RaceTrait
     Globals::setPlanification([]);
     $this->gamestate->setAllPlayersMultiactive();
     $this->gamestate->nextState('planification');
+  }
+
+  function stEndRound()
+  {
+    die('todo');
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -130,20 +136,108 @@ trait RaceTrait
 
   public function stEndOfPlanification()
   {
-    $planification = Globals::getInitialSelection();
-    die('test');
-    // foreach ($players as $pId => $player) {
-    //   $cardIds = $planification[$pId];
-    //   $cards = Cards::get($cardIds);
-    //   Cards::discard($cardIds);
-    //   Notifications::discardCards(
-    //     $player,
-    //     $cards,
-    //     null,
-    //     clienttranslate('${player_name} discards 4 cards (initial selection)')
-    //   );
+    $planification = Globals::getPlanification();
+
+    // Keep that hidden
+    // foreach($planification as $pId => $cardIds){
+    //   $constructor = Constructors::getOfPlayer($pId);
+    //   $constructor->setGear(count($cardIds));
+    //   Notifications::setGear()
     // }
 
-    $this->gamestate->nextState('done');
+    $this->initCustomTurnOrder('reveal', null, 'stReveal', 'stEndOfRound');
+  }
+
+  /////////////////////////////////////
+  //  ____                      _
+  // |  _ \ _____   _____  __ _| |
+  // | |_) / _ \ \ / / _ \/ _` | |
+  // |  _ <  __/\ V /  __/ (_| | |
+  // |_| \_\___| \_/ \___|\__,_|_|
+  /////////////////////////////////////
+  public function stReveal()
+  {
+    $constructor = Constructors::getActive();
+    $planification = Globals::getPlanification();
+    $cardIds = $planification[$constructor->getPId()];
+
+    // Setup gear and reveal cards
+    $newGear = count($cardIds);
+    $heat = null;
+    if (abs($newGear - $constructor->getGear()) > 1) {
+      die('TODO : pay a heat for change of two gears');
+    }
+    $constructor->setGear($newGear);
+    Cards::move($cardIds, ['inplay', $constructor->getId()]);
+    $cards = Cards::getMany($cardIds);
+    Notifications::reveal($constructor, $newGear, $cards, $heat);
+
+    // TODO : handle stress
+
+    $this->gamestate->jumpToState(ST_CHOOSE_SPEED);
+  }
+
+  ///////////////////////////////////
+  //  ____                      _
+  // / ___| _ __   ___  ___  __| |
+  // \___ \| '_ \ / _ \/ _ \/ _` |
+  //  ___) | |_) |  __/  __/ (_| |
+  // |____/| .__/ \___|\___|\__,_|
+  //       |_|
+  ///////////////////////////////////
+
+  public function argsChooseSpeed()
+  {
+    $constructor = Constructors::getActive();
+
+    // Compute speed
+    $speed = 0;
+    foreach ($constructor->getPlayedCards() as $card) {
+      $speed += $card['speed'];
+    }
+    $possibleSpeeds = [$speed];
+
+    // Compute ending cells
+    $speeds = [];
+    foreach ($possibleSpeeds as $speed) {
+      list($newCell, ,) = $this->getCircuit()->getReachedCell($constructor, $speed);
+      $speeds[$speed] = $newCell;
+    }
+
+    return [
+      'speeds' => $speeds,
+    ];
+  }
+
+  public function stChooseSpeed()
+  {
+    // TODO : enable
+    // $speeds = $this->argsChooseSpeed();
+    // if(count($speeds) == 1){
+    //   $this->actChooseSpeed($speeds[0], true);
+    // }
+  }
+
+  public function actChooseSpeed($speed, $auto = false)
+  {
+    if (!$auto) {
+      self::checkAction('actChooseSpeed');
+    }
+    $args = $this->argsChooseSpeed();
+    if (!array_key_exists($speed, $args['speeds'])) {
+      throw new \BgaVisibleSystemException('Invalid speed. Should not happen');
+    }
+
+    // Set the speed and move the car
+    $constructor = Constructors::getActive();
+    $constructor->setSpeed($speed);
+
+    // Compute the new cell
+    list($newCell, $nSpacesForward, $extraTurns) = $this->getCircuit()->getReachedCell($constructor, $speed);
+    $constructor->setCarCell($newCell);
+    $constructor->incTurn($extraTurns);
+    Notifications::moveCar($constructor, $speed, $nSpacesForward, $extraTurns);
+
+    $this->nextPlayerCustomOrder('reveal');
   }
 }

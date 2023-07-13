@@ -24,6 +24,12 @@ $machinestates = [
     'transitions' => ['' => ST_SETUP_BRANCH],
   ],
 
+  ST_GENERIC_NEXT_PLAYER => [
+    'name' => 'genericNextPlayer',
+    'description' => '',
+    'type' => 'game',
+  ],
+
   ///////////////////////////////////
   //    ____       _
   //   / ___|  ___| |_ _   _ _ __
@@ -73,21 +79,32 @@ $machinestates = [
     'type' => 'multipleactiveplayer',
     'args' => 'argsPlanification',
     'possibleactions' => ['actPlan', 'actCancelPlan'],
-    'transitions' => [],
   ],
 
-  // ST_RESOLVE_CHOICE => [
-  //   'name' => 'resolveChoice',
-  //   'description' => clienttranslate('${actplayer} must choose which effect to resolve'),
-  //   'descriptionmyturn' => clienttranslate('${you} must choose which effect to resolve'),
-  //   'descriptionxor' => clienttranslate('${actplayer} must choose exactly one effect'),
-  //   'descriptionmyturnxor' => clienttranslate('${you} must choose exactly one effect'),
-  //   'type' => 'activeplayer',
-  //   'args' => 'argsResolveChoice',
-  //   'action' => 'stResolveChoice',
-  //   'possibleactions' => ['actChooseAction', 'actRestart'],
-  //   'transitions' => [],
+  // ST_REVEAL => [
+  //   'name' => 'reveal',
+  //   'description' => '',
+  //   'type' => 'game',
+  //   'action' => 'stReveal',
   // ],
+
+  // ST_END_ROUND => [
+  //   'name' => 'endRound',
+  //   'description' => '',
+  //   'type' => 'game',
+  //   'action' => 'stEndRound',
+  //   'updateGameProgression' => true,
+  // ],
+
+  ST_CHOOSE_SPEED => [
+    'name' => 'chooseSpeed',
+    'description' => clienttranslate('${actplayer} must choose their speed'),
+    'descriptionmyturn' => clienttranslate('${you} must choose your speed'),
+    'type' => 'activeplayer',
+    'args' => 'argsChooseSpeed',
+    'action' => 'stChooseSpeed',
+    'possibleactions' => ['actChooseSpeed'],
+  ],
 
   //////////////////////////////////////////////////////////////////
   //  _____           _    ___   __    ____
