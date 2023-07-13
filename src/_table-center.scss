@@ -13,3 +13,16 @@
     background-size: contain;
   }
 }
+
+.car {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 61.08px;
+  height: 34px;
+  background: url('img/cars.png');
+  background-position-y: calc(var(--constructor-id) * 20%);
+  background-size: 100% 600%;
+  transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r)) translateX(-30.5px) translateY(-17px);
+  transform-origin: top left;
+}

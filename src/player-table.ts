@@ -25,7 +25,7 @@ class PlayerTable {
             </div>`;
         }
         html += `
-            <div id="player-table-${this.playerId}-board" class="player-board" data-color="${player.color}">                
+            <div id="player-table-${this.playerId}-board" class="player-board" data-color="${player.color}">
                 <div id="player-table-${this.playerId}-gear" class="gear" data-gear="${this.currentGear}"></div>
             </div>
         </div>
@@ -43,18 +43,20 @@ class PlayerTable {
         }
     }
 
-    public setHandSelectable(selectionMode: CardSelectionMode, selectableCards: Card[] | null = null, reinitSelection: boolean = false) {
+    public setHandSelectable(selectionMode: CardSelectionMode, selectedCardsIds: string[] | null = null) {
+        const cards = this.hand.getCards();
         this.hand.setSelectionMode(selectionMode);
-        if (selectableCards) {
-            this.hand.setSelectableCards(selectableCards);
-        }
-        if (reinitSelection || selectionMode == 'none') {
-            this.hand.unselectAll();
-        }
+        selectedCardsIds?.forEach(id => this.hand.getCardElement(cards.find(card => card.id == id))?.classList.add(this.hand.getSelectedCardClass())); // TODO make all numbers?
+        console.log(selectedCardsIds?.map(id => cards.find(card => card.id == id)));
     }
     
     public getCurrentGear(): number {
         return this.currentGear;
+    }
+    
+    public setCurrentGear(gear: number) {
+        this.currentGear = gear;
+        document.getElementById(`player-table-${this.playerId}-gear`).dataset.gear = `${gear}`;
     }
     
     public refreshHand(hand: Card[]): Promise<any> {

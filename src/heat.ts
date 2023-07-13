@@ -12,6 +12,8 @@ const ACTION_TIMER_DURATION = 5;
 const LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
+const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
+
 class Heat implements HeatGame {
     public animationManager: AnimationManager;
     public cardsManager: CardsManager;
@@ -233,9 +235,7 @@ class Heat implements HeatGame {
     }
 
     private onEnteringPlanification(args: EnteringPlanificationArgs) {
-        if ((this as any).isCurrentPlayerActive()) {
-            this.getCurrentPlayerTable().setHandSelectable('multiple');
-        }
+        this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', args._private.selection);
     }
 
     public onLeavingState(stateName: string) {
@@ -283,13 +283,29 @@ class Heat implements HeatGame {
     //                        action status bar (ie: the HTML links in the status bar).
     //
     public onUpdateActionButtons(stateName: string, args: any) {
-        
+        switch (stateName) {
+            case 'planification':
+                this.onEnteringPlanification(args);
+                break;
+        }
+
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'planification':
                     (this as any).addActionButton(`actPlanification_button`, '', () => this.actPlanification());
                     this.onHandCardSelectionChange([]);
-                    this.onEnteringPlanification(args);
+                    break;
+                case 'chooseSpeed':
+                    const chooseSpeedArgs = args as EnteringChooseSpeedArgs;
+                    Object.entries(chooseSpeedArgs.speeds).forEach(entry => 
+                        (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, `${entry[0]} : ${entry[1]}` /* TODO*/, () => this.actChooseSpeed(Number(entry[0])))
+                    );
+                    break;
+            }
+        } else {
+            switch (stateName) {
+                case 'planification':
+                    (this as any).addActionButton(`actCancelSelection_button`, _('Cancel'), () => this.actCancelSelection(), null, null, 'gray');
                     break;
             }
         }
@@ -589,6 +605,16 @@ class Heat implements HeatGame {
     public actCancelSelection() {
         this.takeAction('actCancelSelection');
     }
+    
+    private actChooseSpeed(speed: number) {
+        if(!(this as any).checkAction('actChooseSpeed')) {
+            return;
+        }
+
+        this.takeAction('actChooseSpeed', {
+            speed
+        });
+    }
   	
     public actConfirmTurn() {
         if(!(this as any).checkAction('actConfirmTurn')) {
@@ -612,14 +638,6 @@ class Heat implements HeatGame {
         }
 
         this.takeAction('actRestart');
-    }
-
-    private takeAtomicAction(action: string, args: any = {}, warning = false) {
-        if (!(this as any).checkAction(action)) return false;
-  
-        //(this as any).askConfirmation(warning, () =>
-          this.takeAction('actTakeAtomicAction', { actionName: action, actionArgs: JSON.stringify(args) }/*, false*/)
-        //);
     }
 
     public takeAction(action: string, data?: any) {
@@ -648,18 +666,9 @@ class Heat implements HeatGame {
         });
 
         const notifs = [
-            ['pDrawCards', undefined],
-            ['discardCards', ANIMATION_MS],
-            ['pDiscardCards', undefined],
-            ['createCard', undefined],
-            ['fillPool', undefined],
-            ['discardLostKnowledge', 1],
-            ['learnTech', undefined],
-            ['clearTurn', 1],
-            ['refreshUI', 1],
-            ['refreshHand', 1],
-            ['declineCard', undefined],
-            ['declineSlideLeft', undefined],
+            ['updatePlanification', ANIMATION_MS],
+            ['reveal', ANIMATION_MS],
+            ['moveCar', ANIMATION_MS],
         ];
     
         notifs.forEach((notif) => {
@@ -698,76 +707,22 @@ class Heat implements HeatGame {
             notif.args.player_id == this.getPlayerId()
         );
     }
-
-    notif_discardCards() {}
-
-    notif_pDrawCards(args: NotifPDrawCardsArgs) {
-        return this.getPlayerTable(args.player_id).hand.addCards(this.cardsManager.getFullCards(args.cards));
-    }
-
-    notif_pDiscardCards(args: NotifPDiscardCardsArgs) {
-        this.getPlayerTable(args.player_id).hand.removeCards(args.cards);
-        return Promise.resolve(true);
-    }
-
-    notif_createCard(args: NotifCreateCardsArgs) {
-        if (args.card.id[0] == 'T') {
-            const tile = this.technologyTilesManager.getFullCard(args.card as TechnologyTile);
-            return this.getPlayerTable(args.player_id).addTechnologyTile(tile);
-        } else {
-            const card = this.cardsManager.getFullCard(args.card as Card);
-            return this.getPlayerTable(args.player_id).createCard(card);
-        }
-    }
-
-    notif_fillPool(args: NotifFillPoolArgs) {
-        const tiles = Object.values(args.cards);
-        const promises = [1, 2, 3].map(number => {
-            const numberTilesId = tiles.filter(tile => tile.location == `board_${number}`).map(tile => tile.id);
-            const numberTiles = this.technologyTilesManager.getFullCardsByIds(numberTilesId);
-            return this.tableCenter.technologyTilesStocks[number].addCards(numberTiles);
-        });
-        return Promise.all(promises);
-    }
-
-    notif_discardLostKnowledge(args: NotifDiscardLostKnowledgeArgs) {
-        //  TODO
-    }
-
-    notif_learnTech(args: NotifLearnTechArgs) {
-        return this.getPlayerTable(args.player_id).addTechnologyTile(args.card);
-    }
     
-    notif_clearTurn(args: NotifClearTurnArgs) {
-      this.cancelLogs(args.notifIds);
-    }
-    
-    notif_refreshUI(args: NotifRefreshUIArgs) {
-        //  TODO refresh cards ?
-        //  TODO refresh players
-        this.tableCenter.refreshTechnologyTiles(args.datas.techs);
-    }
-    
-    notif_refreshHand(args: NotifRefreshHandArgs) {
-        return this.getPlayerTable(args.player_id).refreshHand(args.hand);
+    notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
+        // TODO
     }  
 
-    notif_declineCard(args: NotifDeclineCardArgs) {
-        return this.getPlayerTable(args.player_id).declineCard(args.card);
+    notif_reveal(args: NotifRevealArgs) {
+        const { constructor_id, gear } = args;
+        this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId).setCurrentGear(gear);
+        // TODO change gear
+        // TODO show played cards
     }  
 
-    notif_declineSlideLeft(args: NotifDeclineCardArgs) {
-        return this.getPlayerTable(args.player_id).declineSlideLeft();
+    notif_moveCar(args: NotifMoveCarArgs) {
+        const { constructor_id, cell } = args;
+        this.tableCenter.moveCar(constructor_id, cell);
     }
-
-    /*
-pour REMOVE_KNOWLEDGE, il faudra gérer plusieurs comportements en fonction du champs 'type'
-je t'envoie une liste d'ids de carte, un entier n, et type qui est soit OR/XOR/SEQ
-SEQ ça veut dire qu'il faut enlever $n knowledge de chaque carte => c'est automatique donc rien à faire pour toi
-XOR ça veut dire qu'il faut enlever $n knowledge d'exactement une carte parmis celles des args
-OR c'est le cas "normal" où tu répartis les $n comme tu veux parmis les cartes des args
-et pour actRemoveKnowleldge j'attends un tableau associatif : ['cardId' => n1, 'cardId2' => n2, ...]
-    */
     
     /*
     * [Undocumented] Called by BGA framework on any notification message
@@ -860,24 +815,8 @@ et pour actRemoveKnowleldge j'attends un tableau associatif : ['cardId' => n1, '
         console.warn('TODO');
     }
 
-    public getGain(type: number): string {
-        switch (type) {
-            case 1: return _("Victory Point");
-            case 2: return _("Bracelet");
-            case 3: return _("Recruit");
-            case 4: return _("Reputation");
-            case 5: return _("Card");
-        }
-    }
-
-    public getTooltipActivation(activation: string): string {
-        switch (activation) {
-            case 'anytime': return _("Ongoing (with conditions)");
-            case 'decline': return _("Decline Phase");
-            case 'immediate': return _("Immediate");
-            case 'timeline': return _("Timeline Phase");
-            case 'endgame': return _("Final Scoring");
-        }
+    private coloredConstructorName(arg: string): string {
+        return `<span style="font-weight: bold;" color="#${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == arg).id]}">${_(arg)}</span>`;
     }
 
     /* This enable to inject translatable styled things to logs or action bar */
@@ -890,6 +829,11 @@ et pour actRemoveKnowleldge j'attends un tableau associatif : ['cardId' => n1, '
                         args[property] = `<strong>${_(args[property])}</strong>`;
                     }*/
                 }
+                
+                let constructorKeys = Object.keys(args).filter((key) => key.substring(0, 16) == 'constructor_name');
+                constructorKeys.filter(key => args[key][0] != '<').forEach((key) => {
+                    args[key] = this.coloredConstructorName(args[key]);
+                });
 
                 log = formatTextIcons(_(log));
             }

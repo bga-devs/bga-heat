@@ -101,7 +101,7 @@ class TechnologyTilesManager extends CardManager<TechnologyTile> {
         <br>
         <strong>${_("Level:")}</strong> ${card.level + 1}
         <br>
-        <strong>${_("Activation:")}</strong> ${this.game.getTooltipActivation(card.activation)}
+        <strong>${_("Activation:")}</strong> 
         `;
         if (card.requirement) {
             message += `

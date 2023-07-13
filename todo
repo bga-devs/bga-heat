@@ -6,21 +6,10 @@ Backend :
  - handle number of heat/stress cards based on circuit
 
 Frontend :
-  - change format_string_recursive to handle constructor_name instead of player_name :
-      code from barrage :
-      let company_keys = Object.keys(args).filter((key) => key.substr(0, 12) == 'company_name');
-      company_keys.forEach((key) => {
-        args[key] = this.coloredCompanyName(args[key]);
-      });
-
   - in player's panels :
     - display current speed of player (hide if -1)
     - display current turn
     - display current round order ("no" field)
-
-  - display cars
-
-  - planification: highlight selected cards + add cancel button
 
   - display "inplay" cards somewhere
 

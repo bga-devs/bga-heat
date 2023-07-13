@@ -45,7 +45,6 @@ interface HeatGame extends Game {
 
     getPlayerId(): number;
     getPlayer(playerId: number): HeatPlayer;
-    getTooltipActivation(activation: string): string;
     getGameStateName(): string;
     getCurrentPlayerTable(): PlayerTable | null;
 
@@ -63,109 +62,36 @@ interface HeatGame extends Game {
     onTimelineSlotClick(slotId: string): void;
 }
 
-interface EnteringInitialSelectionArgs {
+interface EnteringPlanificationArgs {    
     _private?: {
-        cards: string[];
+        cards: number[];
+        selection: string[];
     }
 }
 
-type PossibleCardLocations = {[slotId: string]: number};
-
-interface EnteringPlanificationArgs {
+interface EnteringChooseSpeedArgs {
+    speeds: { [speed: number]: number /*destination cell*/ };
 }
 
-interface EnteringArchiveArgs {
-    _private?: {
-        cardIds: string[];
-    }
-}
-
-interface EnteringLearnArgs {
-    techs: any[]; // TODO
-}
-
-interface EnteringChooseNewCardArgs {
-    centerCards: Card[];
-    freeColor: number;
-    recruits: number;
-    allFree: boolean;
-}
-
-interface EnteringPayDestinationArgs {
-    selectedDestination: TechnologyTile;
-    recruits: number;
-}
-
-interface EnteringTradeArgs {
-    bracelets: number;
-    gainsByBracelets: { [bracelets: number]: number };
-}
-
-// pDrawCards
-interface NotifPDrawCardsArgs {
-    player_id: number;
-    cards: Card[];
-}
-
-// pDiscardCards
-interface NotifPDiscardCardsArgs {
-    n: number;
-    player_id: number;
-    cards: Card[];
-}
-
-// createCard
-interface NotifCreateCardsArgs {
-    player_id: number;
-    card: Card | TechnologyTile;
-}
-
-// fillPool
-interface NotifFillPoolArgs {
-    cards: TechnologyTile[];
-}
-
-// discardLostKnowledge
-interface NotifDiscardLostKnowledgeArgs {
-    player_id: number;
-    n: number | string; // discarded lost knowledge
-    m: number | string; // remaining lost knowledge
-}
-
-// learnTech
-interface NotifLearnTechArgs {
-    player_id: number;
-    card: TechnologyTile;
-}
-
-// learnTech
-interface NotifLearnTechArgs {
-    player_id: number;
-    card: TechnologyTile;
-}
-
-// clearTurn
-interface NotifClearTurnArgs {
-    notifIds: string[];
-}
-
-// refreshUI
-interface NotifRefreshUIArgs {
-    datas: {
-        cards;
-        players: { [playerId: number]: HeatPlayer };
-        techs: TechnologyTile[];
+// updatePlanification
+interface NotifUpdatePlanificationArgs { // TODO
+    _private: {
+        // TODO
     };
 }
 
-// refreshHand
-interface NotifRefreshHandArgs {
-    player_id: number;
-    hand: Card[];
+// reveal
+interface NotifRevealArgs {
+    constructor_id: number;
+    gear: number; // new gear
+    cards: Card[];
+    heat?: any; // TODO
 }
 
-// declineCard
-interface NotifDeclineCardArgs {
-    player_id: number;
-    card: Card;
+// moveCar
+interface NotifMoveCarArgs {
+    constructor_id: number;
+    cell: number;
+    speed: any; // TODO number as string
+    nForward: number;
 }

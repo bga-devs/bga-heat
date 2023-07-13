@@ -1,49 +1,30 @@
 class TableCenter {
-    public technologyTilesDecks: Deck<TechnologyTile>[] = [];
-    public technologyTilesStocks: LineStock<TechnologyTile>[] = [];
-    //public technologyTilesStocks: SlotStock<TechnologyTile>[] = [];
-    public cardDeck: Deck<Card>;
         
     constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
         document.getElementById('circuit').style.backgroundImage = `url('${g_gamethemeurl}img/Circuits/${gamedatas.circuit}.jpg')`;
-        /*TODO [1, 2].forEach(level => {
-            this.technologyTilesDecks[level] = new Deck<TechnologyTile>(game.technologyTilesManager, document.getElementById(`technology-deck-${level}`), {
-                // TODO cardNumber: gamedatas.centerDestinationsDeckCount[level],
-                // TODO topCard: gamedatas.centerDestinationsDeckTop[level],
-                // TODO counter: {},
-            });
-        });
 
-        [1, 2, 3].forEach(number => {
-            this.technologyTilesStocks[number] = new LineStock<TechnologyTile>(game.technologyTilesManager, document.getElementById(`table-technology-tiles-${number}`), {
-            //this.technologyTilesStocks[number] = new SlotStock<TechnologyTile>(game.technologyTilesManager, document.getElementById(`table-technology-tiles-${number}`), {
-                //slotsIds: [1, 2, 3],
-                center: false,
-            });
-            this.technologyTilesStocks[number].onCardClick = tile => this.game.onTableTechnologyTileClick(tile);
-        });
-        this.refreshTechnologyTiles(gamedatas.techs);
-
-        const cardDeckDiv = document.getElementById(`builder-deck`);
-        this.cardDeck = new Deck<Card>(game.builderCardsManager, cardDeckDiv, {
-            // TODO cardNumber: gamedatas.cardDeckCount,
-            // TODO topCard: gamedatas.cardDeckTop,
-            // TODO counter: { counterId: 'deck-counter', },
-        });*/
-    }
-    
-    public setTechnologyTilesSelectable(selectable: boolean, selectableCards: TechnologyTile[] | null = null) {
-        [1, 2, 3].forEach(number => {
-            this.technologyTilesStocks[number].setSelectionMode(selectable ? 'single' : 'none');
-            this.technologyTilesStocks[number].setSelectableCards(selectableCards);
-        });
-    }
-    
-    public refreshTechnologyTiles(techs: TechnologyTile[]) {
-        [1, 2, 3].forEach(number => {
-            const tiles = this.game.technologyTilesManager.getFullCards(techs.filter(tile => tile.location == `board_${number}`));
-            this.technologyTilesStocks[number].addCards(tiles);
-        });
+        Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
     }
 
+    private createCar(constructor: Constructor) {
+        const car = document.createElement('div');
+        car.id = `car-${constructor.id}`,
+        car.classList.add('car');
+        let cell = window['USA_DATAS'][constructor.carCell];
+        let scale = 1650 / 1280;
+        car.style.setProperty('--x', `${scale * cell.x}px`);
+        car.style.setProperty('--y', `${scale * cell.y}px`);
+        car.style.setProperty('--r', `${cell.a}deg`);
+        car.style.setProperty('--constructor-id', `${constructor.id}`);
+        document.getElementById('circuit').insertAdjacentElement('beforeend', car);
+    }
+
+    public moveCar(constructorId: number, carCell: number) {
+        const car = document.getElementById(`car-${constructorId}`);
+        let cell = window['USA_DATAS'][carCell];
+        let scale = 1650 / 1280;
+        car.style.setProperty('--x', `${scale * cell.x}px`);
+        car.style.setProperty('--y', `${scale * cell.y}px`);
+        car.style.setProperty('--r', `${cell.a}deg`);
+    }
 }
