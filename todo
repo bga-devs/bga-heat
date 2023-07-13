@@ -4,6 +4,9 @@ Other :
 
 Backend :
  - handle number of heat/stress cards based on circuit
+ - cancel selection
+ - handle basic end of turn (with discard step?)
+ - return counters of player's deck + discard top card
 
 Frontend :
   - in player's panels :
