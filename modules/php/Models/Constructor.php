@@ -58,6 +58,13 @@ class Constructor extends \HEAT\Helpers\DB_Model
       ->getPosition($this);
   }
 
+  public function getLine()
+  {
+    return Game::get()
+      ->getCircuit()
+      ->getLine($this);
+  }
+
   public function getHand()
   {
     return Cards::getHand($this->id);

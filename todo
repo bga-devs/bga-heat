@@ -9,15 +9,25 @@ Backend :
  - return counters of player's deck + discard top card
 
 Frontend :
+  - color in log does not always match the good color
+
+  - black gear is hard to see for black player
+
   - in player's panels :
     - display current speed of player (hide if -1)
     - display current turn
     - display current round order ("no" field)
 
   - display "inplay" cards somewhere
+  - display engine cards => only heat so maybe the top one + a counter on top of it showing how many heat available ?
+    => probably a counter in the player panel would be useful infor as well
+  - display discard
+  - display number of cards left in deck ??
 
   - speed state: buttons for selecting speed while highlighting corresponding cells ?
 
   - react state : list all the symbols + add 'pass' button if canPass = true
 
   - discard state : make cards selectable (selectable cards sent in args) + call action + notif + notif for public discard (clearPlayedCards)
+
+  - updateTurnOder notif

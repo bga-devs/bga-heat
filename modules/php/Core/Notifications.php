@@ -37,7 +37,7 @@ class Notifications
 
   public static function updatePlanification($player, $args)
   {
-    self::notify($player, 'updatePlanification', '', [
+    self::notify($player->getId(), 'updatePlanification', '', [
       'args' => ['_private' => $args['_private'][$player->getId()]],
     ]);
   }
@@ -122,6 +122,27 @@ class Notifications
     ]);
   }
 
+  public function draw($constructor, $cards)
+  {
+    self::notifyAll('draw', clienttranslate('${constructor_name} draws ${n} card(s)'), [
+      'constructor' => $constructor,
+      'n' => count($cards),
+    ]);
+
+    self::notify($constructor, 'pDraw', clienttranslate('You draw ${n} card(s)'), [
+      'constructor' => $constructor,
+      'n' => $cards->count(),
+      'cards' => $cards->toArray(),
+    ]);
+  }
+
+  public function updateTurnOrder($constructors)
+  {
+    self::notifyAll('updateTurnOrder', clienttranslate('New order is: ${constructors_names}'), [
+      'constructors' => $constructors,
+    ]);
+  }
+
   ///////////////////////////////////////////////////////////////
   //  _   _           _       _            _
   // | | | |_ __   __| | __ _| |_ ___     / \   _ __ __ _ ___
@@ -145,6 +166,21 @@ class Notifications
       $data['constructor_name2'] = $data['constructor2']->getName();
       $data['constructor_id2'] = $data['constructor2']->getId();
       unset($data['constructor2']);
+    }
+
+    if (isset($data['constructors'])) {
+      $args = [];
+      $logs = [];
+      foreach ($data['constructors'] as $i => $constructor) {
+        $logs[] = '${constructor_name' . $i . '}';
+        $args['constructor_name' . $i] = $constructor->getName();
+      }
+      $data['constructors_names'] = [
+        'log' => join(', ', $logs),
+        'args' => $args,
+      ];
+      $data['i18n'][] = 'constructors_names';
+      unset($data['constructors']);
     }
   }
 }

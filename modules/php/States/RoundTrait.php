@@ -19,7 +19,31 @@ trait RoundTrait
 
   function stEndRound()
   {
-    die('todo');
+    // Compute new order
+    $positions = [];
+    $length = $this->getCircuit()->getLength();
+    foreach (Constructors::getAll() as $constructor) {
+      $position = $constructor->getPosition();
+      $line = $constructor->getLine();
+      $raceLine = $this->getCircuit()->getRaceLine($position);
+      $uid = ($length * $constructor->getTurn() + $position) * 2 + ($line == $raceLine ? 1 : 0);
+      $positions[$uid] = $constructor->getId();
+    }
+
+    ksort($positions);
+    $order = array_values($positions);
+    Globals::setTurnOrder($order);
+    $constructors = [];
+    foreach ($order as $i => $cId) {
+      $constructor = Constructors::get($cId);
+      $constructor->setNo($i);
+      $constructors[] = $constructor;
+    }
+    Notifications::updateTurnOrder($constructors);
+
+    // TODO : check crossing end
+
+    $this->gamestate->jumpToState(ST_START_ROUND);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -106,7 +130,7 @@ trait RoundTrait
     //   Notifications::setGear()
     // }
 
-    $this->initCustomTurnOrder('reveal', null, 'stReveal', 'stEndOfRound');
+    $this->initCustomTurnOrder('reveal', null, 'stReveal', 'stEndRound');
   }
 
   ////////////////////////////////////////////
@@ -396,7 +420,11 @@ trait RoundTrait
     Notifications::clearPlayedCards($constructor, $cardIds);
 
     // Replenish
-    die('test');
+    $nCards = $constructor->getHand()->count();
+    $nToDraw = 7 - $nCards;
+    $cards = Cards::draw($constructor->getId(), $nToDraw);
+    Notifications::draw($constructor, $cards);
+
     $this->nextPlayerCustomOrder('reveal');
   }
 }

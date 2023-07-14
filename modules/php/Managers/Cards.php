@@ -70,19 +70,19 @@ class Cards extends \HEAT\Helpers\Pieces
       $cards = [];
 
       // Speed cards
-      $cards[] = ['type' => 101, 'n' => 3, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 102, 'n' => 3, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 103, 'n' => 3, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 104, 'n' => 3, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 101, 'nbr' => 3, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 102, 'nbr' => 3, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 103, 'nbr' => 3, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 104, 'nbr' => 3, 'location' => "deck-$cId"];
 
       // Starting upgrades : 0, 5, pesonalized Heat
-      $cards[] = ['type' => 100, 'n' => 1, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 105, 'n' => 1, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 106, 'n' => 1, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 100, 'nbr' => 1, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 105, 'nbr' => 1, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 106, 'nbr' => 1, 'location' => "deck-$cId"];
 
       // Stress and heats
-      $cards[] = ['type' => 110, 'n' => 3, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 111, 'n' => 6, 'location' => "engine-$cId"];
+      $cards[] = ['type' => 110, 'nbr' => 3, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 111, 'nbr' => 6, 'location' => "engine-$cId"];
 
       // Create the cards
       self::create($cards, null);

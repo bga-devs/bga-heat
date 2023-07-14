@@ -68,7 +68,13 @@ class Circuit
   public function getPosition($constructor)
   {
     $currentCell = $constructor->getCarCell();
-    $currentPosition = $this->cells[$currentCell]['pos'];
+    return $this->cells[$currentCell]['pos'];
+  }
+
+  public function getLine($constructor)
+  {
+    $currentCell = $constructor->getCarCell();
+    return $this->cells[$currentCell]['lane'];
   }
 
   public function getReachedCell($constructor, $speed)
