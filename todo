@@ -9,6 +9,8 @@ Backend :
  - return counters of player's deck + discard top card
  - return number of turns
  - return "inplay" cards
+ - Error when discarding cards : Notice: Undefined variable: constructor in /var/tournoi/release/games/heat/999999-9999/modules/php/States/RoundTrait.php on line 398
+ - add constructor ids or no in notif_updateTurnOrder {constructors_names: '<span style="font-weight: bold;" color="#12151a">t…font-weight: bold;" color="#376bbe">thoun0</span>', i18n: Array(1)}
 
 Frontend :
   - color in log does not always match the good color
@@ -22,8 +24,6 @@ Frontend :
 
   - speed state: buttons for selecting speed while highlighting corresponding cells ?
 
-  - react state : list all the symbols + add 'pass' button if canPass = true
-
-  - discard state : make cards selectable (selectable cards sent in args) + call action + notif + notif for public discard (clearPlayedCards)
+  - discard state : notif + notif for public discard (clearPlayedCards)
 
   - updateTurnOrder notif

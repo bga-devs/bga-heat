@@ -77,6 +77,12 @@ interface EnteringReactArgs {
     symbols: { [symbol: string]: number };
 }
 
+interface EnteringDiscardArgs {    
+    _private?: {
+        cardIds: number[];
+    }
+}
+
 // updatePlanification
 interface NotifUpdatePlanificationArgs { // TODO
     _private: {

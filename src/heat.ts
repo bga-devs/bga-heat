@@ -196,8 +196,8 @@ class Heat implements HeatGame {
         }*/
 
         switch (stateName) {
-            case 'planificationDISABLEDMULTI':
-                this.onEnteringPlanification(args.args);
+            case 'discard':
+                this.onEnteringDiscard(args.args);
                 break;
         }
     }
@@ -238,7 +238,11 @@ class Heat implements HeatGame {
     }
 
     private onEnteringPlanification(args: EnteringPlanificationArgs) {
-        this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', args._private.selection);
+        this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', null, args._private.selection);
+    }
+
+    private onEnteringDiscard(args: EnteringDiscardArgs) {
+        this.getCurrentPlayerTable().setHandSelectable('multiple', args._private.cardIds);
     }
 
     public onLeavingState(stateName: string) {
@@ -249,37 +253,15 @@ class Heat implements HeatGame {
       document.getElementById('restartAction').innerHTML = '';
 
         switch (stateName) {
-            case 'initialSelection':
-                this.onLeavingInitialSelection();
-                break;
-            case 'create':
-                this.onLeavingCreate();
-                break;
-            case 'archive':
-                this.onLeavingArchive();
-                break;
-            case 'learn':
-                this.onLeavingLearn();
+            case 'planification':
+            case 'discard':
+                this.onLeavingHandSelection();
                 break;
         }
     }
 
-    private onLeavingInitialSelection() {
-        this.getCurrentPlayerTable()?.endInitialSelection();
-    }
-
-    private onLeavingCreate() {
-        this.createEngine.leaveState();
-        this.createEngine = null;
-    }
-
-    private onLeavingArchive() {
-        this.archiveEngine.leaveState();
-        this.archiveEngine = null;
-    }
-
-    private onLeavingLearn() {
-        this.tableCenter.setTechnologyTilesSelectable(false);
+    private onLeavingHandSelection() {
+        this.getCurrentPlayerTable()?.setHandSelectable('none');
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -310,6 +292,10 @@ class Heat implements HeatGame {
                     Object.entries(reactArgs.symbols).forEach(entry => 
                         (this as any).addActionButton(`actReact_button`, `${entry[0]} ${entry[1]}`, () => this.actReact(entry[0])) // TODO
                     );
+                    break;
+                case 'discard':
+                    (this as any).addActionButton(`actDiscard_button`, '', () => this.actDiscard());
+                    this.onHandCardSelectionChange([]);
                     break;
             }
         } else {
@@ -599,6 +585,12 @@ class Heat implements HeatGame {
             const button = document.getElementById('actPlanification_button');
             button.innerHTML = label;
             button.classList.toggle('disabled', !allowed);
+        } else
+        if (this.gamedatas.gamestate.name == 'discard') {
+            const label = _('Discard ${number} selected cards').replace('${number}', `${selection.length}`);
+
+            const button = document.getElementById('actDiscard_button');
+            button.innerHTML = label;
         }
     }
 
@@ -662,7 +654,19 @@ class Heat implements HeatGame {
         });
     }
   	
-    public actConfirmPartialTurn() {
+    public actDiscard() {
+        if(!(this as any).checkAction('actDiscard')) {
+            return;
+        }
+
+        const selectedCards = this.getCurrentPlayerTable().hand.getSelection();
+
+        this.takeAction('actDiscard', {
+            cardIds: JSON.stringify(selectedCards.map(card => card.id)),
+        });
+    }
+  	
+    /*public actConfirmPartialTurn() {
         if(!(this as any).checkAction('actConfirmPartialTurn')) {
             return;
         }
@@ -676,7 +680,7 @@ class Heat implements HeatGame {
         }
 
         this.takeAction('actRestart');
-    }
+    }*/
 
     public takeAction(action: string, data?: any) {
         data = data || {};
@@ -707,6 +711,7 @@ class Heat implements HeatGame {
             ['updatePlanification', ANIMATION_MS],
             ['reveal', ANIMATION_MS],
             ['moveCar', ANIMATION_MS],
+            ['updateTurnOrder', 1],
         ];
     
         notifs.forEach((notif) => {
@@ -760,6 +765,11 @@ class Heat implements HeatGame {
     notif_moveCar(args: NotifMoveCarArgs) {
         const { constructor_id, cell } = args;
         this.tableCenter.moveCar(constructor_id, cell);
+    } 
+
+    notif_updateTurnOrder(args: NotifMoveCarArgs) {
+        //const { constructor_id, cell } = args;
+        //this.tableCenter.moveCar(constructor_id, cell);
     }
     
     /*

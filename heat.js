@@ -2251,12 +2251,13 @@ var PlayerTable = /** @class */ (function () {
             }
         });
     }
-    PlayerTable.prototype.setHandSelectable = function (selectionMode, selectedCardsIds) {
+    PlayerTable.prototype.setHandSelectable = function (selectionMode, selectableCardsIds, selectedCardsIds) {
         var _this = this;
+        if (selectableCardsIds === void 0) { selectableCardsIds = null; }
         if (selectedCardsIds === void 0) { selectedCardsIds = null; }
         var cards = this.hand.getCards();
-        this.hand.setSelectionMode(selectionMode);
-        selectedCardsIds === null || selectedCardsIds === void 0 ? void 0 : selectedCardsIds.forEach(function (id) { var _a; return (_a = _this.hand.getCardElement(cards.find(function (card) { return card.id == id; }))) === null || _a === void 0 ? void 0 : _a.classList.add(_this.hand.getSelectedCardClass()); }); // TODO make all numbers?
+        this.hand.setSelectionMode(selectionMode, selectableCardsIds ? cards.filter(function (card) { return selectableCardsIds.includes(Number(card.id)); }) : undefined);
+        selectedCardsIds === null || selectedCardsIds === void 0 ? void 0 : selectedCardsIds.forEach(function (id) { var _a; return (_a = _this.hand.getCardElement(cards.find(function (card) { return Number(card.id) == Number(id); }))) === null || _a === void 0 ? void 0 : _a.classList.add(_this.hand.getSelectedCardClass()); }); // TODO make all numbers?
     };
     PlayerTable.prototype.getCurrentGear = function () {
         return this.currentGear;
@@ -2418,8 +2419,8 @@ var Heat = /** @class */ (function () {
             });
         }*/
         switch (stateName) {
-            case 'planificationDISABLEDMULTI':
-                this.onEnteringPlanification(args.args);
+            case 'discard':
+                this.onEnteringDiscard(args.args);
                 break;
         }
     };
@@ -2460,7 +2461,10 @@ var Heat = /** @class */ (function () {
         this.updatePageTitle();
     };
     Heat.prototype.onEnteringPlanification = function (args) {
-        this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.selection);
+        this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', null, args._private.selection);
+    };
+    Heat.prototype.onEnteringDiscard = function (args) {
+        this.getCurrentPlayerTable().setHandSelectable('multiple', args._private.cardIds);
     };
     Heat.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
@@ -2468,34 +2472,15 @@ var Heat = /** @class */ (function () {
         document.getElementById('customActions').innerHTML = '';
         document.getElementById('restartAction').innerHTML = '';
         switch (stateName) {
-            case 'initialSelection':
-                this.onLeavingInitialSelection();
-                break;
-            case 'create':
-                this.onLeavingCreate();
-                break;
-            case 'archive':
-                this.onLeavingArchive();
-                break;
-            case 'learn':
-                this.onLeavingLearn();
+            case 'planification':
+            case 'discard':
+                this.onLeavingHandSelection();
                 break;
         }
     };
-    Heat.prototype.onLeavingInitialSelection = function () {
+    Heat.prototype.onLeavingHandSelection = function () {
         var _a;
-        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.endInitialSelection();
-    };
-    Heat.prototype.onLeavingCreate = function () {
-        this.createEngine.leaveState();
-        this.createEngine = null;
-    };
-    Heat.prototype.onLeavingArchive = function () {
-        this.archiveEngine.leaveState();
-        this.archiveEngine = null;
-    };
-    Heat.prototype.onLeavingLearn = function () {
-        this.tableCenter.setTechnologyTilesSelectable(false);
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setHandSelectable('none');
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -2526,6 +2511,10 @@ var Heat = /** @class */ (function () {
                         return _this.addActionButton("actReact_button", "".concat(entry[0], " ").concat(entry[1]), function () { return _this.actReact(entry[0]); });
                     } // TODO
                     );
+                    break;
+                case 'discard':
+                    this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(); });
+                    this.onHandCardSelectionChange([]);
                     break;
             }
         }
@@ -2720,6 +2709,11 @@ var Heat = /** @class */ (function () {
             button.innerHTML = label;
             button.classList.toggle('disabled', !allowed);
         }
+        else if (this.gamedatas.gamestate.name == 'discard') {
+            var label = _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length));
+            var button = document.getElementById('actDiscard_button');
+            button.innerHTML = label;
+        }
     };
     Heat.prototype.onTableCardClick = function (card) {
         /*if (this.gamedatas.gamestate.name == 'discardTableCard') {
@@ -2769,18 +2763,30 @@ var Heat = /** @class */ (function () {
             react: react
         });
     };
-    Heat.prototype.actConfirmPartialTurn = function () {
-        if (!this.checkAction('actConfirmPartialTurn')) {
+    Heat.prototype.actDiscard = function () {
+        if (!this.checkAction('actDiscard')) {
             return;
         }
+        var selectedCards = this.getCurrentPlayerTable().hand.getSelection();
+        this.takeAction('actDiscard', {
+            cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
+        });
+    };
+    /*public actConfirmPartialTurn() {
+        if(!(this as any).checkAction('actConfirmPartialTurn')) {
+            return;
+        }
+
         this.takeAction('actConfirmPartialTurn');
-    };
-    Heat.prototype.actRestart = function () {
-        if (!this.checkAction('actRestart')) {
+    }
+    
+    public actRestart() {
+        if(!(this as any).checkAction('actRestart')) {
             return;
         }
+
         this.takeAction('actRestart');
-    };
+    }*/
     Heat.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -2807,6 +2813,7 @@ var Heat = /** @class */ (function () {
             ['updatePlanification', ANIMATION_MS],
             ['reveal', ANIMATION_MS],
             ['moveCar', ANIMATION_MS],
+            ['updateTurnOrder', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
@@ -2850,6 +2857,10 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_moveCar = function (args) {
         var constructor_id = args.constructor_id, cell = args.cell;
         this.tableCenter.moveCar(constructor_id, cell);
+    };
+    Heat.prototype.notif_updateTurnOrder = function (args) {
+        //const { constructor_id, cell } = args;
+        //this.tableCenter.moveCar(constructor_id, cell);
     };
     /*
     * [Undocumented] Called by BGA framework on any notification message

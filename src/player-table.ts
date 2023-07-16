@@ -53,10 +53,10 @@ class PlayerTable {
         });
     }
 
-    public setHandSelectable(selectionMode: CardSelectionMode, selectedCardsIds: string[] | null = null) {
+    public setHandSelectable(selectionMode: CardSelectionMode, selectableCardsIds: number[] | null = null, selectedCardsIds: string[] | null = null) {
         const cards = this.hand.getCards();
-        this.hand.setSelectionMode(selectionMode);
-        selectedCardsIds?.forEach(id => this.hand.getCardElement(cards.find(card => card.id == id))?.classList.add(this.hand.getSelectedCardClass())); // TODO make all numbers?
+        this.hand.setSelectionMode(selectionMode, selectableCardsIds ? cards.filter(card => selectableCardsIds.includes(Number(card.id))) : undefined);
+        selectedCardsIds?.forEach(id => this.hand.getCardElement(cards.find(card => Number(card.id) == Number(id)))?.classList.add(this.hand.getSelectedCardClass())); // TODO make all numbers?
     }
     
     public getCurrentGear(): number {
