@@ -38,6 +38,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
       'handCount' => $this->getHand()->count(),
       'engine' => $this->getEngine(),
       'discard' => $this->getDiscard(),
+      'inplay' => $this->getPlayedCards(),
     ]);
   }
 

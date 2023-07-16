@@ -9,6 +9,28 @@ class Circuit
   protected $startingCells = [];
   protected $cells = [];
 
+  protected $nbrLaps = 0;
+  protected $stressCards = 0;
+  protected $heatCards = 0;
+  public function getNbrLaps()
+  {
+    $initial = $this->nbrLaps;
+    // TODO : weather + event
+    return $initial;
+  }
+  public function getStressCards()
+  {
+    $initial = $this->stressCards;
+    // TODO : weather + event
+    return $initial;
+  }
+  public function getHeatCards()
+  {
+    $initial = $this->heatCards;
+    // TODO : weather + event
+    return $initial;
+  }
+
   public function getStartingCells()
   {
     return $this->startingCells;

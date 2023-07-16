@@ -44,7 +44,7 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
-  public function actCancelPlan()
+  public function actCancelSelection()
   {
     self::setAjaxMode();
     $this->game->actCancelPlan();

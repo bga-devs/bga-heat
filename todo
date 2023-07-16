@@ -3,16 +3,9 @@ Other :
 
 
 Backend :
- - handle number of heat/stress cards based on circuit
- - cancel selection
- - handle basic end of turn (with discard step?)
- - return counters of player's deck + discard top card
- - return number of turns
- - return "inplay" cards
- - Error when discarding cards : Notice: Undefined variable: constructor in /var/tournoi/release/games/heat/999999-9999/modules/php/States/RoundTrait.php on line 398
- - add constructor ids or no in notif_updateTurnOrder {constructors_names: '<span style="font-weight: bold;" color="#12151a">t…font-weight: bold;" color="#376bbe">thoun0</span>', i18n: Array(1)}
 
 Frontend :
+  - take nbrLaps value in getAllDatas
   - color in log does not always match the good color
 
   - in player's panels :
@@ -25,5 +18,8 @@ Frontend :
   - speed state: buttons for selecting speed while highlighting corresponding cells ?
 
   - discard state : notif + notif for public discard (clearPlayedCards)
+  - discard state : change button title for "no additional discard" when 0 card selected ?
 
   - updateTurnOrder notif
+
+  - draw/discard : ignore public notif for player that draw/discard

@@ -389,7 +389,8 @@ trait RoundTrait
   public function actDiscard($cardIds)
   {
     self::checkAction('actDiscard');
-    if (count($cardIds) > 1) {
+    if (count($cardIds) > 0) {
+      $constructor = Constructors::getActive();
       $ids = $this->argsDiscard()['_private']['active']['cardIds'];
       if (!empty(array_diff($cardIds, $ids))) {
         throw new \BgaVisibleSystemException('Invalid cards to discard. Should not happen');
@@ -420,10 +421,7 @@ trait RoundTrait
     Notifications::clearPlayedCards($constructor, $cardIds);
 
     // Replenish
-    $nCards = $constructor->getHand()->count();
-    $nToDraw = 7 - $nCards;
-    $cards = Cards::draw($constructor->getId(), $nToDraw);
-    Notifications::draw($constructor, $cards);
+    Cards::fillHand($constructor);
 
     $this->nextPlayerCustomOrder('reveal');
   }

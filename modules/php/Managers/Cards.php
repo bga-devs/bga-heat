@@ -5,6 +5,7 @@ use BgaVisibleSystemException;
 use HEAT\Core\Stats;
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
+use HEAT\Core\Game;
 use HEAT\Helpers\UserException;
 use HEAT\Helpers\Collection;
 use HEAT\Managers\Constructors;
@@ -80,15 +81,41 @@ class Cards extends \HEAT\Helpers\Pieces
       $cards[] = ['type' => 105, 'nbr' => 1, 'location' => "deck-$cId"];
       $cards[] = ['type' => 106, 'nbr' => 1, 'location' => "deck-$cId"];
 
-      // Stress and heats
-      $cards[] = ['type' => 110, 'nbr' => 3, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 111, 'nbr' => 6, 'location' => "engine-$cId"];
-
       // Create the cards
       self::create($cards, null);
-      self::shuffle("deck-$cId");
-      self::draw($cId, 7);
     }
+  }
+
+  public static function setupRace()
+  {
+    $nStress = Game::get()
+      ->getCircuit()
+      ->getStressCards();
+    $nHeat = Game::get()
+      ->getCircuit()
+      ->getHeatCards();
+
+    $cards = [];
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      if ($constructor->isAI()) {
+        continue;
+      }
+
+      // Stress and heats
+      $cards[] = ['type' => 110, 'nbr' => $nStress, 'location' => "deck-$cId"];
+      $cards[] = ['type' => 111, 'nbr' => $nHeat, 'location' => "engine-$cId"];
+    }
+
+    self::create($cards, null);
+    //    Notifications::setupRace($cards, $nStress, $nHeat);
+  }
+
+  public static function fillHand($constructor)
+  {
+    $nCards = $constructor->getHand()->count();
+    $nToDraw = Game::get()->getHandSizeLimit() - $nCards;
+    $cards = Cards::draw($constructor->getId(), $nToDraw);
+    Notifications::draw($constructor, $cards);
   }
 
   ////////////////////////////////

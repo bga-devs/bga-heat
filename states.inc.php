@@ -43,7 +43,7 @@ $machinestates = [
     'description' => '',
     'type' => 'game',
     'action' => 'stSetupBranch',
-    'transitions' => ['done' => ST_START_RACE],
+    'transitions' => ['done' => ST_SETUP_RACE],
   ],
 
   //////////////////////////////
@@ -54,6 +54,15 @@ $machinestates = [
   // |_| \_\__,_|\___\___|
   //////////////////////////////
 
+  ST_SETUP_RACE => [
+    'name' => 'setupRace',
+    'description' => '',
+    'type' => 'game',
+    'action' => 'stSetupRace',
+    'updateGameProgression' => true,
+    'transitions' => ['start' => ST_START_RACE],
+  ],
+
   ST_START_RACE => [
     'name' => 'startRace',
     'description' => '',
@@ -62,6 +71,14 @@ $machinestates = [
     'updateGameProgression' => true,
     'transitions' => ['startRound' => ST_START_ROUND],
   ],
+
+  /////////////////////////////////////
+  //  ____                       _
+  // |  _ \ ___  _   _ _ __   __| |
+  // | |_) / _ \| | | | '_ \ / _` |
+  // |  _ < (_) | |_| | | | | (_| |
+  // |_| \_\___/ \__,_|_| |_|\__,_|
+  /////////////////////////////////////
 
   ST_START_ROUND => [
     'name' => 'startRound',

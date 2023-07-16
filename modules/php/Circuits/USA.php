@@ -3,6 +3,9 @@ namespace HEAT\Circuits;
 
 class USA extends \HEAT\Models\Circuit
 {
+  protected $stressCards = 3;
+  protected $heatCards = 6;
+  protected $nbrLaps = 2;
   protected $corners = [
     12 => 7,
     33 => 3,
