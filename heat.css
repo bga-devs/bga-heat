@@ -902,6 +902,17 @@ height: 241px; */
 .player-table .player-board[data-color=face0d] {
   background-image: url("img/mats/player-board-face0d.jpg");
 }
+.player-table .player-board .bga-cards_deck-counter {
+  --bga-cards-deck-counter-size: 40px;
+}
+.player-table .player-board .bga-cards_deck-counter.round {
+  font-size: 22px;
+}
+.player-table .player-board .engine {
+  position: absolute;
+  left: 407px;
+  top: 316px;
+}
 .player-table .player-board .gear {
   position: absolute;
   width: 80px;
@@ -935,6 +946,12 @@ height: 241px; */
 }
 .player-table .player-board .gear[data-gear="1"] {
   top: 657px;
+}
+.player-table .player-board[data-color="12151a"] .gear {
+  box-shadow: 2px 2px 8px 5px gray;
+}
+.player-table .player-board[data-color="12151a"] .gear::after {
+  box-shadow: 2px 2px 8px 5px gray;
 }
 .player-table .block-with-text {
   display: flex;

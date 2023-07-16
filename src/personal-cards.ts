@@ -17,8 +17,8 @@ class CardsManager extends CardManager<Card> {
             },
             setupFrontDiv: (card: Card, div: HTMLElement) => this.setupFrontDiv(card, div),
             isCardVisible: card => Boolean(card.type),
-            cardWidth: 163,
-            cardHeight: 228,
+            cardWidth: 225,
+            cardHeight: 362,
             animationManager: game.animationManager,
         });
     }
@@ -43,76 +43,19 @@ class CardsManager extends CardManager<Card> {
     }
 
     private getTooltip(card: Card): string {
-        /*const typeLetter = card.id.substring(0, 1);
+        switch (card.type) {
+            case '101': case '102': case '103': case '104':
+                return `${_('Speed card')}<br>
+                ${_('Speed:')} <strong>${Number(card.type) - 100}</strong>
+                `;
 
-        let message = `
-        <strong>${card.name}</strong>
-        <br>
-        <i>${card.country}</i>
-        <br>
-        <br>
-        <strong>${_("Type:")}</strong> ${this.getType(card.id)}
-        `;
-        if (card.startingSpace) {
-            message += `
-            <br>
-            <strong>${_("Starting space:")}</strong> ${card.startingSpace}
-            `;
+            case '100': case '105':
+                return `${_('Starting upgrade')}<br>
+                ${_('Speed:')} ${Number(card.type) - 100}
+                `;
+
+            case '110': return _('Stress card');
+            case '106': case '111': return _('Heat card');
         }
-        if (card.discard) {
-            message += `
-            <br>
-            <strong>${_("Discard cards:")}</strong> ${card.discard}
-            `;
-        }
-        if (card.locked) {
-            message += `
-            <br>
-            <strong>${_("Locked card")}</strong>
-            `;
-        }
-        if (typeLetter != 'A') {
-            message += `
-            <br>
-            <strong>${_("Initial knowledge:")}</strong> ${card.initialKnowledge}
-            <br>
-            <strong>${_("Victory point:")}</strong> ${card.victoryPoint}
-            `;
-        }
-        message += `
-        <br>
-        <strong>${_("Activation:")}</strong> ${this.game.getTooltipActivation(card.activation)}
-        <br>
-        <br>
-        <strong>${_("Effect:")}</strong> ${card.effect?.map(text => formatTextIcons(text)).join(`<br>`) ?? ''}
-        `;*/
-        const message = 'TODO';
- 
-        return message;
-    }
-
-    public getFullCard(card: Card): Card {
-        return {
-            ...CARDS_DATA[card.id],
-            id: card.id,
-            location: card.location,
-            knowledge: card.knowledge,
-        };
-    }
-
-    public getFullCards(cards: Card[]): Card[] {
-        return cards; // TODO?
-        //return cards.map(card => this.getFullCard(card));
-    }
-
-    public getFullCardById(id: string): Card {
-        return {
-            ...CARDS_DATA[id],
-            id,
-        };
-    }
-
-    public getFullCardsByIds(ids: string[]): Card[] {
-        return ids.map(id => this.getFullCardById(id));
     }
 }

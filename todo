@@ -11,16 +11,12 @@ Backend :
 Frontend :
   - color in log does not always match the good color
 
-  - black gear is hard to see for black player
-
   - in player's panels :
     - display current speed of player (hide if -1)
     - display current turn
     - display current round order ("no" field)
 
   - display "inplay" cards somewhere
-  - display engine cards => only heat so maybe the top one + a counter on top of it showing how many heat available ?
-    => probably a counter in the player panel would be useful infor as well
   - display discard
   - display number of cards left in deck ??
 

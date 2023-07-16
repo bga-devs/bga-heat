@@ -50,6 +50,20 @@
       }
     } 
 
+    .bga-cards_deck-counter {
+      --bga-cards-deck-counter-size: 40px;
+      
+      &.round {
+        font-size: 22px;
+      }
+    }
+
+    .engine {
+      position: absolute;
+      left: 407px;
+      top: 316px;
+    }
+
     .gear {
       position: absolute;
       width: 80px;
@@ -77,6 +91,15 @@
       &[data-gear="3"] { top: 401px; }
       &[data-gear="2"] { top: 529px; }
       &[data-gear="1"] { top: 657px; }
+    }
+
+    &[data-color="12151a"] {
+      .gear {
+        box-shadow: 2px 2px 8px 5px gray;
+        &::after {
+          box-shadow: 2px 2px 8px 5px gray;
+        }
+      }
     }
   }
   

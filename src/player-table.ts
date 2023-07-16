@@ -4,6 +4,7 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 class PlayerTable {
     public playerId: number;
     public hand?: LineStock<Card>;
+    public engine: Deck<Card>;
 
     private currentPlayer: boolean;
     private currentGear: number;
@@ -26,6 +27,7 @@ class PlayerTable {
         }
         html += `
             <div id="player-table-${this.playerId}-board" class="player-board" data-color="${player.color}">
+                <div id="player-table-${this.playerId}-engine" class="engine"></div>
                 <div id="player-table-${this.playerId}-gear" class="gear" data-gear="${this.currentGear}"></div>
             </div>
         </div>
@@ -41,13 +43,20 @@ class PlayerTable {
             this.hand.onSelectionChange = (selection: Card[]) => this.game.onHandCardSelectionChange(selection);     
             this.refreshHand(constructor.hand);
         }
+        
+        this.engine = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-engine`), {
+            cardNumber: Object.values(constructor.engine).length,
+            topCard: Object.values(constructor.engine)[0],
+            counter: {
+                extraClasses: 'round',
+            }
+        });
     }
 
     public setHandSelectable(selectionMode: CardSelectionMode, selectedCardsIds: string[] | null = null) {
         const cards = this.hand.getCards();
         this.hand.setSelectionMode(selectionMode);
         selectedCardsIds?.forEach(id => this.hand.getCardElement(cards.find(card => card.id == id))?.classList.add(this.hand.getSelectedCardClass())); // TODO make all numbers?
-        console.log(selectedCardsIds?.map(id => cards.find(card => card.id == id)));
     }
     
     public getCurrentGear(): number {
@@ -61,7 +70,7 @@ class PlayerTable {
     
     public refreshHand(hand: Card[]): Promise<any> {
         this.hand.removeAll();
-        const promise = this.hand.addCards(this.game.cardsManager.getFullCards(hand));
+        const promise = this.hand.addCards(hand);
 
         hand.forEach(card => this.game.cardsManager.getCardElement(card).dataset.playerColor = this.game.getPlayer(this.playerId).color);
 

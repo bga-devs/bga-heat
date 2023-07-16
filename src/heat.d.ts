@@ -17,7 +17,8 @@ interface Constructor {
     turn: number;
     score: number;
     lvl; // TODO
-    hand: Card[];
+    engine?: { [id: number]: Card};
+    hand?: Card[];
     handCount: number;
 }
 
@@ -57,9 +58,6 @@ interface HeatGame extends Game {
     changePageTitle(suffix?: string, save?: boolean): void;
     addPrimaryActionButton(id, text, callback, zone?): void;
     addSecondaryActionButton(id, text, callback, zone?): void
-    onCreateCardConfirm(data: CreateEngineData): void;
-    onArchiveCardConfirm(data: ArchiveEngineData): void;
-    onTimelineSlotClick(slotId: string): void;
 }
 
 interface EnteringPlanificationArgs {    

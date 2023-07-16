@@ -24,6 +24,7 @@ class Heat implements HeatGame {
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
     private handCounters: Counter[] = [];
+    private engineCounters: Counter[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -388,7 +389,10 @@ class Heat implements HeatGame {
                     <div class="player-hand-card"></div> 
                     <span id="playerhand-counter-${player.id}"></span>
                 </div>
-
+                <div id="engine-counter-wrapper-${player.id}" class="engine-counter">
+                    Engine
+                    <span id="engine-counter-${player.id}"></span>
+                </div>
             </div>
             <div>${playerId == gamedatas.firstPlayerId ? `<div id="first-player">${_('First player')}</div>` : ''}</div>`;
 
@@ -398,9 +402,14 @@ class Heat implements HeatGame {
             this.handCounters[playerId] = new ebg.counter();
             this.handCounters[playerId].create(`playerhand-counter-${playerId}`);
             this.handCounters[playerId].setValue(constructor.handCount);
+
+            this.engineCounters[playerId] = new ebg.counter();
+            this.engineCounters[playerId].create(`engine-counter-${playerId}`);
+            this.engineCounters[playerId].setValue(Object.values(constructor.engine).length);
         });
 
-        this.setTooltipToClass('lost-knowledge-counter', _('Lost knowledge'));
+        this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
+        this.setTooltipToClass('engine-counter', _('Engine cards count'));
     }
 
     private createPlayerTables(gamedatas: HeatGamedatas) {
@@ -554,24 +563,6 @@ class Heat implements HeatGame {
             button.innerHTML = label;
             button.classList.toggle('disabled', !allowed);
         }
-    }
-    
-    public onTimelineSlotClick(slotId: string): void {
-        this.createEngine.selectSlot(slotId);
-    }
-
-    public onCreateCardConfirm(data: CreateEngineData): void {
-        this.takeAtomicAction('actCreate', [
-            data.selectedCard.id,
-            data.selectedSlot,
-            data.discardCards.map(card => card.id).sort(),
-        ]);
-    }
-
-    public onArchiveCardConfirm(data: ArchiveEngineData): void {
-        this.takeAtomicAction('actArchive', [
-            data.discardCards.map(card => card.id).sort(),
-        ]);
     }
 
     public onTableCardClick(card: Card): void {

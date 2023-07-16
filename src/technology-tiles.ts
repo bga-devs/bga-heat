@@ -131,26 +131,4 @@ class TechnologyTilesManager extends CardManager<TechnologyTile> {
         </div>`
         this.setupFrontDiv(card, div.querySelector('.front'), true);
     }
-
-    public getFullCard(tile: TechnologyTile): TechnologyTile {
-        return {
-            ...TECHS_DATA[tile.id],
-            id: tile.id,
-        };
-    }
-
-    public getFullCards(tiles: TechnologyTile[]): TechnologyTile[] {
-        return tiles.map(tile => this.getFullCard(tile));
-    }
-
-    public getFullCardById(id: string): TechnologyTile {
-        return {
-            ...TECHS_DATA[id],
-            id,
-        };
-    }
-
-    public getFullCardsByIds(ids: string[]): TechnologyTile[] {
-        return ids.map(id => this.getFullCardById(id));
-    }
 }
