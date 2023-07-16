@@ -168,6 +168,21 @@ class Notifications
     ]);
   }
 
+  public function payHeatsForCorner($constructor, $cards, $speed, $limit)
+  {
+    self::notifyAll(
+      'payHeatsForCorner',
+      clienttranslate('${constructor_name} discards ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit}'),
+      [
+        'constructor' => $constructor,
+        'n' => count($cards),
+        'cards' => $cards->toArray(),
+        'speed' => $speed,
+        'limit' => $limit,
+      ]
+    );
+  }
+
   ///////////////////////////////////////////////////////////////
   //  _   _           _       _            _
   // | | | |_ __   __| | __ _| |_ ___     / \   _ __ __ _ ___

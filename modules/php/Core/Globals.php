@@ -22,6 +22,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
 
     'planification' => 'obj',
     'previousPosition' => 'int',
+    'previousTurn' => 'int',
     'symbols' => 'obj',
 
     // Game options

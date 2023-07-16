@@ -70,7 +70,7 @@ const ACCELERATE = 'accelerate';
 const REFRESH = 'refresh';
 const ADJUST = 'adjust';
 const ADRENALINE = 'adrenaline';
-const HEATED_BOOST_BOOST = 'heated-boost';
+const HEATED_BOOST = 'heated-boost';
 
 /*
  * MISC

@@ -98,4 +98,11 @@ class Constructor extends \HEAT\Helpers\DB_Model
     Cards::move($card['id'], ['inplay', $this->id]);
     return [$cards, $card];
   }
+
+  public function payHeats($n)
+  {
+    $cards = $this->getEngine()->limit($n);
+    Cards::move($cards->getIds(), ['discard', $this->id]);
+    return $cards;
+  }
 }

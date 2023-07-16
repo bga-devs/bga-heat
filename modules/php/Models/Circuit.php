@@ -155,4 +155,20 @@ class Circuit
 
     return $cell;
   }
+
+  public function getCornersInBetween($turn1, $pos1, $turn2, $pos2)
+  {
+    $length = $this->getLength();
+    $uid1 = $length * $turn1 + $pos1;
+    $uid2 = $length * $turn2 + $pos2;
+    $corners = [];
+    for ($pos = $uid1 + 1; $pos <= min($uid2, $length * $this->getNbrLaps()); $pos++) {
+      $position = $pos % $length;
+      if (array_key_exists($position, $this->corners)) {
+        $corners[] = [$position, $this->corners[$position]];
+      }
+    }
+
+    return $corners;
+  }
 }

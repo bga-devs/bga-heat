@@ -5,9 +5,13 @@ Other :
 Backend :
 
 Frontend :
+  - payHeatForCorner notif
+  
   - planification : shouldnt be able to select heat (unless very rare case where you can play nothing)
 
   - reveal : handle when args.heat != null
+
+  - Notif => card_image and cards_images
 
   - slipstream state : add buttons very similar to speed state
 

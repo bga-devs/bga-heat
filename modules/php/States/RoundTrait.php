@@ -169,6 +169,7 @@ trait RoundTrait
 
     // Store previous position and store symbols
     Globals::setPreviousPosition($constructor->getPosition());
+    Globals::setPreviousTurn($constructor->getTurn());
     $symbols = [];
     foreach ($cards as $card) {
       foreach ($card['symbols'] as $symbol => $n) {
@@ -389,6 +390,35 @@ trait RoundTrait
 
   public function stCheckCorner()
   {
+    // Compute corners between the two positions
+    $constructor = Constructors::getActive();
+    $prevPosition = Globals::getPreviousPosition();
+    $prevTurn = Globals::getPreviousTurn();
+    $position = $constructor->getPosition();
+    $turn = $constructor->getTurn();
+    $corners = $this->getCircuit()->getCornersInBetween($prevTurn, $prevPosition, $turn, $position);
+
+    // For each corner, check speed against max speed of corner
+    if (!empty($corners)) {
+      $speed = $constructor->getSpeed();
+      foreach ($corners as $corner) {
+        list($position, $limit) = $corner;
+        // TODO : weather can modify limit as well as some upgrade cards
+        $delta = $speed - $limit;
+        // Have we overspeed ?
+        if ($delta > 0) {
+          // Are we spinning out ??
+          if ($delta > $constructor->getEngine()->count()) {
+            die('TODO: spinning out !');
+            break;
+          } else {
+            $cards = $constructor->payHeats($delta);
+            Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit);
+          }
+        }
+      }
+    }
+
     $this->gamestate->jumpToState(ST_DISCARD);
   }
 
