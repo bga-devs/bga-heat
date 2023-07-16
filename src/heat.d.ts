@@ -20,6 +20,7 @@ interface Constructor {
     engine?: { [id: number]: Card};
     hand?: Card[];
     handCount: number;
+    speed: number;
 }
 
 interface HeatGamedatas {

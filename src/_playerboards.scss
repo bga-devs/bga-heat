@@ -10,11 +10,6 @@
 
   .icon {
     margin-right: 5px;
-
-    &.vp {
-      width: 24px;
-      height: 24px;
-    }
   }
 
   .counters {
@@ -24,10 +19,6 @@
 
     >div {
       flex: 1;
-
-      &:last-child {
-        flex: 2;
-      }
     }
   }
 
@@ -42,28 +33,13 @@
     vertical-align: middle;
   }
 
-  .reputation-legend {
-    .icon {
-      width: 20px;
-      height: 20px;
-      margin-right: 2px;
-    }
-
-    font-size: 75%;
-    vertical-align: middle;
+  .order-counter {
+    width: 24px;
+    height: 24px;
+    border: 2px solid black;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-
-}
-
-#first-player {
-  background: #6199b0;
-  color: white;
-  height: 20px;
-  font-size: 14px;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  user-select: none;
-  padding: 0 10px;
 }

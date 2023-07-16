@@ -7,14 +7,14 @@ Backend :
  - cancel selection
  - handle basic end of turn (with discard step?)
  - return counters of player's deck + discard top card
+ - return number of turns
+ - return "inplay" cards
 
 Frontend :
   - color in log does not always match the good color
 
   - in player's panels :
-    - display current speed of player (hide if -1)
-    - display current turn
-    - display current round order ("no" field)
+    - display max turns
 
   - display "inplay" cards somewhere
   - display discard
@@ -26,4 +26,4 @@ Frontend :
 
   - discard state : make cards selectable (selectable cards sent in args) + call action + notif + notif for public discard (clearPlayedCards)
 
-  - updateTurnOder notif
+  - updateTurnOrder notif

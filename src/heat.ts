@@ -25,6 +25,8 @@ class Heat implements HeatGame {
     private playersTables: PlayerTable[] = [];
     private handCounters: Counter[] = [];
     private engineCounters: Counter[] = [];
+    private speedCounters: Counter[] = [];
+    private turnCounters: Counter[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -394,7 +396,23 @@ class Heat implements HeatGame {
                     <span id="engine-counter-${player.id}"></span>
                 </div>
             </div>
-            <div>${playerId == gamedatas.firstPlayerId ? `<div id="first-player">${_('First player')}</div>` : ''}</div>`;
+            <div class="counters">
+                <div id="speed-counter-wrapper-${player.id}" class="speed-counter">
+                    Speed 
+                    <span id="speed-counter-${player.id}">-</span>
+                </div>
+                <div id="turn-counter-wrapper-${player.id}" class="turn-counter">
+                    Turn
+                    <span id="turn-counter-${player.id}">-</span> / 2
+                </div>
+            </div>
+            <div class="counters">
+                <div>
+                    <div id="order-${player.id}" class="order-counter">
+                        ${constructor.no + 1}
+                    </div>
+                </div>
+            </div>`;
 
             dojo.place(html, `player_board_${player.id}`);
 
@@ -406,6 +424,18 @@ class Heat implements HeatGame {
             this.engineCounters[playerId] = new ebg.counter();
             this.engineCounters[playerId].create(`engine-counter-${playerId}`);
             this.engineCounters[playerId].setValue(Object.values(constructor.engine).length);
+
+            this.speedCounters[playerId] = new ebg.counter();
+            this.speedCounters[playerId].create(`turn-counter-${playerId}`);
+            if (constructor.speed !== null && constructor.speed >= 0) {
+                this.speedCounters[playerId].setValue(constructor.speed);
+            }
+
+            this.turnCounters[playerId] = new ebg.counter();
+            this.turnCounters[playerId].create(`turn-counter-${playerId}`);
+            if (constructor.turn >= 0) {
+                this.turnCounters[playerId].setValue(constructor.turn + 1);
+            }
         });
 
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));

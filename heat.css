@@ -796,10 +796,6 @@ height: 241px; */
 .player-board .icon {
   margin-right: 5px;
 }
-.player-board .icon.vp {
-  width: 24px;
-  height: 24px;
-}
 .player-board .counters {
   display: flex;
   align-items: center;
@@ -807,9 +803,6 @@ height: 241px; */
 }
 .player-board .counters > div {
   flex: 1;
-}
-.player-board .counters > div:last-child {
-  flex: 2;
 }
 .player-board .player-hand-card {
   display: inline-block;
@@ -821,27 +814,14 @@ height: 241px; */
   background-position: center;
   vertical-align: middle;
 }
-.player-board .reputation-legend {
-  font-size: 75%;
-  vertical-align: middle;
-}
-.player-board .reputation-legend .icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 2px;
-}
-
-#first-player {
-  background: #6199b0;
-  color: white;
-  height: 20px;
-  font-size: 14px;
-  display: inline-flex;
+.player-board .order-counter {
+  width: 24px;
+  height: 24px;
+  border: 2px solid black;
+  border-radius: 50%;
+  display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 10px;
-  user-select: none;
-  padding: 0 10px;
 }
 
 .player-table {

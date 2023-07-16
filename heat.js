@@ -2284,6 +2284,8 @@ var Heat = /** @class */ (function () {
         this.playersTables = [];
         this.handCounters = [];
         this.engineCounters = [];
+        this.speedCounters = [];
+        this.turnCounters = [];
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         this._notif_uid_to_log_id = [];
         this._notif_uid_to_mobile_log_id = [];
@@ -2584,7 +2586,7 @@ var Heat = /** @class */ (function () {
             document.getElementById("player_score_".concat(player.id)).insertAdjacentHTML('beforebegin', "<div class=\"vp icon\"></div>");
             document.getElementById("icon_point_".concat(player.id)).remove();
             /**/
-            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(player.id, "\" class=\"engine-counter\">\n                    Engine\n                    <span id=\"engine-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            <div>").concat(playerId == gamedatas.firstPlayerId ? "<div id=\"first-player\">".concat(_('First player'), "</div>") : '', "</div>");
+            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(player.id, "\" class=\"engine-counter\">\n                    Engine\n                    <span id=\"engine-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-").concat(player.id, "\" class=\"speed-counter\">\n                    Speed \n                    <span id=\"speed-counter-").concat(player.id, "\">-</span>\n                </div>\n                <div id=\"turn-counter-wrapper-").concat(player.id, "\" class=\"turn-counter\">\n                    Turn\n                    <span id=\"turn-counter-").concat(player.id, "\">-</span> / 2\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(player.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(player.id));
             _this.handCounters[playerId] = new ebg.counter();
             _this.handCounters[playerId].create("playerhand-counter-".concat(playerId));
@@ -2592,6 +2594,16 @@ var Heat = /** @class */ (function () {
             _this.engineCounters[playerId] = new ebg.counter();
             _this.engineCounters[playerId].create("engine-counter-".concat(playerId));
             _this.engineCounters[playerId].setValue(Object.values(constructor.engine).length);
+            _this.speedCounters[playerId] = new ebg.counter();
+            _this.speedCounters[playerId].create("turn-counter-".concat(playerId));
+            if (constructor.speed !== null && constructor.speed >= 0) {
+                _this.speedCounters[playerId].setValue(constructor.speed);
+            }
+            _this.turnCounters[playerId] = new ebg.counter();
+            _this.turnCounters[playerId].create("turn-counter-".concat(playerId));
+            if (constructor.turn >= 0) {
+                _this.turnCounters[playerId].setValue(constructor.turn + 1);
+            }
         });
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
