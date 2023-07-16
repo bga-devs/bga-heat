@@ -2519,6 +2519,14 @@ var Heat = /** @class */ (function () {
                         return _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), "".concat(entry[0], " : ").concat(entry[1]) /* TODO*/, function () { return _this.actChooseSpeed(Number(entry[0])); });
                     });
                     break;
+                case 'react':
+                    var reactArgs = args;
+                    this.addActionButton("actPassReact_button", _('Pass'), function () { return _this.actPassReact(); });
+                    Object.entries(reactArgs.symbols).forEach(function (entry) {
+                        return _this.addActionButton("actReact_button", "".concat(entry[0], " ").concat(entry[1]), function () { return _this.actReact(entry[0]); });
+                    } // TODO
+                    );
+                    break;
             }
         }
         else {
@@ -2747,11 +2755,19 @@ var Heat = /** @class */ (function () {
             speed: speed
         });
     };
-    Heat.prototype.actConfirmTurn = function () {
-        if (!this.checkAction('actConfirmTurn')) {
+    Heat.prototype.actPassReact = function () {
+        if (!this.checkAction('actPassReact')) {
             return;
         }
-        this.takeAction('actConfirmTurn');
+        this.takeAction('actPassReact');
+    };
+    Heat.prototype.actReact = function (react) {
+        if (!this.checkAction('actReact')) {
+            return;
+        }
+        this.takeAction('actReact', {
+            react: react
+        });
     };
     Heat.prototype.actConfirmPartialTurn = function () {
         if (!this.checkAction('actConfirmPartialTurn')) {

@@ -72,6 +72,11 @@ interface EnteringChooseSpeedArgs {
     speeds: { [speed: number]: number /*destination cell*/ };
 }
 
+interface EnteringReactArgs {
+    canPass: boolean;
+    symbols: { [symbol: string]: number };
+}
+
 // updatePlanification
 interface NotifUpdatePlanificationArgs { // TODO
     _private: {

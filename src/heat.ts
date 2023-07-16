@@ -304,6 +304,13 @@ class Heat implements HeatGame {
                         (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, `${entry[0]} : ${entry[1]}` /* TODO*/, () => this.actChooseSpeed(Number(entry[0])))
                     );
                     break;
+                case 'react':
+                    const reactArgs = args as EnteringReactArgs;
+                    (this as any).addActionButton(`actPassReact_button`, _('Pass'), () => this.actPassReact());
+                    Object.entries(reactArgs.symbols).forEach(entry => 
+                        (this as any).addActionButton(`actReact_button`, `${entry[0]} ${entry[1]}`, () => this.actReact(entry[0])) // TODO
+                    );
+                    break;
             }
         } else {
             switch (stateName) {
@@ -636,13 +643,23 @@ class Heat implements HeatGame {
             speed
         });
     }
-  	
-    public actConfirmTurn() {
-        if(!(this as any).checkAction('actConfirmTurn')) {
+    
+    private actPassReact() {
+        if(!(this as any).checkAction('actPassReact')) {
             return;
         }
 
-        this.takeAction('actConfirmTurn');
+        this.takeAction('actPassReact');
+    }
+  	
+    public actReact(react: string) {
+        if(!(this as any).checkAction('actReact')) {
+            return;
+        }
+
+        this.takeAction('actReact', {
+            react
+        });
     }
   	
     public actConfirmPartialTurn() {

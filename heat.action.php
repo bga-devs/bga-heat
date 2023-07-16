@@ -59,6 +59,13 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actPassReact()
+  {
+    self::setAjaxMode();
+    $this->game->actPassReact();
+    self::ajaxResponse();
+  }
+
   public function actDiscard()
   {
     self::setAjaxMode();
