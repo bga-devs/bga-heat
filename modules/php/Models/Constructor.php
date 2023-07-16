@@ -85,4 +85,17 @@ class Constructor extends \HEAT\Helpers\DB_Model
   {
     return Cards::getDiscard($this->id)->first();
   }
+
+  public function resolveBoost()
+  {
+    $cards = [];
+    do {
+      $card = Cards::flipForBoost($this->id, 1);
+      $cards[] = $card;
+    } while ($card['effect'] != SPEED);
+
+    array_pop($cards);
+    Cards::move($card['id'], ['inplay', $this->id]);
+    return [$cards, $card];
+  }
 }

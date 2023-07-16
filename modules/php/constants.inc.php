@@ -59,7 +59,7 @@ const STRESS = 'stress';
 /*
  * Symbols
  */
-const PLUS = 'plus';
+const BOOST = 'boost';
 const COOLDOWN = 'cooldown';
 const REDUCE = 'reduce';
 const SLIPSTREAM = 'slipstream';
@@ -70,7 +70,7 @@ const ACCELERATE = 'accelerate';
 const REFRESH = 'refresh';
 const ADJUST = 'adjust';
 const ADRENALINE = 'adrenaline';
-const BOOST = 'boost';
+const HEATED_BOOST_BOOST = 'heated-boost';
 
 /*
  * MISC

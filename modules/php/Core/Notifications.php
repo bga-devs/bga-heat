@@ -109,17 +109,16 @@ class Notifications
     ]);
   }
 
-  public function discard($constructor, $cardIds)
+  public function discard($constructor, $cards)
   {
     self::notifyAll('discard', clienttranslate('${constructor_name} discards ${n} card(s)'), [
       'constructor' => $constructor,
-      'n' => count($cardIds),
+      'n' => count($cards),
     ]);
 
-    self::notify($constructor, 'pDiscard', clienttranslate('You discards ${n} card(s)'), [
+    self::notify($constructor, 'pDiscard', clienttranslate('You discards ${cards_images}'), [
       'constructor' => $constructor,
-      'n' => count($cardIds),
-      'cardIds' => $cardIds,
+      'cards' => $cards,
     ]);
   }
 
@@ -138,10 +137,27 @@ class Notifications
       'n' => count($cards),
     ]);
 
-    self::notify($constructor, 'pDraw', clienttranslate('You draw ${n} card(s)'), [
+    self::notify($constructor, 'pDraw', clienttranslate('You draw ${cards_images}'), [
       'constructor' => $constructor,
-      'n' => $cards->count(),
       'cards' => $cards->toArray(),
+    ]);
+  }
+
+  public function resolveBoost($constructor, $cards, $card, $i, $n)
+  {
+    $msg =
+      $i == 1 && $n == 1
+        ? clienttranslate('${constructor_name} discards ${cards_images} and keep ${card_image} to resolve boost symbol')
+        : clienttranslate(
+          '${constructor_name} discards ${cards_images} and keep ${card_image} to resolve boost symbol (${i} / ${n})'
+        );
+
+    self::notifyAll('resolveBoost', $msg, [
+      'constructor' => $constructor,
+      'cards' => $cards,
+      'card' => $card,
+      'i' => $i,
+      'n' => $n,
     ]);
   }
 
@@ -191,6 +207,16 @@ class Notifications
       ];
       $data['i18n'][] = 'constructors_names';
       unset($data['constructors']);
+    }
+
+    if (isset($data['card'])) {
+      $data['card_image'] = '';
+      $data['preserve'][] = 'card';
+    }
+
+    if (isset($data['cards'])) {
+      $data['cards_images'] = '';
+      $data['preserve'][] = 'cards';
     }
   }
 }

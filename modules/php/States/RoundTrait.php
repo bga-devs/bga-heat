@@ -178,8 +178,10 @@ trait RoundTrait
     Globals::setSymbols($symbols);
 
     // Resolve + symbols
-    if (($symbols[PLUS] ?? 0) > 0) {
-      die('TODO: handle + symbols');
+    $n = $symbols[BOOST] ?? 0;
+    for ($i = 0; $i < $n; $i++) {
+      list($cards, $card) = $constructor->resolveBoost();
+      Notifications::resolveBoost($constructor, $cards, $card, $i + 1, $n);
     }
 
     $this->gamestate->jumpToState(ST_CHOOSE_SPEED);
@@ -282,7 +284,7 @@ trait RoundTrait
     }
 
     // Add the boost symbol
-    $symbols[BOOST] = 1;
+    $symbols[HEATED_BOOST] = 1;
 
     // Save all the symbols and proceed to React phase
     Globals::setSymbols($symbols);
@@ -433,7 +435,7 @@ trait RoundTrait
       }
 
       Cards::move($cardIds, ['discard', $constructor->getId()]);
-      Notifications::discard($constructor, $cardIds);
+      Notifications::discard($constructor, Cards::getMany($cardIds));
     }
 
     $this->stReplenish();

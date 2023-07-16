@@ -51,6 +51,11 @@ class Cards extends \HEAT\Helpers\Pieces
     return static::pickForLocation($n, "deck-$cId", "hand-$cId");
   }
 
+  public function flipForBoost($cId)
+  {
+    return static::pickOneForLocation("deck-$cId", "discard-$cId");
+  }
+
   ///////////////////////////////////
   //  ____       _
   // / ___|  ___| |_ _   _ _ __
@@ -147,13 +152,13 @@ class Cards extends \HEAT\Helpers\Pieces
       106 => $f(HEAT, 0),
 
       // Generic stress and heats
-      110 => $f(STRESS, 0),
+      110 => $f(STRESS, 0, [BOOST => 1]),
       111 => $f(HEAT, 0),
 
       // 4 wheel drive
-      1 => $f(BASIC_UPGRADE, 4, [PLUS => 1], clienttranslate('4 wheel drive')),
-      2 => $f(BASIC_UPGRADE, 0, [PLUS => 3], clienttranslate('4 wheel drive')),
-      3 => $f(BASIC_UPGRADE, 0, [PLUS => 1, COOLDOWN => 3], clienttranslate('4 wheel drive')),
+      1 => $f(BASIC_UPGRADE, 4, [BOOST => 1], clienttranslate('4 wheel drive')),
+      2 => $f(BASIC_UPGRADE, 0, [BOOST => 3], clienttranslate('4 wheel drive')),
+      3 => $f(BASIC_UPGRADE, 0, [BOOST => 1, COOLDOWN => 3], clienttranslate('4 wheel drive')),
       // Body
       4 => $f(BASIC_UPGRADE, 3, [REDUCE => 2], clienttranslate('Body')),
       5 => $f(BASIC_UPGRADE, 5, [REDUCE => 1], clienttranslate('Body')),
@@ -183,7 +188,7 @@ class Cards extends \HEAT\Helpers\Pieces
       21 => $f(ADVANCED_UPGRADE, 4, [SCRAP => 2, COOLDOWN => 1], clienttranslate('Cooling system')),
       // Fuel
       22 => $f(ADVANCED_UPGRADE, 2, [SALVAGE => 2], clienttranslate('Fuel')),
-      23 => $f(ADVANCED_UPGRADE, 0, [PLUS => 1, SALVAGE => 2, COOLDOWN => 1], clienttranslate('Fuel')),
+      23 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, SALVAGE => 2, COOLDOWN => 1], clienttranslate('Fuel')),
       // Gas pedal
       24 => $f(ADVANCED_UPGRADE, 1, [SCRAP => 1, DIRECT => 1], clienttranslate('Gas pedal')),
       25 => $f(ADVANCED_UPGRADE, 2, [SCRAP => 2, DIRECT => 1], clienttranslate('Gas pedal')),
@@ -191,7 +196,7 @@ class Cards extends \HEAT\Helpers\Pieces
       27 => $f(ADVANCED_UPGRADE, 4, [HEAT => 1, COOLDOWN => 1, DIRECT => 1], clienttranslate('Gas pedal')),
       28 => $f(ADVANCED_UPGRADE, 1, [SCRAP => 1, SCRAP => 5, ACCELERATE => 1], clienttranslate('Gas pedal')),
       // R.P.M.
-      29 => $f(ADVANCED_UPGRADE, 0, [PLUS => 1, SLIPSTREAM => 3], clienttranslate('R.P.M.')),
+      29 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, SLIPSTREAM => 3], clienttranslate('R.P.M.')),
       30 => $f(ADVANCED_UPGRADE, 1, [HEAT => 1, SLIPSTREAM => 3], clienttranslate('R.P.M.')),
       31 => $f(ADVANCED_UPGRADE, [1, 2], [SLIPSTREAM => 1], clienttranslate('R.P.M.')),
       // Suspension
@@ -205,7 +210,7 @@ class Cards extends \HEAT\Helpers\Pieces
       38 => $f(ADVANCED_UPGRADE, 2, [ADJUST => 1, SCRAP => 2], clienttranslate('Tires')),
       39 => $f(ADVANCED_UPGRADE, 3, [ADJUST => -1, COOLDOWN => 2], clienttranslate('Tires')),
       40 => $f(ADVANCED_UPGRADE, 0, [ADJUST => 1, COOLDOWN => 1, SLIPSTREAM => 1], clienttranslate('Tires')),
-      41 => $f(ADVANCED_UPGRADE, 0, [ADJUST => 2, PLUS => 2], clienttranslate('Tires')),
+      41 => $f(ADVANCED_UPGRADE, 0, [ADJUST => 2, BOOST => 2], clienttranslate('Tires')),
       // Turbo charger
       42 => $f(ADVANCED_UPGRADE, 7, [HEAT => 2, COOLDOWN => 3], clienttranslate('Turbo charger')),
       43 => $f(ADVANCED_UPGRADE, 8, [HEAT => 1, SCRAP => 6], clienttranslate('Turbo charger')),
@@ -214,7 +219,7 @@ class Cards extends \HEAT\Helpers\Pieces
       45 => $f(ADVANCED_UPGRADE, 3, [HEAT => 1, SCRAP => 2, ADJUST => 2], clienttranslate('Wings')),
       46 => $f(ADVANCED_UPGRADE, 6, [HEAT => 2, ADJUST => 3], clienttranslate('Wings')),
       // 4 wheel drive
-      47 => $f(ADVANCED_UPGRADE, 0, [PLUS => 1, ACCELERATE => 1], clienttranslate('4 wheel drive')),
+      47 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, ACCELERATE => 1], clienttranslate('4 wheel drive')),
 
       48 => $f(HEAT, 0),
     ];
