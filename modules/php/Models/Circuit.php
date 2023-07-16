@@ -127,4 +127,32 @@ class Circuit
       }
     }
   }
+
+  public function getSlipstreamResult($constructor, $n)
+  {
+    $currentPosition = $this->getPosition($constructor);
+    // TODO : check section and weather condition that might prevent slipstream
+
+    // Is there a car next to me or in front of me ?
+    $currentLine = $this->getLine($constructor);
+    $nextPosition = ($currentPosition + 1) % $this->getLength();
+    if ($this->isFree($currentPosition, 3 - $currentLine) && $this->isFree($nextPosition, 1) && $this->isFree($nextPosition, 2)) {
+      return false;
+    }
+
+    // Cant slipstream on last last if that makes you cross finish line
+    $newPosition = $currentPosition + $n;
+    $extraTurn = intdiv($newPosition, $this->getLength());
+    if ($constructor->getTurn() + $extraTurn >= $this->getNbrLaps()) {
+      return false;
+    }
+
+    // Check that you move at least one cell forward
+    list($cell, $nSpacesForward) = $this->getReachedCell($constructor, $n);
+    if ($nSpacesForward == 0) {
+      return false;
+    }
+
+    return $cell;
+  }
 }

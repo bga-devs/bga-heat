@@ -56,7 +56,7 @@ class Notifications
     ]);
   }
 
-  public function moveCar($constructor, $newCell, $speed, $nSpacesForward, $extraTurns)
+  public function moveCar($constructor, $newCell, $speed, $nSpacesForward, $extraTurns, $slipstream = false)
   {
     $msg =
       $speed == $nSpacesForward
@@ -64,6 +64,15 @@ class Notifications
         : clienttranslate(
           '${constructor_name} moves their car ${nForward} spaces forward out of ${speed} because they are blocked by other cars'
         );
+    if ($slipstream) {
+      $msg =
+        $speed == $nSpacesForward
+          ? clienttranslate('Slipstream: ${constructor_name} moves their car ${nForward} spaces forward')
+          : clienttranslate(
+            'Slipstream: ${constructor_name} moves their car ${nForward} spaces forward out of ${speed} because they are blocked by other cars'
+          );
+    }
+
     self::notifyAll('moveCar', $msg, [
       'constructor' => $constructor,
       'cell' => $newCell,

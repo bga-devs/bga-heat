@@ -5,6 +5,10 @@ Other :
 Backend :
 
 Frontend :
+  - slipstream state : add buttons very similar to speed state
+
+  - "args._private undefined" => discard state for inactive player
+
   - take nbrLaps value in getAllDatas
   - color in log does not always match the good color
 

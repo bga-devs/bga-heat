@@ -30,7 +30,7 @@ trait RoundTrait
       $positions[$uid] = $constructor->getId();
     }
 
-    ksort($positions);
+    krsort($positions);
     $order = array_values($positions);
     Globals::setTurnOrder($order);
     $constructors = [];
@@ -324,18 +324,45 @@ trait RoundTrait
 
   public function argsSlipstream()
   {
-    return [];
+    $constructor = Constructors::getActive();
+    $slipstreams = [2];
+    // TODO : bonuses for optional slipstream increase
+    // TODO : weather module optional slipstream increase
+
+    $cells = [];
+    foreach ($slipstreams as $n) {
+      $cell = $this->getCircuit()->getSlipstreamResult($constructor, $n);
+      if ($cell !== false) {
+        $cells[$n] = $cell;
+      }
+    }
+
+    return [
+      'cells' => $cells,
+    ];
   }
 
   public function stSlipstream()
   {
-    $this->actSlipstream(false);
+    if (empty($this->argsSlipstream()['cells'])) {
+      $this->actSlipstream(0);
+    }
   }
 
-  public function actSlipstream($move)
+  public function actSlipstream($n)
   {
     self::checkAction('actSlipstream');
-    if ($move) {
+    if ($n > 0) {
+      if (!array_key_exists($n, $this->argsSlipstream()['cells'])) {
+        throw new \BgaVisibleSystemException('Invalid slipstream. Should not happen');
+      }
+
+      // Compute the new cell
+      $constructor = Constructors::getActive();
+      list($newCell, $nSpacesForward, $extraTurns) = $this->getCircuit()->getReachedCell($constructor, $n);
+      $constructor->setCarCell($newCell);
+      $constructor->incTurn($extraTurns);
+      Notifications::moveCar($constructor, $newCell, $n, $nSpacesForward, $extraTurns, true);
     }
 
     $this->stCheckCorner();
