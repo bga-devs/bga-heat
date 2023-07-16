@@ -150,9 +150,18 @@ trait RoundTrait
     // Setup gear and reveal cards
     $newGear = count($cardIds);
     $heat = null;
-    if (abs($newGear - $constructor->getGear()) > 1) {
-      die('TODO : pay a heat for change of two gears');
+    if (abs($newGear - $constructor->getGear()) > 2) {
+      throw new \BgaVisibleSystemException('You cant change gear more than 2. Should not happen');
     }
+    // Check heat
+    if (abs($newGear - $constructor->getGear()) > 1) {
+      $heat = $constructor->getEngine()->first();
+      if (is_null($heat)) {
+        throw new \BgaVisibleSystemException('You dont have enough heat to pay for the change of gear of 2. Should not happen');
+      }
+      Cards::move($heat['id'], ['discard', $constructor->getId()]);
+    }
+
     $constructor->setGear($newGear);
     Cards::move($cardIds, ['inplay', $constructor->getId()]);
     $cards = Cards::getMany($cardIds);

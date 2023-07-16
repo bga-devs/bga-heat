@@ -147,7 +147,7 @@ class Notifications
 
   public function updateTurnOrder($constructors)
   {
-    self::notifyAll('updateTurnOrder', clienttranslate('New order is: ${constructors_names}'), [
+    self::notifyAll('updateTurnOrder', clienttranslate('New round order is: ${constructors_names}'), [
       'constructors' => $constructors,
     ]);
   }
