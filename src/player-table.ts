@@ -38,8 +38,7 @@ class PlayerTable {
         if (this.currentPlayer) {
             this.hand = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-hand`), {
                 sort: (a: Card, b: Card) => Number(a.type) - Number(b.type),
-            });
-            this.hand.onCardClick = (card: Card) => this.game.onHandCardClick(card);   
+            }); 
             this.hand.onSelectionChange = (selection: Card[]) => this.game.onHandCardSelectionChange(selection);     
             this.refreshHand(constructor.hand);
         }

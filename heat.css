@@ -784,6 +784,25 @@ height: 241px; */
   transform-origin: top left;
 }
 
+.map-indicator {
+  position: absolute;
+  left: -16px;
+  top: -16px;
+  width: 32px;
+  height: 32px;
+  background: url("img/cars.png");
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 5px 5px white;
+  transform: translateX(var(--x)) translateY(var(--y));
+  transform-origin: top left;
+  cursor: pointer;
+}
+.map-indicator.hover, .map-indicator:hover {
+  background: yellow;
+  box-shadow: 0 0 5px 5px yellow;
+}
+
 .player-board {
   background-color: white;
 }
@@ -985,10 +1004,7 @@ html, .mode_3d #game_play_area_background {
   background-position: top;
 }
 
-#bga-zoom-wrapper {
-  padding-top: 32px;
-}
-
+/* TODO
 .icon {
   display: inline-block;
   width: 32px;
@@ -997,66 +1013,11 @@ html, .mode_3d #game_play_area_background {
   background-repeat: no-repeat;
   background-position: center;
   vertical-align: middle;
-}
-.icon.knowledge {
-  background-image: url("img/knowledge-icon.svg");
-}
-.icon.lost-knowledge {
-  background-image: url("img/lost-knowledge-icon.svg");
-}
-.icon.vp {
-  background-image: url("img/vp-icon.svg");
-}
-.icon.city {
-  background-image: url("img/monument-icon-city.svg");
-}
-.icon.megalith {
-  background-image: url("img/monument-icon-megalith.svg");
-}
-.icon.pyramid {
-  background-image: url("img/monument-icon-pyramid.svg");
-}
-.icon.artifact {
-  background-image: url("img/artifact-icon.svg");
-}
-.icon.ancient {
-  background-image: url("img/technology-icon-ancient.svg");
-}
-.icon.secret {
-  background-image: url("img/technology-icon-secret.svg");
-}
-.icon.writing {
-  background-image: url("img/technology-icon-writing.svg");
-}
-.icon.starting-space {
-  background-image: url("img/starting-space-icon.svg");
-}
 
-.action-icon {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  vertical-align: middle;
-}
-.action-icon.create {
-  background-image: url("img/action-create-white.svg");
-}
-.action-icon.learn {
-  background-image: url("img/action-learn-white.svg");
-}
-.action-icon.archive {
-  background-image: url("img/action-archive-white.svg");
-}
-.action-icon.excavate {
-  background-image: url("img/action-excavate-white.svg");
-}
-.action-icon.search {
-  background-image: url("img/action-search-white.svg");
-}
-
+  &.knowledge {
+    background-image: url('img/knowledge-icon.svg');
+  }
+}*/
 .action-button .icon, .action-button .color, .log .icon, .log .color {
   width: 24px;
   height: 24px;
@@ -1077,60 +1038,6 @@ html, .mode_3d #game_play_area_background {
   flex-direction: column;
 }
 
-.artifact-tooltip > div {
-  padding: 5px;
-}
-.artifact-tooltip > div:not(:last-child) {
-  border-bottom: 1px solid gray;
-}
-
-.knowledge-token {
-  display: inline-block;
-  width: 25px;
-  height: 38px;
-  background-size: auto 100%;
-  vertical-align: middle;
-  background-image: url("img/knowledge-tokens.png");
-  background-position-x: 0%;
-}
-.knowledge-token.golden {
-  background-position-x: 100%;
-}
-.knowledge-token.selectable {
-  cursor: pointer;
-}
-.knowledge-token.selectable:not(.selected) {
-  box-shadow: 0 0 5px 5px white;
-}
-.knowledge-token.selected {
-  box-shadow: 0 0 5px 5px red;
-}
-
-#last-round {
-  margin: 5px -5px -5px;
-  text-align: center;
-  background-color: #900;
-  color: white;
-  text-shadow: 0 0 1px #900, 0 0 5px #900, 0 0 6px #900, 0 0 7px #900;
-}
-#last-round .last-round-text {
-  display: inline-block;
-}
-#last-round .last-round-text.animate {
-  animation: last-round-animation 2s 1 forwards ease-in-out;
-}
-
-@keyframes last-round-animation {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(3);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
 #logs .log.notif_newUndoableStep {
   margin-top: 0;
 }
@@ -1190,4 +1097,12 @@ html, .mode_3d #game_play_area_background {
 /* Mobile logs */
 .log.cancel.roundedbox {
   background-color: #ef9a9a;
+}
+
+.log-card-image {
+  margin: 3px;
+  display: flex;
+  justify-content: center;
+  max-height: 54px;
+  overflow: hidden;
 }

@@ -27,4 +27,23 @@ class TableCenter {
         car.style.setProperty('--y', `${scale * cell.y}px`);
         car.style.setProperty('--r', `${cell.a}deg`);
     }
+    
+    public addMapIndicator(cellId: number, clickCallback?: () => void): void {
+        const mapIndicator = document.createElement('div');
+        mapIndicator.id = `map-indicator-${cellId}`,
+        mapIndicator.classList.add('map-indicator');
+        let cell = window['USA_DATAS'][cellId];
+        let scale = 1650 / 1280;
+        mapIndicator.style.setProperty('--x', `${scale * cell.x}px`);
+        mapIndicator.style.setProperty('--y', `${scale * cell.y}px`);
+        document.getElementById('circuit').insertAdjacentElement('beforeend', mapIndicator);
+
+        if (clickCallback) {
+            mapIndicator.addEventListener('click', clickCallback);
+        }
+    }
+    
+    public removeMapIndicators(): void {
+        document.getElementById('circuit').querySelectorAll('.map-indicator').forEach(elem => elem.remove());
+    }
 }

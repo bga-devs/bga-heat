@@ -26,10 +26,7 @@ html, .mode_3d #game_play_area_background {
   background-position: top;
 }
 
-#bga-zoom-wrapper {
-  padding-top: 32px;
-}
-
+/* TODO
 .icon {
   display: inline-block;
   width: 32px;
@@ -42,63 +39,7 @@ html, .mode_3d #game_play_area_background {
   &.knowledge {
     background-image: url('img/knowledge-icon.svg');
   }
-  &.lost-knowledge {
-    background-image: url('img/lost-knowledge-icon.svg');
-  }
-  &.vp {
-    background-image: url('img/vp-icon.svg');
-  }
-  &.city {
-    background-image: url('img/monument-icon-city.svg');
-  }
-  &.megalith {
-    background-image: url('img/monument-icon-megalith.svg');
-  }
-  &.pyramid {
-    background-image: url('img/monument-icon-pyramid.svg');
-  }
-  &.artifact {
-    background-image: url('img/artifact-icon.svg');
-  }
-  &.ancient {
-    background-image: url('img/technology-icon-ancient.svg');
-  }
-  &.secret {
-      background-image: url('img/technology-icon-secret.svg');
-  }
-  &.writing {
-      background-image: url('img/technology-icon-writing.svg');
-  }
-  &.starting-space {
-    background-image: url('img/starting-space-icon.svg');
-  }
-}
-
-.action-icon {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  vertical-align: middle;
-  
-  &.create {
-    background-image: url('img/action-create-white.svg');
-  }  
-  &.learn {
-    background-image: url('img/action-learn-white.svg');
-  }  
-  &.archive {
-    background-image: url('img/action-archive-white.svg');
-  }
-  &.excavate {
-    background-image: url('img/action-excavate-white.svg');
-  }
-  &.search {
-    background-image: url('img/action-search-white.svg');
-  }
-}
+}*/
 
 .action-button, .log {
   .icon, .color {
@@ -122,69 +63,6 @@ html, .mode_3d #game_play_area_background {
   flex-wrap: wrap;
   gap: 20px;
   flex-direction: column;
-}
-
-.artifact-tooltip {
-  &>div {
-    padding: 5px;
-
-    &:not(:last-child) {
-      border-bottom: 1px solid gray;
-    }
-  }
-}
-
-.knowledge-token {
-  display: inline-block;
-  width: 25px;
-  height: 38px;
-  background-size: auto 100%;
-  vertical-align: middle;
-  background-image: url('img/knowledge-tokens.png');
-  background-position-x: 0%;
-
-  &.golden {
-    background-position-x: 100%;
-  }
-
-  &.selectable {
-    &:not(.selected) {
-      box-shadow: 0 0 5px 5px white;
-    }
-    cursor: pointer;
-  }
-
-  &.selected {
-    box-shadow: 0 0 5px 5px red;
-  }
-}
-
-#last-round {
-    margin: 5px -5px -5px;
-    text-align: center;
-    background-color: #900;
-    color: white;
-    text-shadow: 0 0 1px #900, 0 0 5px #900, 0 0 6px #900, 0 0 7px #900;
-
-    .last-round-text {
-        display: inline-block;
-
-        &.animate {
-            animation: last-round-animation 2s 1 forwards ease-in-out;
-        }
-    }
-}
-
-@keyframes last-round-animation {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(3);
-  }
-  100% { 
-    transform: scale(1);
-  }
 }
 
 #logs .log.notif_newUndoableStep {
@@ -253,4 +131,12 @@ html, .mode_3d #game_play_area_background {
 /* Mobile logs */
 .log.cancel.roundedbox {
   background-color: #ef9a9a;
+}
+
+.log-card-image {
+  margin: 3px;
+  display: flex;
+  justify-content: center;
+  max-height: 54px;
+  overflow: hidden;
 }

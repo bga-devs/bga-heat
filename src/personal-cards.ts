@@ -58,4 +58,29 @@ class CardsManager extends CardManager<Card> {
             case '106': case '111': return _('Heat card');
         }
     }
+    
+    public getHtml(card: Card): string {
+        const type = Number(card.type);
+        let className = '';
+        let col = null;
+        switch (type) {
+            case 110:
+                className ='stress';
+                break;
+            case 111:
+                className = 'heat';
+                break;
+            default:
+                col = `${type % 100}`;
+                break;
+        }
+
+        let html = `<div class="card personal-card" data-side="front">
+            <div class="card-sides">
+                <div class="card-side front ${className}" ${col !== null ? `data-col="${col}"` : ''}>
+                </div>
+            </div>
+        </div>`;
+        return html;
+    }
 }

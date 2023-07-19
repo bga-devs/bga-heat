@@ -26,3 +26,23 @@
   transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r)) translateX(-30.5px) translateY(-17px);
   transform-origin: top left;
 }
+
+.map-indicator {
+  position: absolute;
+  left: -16px;
+  top: -16px;
+  width: 32px;
+  height: 32px;
+  background: url('img/cars.png');
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 5px 5px white;
+  transform: translateX(var(--x)) translateY(var(--y));
+  transform-origin: top left;
+  cursor: pointer;
+
+  &.hover, &:hover {
+    background: yellow;
+    box-shadow: 0 0 5px 5px yellow;
+  }
+}
