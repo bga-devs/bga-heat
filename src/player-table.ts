@@ -1,10 +1,41 @@
 const isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
+const PERSONAL_CARDS_SORTING = (a: Card, b: Card) => Number(a.type) - Number(b.type);
+
+class InPlayStock extends LineStock<Card> {
+    private playerId: number;
+
+    constructor(game: HeatGame, constructor: Constructor) {
+        super(game.cardsManager, document.getElementById(`player-table-${constructor.pId}-inplay`), {
+            sort: PERSONAL_CARDS_SORTING,
+        });
+        this.playerId = constructor.pId;
+        this.addCards(Object.values(constructor.inplay));
+        this.toggleInPlay(); // in case inplay is empty, addCard is not called
+    }
+
+    private toggleInPlay() {
+        document.getElementById(`player-table-${this.playerId}-inplay-wrapper`).dataset.visible = (!this.isEmpty()).toString();
+    }
+
+    public addCard(card: Card, animation?: CardAnimation<Card>, settings?: AddCardSettings): Promise<boolean> {
+        const promise = super.addCard(card, animation, settings);
+        this.toggleInPlay();
+        return promise;
+    }
+
+    public cardRemoved(card: Card, settings?: RemoveCardSettings) {
+        super.cardRemoved(card, settings);
+        this.toggleInPlay();
+    }
+}
+
 class PlayerTable {
     public playerId: number;
     public hand?: LineStock<Card>;
     public engine: Deck<Card>;
+    public inplay: InPlayStock;
 
     private currentPlayer: boolean;
     private currentGear: number;
@@ -31,7 +62,12 @@ class PlayerTable {
                 <div id="player-table-${this.playerId}-engine" class="engine"></div>
                 <div id="player-table-${this.playerId}-discard" class="discard"></div>
                 <div id="player-table-${this.playerId}-gear" class="gear" data-gear="${this.currentGear}"></div>
-                <div id="player-table-${this.playerId}-inplay" class="inplay"></div>
+                <div id="player-table-${this.playerId}-inplay-wrapper" class="inplay-wrapper">
+                <div class="hand-wrapper">
+                    <div class="block-label">${_('Cards in play')}</div>
+                        <div id="player-table-${this.playerId}-inplay" class="inplay"></div>
+                    </div>
+                </div>
             </div>
         </div>
         `;
@@ -40,10 +76,10 @@ class PlayerTable {
 
         if (this.currentPlayer) {
             this.hand = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-hand`), {
-                sort: (a: Card, b: Card) => Number(a.type) - Number(b.type),
+                sort: PERSONAL_CARDS_SORTING,
             }); 
             this.hand.onSelectionChange = (selection: Card[]) => this.game.onHandCardSelectionChange(selection);     
-            this.refreshHand(constructor.hand);
+            this.hand.addCards(constructor.hand);
         }
         
         this.engine = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-engine`), {
@@ -53,6 +89,8 @@ class PlayerTable {
                 extraClasses: 'round',
             }
         });
+
+        this.inplay = new InPlayStock(this.game, constructor); 
     }
 
     public setHandSelectable(selectionMode: CardSelectionMode, selectableCardsIds: number[] | null = null, selectedCardsIds: string[] | null = null) {
@@ -72,10 +110,16 @@ class PlayerTable {
     
     public refreshHand(hand: Card[]): Promise<any> {
         this.hand.removeAll();
-        const promise = this.hand.addCards(hand);
-
-        //hand.forEach(card => this.game.cardsManager.getCardElement(card).dataset.playerColor = this.game.getPlayer(this.playerId).color);
-
-        return promise;
+        return this.hand.addCards(hand);
+    }
+    
+    public setInplay(cards: Card[]): Promise<any> {
+        this.inplay.removeAll();
+        return this.inplay.addCards(cards);
+    }
+    
+    public clearPlayedCards(cardIds: number[]) {
+        this.inplay.removeAll();
+        // TODO move them to discard instead
     }
 }

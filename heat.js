@@ -2298,6 +2298,32 @@ var Circuit = /** @class */ (function () {
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 var log = isDebug ? console.log.bind(window.console) : function () { };
+var PERSONAL_CARDS_SORTING = function (a, b) { return Number(a.type) - Number(b.type); };
+var InPlayStock = /** @class */ (function (_super) {
+    __extends(InPlayStock, _super);
+    function InPlayStock(game, constructor) {
+        var _this = _super.call(this, game.cardsManager, document.getElementById("player-table-".concat(constructor.pId, "-inplay")), {
+            sort: PERSONAL_CARDS_SORTING,
+        }) || this;
+        _this.playerId = constructor.pId;
+        _this.addCards(Object.values(constructor.inplay));
+        _this.toggleInPlay(); // in case inplay is empty, addCard is not called
+        return _this;
+    }
+    InPlayStock.prototype.toggleInPlay = function () {
+        document.getElementById("player-table-".concat(this.playerId, "-inplay-wrapper")).dataset.visible = (!this.isEmpty()).toString();
+    };
+    InPlayStock.prototype.addCard = function (card, animation, settings) {
+        var promise = _super.prototype.addCard.call(this, card, animation, settings);
+        this.toggleInPlay();
+        return promise;
+    };
+    InPlayStock.prototype.cardRemoved = function (card, settings) {
+        _super.prototype.cardRemoved.call(this, card, settings);
+        this.toggleInPlay();
+    };
+    return InPlayStock;
+}(LineStock));
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player, constructor) {
         var _this = this;
@@ -2309,14 +2335,14 @@ var PlayerTable = /** @class */ (function () {
         if (this.currentPlayer) {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
         }
-        html += "\n            <div id=\"player-table-".concat(this.playerId, "-board\" class=\"player-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-deck\" class=\"deck\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-engine\" class=\"engine\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discard\" class=\"discard\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-gear\" class=\"gear\" data-gear=\"").concat(this.currentGear, "\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-inplay\" class=\"inplay\"></div>\n            </div>\n        </div>\n        ");
+        html += "\n            <div id=\"player-table-".concat(this.playerId, "-board\" class=\"player-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-deck\" class=\"deck\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-engine\" class=\"engine\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discard\" class=\"discard\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-gear\" class=\"gear\" data-gear=\"").concat(this.currentGear, "\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-inplay-wrapper\" class=\"inplay-wrapper\">\n                <div class=\"hand-wrapper\">\n                    <div class=\"block-label\">").concat(_('Cards in play'), "</div>\n                        <div id=\"player-table-").concat(this.playerId, "-inplay\" class=\"inplay\"></div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         if (this.currentPlayer) {
             this.hand = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-hand")), {
-                sort: function (a, b) { return Number(a.type) - Number(b.type); },
+                sort: PERSONAL_CARDS_SORTING,
             });
             this.hand.onSelectionChange = function (selection) { return _this.game.onHandCardSelectionChange(selection); };
-            this.refreshHand(constructor.hand);
+            this.hand.addCards(constructor.hand);
         }
         this.engine = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-engine")), {
             cardNumber: Object.values(constructor.engine).length,
@@ -2325,6 +2351,7 @@ var PlayerTable = /** @class */ (function () {
                 extraClasses: 'round',
             }
         });
+        this.inplay = new InPlayStock(this.game, constructor);
     }
     PlayerTable.prototype.setHandSelectable = function (selectionMode, selectableCardsIds, selectedCardsIds) {
         var _this = this;
@@ -2343,9 +2370,15 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.refreshHand = function (hand) {
         this.hand.removeAll();
-        var promise = this.hand.addCards(hand);
-        //hand.forEach(card => this.game.cardsManager.getCardElement(card).dataset.playerColor = this.game.getPlayer(this.playerId).color);
-        return promise;
+        return this.hand.addCards(hand);
+    };
+    PlayerTable.prototype.setInplay = function (cards) {
+        this.inplay.removeAll();
+        return this.inplay.addCards(cards);
+    };
+    PlayerTable.prototype.clearPlayedCards = function (cardIds) {
+        this.inplay.removeAll();
+        // TODO move them to discard instead
     };
     return PlayerTable;
 }());
@@ -2492,11 +2525,10 @@ var Heat = /** @class */ (function () {
                 );
             });
         }*/
-        switch (stateName) {
-            case 'discard':
-                this.onEnteringDiscard(args.args);
+        /*switch (stateName) {
+            case 'INMULTIdiscard':
                 break;
-        }
+        }*/
     };
     /*
      * Add a blue/grey button if it doesn't already exists
@@ -2616,6 +2648,7 @@ var Heat = /** @class */ (function () {
                     );
                     break;
                 case 'discard':
+                    this.onEnteringDiscard(args);
                     this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(); });
                     this.onHandCardSelectionChange([]);
                     break;
@@ -2769,7 +2802,9 @@ var Heat = /** @class */ (function () {
             button.classList.toggle('disabled', !allowed);
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
-            var label = _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length));
+            var label = selection.length ?
+                _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length)) :
+                _('No additional discard');
             var button = document.getElementById('actDiscard_button');
             button.innerHTML = label;
         }
@@ -2864,7 +2899,7 @@ var Heat = /** @class */ (function () {
         });
         var notifs = [
             ['updatePlanification', ANIMATION_MS],
-            ['reveal', ANIMATION_MS],
+            ['reveal', undefined],
             ['moveCar', ANIMATION_MS],
             ['updateTurnOrder', 1],
             ['payHeatsForCorner', ANIMATION_MS],
@@ -2911,10 +2946,13 @@ var Heat = /** @class */ (function () {
         // TODO
     };
     Heat.prototype.notif_reveal = function (args) {
-        var constructor_id = args.constructor_id, gear = args.gear;
-        this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId).setCurrentGear(gear);
-        // TODO change gear
-        // TODO show played cards
+        var constructor_id = args.constructor_id, gear = args.gear, cards = args.cards, heat = args.heat;
+        var playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        playerTable.setCurrentGear(gear);
+        return Promise.all([
+            playerTable.setInplay(Object.values(cards)),
+            // TODO discard Heat card
+        ]);
     };
     Heat.prototype.notif_moveCar = function (args) {
         var constructor_id = args.constructor_id, cell = args.cell;
@@ -2954,7 +2992,9 @@ var Heat = /** @class */ (function () {
         this.getCurrentPlayerTable().hand.removeCards(cards);
     };
     Heat.prototype.notif_clearPlayedCards = function (args) {
-        // TODO
+        var constructor_id = args.constructor_id, cardIds = args.cardIds;
+        var playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        playerTable.clearPlayedCards(cardIds);
     };
     /*
     * [Undocumented] Called by BGA framework on any notification message
@@ -3063,7 +3103,6 @@ var Heat = /** @class */ (function () {
                     args.card_image = this.cardImageHtml(args.card, args);
                 }
                 if (args.cards_images === '' && args.cards) {
-                    console.log(log, args);
                     args.cards_images = Object.values(args.cards).map(function (card) { return _this.cardImageHtml(card, args); }).join('');
                 }
                 var constructorKeys = Object.keys(args).filter(function (key) { return key.substring(0, 16) == 'constructor_name'; });

@@ -937,16 +937,35 @@ height: 241px; */
 .player-table .player-board[data-color="12151a"] .gear::after {
   box-shadow: 2px 2px 8px 5px gray;
 }
+.player-table .inplay-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.player-table .inplay-wrapper .hand-wrapper {
+  align-self: unset;
+  padding: 0 10px 10px 10px;
+}
+.player-table .inplay-wrapper[data-visible=false] {
+  display: none;
+}
+.player-table .block-label {
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black, 0 0 4px black;
+  text-align: center;
+  padding: 5px;
+  text-overflow: ellipsis;
+}
 .player-table .block-with-text {
   display: flex;
 }
 .player-table .block-with-text .block-label {
-  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black, 0 0 4px black;
-  text-align: center;
   writing-mode: vertical-lr;
   transform: rotate(180deg);
-  padding: 5px;
-  text-overflow: ellipsis;
 }
 .player-table .block-with-text > div:not(.block-label) {
   flex: 1;

@@ -102,18 +102,41 @@
       }
     }
   }
+
+  .inplay-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    .hand-wrapper {
+      align-self: unset;
+      padding: 0 10px 10px 10px;
+    }
+
+    &[data-visible="false"] {
+      display: none;
+    }
+  }
+
+  .block-label {
+    text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black, 0 0 4px black;
+    text-align: center;
+    //color: white;
+    padding: 5px;
+    text-overflow: ellipsis;
+  }
   
   .block-with-text {
     display: flex;
 
     .block-label {
-      text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black, 0 0 4px black;
-      text-align: center;
       writing-mode: vertical-lr;
       transform: rotate(180deg);
-      //color: white;
-      padding: 5px;
-      text-overflow: ellipsis;
     }
 
     &>div:not(.block-label) {

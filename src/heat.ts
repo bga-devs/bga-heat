@@ -195,11 +195,10 @@ class Heat implements HeatGame {
             });
         }*/
 
-        switch (stateName) {
-            case 'discard':
-                this.onEnteringDiscard(args.args);
+        /*switch (stateName) {
+            case 'INMULTIdiscard':
                 break;
-        }
+        }*/
     }
 
     /*
@@ -330,6 +329,7 @@ class Heat implements HeatGame {
                     );
                     break;
                 case 'discard':
+                    this.onEnteringDiscard(args);
                     (this as any).addActionButton(`actDiscard_button`, '', () => this.actDiscard());
                     this.onHandCardSelectionChange([]);
                     break;
@@ -547,7 +547,9 @@ class Heat implements HeatGame {
             button.classList.toggle('disabled', !allowed);
         } else
         if (this.gamedatas.gamestate.name == 'discard') {
-            const label = _('Discard ${number} selected cards').replace('${number}', `${selection.length}`);
+            const label = selection.length ? 
+                _('Discard ${number} selected cards').replace('${number}', `${selection.length}`) :
+                _('No additional discard');
 
             const button = document.getElementById('actDiscard_button');
             button.innerHTML = label;
@@ -663,7 +665,7 @@ class Heat implements HeatGame {
 
         const notifs = [
             ['updatePlanification', ANIMATION_MS],
-            ['reveal', ANIMATION_MS],
+            ['reveal', undefined],
             ['moveCar', ANIMATION_MS],
             ['updateTurnOrder', 1],
             ['payHeatsForCorner', ANIMATION_MS],
@@ -720,10 +722,13 @@ class Heat implements HeatGame {
     }  
 
     notif_reveal(args: NotifRevealArgs) {
-        const { constructor_id, gear } = args;
-        this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId).setCurrentGear(gear);
-        // TODO change gear
-        // TODO show played cards
+        const { constructor_id, gear, cards, heat } = args;
+        const playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        playerTable.setCurrentGear(gear);
+        return Promise.all([
+            playerTable.setInplay(Object.values(cards)),
+            // TODO discard Heat card
+        ]);
     }  
 
     notif_moveCar(args: NotifMoveCarArgs) {
@@ -770,7 +775,9 @@ class Heat implements HeatGame {
     }
 
     notif_clearPlayedCards(args: NotifClearPlayedCardsArgs) {
-        // TODO
+        const { constructor_id, cardIds } = args;
+        const playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        playerTable.clearPlayedCards(cardIds);
     }
     
     /*
@@ -889,7 +896,6 @@ class Heat implements HeatGame {
                 }
 
                 if (args.cards_images === '' && args.cards) {
-                    console.log(log, args);
                     args.cards_images = Object.values(args.cards).map((card: Card) => this.cardImageHtml(card, args)).join('');
                 }
                 

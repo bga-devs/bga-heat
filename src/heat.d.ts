@@ -96,7 +96,7 @@ interface NotifUpdatePlanificationArgs { // TODO
 interface NotifRevealArgs {
     constructor_id: number;
     gear: number; // new gear
-    cards: Card[];
+    cards: { [id: number]: Card};
     heat?: any; // TODO
 }
 

@@ -13,11 +13,5 @@ Frontend :
 
   - reveal : handle when args.heat != null
 
-  - "args._private undefined" => discard state for inactive player
-
-  - display "inplay" cards somewhere
   - display discard
   - display number of cards left in deck ??
-
-  - discard state : notif for public discard (clearPlayedCards)
-  - discard state : change button title for "no additional discard" when 0 card selected ?
