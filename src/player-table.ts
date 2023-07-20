@@ -15,7 +15,7 @@ class PlayerTable {
         this.currentGear = constructor.gear;
 
         let html = `
-        <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color};">
+        <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color}; --personal-card-background-y: ${constructor.id * 100 / 6}%;">
             <div id="player-table-${this.playerId}-name" class="name-wrapper">${player.name}</div>
         `;
         if (this.currentPlayer) {
@@ -27,8 +27,11 @@ class PlayerTable {
         }
         html += `
             <div id="player-table-${this.playerId}-board" class="player-board" data-color="${player.color}">
+                <div id="player-table-${this.playerId}-deck" class="deck"></div>
                 <div id="player-table-${this.playerId}-engine" class="engine"></div>
+                <div id="player-table-${this.playerId}-discard" class="discard"></div>
                 <div id="player-table-${this.playerId}-gear" class="gear" data-gear="${this.currentGear}"></div>
+                <div id="player-table-${this.playerId}-inplay" class="inplay"></div>
             </div>
         </div>
         `;
@@ -71,7 +74,7 @@ class PlayerTable {
         this.hand.removeAll();
         const promise = this.hand.addCards(hand);
 
-        hand.forEach(card => this.game.cardsManager.getCardElement(card).dataset.playerColor = this.game.getPlayer(this.playerId).color);
+        //hand.forEach(card => this.game.cardsManager.getCardElement(card).dataset.playerColor = this.game.getPlayer(this.playerId).color);
 
         return promise;
     }

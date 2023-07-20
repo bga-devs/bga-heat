@@ -1,9 +1,41 @@
-class TableCenter {
+const MAP_WIDTH = 1650;
+const MAP_HEIGHT = 1093;
+
+class Circuit {
+    private mapDiv: HTMLDivElement;
+    private scale; number = 1;
         
     constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
-        document.getElementById('circuit').style.backgroundImage = `url('${g_gamethemeurl}img/Circuits/${gamedatas.circuit}.jpg')`;
+        this.mapDiv = document.getElementById('circuit') as HTMLDivElement;
+
+        this.mapDiv.style.backgroundImage = `url('${g_gamethemeurl}img/Circuits/${gamedatas.circuit}.jpg')`;
 
         Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
+    }
+
+    /** 
+     * Set map size, depending on available screen size.
+     * Player table will be placed left or bottom, depending on window ratio.
+     */ 
+    public setAutoZoom() {
+
+        if (!this.mapDiv.clientWidth) {
+            setTimeout(() => this.setAutoZoom(), 200);
+            return;
+        }
+
+        const gameWidth = MAP_WIDTH;
+        const gameHeight = MAP_HEIGHT;
+
+        const horizontalScale = document.getElementById('game_play_area').clientWidth / gameWidth;
+        const verticalScale = (window.innerHeight - 80) / gameHeight;
+        this.scale = Math.min(1, horizontalScale, verticalScale);
+
+        this.mapDiv.style.transform = this.scale === 1 ? '' : `scale(${this.scale})`;
+        const maxHeight = this.scale === 1 ? '' : `${MAP_HEIGHT * this.scale}px`;
+        //this.mapDiv.style.maxHeight = maxHeight;
+        document.getElementById('table-center').style.maxHeight = maxHeight;
+        //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     }
 
     private createCar(constructor: Constructor) {
@@ -16,7 +48,7 @@ class TableCenter {
         car.style.setProperty('--y', `${scale * cell.y}px`);
         car.style.setProperty('--r', `${cell.a}deg`);
         car.style.setProperty('--constructor-id', `${constructor.id}`);
-        document.getElementById('circuit').insertAdjacentElement('beforeend', car);
+        this.mapDiv.insertAdjacentElement('beforeend', car);
     }
 
     public moveCar(constructorId: number, carCell: number) {
@@ -36,7 +68,7 @@ class TableCenter {
         let scale = 1650 / 1280;
         mapIndicator.style.setProperty('--x', `${scale * cell.x}px`);
         mapIndicator.style.setProperty('--y', `${scale * cell.y}px`);
-        document.getElementById('circuit').insertAdjacentElement('beforeend', mapIndicator);
+        this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
 
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);
@@ -44,6 +76,6 @@ class TableCenter {
     }
     
     public removeMapIndicators(): void {
-        document.getElementById('circuit').querySelectorAll('.map-indicator').forEach(elem => elem.remove());
+        this.mapDiv.querySelectorAll('.map-indicator').forEach(elem => elem.remove());
     }
 }

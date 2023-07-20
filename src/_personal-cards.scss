@@ -31,7 +31,10 @@
                     background-position: #{1 * 100% / 6} 100%;
                 }
 
-                
+                &:not(.stress):not(.heat) {
+                    background-position-y: var(--personal-card-background-y);
+                }
+
                 @for $col from 0 through 6 {
                     &[data-col="#{$col}"]  {
                         background-position-x: #{$col * 100% / 6};
@@ -40,13 +43,6 @@
             }
         }
     }
-
-    @each $playerColor in $playerColors {
-      $i: index($playerColors, $playerColor) - 1;
-      &[data-player-color="#{$playerColor}"] .front { 
-        background-position-y: #{$i * 100% / 6};
-      }
-    } 
 
     &.bga-cards_selectable-card:not(.bga-cards_disabled-card) {
         &:not(.bga-cards_selected-card) {

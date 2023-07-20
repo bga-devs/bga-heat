@@ -524,6 +524,9 @@ height: 241px; */
 .personal-card .card-sides .card-side.front.heat {
   background-position: 16.6666666667% 100%;
 }
+.personal-card .card-sides .card-side.front:not(.stress):not(.heat) {
+  background-position-y: var(--personal-card-background-y);
+}
 .personal-card .card-sides .card-side.front[data-col="0"] {
   background-position-x: 0%;
 }
@@ -544,24 +547,6 @@ height: 241px; */
 }
 .personal-card .card-sides .card-side.front[data-col="6"] {
   background-position-x: 100%;
-}
-.personal-card[data-player-color="12151a"] .front {
-  background-position-y: 0%;
-}
-.personal-card[data-player-color="376bbe"] .front {
-  background-position-y: 16.6666666667%;
-}
-.personal-card[data-player-color="26a54e"] .front {
-  background-position-y: 33.3333333333%;
-}
-.personal-card[data-player-color=e52927] .front {
-  background-position-y: 50%;
-}
-.personal-card[data-player-color="979797"] .front {
-  background-position-y: 66.6666666667%;
-}
-.personal-card[data-player-color=face0d] .front {
-  background-position-y: 83.3333333333%;
 }
 .personal-card.bga-cards_selectable-card:not(.bga-cards_disabled-card):not(.bga-cards_selected-card) {
   animation: selectable-card-animation 1s alternate infinite ease-in-out;
@@ -759,29 +744,29 @@ height: 241px; */
     box-shadow: 0 0 5px 3px white;
   }
 }
-#table-center-wrapper {
+#table-center {
   display: flex;
   justify-content: center;
 }
-
 #table-center #circuit {
   position: relative;
   width: 1650px;
   height: 1093px;
-  background-size: contain;
+  background-size: cover;
+  transform-origin: top center;
 }
 
 .car {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: -30.5px;
+  top: -17px;
   width: 61.08px;
   height: 34px;
   background: url("img/cars.png");
   background-position-y: calc(var(--constructor-id) * 20%);
   background-size: 100% 600%;
-  transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r)) translateX(-30.5px) translateY(-17px);
-  transform-origin: top left;
+  transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
+  transform-origin: center center;
 }
 
 .map-indicator {

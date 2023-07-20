@@ -21,7 +21,7 @@ class Heat implements HeatGame {
 
     private zoomManager: ZoomManager;
     private gamedatas: HeatGamedatas;
-    private tableCenter: TableCenter;
+    private circuit: Circuit;
     private playersTables: PlayerTable[] = [];
     private handCounters: Counter[] = [];
     private engineCounters: Counter[] = [];
@@ -88,31 +88,31 @@ class Heat implements HeatGame {
             defaultFolded: true,
         });
 
-        this.tableCenter = new TableCenter(this, gamedatas);
+        this.circuit = new Circuit(this, gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
         
-        this.zoomManager = new ZoomManager({
-            element: document.getElementById('table'),
+        /*this.zoomManager = new ZoomManager({
+            element: document.getElementById('tables'),
             smooth: false,
             zoomControls: {
                 color: 'black',
             },
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
-        });
+        });*/
 
         new HelpManager(this, { 
             buttons: [
                 new BgaHelpPopinButton({
                     title: _("Card help").toUpperCase(),
                     html: this.getHelpHtml(),
-                    onPopinCreated: () => this.populateHelp(),
-                    buttonBackground: '#87a04f',
+                    buttonBackground: '#341819',
                 }),
             ]
         });
         this.setupNotifications();
         this.setupPreferences();
+        (this as any).onScreenWidthChange = () => this.circuit.setAutoZoom();
 
         log( "Ending game setup" );
     }
@@ -243,13 +243,13 @@ class Heat implements HeatGame {
 
     private onEnteringChooseSpeed(args: EnteringChooseSpeedArgs) {
         Object.entries(args.speeds).forEach(entry => 
-            this.tableCenter.addMapIndicator(entry[1], () => this.actChooseSpeed(Number(entry[0])))
+            this.circuit.addMapIndicator(entry[1], () => this.actChooseSpeed(Number(entry[0])))
         );
     }
 
     private onEnteringSlipstream(args: EnteringSlipstreamArgs) {
         Object.entries(args.cells).forEach(entry => 
-            this.tableCenter.addMapIndicator(entry[1], () => this.actSlipstream(Number(entry[0])))
+            this.circuit.addMapIndicator(entry[1], () => this.actSlipstream(Number(entry[0])))
         );
     }
 
@@ -281,7 +281,7 @@ class Heat implements HeatGame {
     }
 
     private onLeavingChooseSpeed() {
-        this.tableCenter.removeMapIndicators();
+        this.circuit.removeMapIndicators();
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -518,54 +518,14 @@ class Heat implements HeatGame {
         });
     }
 
-    private setScore(playerId: number, score: number) {
-        (this as any).scoreCtrl[playerId]?.toValue(score);
-    }
-
     private getHelpHtml() {
         let html = `
         <div id="help-popin">
             <h1>${_("Assets")}</h2>
-            <div class="help-section">
-                <div class="icon vp"></div>
-                <div class="help-label">${_("Gain 1 <strong>Victory Point</strong>. The player moves their token forward 1 space on the Score Track.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon recruit"></div>
-                <div class="help-label">${_("Gain 1 <strong>Recruit</strong>: The player adds 1 Recruit token to their ship.")} ${_("It is not possible to have more than 3.")} ${_("A recruit allows a player to draw the Viking card of their choice when Recruiting or replaces a Viking card during Exploration.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon bracelet"></div>
-                <div class="help-label">${_("Gain 1 <strong>Silver Bracelet</strong>: The player adds 1 Silver Bracelet token to their ship.")} ${_("It is not possible to have more than 3.")} ${_("They are used for Trading.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon reputation"></div>
-                <div class="help-label">${_("Gain 1 <strong>Reputation Point</strong>: The player moves their token forward 1 space on the Reputation Track.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon take-card"></div>
-                <div class="help-label">${_("Draw <strong>the first Viking card</strong> from the deck: It is placed in the player’s Crew Zone (without taking any assets).")}</div>
-            </div>
-
-            <h1>${_("Powers of the artifacts (variant option)")}</h1>
-        `;
-
-        for (let i = 1; i <=7; i++) {
-            html += `
-            <div class="help-section">
-                <div id="help-artifact-${i}"></div>
-                <div>${this.technologyTilesManager.getTooltip(i as any)}</div>
-            </div> `;
-        }
-        html += `</div>`;
+            TODO
+        </div>`;
 
         return html;
-    }
-
-    private populateHelp() {
-        for (let i = 1; i <=7; i++) {
-            this.technologyTilesManager.setForHelp(i, `help-artifact-${i}`);
-        }
     }
     
     public onHandCardSelectionChange(selection: Card[]): void {
@@ -768,7 +728,7 @@ class Heat implements HeatGame {
 
     notif_moveCar(args: NotifMoveCarArgs) {
         const { constructor_id, cell } = args;
-        this.tableCenter.moveCar(constructor_id, cell);
+        this.circuit.moveCar(constructor_id, cell);
     } 
 
     notif_updateTurnOrder(args: NotifUpdateTurnOrderArgs) {
@@ -908,6 +868,11 @@ class Heat implements HeatGame {
         return `<span style="font-weight: bold; color: #${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == constructorName).id]}">${constructorName}</span>`;
     }
 
+    private cardImageHtml(card: Card, args: any) {
+        const constructorId = args.constructor_id ?? Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId())?.id;
+        return `<div class="log-card-image" style="--personal-card-background-y: ${constructorId * 100 / 6}%;">${this.cardsManager.getHtml(card)}</div>`;
+    }
+
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     public format_string_recursive(log: string, args: any) {
@@ -920,11 +885,12 @@ class Heat implements HeatGame {
                 }
 
                 if (args.card_image === '' && args.card) {
-                    args.card_image = `<div class="log-card-image">${this.cardsManager.getHtml(args.card)}</div>`;
+                    args.card_image = this.cardImageHtml(args.card, args);
                 }
 
                 if (args.cards_images === '' && args.cards) {
-                    args.cards_images = Object.values(args.cards).map((card: Card) => `<div class="log-card-image">${this.cardsManager.getHtml(card)}</div>`).join('');
+                    console.log(log, args);
+                    args.cards_images = Object.values(args.cards).map((card: Card) => this.cardImageHtml(card, args)).join('');
                 }
                 
                 let constructorKeys = Object.keys(args).filter((key) => key.substring(0, 16) == 'constructor_name');
