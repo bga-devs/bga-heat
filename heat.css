@@ -902,22 +902,31 @@ height: 241px; */
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: var(--player-color);
-  box-shadow: 2px 2px 8px 5px black;
   top: 198px;
   right: 52px;
   transition: top 0.5s;
+  /*&::after {
+    content: '';
+    position: absolute;
+    left: 25px;
+    right: 25px;
+    top: 25px;
+    bottom: 25px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 39% 25%, #FFFFFFBB 2px, var(--player-color) 4%, #000000BB 100%);
+    box-shadow: 2px 2px 8px 5px black;
+  }*/
 }
 .player-table .player-board .gear::after {
   content: "";
   position: absolute;
-  left: 25px;
-  right: 25px;
-  top: 25px;
-  bottom: 25px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 39% 25%, rgba(255, 255, 255, 0.7333333333) 2px, var(--player-color) 4%, rgba(0, 0, 0, 0.7333333333) 100%);
-  box-shadow: 2px 2px 8px 5px black;
+  background-image: url("img/stick.png");
+  background-size: auto 100%;
 }
 .player-table .player-board .gear[data-gear="4"] {
   top: 274px;
@@ -931,11 +940,34 @@ height: 241px; */
 .player-table .player-board .gear[data-gear="1"] {
   top: 657px;
 }
-.player-table .player-board[data-color="12151a"] .gear {
-  box-shadow: 2px 2px 8px 5px gray;
+.player-table .player-board [data-color="12151a"] .gear::after {
+  background-position-x: 0%;
 }
-.player-table .player-board[data-color="12151a"] .gear::after {
-  box-shadow: 2px 2px 8px 5px gray;
+.player-table .player-board [data-color="376bbe"] .gear::after {
+  background-position-x: 33.3333333333%;
+}
+.player-table .player-board [data-color="26a54e"] .gear::after {
+  background-position-x: 66.6666666667%;
+}
+.player-table .player-board [data-color=e52927] .gear::after {
+  background-position-x: 100%;
+}
+.player-table .player-board [data-color="979797"] .gear::after {
+  background-position-x: 133.3333333333%;
+}
+.player-table .player-board [data-color=face0d] .gear::after {
+  background-position-x: 166.6666666667%;
+}
+.player-table .player-board[data-color="12151a"] .gear::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0px 0px 8px 5px white;
 }
 .player-table .inplay-wrapper {
   position: absolute;
@@ -1008,20 +1040,38 @@ html, .mode_3d #game_play_area_background {
   background-position: top;
 }
 
-/* TODO
 .icon {
   display: inline-block;
   width: 32px;
   height: 32px;
+  background-image: url("img/icons.png");
   background-size: auto 100%;
   background-repeat: no-repeat;
   background-position: center;
   vertical-align: middle;
+}
+.icon.turn {
+  background-position-x: 0%;
+}
+.icon.engine {
+  background-position-x: 16.6666666667%;
+}
+.icon.heat {
+  background-position-x: 33.3333333333%;
+}
+.icon.cooldown {
+  background-position-x: 50%;
+}
+.icon.stress {
+  background-position-x: 66.6666666667%;
+}
+.icon.boost {
+  background-position-x: 83.3333333333%;
+}
+.icon.speed {
+  background-position-x: 100%;
+}
 
-  &.knowledge {
-    background-image: url('img/knowledge-icon.svg');
-  }
-}*/
 .action-button .icon, .action-button .color, .log .icon, .log .color {
   width: 24px;
   height: 24px;

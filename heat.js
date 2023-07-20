@@ -2387,6 +2387,10 @@ var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
+function formatTextIcons(str) {
+    return str
+        .replace(/\[Heat\]/ig, '<div class="heat icon"></div>');
+}
 var Heat = /** @class */ (function () {
     function Heat() {
         this.playersTables = [];
@@ -2721,10 +2725,7 @@ var Heat = /** @class */ (function () {
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
             var constructor = _this.getPlayerConstructor(playerId);
-            document.getElementById("player_score_".concat(player.id)).insertAdjacentHTML('beforebegin', "<div class=\"vp icon\"></div>");
-            document.getElementById("icon_point_".concat(player.id)).remove();
-            /**/
-            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(player.id, "\" class=\"engine-counter\">\n                    Engine\n                    <span id=\"engine-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-").concat(player.id, "\" class=\"speed-counter\">\n                    Speed \n                    <span id=\"speed-counter-").concat(player.id, "\">-</span>\n                </div>\n                <div id=\"turn-counter-wrapper-").concat(player.id, "\" class=\"turn-counter\">\n                    Turn\n                    <span id=\"turn-counter-").concat(player.id, "\">-</span> / ").concat(gamedatas.nbrLaps, "\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(player.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n            </div>");
+            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(player.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-").concat(player.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(player.id, "\">-</span>\n                </div>\n                <div id=\"turn-counter-wrapper-").concat(player.id, "\" class=\"turn-counter\">\n                    <div class=\"turn icon\"></div>\n                    <span id=\"turn-counter-").concat(player.id, "\">-</span> / ").concat(gamedatas.nbrLaps, "\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(player.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(player.id));
             _this.handCounters[playerId] = new ebg.counter();
             _this.handCounters[playerId].create("playerhand-counter-".concat(playerId));
@@ -2745,6 +2746,8 @@ var Heat = /** @class */ (function () {
         });
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
+        this.setTooltipToClass('speed-counter', _('Speed'));
+        this.setTooltipToClass('turn-counter', _('Turns'));
     };
     Heat.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;
@@ -2760,28 +2763,6 @@ var Heat = /** @class */ (function () {
         var table = new PlayerTable(this, gamedatas.players[playerId], this.getPlayerConstructor(playerId));
         this.playersTables.push(table);
     };
-    Heat.prototype.updateGains = function (playerId, gains) {
-        Object.entries(gains).forEach(function (entry) {
-            var type = Number(entry[0]);
-            var amount = entry[1];
-            if (amount != 0) {
-                switch (type) {
-                    /*case VP:
-                        this.setScore(playerId, (this as any).scoreCtrl[playerId].getValue() + amount);
-                        break;
-                    case BRACELET:
-                        this.setBracelets(playerId, this.braceletCounters[playerId].getValue() + amount);
-                        break;
-                    case RECRUIT:
-                        this.setRecruits(playerId, this.recruitCounters[playerId].getValue() + amount);
-                        break;
-                    case REPUTATION:
-                        this.setReputation(playerId, this.tableCenter.getReputation(playerId) + amount);
-                        break;*/
-                }
-            }
-        });
-    };
     Heat.prototype.getHelpHtml = function () {
         var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Assets"), "</h2>\n            TODO\n        </div>");
         return html;
@@ -2794,7 +2775,7 @@ var Heat = /** @class */ (function () {
             var maxAllowed = Math.min(4, gear + 2);
             var allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
             var label = allowed ?
-                _('Set gear to ${gear} an play selected cards').replace('${gear}', "".concat(selection.length)) + (Math.abs(selection.length - gear) == 2 ? ' (+1 [Heat])' : '') :
+                _('Set gear to ${gear} an play selected cards').replace('${gear}', "".concat(selection.length)) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
                 _('Select between ${min} and ${max} cards').replace('${min}', "".concat(minAllowed)).replace('${max}', "".concat(maxAllowed));
             document.getElementById("player-table-".concat(table.playerId, "-gear")).dataset.gear = "".concat(allowed ? selection.length : gear);
             var button = document.getElementById('actPlanification_button');

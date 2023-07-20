@@ -14,6 +14,11 @@ const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
 const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
 
+function formatTextIcons(str: string) {
+    return str
+        .replace(/\[Heat\]/ig, '<div class="heat icon"></div>');
+}
+
 class Heat implements HeatGame {
     public animationManager: AnimationManager;
     public cardsManager: CardsManager;
@@ -417,27 +422,23 @@ class Heat implements HeatGame {
             const playerId = Number(player.id);
             const constructor = this.getPlayerConstructor(playerId);
 
-            document.getElementById(`player_score_${player.id}`).insertAdjacentHTML('beforebegin', `<div class="vp icon"></div>`);
-            document.getElementById(`icon_point_${player.id}`).remove();
-
-            /**/
             let html = `<div class="counters">
                 <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
                     <div class="player-hand-card"></div> 
                     <span id="playerhand-counter-${player.id}"></span>
                 </div>
                 <div id="engine-counter-wrapper-${player.id}" class="engine-counter">
-                    Engine
+                    <div class="engine icon"></div>
                     <span id="engine-counter-${player.id}"></span>
                 </div>
             </div>
             <div class="counters">
                 <div id="speed-counter-wrapper-${player.id}" class="speed-counter">
-                    Speed 
+                    <div class="speed icon"></div>
                     <span id="speed-counter-${player.id}">-</span>
                 </div>
                 <div id="turn-counter-wrapper-${player.id}" class="turn-counter">
-                    Turn
+                    <div class="turn icon"></div>
                     <span id="turn-counter-${player.id}">-</span> / ${gamedatas.nbrLaps}
                 </div>
             </div>
@@ -475,6 +476,8 @@ class Heat implements HeatGame {
 
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
+        this.setTooltipToClass('speed-counter', _('Speed'));
+        this.setTooltipToClass('turn-counter', _('Turns'));
     }
 
     private createPlayerTables(gamedatas: HeatGamedatas) {
@@ -492,30 +495,6 @@ class Heat implements HeatGame {
     private createPlayerTable(gamedatas: HeatGamedatas, playerId: number) {
         const table = new PlayerTable(this, gamedatas.players[playerId], this.getPlayerConstructor(playerId));
         this.playersTables.push(table);
-    }
-
-    private updateGains(playerId: number, gains: { [type: number]: number }) {
-        Object.entries(gains).forEach(entry => {
-            const type = Number(entry[0]);
-            const amount = entry[1];
-
-            if (amount != 0) {
-                switch (type) {
-                    /*case VP:
-                        this.setScore(playerId, (this as any).scoreCtrl[playerId].getValue() + amount);
-                        break;
-                    case BRACELET:
-                        this.setBracelets(playerId, this.braceletCounters[playerId].getValue() + amount);
-                        break;
-                    case RECRUIT:
-                        this.setRecruits(playerId, this.recruitCounters[playerId].getValue() + amount);
-                        break;
-                    case REPUTATION:
-                        this.setReputation(playerId, this.tableCenter.getReputation(playerId) + amount);
-                        break;*/
-                }
-            }
-        });
     }
 
     private getHelpHtml() {
@@ -537,7 +516,7 @@ class Heat implements HeatGame {
             const maxAllowed = Math.min(4, gear + 2);
             const allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
             const label = allowed ? 
-                _('Set gear to ${gear} an play selected cards').replace('${gear}', `${selection.length}`) + (Math.abs(selection.length - gear) == 2 ? ' (+1 [Heat])' : '') :
+                _('Set gear to ${gear} an play selected cards').replace('${gear}', `${selection.length}`) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
                 _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
 
             document.getElementById(`player-table-${table.playerId}-gear`).dataset.gear = `${allowed ? selection.length : gear}`;
