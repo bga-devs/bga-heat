@@ -211,10 +211,12 @@ class Notifications
     if (isset($data['constructors'])) {
       $args = [];
       $logs = [];
+      $data['constructor_ids'] = [];
       foreach ($data['constructors'] as $i => $constructor) {
         $logs[] = '${constructor_name' . $i . '}';
         $args['constructor_name' . $i] = $constructor->getName();
         $args['constructor_id' . $i] = $constructor->getId();
+        $data['constructor_ids'][] = $constructor->getId();
       }
       $data['constructors_names'] = [
         'log' => join(', ', $logs),

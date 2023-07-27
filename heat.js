@@ -1154,10 +1154,10 @@ var CardStock = /** @class */ (function () {
         var selectableCardsClass = this.getSelectableCardClass();
         var unselectableCardsClass = this.getUnselectableCardClass();
         if (selectableCardsClass) {
-            element.classList.toggle(selectableCardsClass, selectable);
+            element === null || element === void 0 ? void 0 : element.classList.toggle(selectableCardsClass, selectable);
         }
         if (unselectableCardsClass) {
-            element.classList.toggle(unselectableCardsClass, !selectable);
+            element === null || element === void 0 ? void 0 : element.classList.toggle(unselectableCardsClass, !selectable);
         }
         if (!selectable && this.isSelected(card)) {
             this.unselectCard(card, true);
@@ -1192,7 +1192,7 @@ var CardStock = /** @class */ (function () {
         }
         var element = this.getCardElement(card);
         var selectableCardsClass = this.getSelectableCardClass();
-        if (!element.classList.contains(selectableCardsClass)) {
+        if (!element || !element.classList.contains(selectableCardsClass)) {
             return;
         }
         if (this.selectionMode === 'single') {
@@ -1216,7 +1216,7 @@ var CardStock = /** @class */ (function () {
         if (silent === void 0) { silent = false; }
         var element = this.getCardElement(card);
         var selectedCardsClass = this.getSelectedCardClass();
-        element.classList.remove(selectedCardsClass);
+        element === null || element === void 0 ? void 0 : element.classList.remove(selectedCardsClass);
         var index = this.selectedCards.findIndex(function (c) { return _this.manager.getId(c) == _this.manager.getId(card); });
         if (index !== -1) {
             this.selectedCards.splice(index, 1);
@@ -1363,7 +1363,7 @@ var CardStock = /** @class */ (function () {
         var selectableCardsClass = this.getSelectableCardClass();
         var unselectableCardsClass = this.getUnselectableCardClass();
         var selectedCardsClass = this.getSelectedCardClass();
-        cardElement.classList.remove(selectableCardsClass, unselectableCardsClass, selectedCardsClass);
+        cardElement === null || cardElement === void 0 ? void 0 : cardElement.classList.remove(selectableCardsClass, unselectableCardsClass, selectedCardsClass);
     };
     return CardStock;
 }());
@@ -1642,6 +1642,23 @@ var SlotStock = /** @class */ (function (_super) {
         this.element.innerHTML = '';
         this.slotsIds = slotsIds !== null && slotsIds !== void 0 ? slotsIds : [];
         this.slotsIds.forEach(function (slotId) {
+            _this.createSlot(slotId);
+        });
+    };
+    /**
+     * Add new slots ids. Will not change nor empty the existing ones.
+     *
+     * @param slotsIds the new slotsIds. Will be merged with the old ones.
+     */
+    SlotStock.prototype.addSlotsIds = function (newSlotsIds) {
+        var _a;
+        var _this = this;
+        if (newSlotsIds.length == 0) {
+            // no change
+            return;
+        }
+        (_a = this.slotsIds).push.apply(_a, newSlotsIds);
+        newSlotsIds.forEach(function (slotId) {
             _this.createSlot(slotId);
         });
     };
@@ -2116,6 +2133,24 @@ var CardsManager = /** @class */ (function (_super) {
             case '111': return _('Heat card');
         }
     };
+    CardsManager.prototype.getHtml = function (card) {
+        var type = Number(card.type);
+        var className = '';
+        var col = null;
+        switch (type) {
+            case 110:
+                className = 'stress';
+                break;
+            case 111:
+                className = 'heat';
+                break;
+            default:
+                col = "".concat(type % 100);
+                break;
+        }
+        var html = "<div class=\"card personal-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front ".concat(className, "\" ").concat(col !== null ? "data-col=\"".concat(col, "\"") : '', ">\n                </div>\n            </div>\n        </div>");
+        return html;
+    };
     return CardsManager;
 }(CardManager));
 var TILE_COLORS = {
@@ -2191,14 +2226,39 @@ var TechnologyTilesManager = /** @class */ (function (_super) {
     };
     return TechnologyTilesManager;
 }(CardManager));
-var TableCenter = /** @class */ (function () {
-    function TableCenter(game, gamedatas) {
+var MAP_WIDTH = 1650;
+var MAP_HEIGHT = 1093;
+var Circuit = /** @class */ (function () {
+    function Circuit(game, gamedatas) {
         var _this = this;
         this.game = game;
-        document.getElementById('circuit').style.backgroundImage = "url('".concat(g_gamethemeurl, "img/Circuits/").concat(gamedatas.circuit, ".jpg')");
+        this.number = 1;
+        this.mapDiv = document.getElementById('circuit');
+        this.mapDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/Circuits/").concat(gamedatas.circuit, ".jpg')");
         Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
     }
-    TableCenter.prototype.createCar = function (constructor) {
+    /**
+     * Set map size, depending on available screen size.
+     * Player table will be placed left or bottom, depending on window ratio.
+     */
+    Circuit.prototype.setAutoZoom = function () {
+        var _this = this;
+        if (!this.mapDiv.clientWidth) {
+            setTimeout(function () { return _this.setAutoZoom(); }, 200);
+            return;
+        }
+        var gameWidth = MAP_WIDTH;
+        var gameHeight = MAP_HEIGHT;
+        var horizontalScale = document.getElementById('game_play_area').clientWidth / gameWidth;
+        var verticalScale = (window.innerHeight - 80) / gameHeight;
+        this.scale = Math.min(1, horizontalScale, verticalScale);
+        this.mapDiv.style.transform = this.scale === 1 ? '' : "scale(".concat(this.scale, ")");
+        var maxHeight = this.scale === 1 ? '' : "".concat(MAP_HEIGHT * this.scale, "px");
+        //this.mapDiv.style.maxHeight = maxHeight;
+        document.getElementById('table-center').style.maxHeight = maxHeight;
+        //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
+    };
+    Circuit.prototype.createCar = function (constructor) {
         var car = document.createElement('div');
         car.id = "car-".concat(constructor.id),
             car.classList.add('car');
@@ -2208,9 +2268,9 @@ var TableCenter = /** @class */ (function () {
         car.style.setProperty('--y', "".concat(scale * cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
         car.style.setProperty('--constructor-id', "".concat(constructor.id));
-        document.getElementById('circuit').insertAdjacentElement('beforeend', car);
+        this.mapDiv.insertAdjacentElement('beforeend', car);
     };
-    TableCenter.prototype.moveCar = function (constructorId, carCell) {
+    Circuit.prototype.moveCar = function (constructorId, carCell) {
         var car = document.getElementById("car-".concat(constructorId));
         var cell = window['USA_DATAS'][carCell];
         var scale = 1650 / 1280;
@@ -2218,10 +2278,52 @@ var TableCenter = /** @class */ (function () {
         car.style.setProperty('--y', "".concat(scale * cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
     };
-    return TableCenter;
+    Circuit.prototype.addMapIndicator = function (cellId, clickCallback) {
+        var mapIndicator = document.createElement('div');
+        mapIndicator.id = "map-indicator-".concat(cellId),
+            mapIndicator.classList.add('map-indicator');
+        var cell = window['USA_DATAS'][cellId];
+        var scale = 1650 / 1280;
+        mapIndicator.style.setProperty('--x', "".concat(scale * cell.x, "px"));
+        mapIndicator.style.setProperty('--y', "".concat(scale * cell.y, "px"));
+        this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
+        if (clickCallback) {
+            mapIndicator.addEventListener('click', clickCallback);
+        }
+    };
+    Circuit.prototype.removeMapIndicators = function () {
+        this.mapDiv.querySelectorAll('.map-indicator').forEach(function (elem) { return elem.remove(); });
+    };
+    return Circuit;
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 var log = isDebug ? console.log.bind(window.console) : function () { };
+var PERSONAL_CARDS_SORTING = function (a, b) { return Number(a.type) - Number(b.type); };
+var InPlayStock = /** @class */ (function (_super) {
+    __extends(InPlayStock, _super);
+    function InPlayStock(game, constructor) {
+        var _this = _super.call(this, game.cardsManager, document.getElementById("player-table-".concat(constructor.pId, "-inplay")), {
+            sort: PERSONAL_CARDS_SORTING,
+        }) || this;
+        _this.playerId = constructor.pId;
+        _this.addCards(Object.values(constructor.inplay));
+        _this.toggleInPlay(); // in case inplay is empty, addCard is not called
+        return _this;
+    }
+    InPlayStock.prototype.toggleInPlay = function () {
+        document.getElementById("player-table-".concat(this.playerId, "-inplay-wrapper")).dataset.visible = (!this.isEmpty()).toString();
+    };
+    InPlayStock.prototype.addCard = function (card, animation, settings) {
+        var promise = _super.prototype.addCard.call(this, card, animation, settings);
+        this.toggleInPlay();
+        return promise;
+    };
+    InPlayStock.prototype.cardRemoved = function (card, settings) {
+        _super.prototype.cardRemoved.call(this, card, settings);
+        this.toggleInPlay();
+    };
+    return InPlayStock;
+}(LineStock));
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player, constructor) {
         var _this = this;
@@ -2229,19 +2331,18 @@ var PlayerTable = /** @class */ (function () {
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         this.currentGear = constructor.gear;
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" style=\"--player-color: #").concat(player.color, ";\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"name-wrapper\">").concat(player.name, "</div>\n        ");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" style=\"--player-color: #").concat(player.color, "; --personal-card-background-y: ").concat(constructor.id * 100 / 6, "%;\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"name-wrapper\">").concat(player.name, "</div>\n        ");
         if (this.currentPlayer) {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
         }
-        html += "\n            <div id=\"player-table-".concat(this.playerId, "-board\" class=\"player-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-engine\" class=\"engine\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-gear\" class=\"gear\" data-gear=\"").concat(this.currentGear, "\"></div>\n            </div>\n        </div>\n        ");
+        html += "\n            <div id=\"player-table-".concat(this.playerId, "-board\" class=\"player-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-deck\" class=\"deck\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-engine\" class=\"engine\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discard\" class=\"discard\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-gear\" class=\"gear\" data-gear=\"").concat(this.currentGear, "\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-inplay-wrapper\" class=\"inplay-wrapper\">\n                <div class=\"hand-wrapper\">\n                    <div class=\"block-label\">").concat(_('Cards in play'), "</div>\n                        <div id=\"player-table-").concat(this.playerId, "-inplay\" class=\"inplay\"></div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         if (this.currentPlayer) {
             this.hand = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-hand")), {
-                sort: function (a, b) { return Number(a.type) - Number(b.type); },
+                sort: PERSONAL_CARDS_SORTING,
             });
-            this.hand.onCardClick = function (card) { return _this.game.onHandCardClick(card); };
             this.hand.onSelectionChange = function (selection) { return _this.game.onHandCardSelectionChange(selection); };
-            this.refreshHand(constructor.hand);
+            this.hand.addCards(constructor.hand);
         }
         this.engine = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-engine")), {
             cardNumber: Object.values(constructor.engine).length,
@@ -2250,6 +2351,7 @@ var PlayerTable = /** @class */ (function () {
                 extraClasses: 'round',
             }
         });
+        this.inplay = new InPlayStock(this.game, constructor);
     }
     PlayerTable.prototype.setHandSelectable = function (selectionMode, selectableCardsIds, selectedCardsIds) {
         var _this = this;
@@ -2267,11 +2369,16 @@ var PlayerTable = /** @class */ (function () {
         document.getElementById("player-table-".concat(this.playerId, "-gear")).dataset.gear = "".concat(gear);
     };
     PlayerTable.prototype.refreshHand = function (hand) {
-        var _this = this;
         this.hand.removeAll();
-        var promise = this.hand.addCards(hand);
-        hand.forEach(function (card) { return _this.game.cardsManager.getCardElement(card).dataset.playerColor = _this.game.getPlayer(_this.playerId).color; });
-        return promise;
+        return this.hand.addCards(hand);
+    };
+    PlayerTable.prototype.setInplay = function (cards) {
+        this.inplay.removeAll();
+        return this.inplay.addCards(cards);
+    };
+    PlayerTable.prototype.clearPlayedCards = function (cardIds) {
+        this.inplay.removeAll();
+        // TODO move them to discard instead
     };
     return PlayerTable;
 }());
@@ -2280,6 +2387,10 @@ var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
+function formatTextIcons(str) {
+    return str
+        .replace(/\[Heat\]/ig, '<div class="heat icon"></div>');
+}
 var Heat = /** @class */ (function () {
     function Heat() {
         this.playersTables = [];
@@ -2333,29 +2444,29 @@ var Heat = /** @class */ (function () {
             entryClasses: 'round-point',
             defaultFolded: true,
         });
-        this.tableCenter = new TableCenter(this, gamedatas);
+        this.circuit = new Circuit(this, gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
-        this.zoomManager = new ZoomManager({
-            element: document.getElementById('table'),
+        /*this.zoomManager = new ZoomManager({
+            element: document.getElementById('tables'),
             smooth: false,
             zoomControls: {
                 color: 'black',
             },
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
-        });
+        });*/
         new HelpManager(this, {
             buttons: [
                 new BgaHelpPopinButton({
                     title: _("Card help").toUpperCase(),
                     html: this.getHelpHtml(),
-                    onPopinCreated: function () { return _this.populateHelp(); },
-                    buttonBackground: '#87a04f',
+                    buttonBackground: '#341819',
                 }),
             ]
         });
         this.setupNotifications();
         this.setupPreferences();
+        this.onScreenWidthChange = function () { return _this.circuit.setAutoZoom(); };
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -2418,11 +2529,10 @@ var Heat = /** @class */ (function () {
                 );
             });
         }*/
-        switch (stateName) {
-            case 'discard':
-                this.onEnteringDiscard(args.args);
+        /*switch (stateName) {
+            case 'INMULTIdiscard':
                 break;
-        }
+        }*/
     };
     /*
      * Add a blue/grey button if it doesn't already exists
@@ -2461,7 +2571,19 @@ var Heat = /** @class */ (function () {
         this.updatePageTitle();
     };
     Heat.prototype.onEnteringPlanification = function (args) {
-        this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', null, args._private.selection);
+        this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
+    };
+    Heat.prototype.onEnteringChooseSpeed = function (args) {
+        var _this = this;
+        Object.entries(args.speeds).forEach(function (entry) {
+            return _this.circuit.addMapIndicator(entry[1], function () { return _this.actChooseSpeed(Number(entry[0])); });
+        });
+    };
+    Heat.prototype.onEnteringSlipstream = function (args) {
+        var _this = this;
+        Object.entries(args.cells).forEach(function (entry) {
+            return _this.circuit.addMapIndicator(entry[1], function () { return _this.actSlipstream(Number(entry[0])); });
+        });
     };
     Heat.prototype.onEnteringDiscard = function (args) {
         this.getCurrentPlayerTable().setHandSelectable('multiple', args._private.cardIds);
@@ -2476,11 +2598,18 @@ var Heat = /** @class */ (function () {
             case 'discard':
                 this.onLeavingHandSelection();
                 break;
+            case 'chooseSpeed':
+            case 'slipstream':
+                this.onLeavingChooseSpeed();
+                break;
         }
     };
     Heat.prototype.onLeavingHandSelection = function () {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setHandSelectable('none');
+    };
+    Heat.prototype.onLeavingChooseSpeed = function () {
+        this.circuit.removeMapIndicators();
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -2500,8 +2629,18 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'chooseSpeed':
                     var chooseSpeedArgs = args;
+                    this.onEnteringChooseSpeed(chooseSpeedArgs);
                     Object.entries(chooseSpeedArgs.speeds).forEach(function (entry) {
-                        return _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), "".concat(entry[0], " : ").concat(entry[1]) /* TODO*/, function () { return _this.actChooseSpeed(Number(entry[0])); });
+                        _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), _('Move ${cell} cell(s)').replace('${cell}', "".concat(entry[0])), function () { return _this.actChooseSpeed(Number(entry[0])); });
+                        _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
+                    });
+                    break;
+                case 'slipstream':
+                    var slipstreamArgs = args;
+                    this.onEnteringSlipstream(slipstreamArgs);
+                    Object.entries(slipstreamArgs.cells).forEach(function (entry) {
+                        _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), _('Move ${cell} cell(s)').replace('${cell}', "".concat(entry[0])), function () { return _this.actSlipstream(Number(entry[0])); });
+                        _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
                     });
                     break;
                 case 'react':
@@ -2513,6 +2652,7 @@ var Heat = /** @class */ (function () {
                     );
                     break;
                 case 'discard':
+                    this.onEnteringDiscard(args);
                     this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(); });
                     this.onHandCardSelectionChange([]);
                     break;
@@ -2525,6 +2665,11 @@ var Heat = /** @class */ (function () {
                     break;
             }
         }
+    };
+    Heat.prototype.linkButtonHoverToMapIndicator = function (btn, cellId) {
+        var mapIndicator = document.getElementById("map-indicator-".concat(cellId));
+        btn.addEventListener('mouseenter', function () { return mapIndicator === null || mapIndicator === void 0 ? void 0 : mapIndicator.classList.add('hover'); });
+        btn.addEventListener('mouseleave', function () { return mapIndicator === null || mapIndicator === void 0 ? void 0 : mapIndicator.classList.remove('hover'); });
     };
     ///////////////////////////////////////////////////
     //// Utility methods
@@ -2570,7 +2715,7 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.getOrderedPlayers = function (gamedatas) {
         var _this = this;
-        var players = Object.values(gamedatas.players).sort(function (a, b) { return a.playerNo - b.playerNo; });
+        var players = Object.values(gamedatas.players).sort(function (a, b) { return a.no - b.no; });
         var playerIndex = players.findIndex(function (player) { return Number(player.id) === Number(_this.player_id); });
         var orderedPlayers = playerIndex > 0 ? __spreadArray(__spreadArray([], players.slice(playerIndex), true), players.slice(0, playerIndex), true) : players;
         return orderedPlayers;
@@ -2580,10 +2725,7 @@ var Heat = /** @class */ (function () {
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
             var constructor = _this.getPlayerConstructor(playerId);
-            document.getElementById("player_score_".concat(player.id)).insertAdjacentHTML('beforebegin', "<div class=\"vp icon\"></div>");
-            document.getElementById("icon_point_".concat(player.id)).remove();
-            /**/
-            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(player.id, "\" class=\"engine-counter\">\n                    Engine\n                    <span id=\"engine-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-").concat(player.id, "\" class=\"speed-counter\">\n                    Speed \n                    <span id=\"speed-counter-").concat(player.id, "\">-</span>\n                </div>\n                <div id=\"turn-counter-wrapper-").concat(player.id, "\" class=\"turn-counter\">\n                    Turn\n                    <span id=\"turn-counter-").concat(player.id, "\">-</span> / 2\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(player.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n            </div>");
+            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(player.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-").concat(player.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(player.id, "\">-</span>\n                </div>\n                <div id=\"turn-counter-wrapper-").concat(player.id, "\" class=\"turn-counter\">\n                    <div class=\"turn icon\"></div>\n                    <span id=\"turn-counter-").concat(player.id, "\">-</span> / ").concat(gamedatas.nbrLaps, "\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(player.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(player.id));
             _this.handCounters[playerId] = new ebg.counter();
             _this.handCounters[playerId].create("playerhand-counter-".concat(playerId));
@@ -2604,6 +2746,8 @@ var Heat = /** @class */ (function () {
         });
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
+        this.setTooltipToClass('speed-counter', _('Speed'));
+        this.setTooltipToClass('turn-counter', _('Turns'));
     };
     Heat.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;
@@ -2619,81 +2763,10 @@ var Heat = /** @class */ (function () {
         var table = new PlayerTable(this, gamedatas.players[playerId], this.getPlayerConstructor(playerId));
         this.playersTables.push(table);
     };
-    Heat.prototype.updateGains = function (playerId, gains) {
-        Object.entries(gains).forEach(function (entry) {
-            var type = Number(entry[0]);
-            var amount = entry[1];
-            if (amount != 0) {
-                switch (type) {
-                    /*case VP:
-                        this.setScore(playerId, (this as any).scoreCtrl[playerId].getValue() + amount);
-                        break;
-                    case BRACELET:
-                        this.setBracelets(playerId, this.braceletCounters[playerId].getValue() + amount);
-                        break;
-                    case RECRUIT:
-                        this.setRecruits(playerId, this.recruitCounters[playerId].getValue() + amount);
-                        break;
-                    case REPUTATION:
-                        this.setReputation(playerId, this.tableCenter.getReputation(playerId) + amount);
-                        break;*/
-                }
-            }
-        });
-    };
-    Heat.prototype.setScore = function (playerId, score) {
-        var _a;
-        (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(score);
-        this.tableCenter.setScore(playerId, score);
-    };
-    Heat.prototype.setReputation = function (playerId, count) {
-        this.lostKnowledgeCounters[playerId].toValue(count);
-        this.tableCenter.setReputation(playerId, count);
-    };
-    Heat.prototype.setRecruits = function (playerId, count) {
-        this.recruitCounters[playerId].toValue(count);
-        this.getPlayerTable(playerId).updateCounter('recruits', count);
-    };
-    Heat.prototype.setBracelets = function (playerId, count) {
-        this.braceletCounters[playerId].toValue(count);
-        this.getPlayerTable(playerId).updateCounter('bracelets', count);
-    };
     Heat.prototype.getHelpHtml = function () {
-        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Assets"), "</h2>\n            <div class=\"help-section\">\n                <div class=\"icon vp\"></div>\n                <div class=\"help-label\">").concat(_("Gain 1 <strong>Victory Point</strong>. The player moves their token forward 1 space on the Score Track."), "</div>\n            </div>\n            <div class=\"help-section\">\n                <div class=\"icon recruit\"></div>\n                <div class=\"help-label\">").concat(_("Gain 1 <strong>Recruit</strong>: The player adds 1 Recruit token to their ship."), " ").concat(_("It is not possible to have more than 3."), " ").concat(_("A recruit allows a player to draw the Viking card of their choice when Recruiting or replaces a Viking card during Exploration."), "</div>\n            </div>\n            <div class=\"help-section\">\n                <div class=\"icon bracelet\"></div>\n                <div class=\"help-label\">").concat(_("Gain 1 <strong>Silver Bracelet</strong>: The player adds 1 Silver Bracelet token to their ship."), " ").concat(_("It is not possible to have more than 3."), " ").concat(_("They are used for Trading."), "</div>\n            </div>\n            <div class=\"help-section\">\n                <div class=\"icon reputation\"></div>\n                <div class=\"help-label\">").concat(_("Gain 1 <strong>Reputation Point</strong>: The player moves their token forward 1 space on the Reputation Track."), "</div>\n            </div>\n            <div class=\"help-section\">\n                <div class=\"icon take-card\"></div>\n                <div class=\"help-label\">").concat(_("Draw <strong>the first Viking card</strong> from the deck: It is placed in the player’s Crew Zone (without taking any assets)."), "</div>\n            </div>\n\n            <h1>").concat(_("Powers of the artifacts (variant option)"), "</h1>\n        ");
-        for (var i = 1; i <= 7; i++) {
-            html += "\n            <div class=\"help-section\">\n                <div id=\"help-artifact-".concat(i, "\"></div>\n                <div>").concat(this.technologyTilesManager.getTooltip(i), "</div>\n            </div> ");
-        }
-        html += "</div>";
+        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Assets"), "</h2>\n            TODO\n        </div>");
         return html;
     };
-    Heat.prototype.populateHelp = function () {
-        for (var i = 1; i <= 7; i++) {
-            this.technologyTilesManager.setForHelp(i, "help-artifact-".concat(i));
-        }
-    };
-    Heat.prototype.onTableTechnologyTileClick = function (tile) {
-        if (this.gamedatas.gamestate.name == 'learn') {
-            this.takeAtomicAction('actLearn', [
-                tile.id,
-            ]);
-        }
-    };
-    Heat.prototype.onHandCardClick = function (card) {
-        if (this.gamedatas.gamestate.name == 'create') {
-            /*this.takeAtomicAction('actCreate', [
-                card.id,
-                card.id[0] == 'A' ? `artefact-0` : `timeline-${card.startingSpace}-0`, // TODO space to build
-                [], // TODO cards to discard
-            ]);*/
-        }
-    };
-    /*public updateCreatePageTitle() {
-        if (this.selectedCard) {
-            // TODO
-        } else {
-            this.changePageTitle(null);
-        }
-    }*/
     Heat.prototype.onHandCardSelectionChange = function (selection) {
         if (this.gamedatas.gamestate.name == 'planification') {
             var table = this.getCurrentPlayerTable();
@@ -2702,7 +2775,7 @@ var Heat = /** @class */ (function () {
             var maxAllowed = Math.min(4, gear + 2);
             var allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
             var label = allowed ?
-                _('Set gear to ${gear} an play selected cards').replace('${gear}', "".concat(selection.length)) + (Math.abs(selection.length - gear) == 2 ? ' (+1 [Heat])' : '') :
+                _('Set gear to ${gear} an play selected cards').replace('${gear}', "".concat(selection.length)) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
                 _('Select between ${min} and ${max} cards').replace('${min}', "".concat(minAllowed)).replace('${max}', "".concat(maxAllowed));
             document.getElementById("player-table-".concat(table.playerId, "-gear")).dataset.gear = "".concat(allowed ? selection.length : gear);
             var button = document.getElementById('actPlanification_button');
@@ -2710,24 +2783,12 @@ var Heat = /** @class */ (function () {
             button.classList.toggle('disabled', !allowed);
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
-            var label = _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length));
+            var label = selection.length ?
+                _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length)) :
+                _('No additional discard');
             var button = document.getElementById('actDiscard_button');
             button.innerHTML = label;
         }
-    };
-    Heat.prototype.onTableCardClick = function (card) {
-        /*if (this.gamedatas.gamestate.name == 'discardTableCard') {
-            this.discardTableCard(card.id);
-        } else {
-            this.chooseNewCard(card.id);
-        }*/
-    };
-    Heat.prototype.onPlayedCardClick = function (card) {
-        /*if (this.gamedatas.gamestate.name == 'discardCard') {
-            this.discardCard(card.id);
-        } else {
-            this.setPayDestinationLabelAndState();
-        }*/
     };
     Heat.prototype.actPlanification = function () {
         if (!this.checkAction('actPlan')) {
@@ -2746,6 +2807,14 @@ var Heat = /** @class */ (function () {
             return;
         }
         this.takeAction('actChooseSpeed', {
+            speed: speed
+        });
+    };
+    Heat.prototype.actSlipstream = function (speed) {
+        if (!this.checkAction('actSlipstream')) {
+            return;
+        }
+        this.takeAction('actSlipstream', {
             speed: speed
         });
     };
@@ -2811,9 +2880,15 @@ var Heat = /** @class */ (function () {
         });
         var notifs = [
             ['updatePlanification', ANIMATION_MS],
-            ['reveal', ANIMATION_MS],
+            ['reveal', undefined],
             ['moveCar', ANIMATION_MS],
             ['updateTurnOrder', 1],
+            ['payHeatsForCorner', ANIMATION_MS],
+            ['discard', ANIMATION_MS],
+            ['pDiscard', ANIMATION_MS],
+            ['draw', ANIMATION_MS],
+            ['pDraw', ANIMATION_MS],
+            ['clearPlayedCards', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
@@ -2841,26 +2916,66 @@ var Heat = /** @class */ (function () {
                 }
             });
         }
-        this.notifqueue.setIgnoreNotificationCheck('discardCards', function (notif) {
-            return notif.args.player_id == _this.getPlayerId();
+        this.notifqueue.setIgnoreNotificationCheck('discard', function (notif) {
+            return _this.getPlayerIdFromConstructorId(notif.args.player_id) == _this.getPlayerId();
+        });
+        this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
+            return _this.getPlayerIdFromConstructorId(notif.args.player_id) == _this.getPlayerId();
         });
     };
     Heat.prototype.notif_updatePlanification = function (args) {
         // TODO
     };
     Heat.prototype.notif_reveal = function (args) {
-        var constructor_id = args.constructor_id, gear = args.gear;
-        this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId).setCurrentGear(gear);
-        // TODO change gear
-        // TODO show played cards
+        var constructor_id = args.constructor_id, gear = args.gear, cards = args.cards, heat = args.heat;
+        var playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        playerTable.setCurrentGear(gear);
+        return Promise.all([
+            playerTable.setInplay(Object.values(cards)),
+            // TODO discard Heat card
+        ]);
     };
     Heat.prototype.notif_moveCar = function (args) {
         var constructor_id = args.constructor_id, cell = args.cell;
-        this.tableCenter.moveCar(constructor_id, cell);
+        this.circuit.moveCar(constructor_id, cell);
     };
     Heat.prototype.notif_updateTurnOrder = function (args) {
-        //const { constructor_id, cell } = args;
-        //this.tableCenter.moveCar(constructor_id, cell);
+        var _this = this;
+        var constructor_ids = args.constructor_ids;
+        constructor_ids.forEach(function (constructorId, index) {
+            var playerId = _this.getPlayerIdFromConstructorId(constructorId);
+            if (playerId) {
+                document.getElementById("order-".concat(playerId)).innerHTML = "".concat(index + 1);
+            }
+        });
+    };
+    Heat.prototype.notif_payHeatsForCorner = function (args) {
+        // TODO
+    };
+    Heat.prototype.getPlayerIdFromConstructorId = function (constructorId) {
+        var _a;
+        return (_a = this.gamedatas.constructors[constructorId]) === null || _a === void 0 ? void 0 : _a.pId;
+    };
+    Heat.prototype.notif_draw = function (args) {
+        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(args.n);
+    };
+    Heat.prototype.notif_discard = function (args) {
+        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-args.n);
+    };
+    Heat.prototype.notif_pDraw = function (args) {
+        var cards = Object.values(args.cards);
+        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(cards.length);
+        this.getCurrentPlayerTable().hand.addCards(cards);
+    };
+    Heat.prototype.notif_pDiscard = function (args) {
+        var cards = Object.values(args.cards);
+        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-cards.length);
+        this.getCurrentPlayerTable().hand.removeCards(cards);
+    };
+    Heat.prototype.notif_clearPlayedCards = function (args) {
+        var constructor_id = args.constructor_id, cardIds = args.cardIds;
+        var playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        playerTable.clearPlayedCards(cardIds);
     };
     /*
     * [Undocumented] Called by BGA framework on any notification message
@@ -2945,8 +3060,14 @@ var Heat = /** @class */ (function () {
     Heat.prototype.stopActionTimer = function () {
         console.warn('TODO');
     };
-    Heat.prototype.coloredConstructorName = function (arg) {
-        return "<span style=\"font-weight: bold;\" color=\"#".concat(CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.name == arg; }).id], "\">").concat(_(arg), "</span>");
+    Heat.prototype.coloredConstructorName = function (constructorName) {
+        return "<span style=\"font-weight: bold; color: #".concat(CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.name == constructorName; }).id], "\">").concat(constructorName, "</span>");
+    };
+    Heat.prototype.cardImageHtml = function (card, args) {
+        var _this = this;
+        var _a, _b;
+        var constructorId = (_a = args.constructor_id) !== null && _a !== void 0 ? _a : (_b = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); })) === null || _b === void 0 ? void 0 : _b.id;
+        return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat(constructorId * 100 / 6, "%;\">").concat(this.cardsManager.getHtml(card), "</div>");
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
@@ -2958,6 +3079,12 @@ var Heat = /** @class */ (function () {
                     /*if (['card_names'].includes(property) && args[property][0] != '<') {
                         args[property] = `<strong>${_(args[property])}</strong>`;
                     }*/
+                }
+                if (args.card_image === '' && args.card) {
+                    args.card_image = this.cardImageHtml(args.card, args);
+                }
+                if (args.cards_images === '' && args.cards) {
+                    args.cards_images = Object.values(args.cards).map(function (card) { return _this.cardImageHtml(card, args); }).join('');
                 }
                 var constructorKeys = Object.keys(args).filter(function (key) { return key.substring(0, 16) == 'constructor_name'; });
                 constructorKeys.filter(function (key) { return args[key][0] != '<'; }).forEach(function (key) {

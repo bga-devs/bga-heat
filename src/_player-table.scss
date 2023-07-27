@@ -69,13 +69,25 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background-color: var(--player-color);
-      box-shadow: 2px 2px 8px 5px black;
+      //background-color: var(--player-color);
+      //box-shadow: 2px 2px 8px 5px black;
       top: 198px;
       right: 52px;
       transition: top 0.5s;
-
+      
       &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        border-radius: 50%;
+        background-image: url('img/stick.png');
+        background-size: auto 100%;
+      }
+
+      /*&::after {
         content: '';
         position: absolute;
         left: 25px;
@@ -85,7 +97,7 @@
         border-radius: 50%;
         background: radial-gradient(circle at 39% 25%, #FFFFFFBB 2px, var(--player-color) 4%, #000000BB 100%);
         box-shadow: 2px 2px 8px 5px black;
-      }
+      }*/
 
       &[data-gear="4"] { top: 274px; }
       &[data-gear="3"] { top: 401px; }
@@ -93,27 +105,64 @@
       &[data-gear="1"] { top: 657px; }
     }
 
+    @each $playerColor in $playerColors {
+      $i: index($playerColors, $playerColor) - 1;
+      [data-color="#{$playerColor}"] .gear::after { 
+          background-position-x: #{$i * 100% / 3};
+      }
+    }
+
     &[data-color="12151a"] {
       .gear {
-        box-shadow: 2px 2px 8px 5px gray;
-        &::after {
-          box-shadow: 2px 2px 8px 5px gray;
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          border-radius: 50%;
+          background: white;
+          box-shadow: 0px 0px 8px 5px white;
         }
       }
     }
+  }
+
+  .inplay-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    .hand-wrapper {
+      align-self: unset;
+      padding: 0 10px 10px 10px;
+    }
+
+    &[data-visible="false"] {
+      display: none;
+    }
+  }
+
+  .block-label {
+    text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black, 0 0 4px black;
+    text-align: center;
+    //color: white;
+    padding: 5px;
+    text-overflow: ellipsis;
   }
   
   .block-with-text {
     display: flex;
 
     .block-label {
-      text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black, 0 0 4px black;
-      text-align: center;
       writing-mode: vertical-lr;
       transform: rotate(180deg);
-      //color: white;
-      padding: 5px;
-      text-overflow: ellipsis;
     }
 
     &>div:not(.block-label) {

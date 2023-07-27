@@ -21,6 +21,7 @@ interface Constructor {
     hand?: Card[];
     handCount: number;
     speed: number;
+    inplay?: { [id: number]: Card};
 }
 
 interface HeatGamedatas {
@@ -37,6 +38,7 @@ interface HeatGamedatas {
 
     // Add here variables you set up in getAllDatas
     circuit: string;
+    nbrLaps: number;
     constructors: { [id: number]: Constructor };
 }
 
@@ -51,11 +53,7 @@ interface HeatGame extends Game {
     getCurrentPlayerTable(): PlayerTable | null;
 
     setTooltip(id: string, html: string): void;
-    onTableTechnologyTileClick(destination: TechnologyTile): void;
-    onHandCardClick(card: Card): void;
     onHandCardSelectionChange(selection: Card[]): void;
-    onTableCardClick(card: Card): void;
-    onPlayedCardClick(card: Card): void;
     changePageTitle(suffix?: string, save?: boolean): void;
     addPrimaryActionButton(id, text, callback, zone?): void;
     addSecondaryActionButton(id, text, callback, zone?): void
@@ -70,6 +68,10 @@ interface EnteringPlanificationArgs {
 
 interface EnteringChooseSpeedArgs {
     speeds: { [speed: number]: number /*destination cell*/ };
+}
+
+interface EnteringSlipstreamArgs {
+    cells: { [speed: number]: number /*destination cell*/ };
 }
 
 interface EnteringReactArgs {
@@ -94,7 +96,7 @@ interface NotifUpdatePlanificationArgs { // TODO
 interface NotifRevealArgs {
     constructor_id: number;
     gear: number; // new gear
-    cards: Card[];
+    cards: { [id: number]: Card};
     heat?: any; // TODO
 }
 
@@ -104,4 +106,36 @@ interface NotifMoveCarArgs {
     cell: number;
     speed: any; // TODO number as string
     nForward: number;
+}
+
+// payHeatsForCorner
+interface NotifPayHeatsForCornerArgs {
+    constructor_id: number;
+    n: number;
+    cards: Card[];
+    speed: number;
+    limit: number;
+}
+
+// draw, discard
+interface NotifCardsArgs {
+    constructor_id: number;
+    n: number;
+}
+
+// pDraw, pDiscard
+interface NotifPCardsArgs {
+    constructor_id: number;
+    cards: { [id: number]: Card};
+}
+
+// clearPlayedCards
+interface NotifClearPlayedCardsArgs {
+    constructor_id: number;
+    cardIds: number[];
+}
+
+// updateTurnOrder
+interface NotifUpdateTurnOrderArgs {
+    constructor_ids: number[];
 }

@@ -14,6 +14,11 @@ const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
 const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
 
+function formatTextIcons(str: string) {
+    return str
+        .replace(/\[Heat\]/ig, '<div class="heat icon"></div>');
+}
+
 class Heat implements HeatGame {
     public animationManager: AnimationManager;
     public cardsManager: CardsManager;
@@ -21,7 +26,7 @@ class Heat implements HeatGame {
 
     private zoomManager: ZoomManager;
     private gamedatas: HeatGamedatas;
-    private tableCenter: TableCenter;
+    private circuit: Circuit;
     private playersTables: PlayerTable[] = [];
     private handCounters: Counter[] = [];
     private engineCounters: Counter[] = [];
@@ -88,31 +93,31 @@ class Heat implements HeatGame {
             defaultFolded: true,
         });
 
-        this.tableCenter = new TableCenter(this, gamedatas);
+        this.circuit = new Circuit(this, gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
         
-        this.zoomManager = new ZoomManager({
-            element: document.getElementById('table'),
+        /*this.zoomManager = new ZoomManager({
+            element: document.getElementById('tables'),
             smooth: false,
             zoomControls: {
                 color: 'black',
             },
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
-        });
+        });*/
 
         new HelpManager(this, { 
             buttons: [
                 new BgaHelpPopinButton({
                     title: _("Card help").toUpperCase(),
                     html: this.getHelpHtml(),
-                    onPopinCreated: () => this.populateHelp(),
-                    buttonBackground: '#87a04f',
+                    buttonBackground: '#341819',
                 }),
             ]
         });
         this.setupNotifications();
         this.setupPreferences();
+        (this as any).onScreenWidthChange = () => this.circuit.setAutoZoom();
 
         log( "Ending game setup" );
     }
@@ -195,11 +200,10 @@ class Heat implements HeatGame {
             });
         }*/
 
-        switch (stateName) {
-            case 'discard':
-                this.onEnteringDiscard(args.args);
+        /*switch (stateName) {
+            case 'INMULTIdiscard':
                 break;
-        }
+        }*/
     }
 
     /*
@@ -238,7 +242,19 @@ class Heat implements HeatGame {
     }
 
     private onEnteringPlanification(args: EnteringPlanificationArgs) {
-        this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', null, args._private.selection);
+        this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
+    }
+
+    private onEnteringChooseSpeed(args: EnteringChooseSpeedArgs) {
+        Object.entries(args.speeds).forEach(entry => 
+            this.circuit.addMapIndicator(entry[1], () => this.actChooseSpeed(Number(entry[0])))
+        );
+    }
+
+    private onEnteringSlipstream(args: EnteringSlipstreamArgs) {
+        Object.entries(args.cells).forEach(entry => 
+            this.circuit.addMapIndicator(entry[1], () => this.actSlipstream(Number(entry[0])))
+        );
     }
 
     private onEnteringDiscard(args: EnteringDiscardArgs) {
@@ -257,11 +273,19 @@ class Heat implements HeatGame {
             case 'discard':
                 this.onLeavingHandSelection();
                 break;
+            case 'chooseSpeed':
+            case 'slipstream':
+                this.onLeavingChooseSpeed();
+                break;
         }
     }
 
     private onLeavingHandSelection() {
         this.getCurrentPlayerTable()?.setHandSelectable('none');
+    }
+
+    private onLeavingChooseSpeed() {
+        this.circuit.removeMapIndicators();
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -282,9 +306,25 @@ class Heat implements HeatGame {
                     break;
                 case 'chooseSpeed':
                     const chooseSpeedArgs = args as EnteringChooseSpeedArgs;
-                    Object.entries(chooseSpeedArgs.speeds).forEach(entry => 
-                        (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, `${entry[0]} : ${entry[1]}` /* TODO*/, () => this.actChooseSpeed(Number(entry[0])))
-                    );
+                    this.onEnteringChooseSpeed(chooseSpeedArgs);
+                    Object.entries(chooseSpeedArgs.speeds).forEach(entry => {
+                        (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, _('Move ${cell} cell(s)').replace('${cell}', `${entry[0]}`), () => this.actChooseSpeed(Number(entry[0])))
+                        this.linkButtonHoverToMapIndicator(
+                            document.getElementById(`chooseSpeed${entry[0]}_button`),
+                            entry[1],
+                        );
+                    });
+                    break;
+                case 'slipstream':
+                    const slipstreamArgs = args as EnteringSlipstreamArgs;
+                    this.onEnteringSlipstream(slipstreamArgs);
+                    Object.entries(slipstreamArgs.cells).forEach(entry => {
+                        (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, _('Move ${cell} cell(s)').replace('${cell}', `${entry[0]}`), () => this.actSlipstream(Number(entry[0])))
+                        this.linkButtonHoverToMapIndicator(
+                            document.getElementById(`chooseSpeed${entry[0]}_button`),
+                            entry[1],
+                        );
+                    });
                     break;
                 case 'react':
                     const reactArgs = args as EnteringReactArgs;
@@ -294,6 +334,7 @@ class Heat implements HeatGame {
                     );
                     break;
                 case 'discard':
+                    this.onEnteringDiscard(args);
                     (this as any).addActionButton(`actDiscard_button`, '', () => this.actDiscard());
                     this.onHandCardSelectionChange([]);
                     break;
@@ -305,6 +346,12 @@ class Heat implements HeatGame {
                     break;
             }
         }
+    }
+
+    private linkButtonHoverToMapIndicator(btn: HTMLElement, cellId: number) {
+        const mapIndicator = document.getElementById(`map-indicator-${cellId}`);
+        btn.addEventListener('mouseenter', () => mapIndicator?.classList.add('hover'));
+        btn.addEventListener('mouseleave', () => mapIndicator?.classList.remove('hover'));
     }
 
     ///////////////////////////////////////////////////
@@ -363,7 +410,7 @@ class Heat implements HeatGame {
     }
 
     private getOrderedPlayers(gamedatas: HeatGamedatas) {
-        const players = Object.values(gamedatas.players).sort((a, b) => a.playerNo - b.playerNo);
+        const players = Object.values(gamedatas.players).sort((a, b) => a.no - b.no);
         const playerIndex = players.findIndex(player => Number(player.id) === Number((this as any).player_id));
         const orderedPlayers = playerIndex > 0 ? [...players.slice(playerIndex), ...players.slice(0, playerIndex)] : players;
         return orderedPlayers;
@@ -375,28 +422,24 @@ class Heat implements HeatGame {
             const playerId = Number(player.id);
             const constructor = this.getPlayerConstructor(playerId);
 
-            document.getElementById(`player_score_${player.id}`).insertAdjacentHTML('beforebegin', `<div class="vp icon"></div>`);
-            document.getElementById(`icon_point_${player.id}`).remove();
-
-            /**/
             let html = `<div class="counters">
                 <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
                     <div class="player-hand-card"></div> 
                     <span id="playerhand-counter-${player.id}"></span>
                 </div>
                 <div id="engine-counter-wrapper-${player.id}" class="engine-counter">
-                    Engine
+                    <div class="engine icon"></div>
                     <span id="engine-counter-${player.id}"></span>
                 </div>
             </div>
             <div class="counters">
                 <div id="speed-counter-wrapper-${player.id}" class="speed-counter">
-                    Speed 
+                    <div class="speed icon"></div>
                     <span id="speed-counter-${player.id}">-</span>
                 </div>
                 <div id="turn-counter-wrapper-${player.id}" class="turn-counter">
-                    Turn
-                    <span id="turn-counter-${player.id}">-</span> / 2
+                    <div class="turn icon"></div>
+                    <span id="turn-counter-${player.id}">-</span> / ${gamedatas.nbrLaps}
                 </div>
             </div>
             <div class="counters">
@@ -433,6 +476,8 @@ class Heat implements HeatGame {
 
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
+        this.setTooltipToClass('speed-counter', _('Speed'));
+        this.setTooltipToClass('turn-counter', _('Turns'));
     }
 
     private createPlayerTables(gamedatas: HeatGamedatas) {
@@ -452,121 +497,15 @@ class Heat implements HeatGame {
         this.playersTables.push(table);
     }
 
-    private updateGains(playerId: number, gains: { [type: number]: number }) {
-        Object.entries(gains).forEach(entry => {
-            const type = Number(entry[0]);
-            const amount = entry[1];
-
-            if (amount != 0) {
-                switch (type) {
-                    /*case VP:
-                        this.setScore(playerId, (this as any).scoreCtrl[playerId].getValue() + amount);
-                        break;
-                    case BRACELET:
-                        this.setBracelets(playerId, this.braceletCounters[playerId].getValue() + amount);
-                        break;
-                    case RECRUIT:
-                        this.setRecruits(playerId, this.recruitCounters[playerId].getValue() + amount);
-                        break;
-                    case REPUTATION:
-                        this.setReputation(playerId, this.tableCenter.getReputation(playerId) + amount);
-                        break;*/
-                }
-            }
-        });
-    }
-
-    private setScore(playerId: number, score: number) {
-        (this as any).scoreCtrl[playerId]?.toValue(score);
-        this.tableCenter.setScore(playerId, score);
-    }
-
-    private setReputation(playerId: number, count: number) {
-        this.lostKnowledgeCounters[playerId].toValue(count);
-        this.tableCenter.setReputation(playerId, count);
-    }
-
-    private setRecruits(playerId: number, count: number) {
-        this.recruitCounters[playerId].toValue(count);
-        this.getPlayerTable(playerId).updateCounter('recruits', count);
-    }
-
-    private setBracelets(playerId: number, count: number) {
-        this.braceletCounters[playerId].toValue(count);
-        this.getPlayerTable(playerId).updateCounter('bracelets', count);
-    }
-
     private getHelpHtml() {
         let html = `
         <div id="help-popin">
             <h1>${_("Assets")}</h2>
-            <div class="help-section">
-                <div class="icon vp"></div>
-                <div class="help-label">${_("Gain 1 <strong>Victory Point</strong>. The player moves their token forward 1 space on the Score Track.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon recruit"></div>
-                <div class="help-label">${_("Gain 1 <strong>Recruit</strong>: The player adds 1 Recruit token to their ship.")} ${_("It is not possible to have more than 3.")} ${_("A recruit allows a player to draw the Viking card of their choice when Recruiting or replaces a Viking card during Exploration.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon bracelet"></div>
-                <div class="help-label">${_("Gain 1 <strong>Silver Bracelet</strong>: The player adds 1 Silver Bracelet token to their ship.")} ${_("It is not possible to have more than 3.")} ${_("They are used for Trading.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon reputation"></div>
-                <div class="help-label">${_("Gain 1 <strong>Reputation Point</strong>: The player moves their token forward 1 space on the Reputation Track.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon take-card"></div>
-                <div class="help-label">${_("Draw <strong>the first Viking card</strong> from the deck: It is placed in the player’s Crew Zone (without taking any assets).")}</div>
-            </div>
-
-            <h1>${_("Powers of the artifacts (variant option)")}</h1>
-        `;
-
-        for (let i = 1; i <=7; i++) {
-            html += `
-            <div class="help-section">
-                <div id="help-artifact-${i}"></div>
-                <div>${this.technologyTilesManager.getTooltip(i as any)}</div>
-            </div> `;
-        }
-        html += `</div>`;
+            TODO
+        </div>`;
 
         return html;
     }
-
-    private populateHelp() {
-        for (let i = 1; i <=7; i++) {
-            this.technologyTilesManager.setForHelp(i, `help-artifact-${i}`);
-        }
-    }
-    
-    public onTableTechnologyTileClick(tile: TechnologyTile): void {
-        if (this.gamedatas.gamestate.name == 'learn') {
-            this.takeAtomicAction('actLearn', [
-                tile.id,
-            ]);
-        }
-    }
-
-    public onHandCardClick(card: Card): void {
-        if (this.gamedatas.gamestate.name == 'create') {
-            /*this.takeAtomicAction('actCreate', [
-                card.id,
-                card.id[0] == 'A' ? `artefact-0` : `timeline-${card.startingSpace}-0`, // TODO space to build
-                [], // TODO cards to discard
-            ]);*/
-        }
-    }
-
-    /*public updateCreatePageTitle() {
-        if (this.selectedCard) {
-            // TODO 
-        } else {
-            this.changePageTitle(null);
-        }
-    }*/
     
     public onHandCardSelectionChange(selection: Card[]): void {
         if (this.gamedatas.gamestate.name == 'planification') {
@@ -577,7 +516,7 @@ class Heat implements HeatGame {
             const maxAllowed = Math.min(4, gear + 2);
             const allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
             const label = allowed ? 
-                _('Set gear to ${gear} an play selected cards').replace('${gear}', `${selection.length}`) + (Math.abs(selection.length - gear) == 2 ? ' (+1 [Heat])' : '') :
+                _('Set gear to ${gear} an play selected cards').replace('${gear}', `${selection.length}`) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
                 _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
 
             document.getElementById(`player-table-${table.playerId}-gear`).dataset.gear = `${allowed ? selection.length : gear}`;
@@ -587,27 +526,13 @@ class Heat implements HeatGame {
             button.classList.toggle('disabled', !allowed);
         } else
         if (this.gamedatas.gamestate.name == 'discard') {
-            const label = _('Discard ${number} selected cards').replace('${number}', `${selection.length}`);
+            const label = selection.length ? 
+                _('Discard ${number} selected cards').replace('${number}', `${selection.length}`) :
+                _('No additional discard');
 
             const button = document.getElementById('actDiscard_button');
             button.innerHTML = label;
         }
-    }
-
-    public onTableCardClick(card: Card): void {
-        /*if (this.gamedatas.gamestate.name == 'discardTableCard') {
-            this.discardTableCard(card.id);
-        } else {
-            this.chooseNewCard(card.id);
-        }*/
-    }
-
-    public onPlayedCardClick(card: Card): void {
-        /*if (this.gamedatas.gamestate.name == 'discardCard') {
-            this.discardCard(card.id);
-        } else {
-            this.setPayDestinationLabelAndState();
-        }*/
     }
   	
     public actPlanification() {
@@ -632,6 +557,16 @@ class Heat implements HeatGame {
         }
 
         this.takeAction('actChooseSpeed', {
+            speed
+        });
+    }
+    
+    private actSlipstream(speed: number) {
+        if(!(this as any).checkAction('actSlipstream')) {
+            return;
+        }
+
+        this.takeAction('actSlipstream', {
             speed
         });
     }
@@ -709,10 +644,17 @@ class Heat implements HeatGame {
 
         const notifs = [
             ['updatePlanification', ANIMATION_MS],
-            ['reveal', ANIMATION_MS],
+            ['reveal', undefined],
             ['moveCar', ANIMATION_MS],
             ['updateTurnOrder', 1],
+            ['payHeatsForCorner', ANIMATION_MS],
+            ['discard', ANIMATION_MS],
+            ['pDiscard', ANIMATION_MS],
+            ['draw', ANIMATION_MS],
+            ['pDraw', ANIMATION_MS],
+            ['clearPlayedCards', ANIMATION_MS],
         ];
+        
     
         notifs.forEach((notif) => {
             dojo.subscribe(notif[0], this, (notifDetails: Notif<any>) => {
@@ -746,8 +688,11 @@ class Heat implements HeatGame {
             });
         }
 
-        (this as any).notifqueue.setIgnoreNotificationCheck('discardCards', (notif: Notif<any>) => 
-            notif.args.player_id == this.getPlayerId()
+        (this as any).notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) => 
+            this.getPlayerIdFromConstructorId(notif.args.player_id) == this.getPlayerId()
+        );
+        (this as any).notifqueue.setIgnoreNotificationCheck('draw', (notif: Notif<any>) => 
+            this.getPlayerIdFromConstructorId(notif.args.player_id) == this.getPlayerId()
         );
     }
     
@@ -756,20 +701,62 @@ class Heat implements HeatGame {
     }  
 
     notif_reveal(args: NotifRevealArgs) {
-        const { constructor_id, gear } = args;
-        this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId).setCurrentGear(gear);
-        // TODO change gear
-        // TODO show played cards
+        const { constructor_id, gear, cards, heat } = args;
+        const playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        playerTable.setCurrentGear(gear);
+        return Promise.all([
+            playerTable.setInplay(Object.values(cards)),
+            // TODO discard Heat card
+        ]);
     }  
 
     notif_moveCar(args: NotifMoveCarArgs) {
         const { constructor_id, cell } = args;
-        this.tableCenter.moveCar(constructor_id, cell);
+        this.circuit.moveCar(constructor_id, cell);
     } 
 
-    notif_updateTurnOrder(args: NotifMoveCarArgs) {
-        //const { constructor_id, cell } = args;
-        //this.tableCenter.moveCar(constructor_id, cell);
+    notif_updateTurnOrder(args: NotifUpdateTurnOrderArgs) {
+        const { constructor_ids } = args;
+        constructor_ids.forEach((constructorId: number, index: number) => {
+            const playerId = this.getPlayerIdFromConstructorId(constructorId);
+            if (playerId) {
+                document.getElementById(`order-${playerId}`).innerHTML = `${index + 1}`;
+            }
+        });
+    }
+
+    notif_payHeatsForCorner(args: NotifPayHeatsForCornerArgs) {
+        // TODO
+    }
+
+    private getPlayerIdFromConstructorId(constructorId: number): number | undefined {
+        return this.gamedatas.constructors[constructorId]?.pId;
+    }
+
+    notif_draw(args: NotifCardsArgs) {
+        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(args.n);
+    }
+
+    notif_discard(args: NotifCardsArgs) {
+        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-args.n);
+    }
+
+    notif_pDraw(args: NotifPCardsArgs) {
+        const cards = Object.values(args.cards);
+        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(cards.length);
+        this.getCurrentPlayerTable().hand.addCards(cards);
+    }
+
+    notif_pDiscard(args: NotifPCardsArgs) {
+        const cards = Object.values(args.cards);
+        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-cards.length);
+        this.getCurrentPlayerTable().hand.removeCards(cards);
+    }
+
+    notif_clearPlayedCards(args: NotifClearPlayedCardsArgs) {
+        const { constructor_id, cardIds } = args;
+        const playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        playerTable.clearPlayedCards(cardIds);
     }
     
     /*
@@ -777,7 +764,7 @@ class Heat implements HeatGame {
     * Handle cancelling log messages for restart turn
     */
     /* @Override */
-    public onPlaceLogOnChannel(msg) {
+    public onPlaceLogOnChannel(msg: any) {
      var currentLogId = (this as any).notifqueue.next_log_id;
      var currentMobileLogId = (this as any).next_log_id;
      var res = (this as any).inherited(arguments);
@@ -863,8 +850,13 @@ class Heat implements HeatGame {
         console.warn('TODO');
     }
 
-    private coloredConstructorName(arg: string): string {
-        return `<span style="font-weight: bold;" color="#${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == arg).id]}">${_(arg)}</span>`;
+    private coloredConstructorName(constructorName: string): string {
+        return `<span style="font-weight: bold; color: #${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == constructorName).id]}">${constructorName}</span>`;
+    }
+
+    private cardImageHtml(card: Card, args: any) {
+        const constructorId = args.constructor_id ?? Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId())?.id;
+        return `<div class="log-card-image" style="--personal-card-background-y: ${constructorId * 100 / 6}%;">${this.cardsManager.getHtml(card)}</div>`;
     }
 
     /* This enable to inject translatable styled things to logs or action bar */
@@ -876,6 +868,14 @@ class Heat implements HeatGame {
                     /*if (['card_names'].includes(property) && args[property][0] != '<') {
                         args[property] = `<strong>${_(args[property])}</strong>`;
                     }*/
+                }
+
+                if (args.card_image === '' && args.card) {
+                    args.card_image = this.cardImageHtml(args.card, args);
+                }
+
+                if (args.cards_images === '' && args.cards) {
+                    args.cards_images = Object.values(args.cards).map((card: Card) => this.cardImageHtml(card, args)).join('');
                 }
                 
                 let constructorKeys = Object.keys(args).filter((key) => key.substring(0, 16) == 'constructor_name');

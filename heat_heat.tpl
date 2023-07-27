@@ -1,11 +1,9 @@
 {OVERALL_GAME_HEADER}
 
-<div id="table">
-    <div id="table-center">
-        <div id="circuit"></div>
-    </div>
-    <div id="tables"></div>
+<div id="table-center">
+    <div id="circuit"></div>
 </div>
+<div id="tables"></div>
 
 <script type="text/javascript">
 const URL = dojoConfig.packages.reduce((r,p) => p.name == "bgagame" ? p.location : r, null);
