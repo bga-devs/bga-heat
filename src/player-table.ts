@@ -122,4 +122,8 @@ class PlayerTable {
         this.inplay.removeAll();
         // TODO move them to discard instead
     }
+    
+    public cooldown(cards: Card[]) {
+        this.engine.addCards(cards);
+    }
 }

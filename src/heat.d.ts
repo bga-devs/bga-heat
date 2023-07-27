@@ -139,3 +139,9 @@ interface NotifClearPlayedCardsArgs {
 interface NotifUpdateTurnOrderArgs {
     constructor_ids: number[];
 }
+
+// cooldown
+interface NotifCooldownArgs {
+    constructor_id: number;
+    cards: Card[];
+}

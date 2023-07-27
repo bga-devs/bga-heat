@@ -653,6 +653,7 @@ class Heat implements HeatGame {
             ['draw', ANIMATION_MS],
             ['pDraw', ANIMATION_MS],
             ['clearPlayedCards', ANIMATION_MS],
+            ['cooldown', ANIMATION_MS],
         ];
         
     
@@ -758,6 +759,16 @@ class Heat implements HeatGame {
         const playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
         playerTable.clearPlayedCards(cardIds);
     }
+
+    notif_cooldown(args: NotifCooldownArgs) {
+        const { constructor_id, cards } = args;
+        const playerId = this.getPlayerIdFromConstructorId(args.constructor_id);
+        const playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        this.handCounters[playerId].incValue(-cards.length);
+        playerTable.cooldown(cards);
+        this.engineCounters[playerId].incValue(cards.length);
+    }
+    
     
     /*
     * [Undocumented] Called by BGA framework on any notification message

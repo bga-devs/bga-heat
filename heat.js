@@ -2379,6 +2379,9 @@ var PlayerTable = /** @class */ (function () {
         this.inplay.removeAll();
         // TODO move them to discard instead
     };
+    PlayerTable.prototype.cooldown = function (cards) {
+        this.engine.addCards(cards);
+    };
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
@@ -2888,6 +2891,7 @@ var Heat = /** @class */ (function () {
             ['draw', ANIMATION_MS],
             ['pDraw', ANIMATION_MS],
             ['clearPlayedCards', ANIMATION_MS],
+            ['cooldown', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
@@ -2975,6 +2979,14 @@ var Heat = /** @class */ (function () {
         var constructor_id = args.constructor_id, cardIds = args.cardIds;
         var playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
         playerTable.clearPlayedCards(cardIds);
+    };
+    Heat.prototype.notif_cooldown = function (args) {
+        var constructor_id = args.constructor_id, cards = args.cards;
+        var playerId = this.getPlayerIdFromConstructorId(args.constructor_id);
+        var playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        this.handCounters[playerId].incValue(-cards.length);
+        playerTable.cooldown(cards);
+        this.engineCounters[playerId].incValue(cards.length);
     };
     /*
     * [Undocumented] Called by BGA framework on any notification message
