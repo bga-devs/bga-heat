@@ -191,6 +191,25 @@ class Notifications
     );
   }
 
+  public function spinOut($constructor, $speed, $limit, $cards, $cell, $stresses)
+  {
+    self::notifyAll(
+      'spinOut',
+      clienttranslate(
+        '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) to discard'
+      ),
+      [
+        'constructor' => $constructor,
+        'n' => count($cards),
+        'cards' => $cards->toArray(),
+        'speed' => $speed,
+        'limit' => $limit,
+        'cell' => $cell,
+        'stresses' => $stresses,
+      ]
+    );
+  }
+
   public function cooldown($constructor, $heats)
   {
     self::notifyAll('cooldown', clienttranslate('${constructor_name} cooldowns ${n} heat(s)'), [

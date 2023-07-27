@@ -129,6 +129,14 @@ class Cards extends \HEAT\Helpers\Pieces
     Notifications::draw($constructor, $cards);
   }
 
+  public static function addStress($constructor, $n)
+  {
+    $cId = $constructor->getId();
+    $cards = [];
+    $cards[] = ['type' => 110, 'nbr' => $n, 'location' => "hand-$cId"];
+    return self::create($cards, null);
+  }
+
   ////////////////////////////////
   //  ____        _
   // |  _ \  __ _| |_ __ _ ___

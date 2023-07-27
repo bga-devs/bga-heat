@@ -459,8 +459,14 @@ trait RoundTrait
         // Have we overspeed ?
         if ($delta > 0) {
           // Are we spinning out ??
-          if ($delta > $constructor->getEngine()->count()) {
-            die('TODO: spinning out !');
+          $available = $constructor->getEngine()->count();
+          if ($delta > $available) {
+            $cards = $constructor->payHeats($available);
+            $cell = $this->getCircuit()->getFirstFreeCell($position - 1, $constructor->getId());
+            $stresses = Cards::addStress($constructor, $constructor->getGear() <= 2 ? 1 : 2);
+            $constructor->setCarCell($cell);
+            $constructor->setGear(1);
+            Notifications::spinOut($constructor, $speed, $limit, $cards, $cell, $stresses);
             break;
           } else {
             $cards = $constructor->payHeats($delta);

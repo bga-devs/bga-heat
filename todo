@@ -10,6 +10,10 @@ Frontend :
   - payHeatsForCorner notif
   - payHeats notif (for heated boost for instance)
    => maybe these two notifs can be merged ? Unless you want to add a red circle around the corner for instance for the payHeatsForCorner notif ? that could be cool
+  - spinOut notif
+   => also very similar but also contains the new cell and the additional stress cards drawn
+
+  - gear are buggy: not colored anymore
 
   - reveal : handle when args.heat != null
 

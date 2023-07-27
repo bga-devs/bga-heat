@@ -94,6 +94,15 @@ class Circuit
     return 0;
   }
 
+  public function getFreeCell($position)
+  {
+    $line = $this->getFreeLine($position);
+    if ($line == 0) {
+      die('Trying to get free cell on a busy position');
+    }
+    return $this->getCell($position, $line);
+  }
+
   public function getPosition($constructor)
   {
     $currentCell = $constructor->getCarCell();
@@ -112,6 +121,24 @@ class Circuit
     return $this->posToCells[2 * $pos + $line];
   }
 
+  public function getFirstFreePosition($position, $cId)
+  {
+    $avoidInfiniteLoop = 0;
+    while ($this->getFreeLine($position, $cId) == 0 && $avoidInfiniteLoop++ < 10) {
+      $position--;
+    }
+    if ($avoidInfiniteLoop >= 10) {
+      die('Couldnt find a valid cell, should not happen');
+    }
+    return $position;
+  }
+
+  public function getFirstFreeCell($position, $cId)
+  {
+    $position = $this->getFirstFreePosition($position, $cId);
+    return $this->getFreeCell($position);
+  }
+
   public function getReachedCell($constructor, $speed)
   {
     $cId = $constructor->getId();
@@ -119,14 +146,7 @@ class Circuit
     $currentLine = $this->getLine($constructor);
 
     // Find the first position that is not already full with cars
-    $newPosition = $currentPosition + $speed;
-    $avoidInfiniteLoop = 0;
-    while ($this->getFreeLine($newPosition, $cId) == 0 && $avoidInfiniteLoop++ < 10) {
-      $newPosition--;
-    }
-    if ($avoidInfiniteLoop >= 10) {
-      die('Couldnt find a valid cell, should not happen');
-    }
+    $newPosition = $this->getFirstFreePosition($currentPosition + $speed, $cId);
 
     // Compute the path
     $path = [$constructor->getCarCell()];
@@ -150,10 +170,9 @@ class Circuit
     $extraTurn = intdiv($newPosition, $this->getLength());
     $nSpacesForward = $newPosition - $currentPosition;
     $newPosition = $newPosition % $this->getLength();
-    $newLine = $this->getFreeLine($newPosition);
 
     // Now get the cell
-    $cellId = $this->getCell($newPosition, $newLine);
+    $cellId = $this->getFreeCell($newPosition);
     $path[] = $cellId;
     return [$cellId, $nSpacesForward, $extraTurn, $path];
   }
