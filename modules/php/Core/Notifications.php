@@ -151,6 +151,12 @@ class Notifications
         : clienttranslate(
           '${constructor_name} discards ${cards_images} and keep ${card_image} to resolve boost symbol (${i} / ${n})'
         );
+    if (empty($cards)) {
+      $msg =
+        $i == 1 && $n == 1
+          ? clienttranslate('${constructor_name} flips ${card_image} to resolve boost symbol')
+          : clienttranslate('${constructor_name} flips ${card_image} to resolve boost symbol (${i} / ${n})');
+    }
 
     self::notifyAll('resolveBoost', $msg, [
       'constructor' => $constructor,
@@ -181,6 +187,31 @@ class Notifications
         'limit' => $limit,
       ]
     );
+  }
+
+  public function cooldown($constructor, $heats)
+  {
+    self::notifyAll('cooldown', clienttranslate('${constructor_name} cooldowns ${n} heat(s)'), [
+      'constructor' => $constructor,
+      'cards' => $heats->toArray(),
+      'n' => $heats->count(),
+    ]);
+  }
+
+  public function adrenaline($constructor)
+  {
+    self::notifyAll('adrenaline', clienttranslate('${constructor_name} uses adrelanine\'s effect to increase their speed by 1'), [
+      'constructor' => $constructor,
+    ]);
+  }
+
+  public function heatedBoost($constructor, $heats, $cards, $card)
+  {
+    self::notifyAll('payHeats', clienttranslate('${constructor_name} discards 1 heat to get the boost effect'), [
+      'constructor' => $constructor,
+      'cards' => $heats->toArray(),
+    ]);
+    self::resolveBoost($constructor, $cards, $card, 1, 1);
   }
 
   ///////////////////////////////////////////////////////////////

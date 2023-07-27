@@ -25,6 +25,11 @@ class Cards extends \HEAT\Helpers\Pieces
     return array_merge($card, self::getDatas()[$card['type']]);
   }
 
+  public static function getDeck($cId)
+  {
+    return self::getInLocation(['deck', $cId]);
+  }
+
   public static function getHand($cId)
   {
     return self::getInLocation(['hand', $cId]);

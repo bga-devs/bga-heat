@@ -1,17 +1,33 @@
 Other :
- - finish to extract circuit datas
-
 
 Backend :
   
   - planification : shouldnt be able to select heat (unless very rare case where you can play nothing) => moved to back, as front makes _private.cards selectable, and heat is in the least (player colored heat at least)
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
-  - updateTurnOrder notif : send constructor ids (by order of play ? or with an associated "no") instead of just constructor_names. I tried to add `constructor_ids` as an array, as I think it's sorted. Is it OK ?
+
+  - updateTurnOrder notif : send constructor ids (by order of play ? or with an associated "no") instead of just constructor_names. I tried to add `constructor_ids` as an array, as I think it's sorted. Is it OK ? => OK
 
 Frontend :
   - payHeatsForCorner notif
+  - payHeats notif (for heated boost for instance)
+   => maybe these two notifs can be merged ? Unless you want to add a red circle around the corner for instance for the payHeatsForCorner notif ? that could be cool
 
   - reveal : handle when args.heat != null
 
   - display discard
-  - display number of cards left in deck ??
+  - display number of cards left in deck
+  
+  - make speed counter work
+
+  - react state : buttons are buggy => multiple call to server
+
+  - icons for react :
+    * Cooldown
+    * Adrenaline : +1 SPEED (I know adrenaline effect is actually 1 extra cooldown + 1 speed but the "+1 speed" does not have any name whereas cooldown has, so I am using 'adrenaline' to refer to the "+1 speed" thingy)
+    * Heated-boost : HEAT > +
+
+  - cooldown notif
+
+  - user pref : voir seulement le haut des cartes en main => garder environ 1/6 de la hauteur et mettre le plateau joueur par dessus, permet d'avoir une vue globale plus complète
+
+  - zoom icons are gone ??

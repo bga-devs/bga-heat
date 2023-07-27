@@ -246,12 +246,17 @@ trait RoundTrait
     $constructor->setSpeed($speed);
 
     // Compute the new cell
-    list($newCell, $nSpacesForward, $extraTurns) = $this->getCircuit()->getReachedCell($constructor, $speed);
-    $constructor->setCarCell($newCell);
-    $constructor->incTurn($extraTurns);
-    Notifications::moveCar($constructor, $newCell, $speed, $nSpacesForward, $extraTurns);
+    $this->moveCar($constructor, $speed);
 
     $this->stAdrenaline();
+  }
+
+  public function moveCar($constructor, $n, $slipstream = false)
+  {
+    list($newCell, $nSpacesForward, $extraTurns) = $this->getCircuit()->getReachedCell($constructor, $n);
+    $constructor->setCarCell($newCell);
+    $constructor->incTurn($extraTurns);
+    Notifications::moveCar($constructor, $newCell, $n, $nSpacesForward, $extraTurns, $slipstream);
   }
 
   //////////////////////////////////////////////////////////////////
@@ -302,16 +307,63 @@ trait RoundTrait
 
   public function argsReact()
   {
+    $constructor = Constructors::getActive();
     $symbols = Globals::getSymbols();
+    $doableSymbols = [];
+    foreach ($symbols as $symbol => $n) {
+      if ($constructor->canUseSymbol($symbol)) {
+        $doableSymbols[] = $symbol;
+      }
+    }
+
     return [
       'symbols' => $symbols,
+      'doable' => $doableSymbols,
       'canPass' => true,
     ];
   }
 
-  public function actReact()
+  public function actReact($symbol)
   {
     self::checkAction('actReact');
+    $constructor = Constructors::getActive();
+    $symbols = Globals::getSymbols();
+    $n = $symbols[$symbol] ?? null;
+    if (is_null($n)) {
+      throw new \BgaVisibleSystemException('Invalid symbol. Should not happen');
+    }
+
+    // Update remaining symbols
+    unset($symbols[$symbol]);
+    Globals::setSymbols($symbols);
+    /////// Resolve effect ///////
+    // COOLDOWN
+    if ($symbol == COOLDOWN) {
+      $heats = $constructor->getHeatsInHand()->limit($n);
+      Cards::move($heats->getIds(), ['engine', $constructor->getId()]);
+      Notifications::cooldown($constructor, $heats);
+    }
+    // ADRENALINE
+    elseif ($symbol == ADRENALINE) {
+      // Increase speed
+      $constructor->incSpeed(1);
+      Notifications::adrenaline($constructor);
+      // Move car 1 cell (if possible)
+      $this->moveCar($constructor, 1);
+    }
+    // HEATED BOOST
+    elseif ($symbol == HEATED_BOOST) {
+      $heats = $constructor->payHeats(1);
+      list($cards, $card) = $constructor->resolveBoost();
+      Notifications::heatedBoost($constructor, $heats, $cards, $card);
+      // Increase speed and move the card
+      $speed = $card['speed'];
+      $constructor->incSpeed($speed);
+      $this->moveCar($constructor, $speed);
+    }
+
+    // Loop on same state to resolve other pending symbols
+    $this->gamestate->jumpToState(ST_REACT);
   }
 
   public function actPassReact()
@@ -371,10 +423,7 @@ trait RoundTrait
 
       // Compute the new cell
       $constructor = Constructors::getActive();
-      list($newCell, $nSpacesForward, $extraTurns) = $this->getCircuit()->getReachedCell($constructor, $n);
-      $constructor->setCarCell($newCell);
-      $constructor->incTurn($extraTurns);
-      Notifications::moveCar($constructor, $newCell, $n, $nSpacesForward, $extraTurns, true);
+      $this->moveCar($constructor, $n, true);
     }
 
     $this->stCheckCorner();

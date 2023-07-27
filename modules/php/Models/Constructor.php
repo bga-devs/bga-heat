@@ -38,6 +38,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
       'handCount' => $this->getHand()->count(),
       'engine' => $this->getEngine(),
       'discard' => $this->getDiscard(),
+      'deckCount' => $this->getDeck()->count(),
       'inplay' => $this->getPlayedCards(),
     ]);
   }
@@ -64,6 +65,11 @@ class Constructor extends \HEAT\Helpers\DB_Model
     return Game::get()
       ->getCircuit()
       ->getLine($this);
+  }
+
+  public function getDeck()
+  {
+    return Cards::getDeck($this->id);
   }
 
   public function getHand()
@@ -104,5 +110,37 @@ class Constructor extends \HEAT\Helpers\DB_Model
     $cards = $this->getEngine()->limit($n);
     Cards::move($cards->getIds(), ['discard', $this->id]);
     return $cards;
+  }
+
+  public function getHeatsInHand()
+  {
+    return $this->getHand()->filter(function ($card) {
+      return $card['effect'] == HEAT;
+    });
+  }
+
+  public function getStressesInHand()
+  {
+    return $this->getHand()->filter(function ($card) {
+      return $card['effect'] == STRESS;
+    });
+  }
+
+  public function canUseSymbol($symbol)
+  {
+    // Cooldown => must have something to cooldown in the hand
+    if ($symbol == \COOLDOWN) {
+      return $this->getHeatsInHand()->count() > 0;
+    }
+    // Reduce stress => must have stress cards in hand
+    elseif ($symbol == \REDUCE) {
+      return $this->getStressesInHand()->count() > 0;
+    }
+    // Heated boost => must be able to pay for it
+    elseif ($symbol == \HEATED_BOOST) {
+      return $this->getEngine()->count() > 0; // TODO : wheather can remove this
+    }
+
+    return true;
   }
 }
