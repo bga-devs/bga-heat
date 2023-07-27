@@ -215,7 +215,7 @@ trait RoundTrait
     // Compute ending cells
     $speeds = [];
     foreach ($possibleSpeeds as $speed) {
-      list($newCell, ,) = $this->getCircuit()->getReachedCell($constructor, $speed);
+      list($newCell, , ,) = $this->getCircuit()->getReachedCell($constructor, $speed);
       $speeds[$speed] = $newCell;
     }
 
@@ -255,10 +255,10 @@ trait RoundTrait
 
   public function moveCar($constructor, $n, $slipstream = false)
   {
-    list($newCell, $nSpacesForward, $extraTurns) = $this->getCircuit()->getReachedCell($constructor, $n);
+    list($newCell, $nSpacesForward, $extraTurns, $path) = $this->getCircuit()->getReachedCell($constructor, $n);
     $constructor->setCarCell($newCell);
     $constructor->incTurn($extraTurns);
-    Notifications::moveCar($constructor, $newCell, $n, $nSpacesForward, $extraTurns, $slipstream);
+    Notifications::moveCar($constructor, $newCell, $n, $nSpacesForward, $extraTurns, $path, $slipstream);
   }
 
   //////////////////////////////////////////////////////////////////

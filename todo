@@ -19,6 +19,9 @@ Frontend :
   
   - make speed counter work
 
+  - move car animation : follow path sent by backend in notif
+   => a reaaaaaally cool plus would be to have the log entries hoverable and you would get the path drawing display on hover (like the white path I had on my little animation test)
+
   - react state : buttons are buggy => multiple call to server
 
   - icons for react :

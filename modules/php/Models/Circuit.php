@@ -8,6 +8,13 @@ class Circuit
   protected $raceLines = [];
   protected $startingCells = [];
   protected $cells = [];
+  protected $posToCells = [];
+  public function __construct()
+  {
+    foreach ($this->cells as $cellId => $cellPos) {
+      $this->posToCells[2 * $cellPos['pos'] + $cellPos['lane']] = $cellId;
+    }
+  }
 
   protected $nbrLaps = 0;
   protected $stressCards = 0;
@@ -71,7 +78,7 @@ class Circuit
     return $this->raceLines[$i];
   }
 
-  public function getFreeLane($position, $exclude = null)
+  public function getFreeLine($position, $exclude = null)
   {
     // Try raceline first
     $raceLine = $this->getRaceLine($position);
@@ -99,33 +106,56 @@ class Circuit
     return $this->cells[$currentCell]['lane'];
   }
 
+  public function getCell($position, $line)
+  {
+    $pos = $position % $this->getLength();
+    return $this->posToCells[2 * $pos + $line];
+  }
+
   public function getReachedCell($constructor, $speed)
   {
     $cId = $constructor->getId();
     $currentPosition = $this->getPosition($constructor);
+    $currentLine = $this->getLine($constructor);
 
     // Find the first position that is not already full with cars
     $newPosition = $currentPosition + $speed;
     $avoidInfiniteLoop = 0;
-    while ($this->getFreeLane($newPosition, $cId) == 0 && $avoidInfiniteLoop++ < 10) {
+    while ($this->getFreeLine($newPosition, $cId) == 0 && $avoidInfiniteLoop++ < 10) {
       $newPosition--;
     }
     if ($avoidInfiniteLoop >= 10) {
       die('Couldnt find a valid cell, should not happen');
     }
 
+    // Compute the path
+    $path = [$constructor->getCarCell()];
+    for ($pos = $currentPosition + 1; $pos < $newPosition; $pos++) {
+      if ($currentLine == 1.5) {
+        $currentLine = $this->getRaceLine($pos);
+      }
+
+      if ($this->isFree($pos, $currentLine)) {
+        $path[] = $this->getCell($pos, $currentLine);
+      } elseif ($this->isFree($pos, 3 - $currentLine)) {
+        $currentLine = 3 - $currentLine;
+        $path[] = $this->getCell($pos, $currentLine);
+      } else {
+        $currentLine = 1.5;
+        $path[] = [$this->getCell($pos, 1), $this->getCell($pos, 2)];
+      }
+    }
+
     // Compute potential extra turns
     $extraTurn = intdiv($newPosition, $this->getLength());
     $nSpacesForward = $newPosition - $currentPosition;
     $newPosition = $newPosition % $this->getLength();
-    $newLane = $this->getFreeLane($newPosition);
+    $newLine = $this->getFreeLine($newPosition);
 
     // Now get the cell
-    foreach ($this->cells as $cellId => $cellPos) {
-      if ($cellPos['pos'] == $newPosition && $cellPos['lane'] == $newLane) {
-        return [$cellId, $nSpacesForward, $extraTurn];
-      }
-    }
+    $cellId = $this->getCell($newPosition, $newLine);
+    $path[] = $cellId;
+    return [$cellId, $nSpacesForward, $extraTurn, $path];
   }
 
   public function getSlipstreamResult($constructor, $n)
@@ -148,12 +178,12 @@ class Circuit
     }
 
     // Check that you move at least one cell forward
-    list($cell, $nSpacesForward) = $this->getReachedCell($constructor, $n);
+    list($cell, $nSpacesForward, , $path) = $this->getReachedCell($constructor, $n);
     if ($nSpacesForward == 0) {
       return false;
     }
 
-    return $cell;
+    return [$cell, $path];
   }
 
   public function getCornersInBetween($turn1, $pos1, $turn2, $pos2)

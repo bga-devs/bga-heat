@@ -56,7 +56,7 @@ class Notifications
     ]);
   }
 
-  public function moveCar($constructor, $newCell, $speed, $nSpacesForward, $extraTurns, $slipstream = false)
+  public function moveCar($constructor, $newCell, $speed, $nSpacesForward, $extraTurns, $path, $slipstream = false)
   {
     $msg =
       $speed == $nSpacesForward
@@ -78,6 +78,8 @@ class Notifications
       'cell' => $newCell,
       'speed' => $speed,
       'nForward' => $nSpacesForward,
+      'path' => $path,
+      'preserve' => ['path'],
     ]);
 
     if ($extraTurns > 0 && $constructor->getTurn() > 0) {
