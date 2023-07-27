@@ -18,7 +18,7 @@ class Cards extends \HEAT\Helpers\Pieces
   protected static $prefix = 'card_';
   protected static $customFields = ['type'];
   protected static $autoreshuffle = true;
-  protected static $autoreshuffleCustom = ['deck' => 'discard'];
+  protected static $autoreshuffleCustom = [];
 
   protected static function cast($card)
   {
@@ -52,12 +52,13 @@ class Cards extends \HEAT\Helpers\Pieces
 
   public function draw($cId, $n)
   {
-    // Draw them
+    static::$autoreshuffleCustom["deck-$cId"] = "discard-$cId";
     return static::pickForLocation($n, "deck-$cId", "hand-$cId");
   }
 
   public function flipForBoost($cId)
   {
+    static::$autoreshuffleCustom["deck-$cId"] = "discard-$cId";
     return static::pickOneForLocation("deck-$cId", "discard-$cId");
   }
 

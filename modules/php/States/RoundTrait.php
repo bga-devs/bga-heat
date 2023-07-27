@@ -176,7 +176,6 @@ trait RoundTrait
         $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
       }
     }
-    Globals::setSymbols($symbols);
 
     // Resolve + symbols
     $n = $symbols[BOOST] ?? 0;
@@ -184,6 +183,9 @@ trait RoundTrait
       list($cards, $card) = $constructor->resolveBoost();
       Notifications::resolveBoost($constructor, $cards, $card, $i + 1, $n);
     }
+
+    unset($symbols[BOOST]);
+    Globals::setSymbols($symbols);
 
     $this->gamestate->jumpToState(ST_CHOOSE_SPEED);
   }
