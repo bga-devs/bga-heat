@@ -83,7 +83,26 @@ class Notifications
     ]);
 
     if ($extraTurns > 0 && $constructor->getTurn() > 0) {
-      die('TODO: notif crossing the ending lane');
+      $nbrLaps = Game::get()->getNbrLaps();
+      $turn = $constructor->getTurn() + 1;
+      $msg = clienttranslate(
+        '${finishIcon}${constructor_name} crosses the finish line and starts lap n°${n}/${lap} ${finishIcon}'
+      );
+      if ($turn == $nbrLaps) {
+        $msg = clienttranslate(
+          '${finishIcon}${constructor_name} crosses the finish line and starts the final lap of the race ${finishIcon}'
+        );
+      }
+      if ($turn > $nbrLaps) {
+        $msg = clienttranslate('${finishIcon}${constructor_name} crosses the finish line and finishes the race ${finishIcon}');
+      }
+
+      self::notifyAll('finishTurn', $msg, [
+        'constructor' => $constructor,
+        'n' => $turn,
+        'lap' => $nbrLaps,
+        'finishIcon' => '',
+      ]);
     }
   }
 
@@ -233,6 +252,14 @@ class Notifications
       'cards' => $heats->toArray(),
     ]);
     self::resolveBoost($constructor, $cards, $card, 1, 1);
+  }
+
+  public function finishRace($constructor, $podium)
+  {
+    self::notifyAll('finishRace', clienttranslate('${constructor_name} finishes the race at position ${pos}'), [
+      'constructor' => $constructor,
+      'pos' => $podium,
+    ]);
   }
 
   ///////////////////////////////////////////////////////////////

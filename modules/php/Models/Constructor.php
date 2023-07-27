@@ -53,6 +53,11 @@ class Constructor extends \HEAT\Helpers\DB_Model
     return $this->isAI() ? ($this->pId + 20) % 5 : null;
   }
 
+  public function isFinished()
+  {
+    return $this->getCarCell() < 0;
+  }
+
   public function getPosition()
   {
     return Game::get()

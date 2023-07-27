@@ -27,6 +27,7 @@ trait RaceTrait
     Cards::setupRace();
 
     // TODO : handle garage module
+    Globals::setFinishedConstructors([]);
     $this->gamestate->nextState('start');
   }
 

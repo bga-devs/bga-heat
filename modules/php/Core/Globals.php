@@ -15,10 +15,11 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'engineChoices' => 'int', // DO NOT MODIFY, USED IN ENGINE MODULE
     'callbackEngineResolved' => 'obj', // DO NOT MODIFY, USED IN ENGINE MODULE
     'anytimeRecursion' => 'int', // DO NOT MODIFY, USED IN ENGINE MODULE
-
     'customTurnOrders' => 'obj', // DO NOT MODIFY, USED FOR CUSTOM TURN ORDER FEATURE
+
     'turnOrder' => 'obj', // store the current turn order
     'activeConstructor' => 'int', // store the id of active company
+    'finishedConstructors' => 'obj', // how many cards are finished
 
     'planification' => 'obj',
     'previousPosition' => 'int',

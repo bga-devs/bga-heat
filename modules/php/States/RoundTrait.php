@@ -13,7 +13,19 @@ trait RoundTrait
   function stStartRound()
   {
     Globals::setPlanification([]);
-    $this->gamestate->setAllPlayersMultiactive();
+    $pIds = Constructors::getAll()
+      ->filter(function ($constructor) {
+        return !$constructor->isAI() && !$constructor->isFinished();
+      })
+      ->map(function ($constructor) {
+        return $constructor->getPId();
+      })
+      ->toArray();
+
+    if (empty($pIds)) {
+      die('Every human as finished the game');
+    }
+    $this->gamestate->setPlayersMultiactive($pIds, '', true);
     $this->gamestate->nextState('planification');
   }
 
@@ -23,15 +35,40 @@ trait RoundTrait
     $positions = [];
     $length = $this->getCircuit()->getLength();
     foreach (Constructors::getAll() as $constructor) {
+      if ($constructor->isFinished()) {
+        continue;
+      }
+
       $position = $constructor->getPosition();
       $line = $constructor->getLine();
       $raceLine = $this->getCircuit()->getRaceLine($position);
       $uid = ($length * $constructor->getTurn() + $position) * 2 + ($line == $raceLine ? 1 : 0);
-      $positions[$uid] = $constructor->getId();
+      $positions[$uid] = $constructor;
     }
 
     krsort($positions);
-    $order = array_values($positions);
+    $order = [];
+    $finished = Globals::getFinishedConstructors();
+    foreach ($positions as $constructor) {
+      $cId = $constructor->getId();
+
+      // Is this car finished ?
+      if ($constructor->getTurn() >= $this->getNbrLaps()) {
+        $finished[] = $cId;
+        $podium = count($finished);
+        $constructor->setCarCell(-$podium);
+        Notifications::finishRace($constructor, $podium);
+      }
+      // Otherwise, keep it for next turn
+      else {
+        $order[] = $cId;
+      }
+    }
+    Globals::setFinishedConstructors($finished);
+    if (empty($order)) {
+      die('End of race');
+    }
+
     Globals::setTurnOrder($order);
     $constructors = [];
     foreach ($order as $i => $cId) {
@@ -40,8 +77,6 @@ trait RoundTrait
       $constructors[] = $constructor;
     }
     Notifications::updateTurnOrder($constructors);
-
-    // TODO : check crossing end
 
     $this->gamestate->jumpToState(ST_START_ROUND);
   }

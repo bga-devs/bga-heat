@@ -15,6 +15,7 @@ Frontend :
 
   - gear are buggy: not colored anymore
 
+  - error on notif reveal
   - reveal : handle when args.heat != null
 
   - display discard
@@ -28,3 +29,15 @@ Frontend :
   - user pref : voir seulement le haut des cartes en main => garder environ 1/6 de la hauteur et mettre le plateau joueur par dessus, permet d'avoir une vue globale plus complète
 
   - zoom icons are gone => No they are just under the map, as the map now autoscale like in TTR
+
+  - finishTurn notif: every time someone cross the ending lane
+    (to test on USA, just set cell 833 for a constructor for instance to be right before finish line)
+    replace "${finishIcon}" by the finish line icon used in player panels
+
+  - finishRace notif 
+    => carCell of constructor is now negative !
+     -X means the constructor finished race at position X
+
+  - add ignore flag on public notif for drawing cards
+
+  - "Set gear to x anD play selected card" (missing the "d")

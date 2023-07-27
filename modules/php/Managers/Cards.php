@@ -125,6 +125,9 @@ class Cards extends \HEAT\Helpers\Pieces
   {
     $nCards = $constructor->getHand()->count();
     $nToDraw = Game::get()->getHandSizeLimit() - $nCards;
+    if ($nToDraw == 0) {
+      return;
+    }
     $cards = Cards::draw($constructor->getId(), $nToDraw);
     Notifications::draw($constructor, $cards);
   }

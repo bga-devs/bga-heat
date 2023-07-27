@@ -51,7 +51,7 @@ class Circuit
   public function isFree($position, $lane, $exclude = null)
   {
     foreach (Constructors::getAll() as $cId => $constructor) {
-      if (!is_null($exclude) && $cId == $exclude) {
+      if ((!is_null($exclude) && $cId == $exclude) || $constructor->isFinished()) {
         continue;
       }
 
