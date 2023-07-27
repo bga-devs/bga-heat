@@ -2391,7 +2391,10 @@ var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
 function formatTextIcons(str) {
     return str
-        .replace(/\[Heat\]/ig, '<div class="heat icon"></div>');
+        .replace(/\[Heat\]/ig, '<div class="heat icon"></div>')
+        .replace(/\[Cooldown\]/ig, '<div class="cooldown icon"></div>')
+        .replace(/\[Speed\]/ig, '<div class="speed icon"></div>')
+        .replace(/\[Boost\]/ig, '<div class="boost icon"></div>');
 }
 var Heat = /** @class */ (function () {
     function Heat() {
@@ -2648,10 +2651,21 @@ var Heat = /** @class */ (function () {
                 case 'react':
                     var reactArgs = args;
                     this.addActionButton("actPassReact_button", _('Pass'), function () { return _this.actPassReact(); });
-                    Object.entries(reactArgs.symbols).forEach(function (entry) {
-                        return _this.addActionButton("actReact_button", "".concat(entry[0], " ").concat(entry[1]), function () { return _this.actReact(entry[0]); });
-                    } // TODO
-                    );
+                    Object.entries(reactArgs.symbols).forEach(function (entry, index) {
+                        var label = "".concat(entry[0], " ").concat(entry[1]);
+                        switch (entry[0]) {
+                            case 'cooldown':
+                                label = "".concat(entry[1], " [Cooldown]");
+                                break;
+                            case 'adrenaline':
+                                label = "+".concat(entry[1], " [Speed]");
+                                break;
+                            case 'heated-boost':
+                                label = "[Heat] > [Boost]";
+                                break;
+                        }
+                        _this.addActionButton("actReact".concat(index, "_button"), formatTextIcons(label), function () { return _this.actReact(entry[0]); });
+                    });
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
@@ -2736,7 +2750,7 @@ var Heat = /** @class */ (function () {
             _this.engineCounters[playerId].create("engine-counter-".concat(playerId));
             _this.engineCounters[playerId].setValue(Object.values(constructor.engine).length);
             _this.speedCounters[playerId] = new ebg.counter();
-            _this.speedCounters[playerId].create("turn-counter-".concat(playerId));
+            _this.speedCounters[playerId].create("speed-counter-".concat(playerId));
             if (constructor.speed !== null && constructor.speed >= 0) {
                 _this.speedCounters[playerId].setValue(constructor.speed);
             }
@@ -2826,12 +2840,12 @@ var Heat = /** @class */ (function () {
         }
         this.takeAction('actPassReact');
     };
-    Heat.prototype.actReact = function (react) {
+    Heat.prototype.actReact = function (symbol) {
         if (!this.checkAction('actReact')) {
             return;
         }
         this.takeAction('actReact', {
-            react: react
+            symbol: symbol
         });
     };
     Heat.prototype.actDiscard = function () {
@@ -2930,13 +2944,20 @@ var Heat = /** @class */ (function () {
         // TODO
     };
     Heat.prototype.notif_reveal = function (args) {
-        var constructor_id = args.constructor_id, gear = args.gear, cards = args.cards, heat = args.heat;
-        var playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        var _a;
+        var constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        var playerTable = this.getPlayerTable(playerId);
         playerTable.setCurrentGear(gear);
-        return Promise.all([
-            playerTable.setInplay(Object.values(cards)),
-            // TODO discard Heat card
-        ]);
+        var cards = Object.values(args.cards);
+        this.handCounters[playerId].incValue(-cards.length);
+        var promises = [playerTable.setInplay(cards)];
+        if (playerTable.hand) {
+            promises.push((_a = playerTable.hand) === null || _a === void 0 ? void 0 : _a.addCard(heat));
+            this.handCounters[playerId].incValue(1);
+        }
+        this.speedCounters[playerId].setValue(cards.map(function (card) { var _a; return (_a = card.speed) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0));
+        return Promise.all(promises);
     };
     Heat.prototype.notif_moveCar = function (args) {
         var constructor_id = args.constructor_id, cell = args.cell;

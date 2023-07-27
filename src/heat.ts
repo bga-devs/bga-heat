@@ -16,7 +16,10 @@ const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', '
 
 function formatTextIcons(str: string) {
     return str
-        .replace(/\[Heat\]/ig, '<div class="heat icon"></div>');
+        .replace(/\[Heat\]/ig, '<div class="heat icon"></div>')
+        .replace(/\[Cooldown\]/ig, '<div class="cooldown icon"></div>')
+        .replace(/\[Speed\]/ig, '<div class="speed icon"></div>')
+        .replace(/\[Boost\]/ig, '<div class="boost icon"></div>');
 }
 
 class Heat implements HeatGame {
@@ -329,9 +332,22 @@ class Heat implements HeatGame {
                 case 'react':
                     const reactArgs = args as EnteringReactArgs;
                     (this as any).addActionButton(`actPassReact_button`, _('Pass'), () => this.actPassReact());
-                    Object.entries(reactArgs.symbols).forEach(entry => 
-                        (this as any).addActionButton(`actReact_button`, `${entry[0]} ${entry[1]}`, () => this.actReact(entry[0])) // TODO
-                    );
+                    Object.entries(reactArgs.symbols).forEach((entry, index) => {
+                        let label = `${entry[0]} ${entry[1]}`;
+                        switch (entry[0]) {
+                            case 'cooldown':
+                                label = `${entry[1]} [Cooldown]`;
+                                break;
+                            case 'adrenaline':
+                                label = `+${entry[1]} [Speed]`;
+                                break;
+                            case 'heated-boost':
+                                label = `[Heat] > [Boost]`;
+                                break;
+                        }
+
+                        (this as any).addActionButton(`actReact${index}_button`, formatTextIcons(label), () => this.actReact(entry[0]));
+                    });
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
@@ -462,7 +478,7 @@ class Heat implements HeatGame {
             this.engineCounters[playerId].setValue(Object.values(constructor.engine).length);
 
             this.speedCounters[playerId] = new ebg.counter();
-            this.speedCounters[playerId].create(`turn-counter-${playerId}`);
+            this.speedCounters[playerId].create(`speed-counter-${playerId}`);
             if (constructor.speed !== null && constructor.speed >= 0) {
                 this.speedCounters[playerId].setValue(constructor.speed);
             }
@@ -579,13 +595,13 @@ class Heat implements HeatGame {
         this.takeAction('actPassReact');
     }
   	
-    public actReact(react: string) {
+    public actReact(symbol: string) {
         if(!(this as any).checkAction('actReact')) {
             return;
         }
 
         this.takeAction('actReact', {
-            react
+            symbol
         });
     }
   	
@@ -702,13 +718,19 @@ class Heat implements HeatGame {
     }  
 
     notif_reveal(args: NotifRevealArgs) {
-        const { constructor_id, gear, cards, heat } = args;
-        const playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        const { constructor_id, gear, heat } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        const playerTable = this.getPlayerTable(playerId);
         playerTable.setCurrentGear(gear);
-        return Promise.all([
-            playerTable.setInplay(Object.values(cards)),
-            // TODO discard Heat card
-        ]);
+        const cards = Object.values(args.cards);
+        this.handCounters[playerId].incValue(-cards.length);
+        const promises = [playerTable.setInplay(cards)];
+        if (playerTable.hand) {
+            promises.push(playerTable.hand?.addCard(heat));
+            this.handCounters[playerId].incValue(1);
+        }
+        this.speedCounters[playerId].setValue(cards.map(card => card.speed ?? 0).reduce((a, b) => a + b, 0));
+        return Promise.all(promises);
     }  
 
     notif_moveCar(args: NotifMoveCarArgs) {

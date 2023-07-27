@@ -16,19 +16,10 @@ Frontend :
   - display discard
   - display number of cards left in deck
   
-  - make speed counter work
+  - make speed counter work => updates when notif reveal, with sum of cards.speed. I need to check what can change this counter, probably reacts ? Maybe clean it at notif clearPlayedCards ?
 
   - move car animation : follow path sent by backend in notif
    => a reaaaaaally cool plus would be to have the log entries hoverable and you would get the path drawing display on hover (like the white path I had on my little animation test)
-
-  - react state : buttons are buggy => multiple call to server
-
-  - icons for react :
-    * Cooldown
-    * Adrenaline : +1 SPEED (I know adrenaline effect is actually 1 extra cooldown + 1 speed but the "+1 speed" does not have any name whereas cooldown has, so I am using 'adrenaline' to refer to the "+1 speed" thingy)
-    * Heated-boost : HEAT > +
-
-  - cooldown notif
 
   - user pref : voir seulement le haut des cartes en main => garder environ 1/6 de la hauteur et mettre le plateau joueur par dessus, permet d'avoir une vue globale plus complète
 

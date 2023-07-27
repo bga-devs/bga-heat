@@ -3,6 +3,7 @@ interface Card {
     location: string;
     state: string;
     type: string;
+    speed?: number;
 }
 
 //console.log(Object.values(CARDS_DATA).map(card => card.startingSpace));

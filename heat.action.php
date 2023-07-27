@@ -70,7 +70,7 @@ class action_heat extends APP_GameAction
   {
     self::setAjaxMode();
     $symbol = self::getArg('symbol', AT_alphanum_dash, false);
-    $this->game->actChooseSpeed($symbol);
+    $this->game->actReact($symbol);
     self::ajaxResponse();
   }
 
