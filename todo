@@ -4,8 +4,7 @@ Backend :
   
   - planification : shouldnt be able to select heat (unless very rare case where you can play nothing) => moved to back, as front makes _private.cards selectable, and heat is in the least (player colored heat at least)
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
-
-  - updateTurnOrder notif : send constructor ids (by order of play ? or with an associated "no") instead of just constructor_names. I tried to add `constructor_ids` as an array, as I think it's sorted. Is it OK ? => OK
+  - fix France error at start
 
 Frontend :
   - payHeatsForCorner notif
@@ -33,4 +32,4 @@ Frontend :
 
   - user pref : voir seulement le haut des cartes en main => garder environ 1/6 de la hauteur et mettre le plateau joueur par dessus, permet d'avoir une vue globale plus complète
 
-  - zoom icons are gone ??
+  - zoom icons are gone => No they are just under the map, as the map now autoscale like in TTR

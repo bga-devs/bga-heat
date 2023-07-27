@@ -2228,11 +2228,13 @@ var TechnologyTilesManager = /** @class */ (function (_super) {
 }(CardManager));
 var MAP_WIDTH = 1650;
 var MAP_HEIGHT = 1093;
+var MAP_SCALE = 1650 / 1280;
 var Circuit = /** @class */ (function () {
     function Circuit(game, gamedatas) {
         var _this = this;
         this.game = game;
-        this.number = 1;
+        this.scale = 1;
+        this.MAP_DATAS = window['MAP_DATAS'];
         this.mapDiv = document.getElementById('circuit');
         this.mapDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/Circuits/").concat(gamedatas.circuit, ".jpg')");
         Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
@@ -2262,30 +2264,27 @@ var Circuit = /** @class */ (function () {
         var car = document.createElement('div');
         car.id = "car-".concat(constructor.id),
             car.classList.add('car');
-        var cell = window['USA_DATAS'][constructor.carCell];
-        var scale = 1650 / 1280;
-        car.style.setProperty('--x', "".concat(scale * cell.x, "px"));
-        car.style.setProperty('--y', "".concat(scale * cell.y, "px"));
+        var cell = this.MAP_DATAS[constructor.carCell];
+        car.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
+        car.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
         car.style.setProperty('--constructor-id', "".concat(constructor.id));
         this.mapDiv.insertAdjacentElement('beforeend', car);
     };
     Circuit.prototype.moveCar = function (constructorId, carCell) {
         var car = document.getElementById("car-".concat(constructorId));
-        var cell = window['USA_DATAS'][carCell];
-        var scale = 1650 / 1280;
-        car.style.setProperty('--x', "".concat(scale * cell.x, "px"));
-        car.style.setProperty('--y', "".concat(scale * cell.y, "px"));
+        var cell = this.MAP_DATAS[carCell];
+        car.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
+        car.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
     };
     Circuit.prototype.addMapIndicator = function (cellId, clickCallback) {
         var mapIndicator = document.createElement('div');
         mapIndicator.id = "map-indicator-".concat(cellId),
             mapIndicator.classList.add('map-indicator');
-        var cell = window['USA_DATAS'][cellId];
-        var scale = 1650 / 1280;
-        mapIndicator.style.setProperty('--x', "".concat(scale * cell.x, "px"));
-        mapIndicator.style.setProperty('--y', "".concat(scale * cell.y, "px"));
+        var cell = this.MAP_DATAS[cellId];
+        mapIndicator.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
+        mapIndicator.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
         this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);

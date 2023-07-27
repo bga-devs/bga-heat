@@ -1,9 +1,12 @@
 const MAP_WIDTH = 1650;
 const MAP_HEIGHT = 1093;
+const MAP_SCALE = 1650 / 1280;
 
 class Circuit {
     private mapDiv: HTMLDivElement;
-    private scale; number = 1;
+    private scale: number = 1;
+
+    private MAP_DATAS = window['MAP_DATAS'];
         
     constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
         this.mapDiv = document.getElementById('circuit') as HTMLDivElement;
@@ -42,10 +45,9 @@ class Circuit {
         const car = document.createElement('div');
         car.id = `car-${constructor.id}`,
         car.classList.add('car');
-        let cell = window['USA_DATAS'][constructor.carCell];
-        let scale = 1650 / 1280;
-        car.style.setProperty('--x', `${scale * cell.x}px`);
-        car.style.setProperty('--y', `${scale * cell.y}px`);
+        let cell = this.MAP_DATAS[constructor.carCell];
+        car.style.setProperty('--x', `${MAP_SCALE * cell.x}px`);
+        car.style.setProperty('--y', `${MAP_SCALE * cell.y}px`);
         car.style.setProperty('--r', `${cell.a}deg`);
         car.style.setProperty('--constructor-id', `${constructor.id}`);
         this.mapDiv.insertAdjacentElement('beforeend', car);
@@ -53,10 +55,9 @@ class Circuit {
 
     public moveCar(constructorId: number, carCell: number) {
         const car = document.getElementById(`car-${constructorId}`);
-        let cell = window['USA_DATAS'][carCell];
-        let scale = 1650 / 1280;
-        car.style.setProperty('--x', `${scale * cell.x}px`);
-        car.style.setProperty('--y', `${scale * cell.y}px`);
+        let cell = this.MAP_DATAS[carCell];
+        car.style.setProperty('--x', `${MAP_SCALE * cell.x}px`);
+        car.style.setProperty('--y', `${MAP_SCALE * cell.y}px`);
         car.style.setProperty('--r', `${cell.a}deg`);
     }
     
@@ -64,10 +65,9 @@ class Circuit {
         const mapIndicator = document.createElement('div');
         mapIndicator.id = `map-indicator-${cellId}`,
         mapIndicator.classList.add('map-indicator');
-        let cell = window['USA_DATAS'][cellId];
-        let scale = 1650 / 1280;
-        mapIndicator.style.setProperty('--x', `${scale * cell.x}px`);
-        mapIndicator.style.setProperty('--y', `${scale * cell.y}px`);
+        let cell = this.MAP_DATAS[cellId];
+        mapIndicator.style.setProperty('--x', `${MAP_SCALE * cell.x}px`);
+        mapIndicator.style.setProperty('--y', `${MAP_SCALE * cell.y}px`);
         this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
 
         if (clickCallback) {
