@@ -72,7 +72,7 @@ class Cards extends \HEAT\Helpers\Pieces
   ///////////////////////////////////
 
   /* Creation of the cards */
-  public static function setupNewGame()
+  public static function setupNewGame($options)
   {
     foreach (Constructors::getAll() as $cId => $constructor) {
       if ($constructor->isAI()) {
@@ -87,13 +87,39 @@ class Cards extends \HEAT\Helpers\Pieces
       $cards[] = ['type' => 103, 'nbr' => 3, 'location' => "deck-$cId"];
       $cards[] = ['type' => 104, 'nbr' => 3, 'location' => "deck-$cId"];
 
-      // Starting upgrades : 0, 5, pesonalized Heat
-      $cards[] = ['type' => 100, 'nbr' => 1, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 105, 'nbr' => 1, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 106, 'nbr' => 1, 'location' => "deck-$cId"];
+      if ($options[\HEAT\OPTION_GARAGE_MODULE] == \HEAT\OPTION_DISABLED) {
+        // Starting upgrades : 0, 5, pesonalized Heat
+        $cards[] = ['type' => 100, 'nbr' => 1, 'location' => "deck-$cId"];
+        $cards[] = ['type' => 105, 'nbr' => 1, 'location' => "deck-$cId"];
+        $cards[] = ['type' => 106, 'nbr' => 1, 'location' => "deck-$cId"];
+      }
+    }
 
-      // Create the cards
-      self::create($cards, null);
+    // Create deck of upgrades
+    $garage = $options[\HEAT\OPTION_GARAGE_MODULE];
+    if ($garage != \HEAT\OPTION_DISABLED) {
+      $withAdvanced = in_array($garage, [\HEAT\OPTION_GARAGE_ADVANCED, \HEAT\OPTION_GARAGE_MIXED]);
+      $withBasic = in_array($garage, [\HEAT\OPTION_GARAGE_BASIC, \HEAT\OPTION_GARAGE_MIXED]);
+      for ($i = 1; $i <= 48; $i++) {
+        $advanced = $i >= 18;
+        if ((!$advanced && $withBasic) || ($advanced && $withAdvanced)) {
+          $cards[] = ['type' => $i, 'nbr' => 1, 'location' => 'upgrades'];
+        }
+      }
+    }
+
+    // Create the cards
+    self::create($cards, null);
+    self::shuffle('upgrades');
+
+    // Draw them if random mode is selected
+    if ($options[\HEAT\OPTION_GARAGE_CHOICE] == \HEAT\OPTION_GARAGE_RANDOM) {
+      foreach (Constructors::getAll() as $cId => $constructor) {
+        if ($constructor->isAI()) {
+          continue;
+        }
+        static::pickForLocation(3, 'upgrades', "deck-$cId");
+      }
     }
   }
 

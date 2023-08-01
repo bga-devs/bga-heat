@@ -52,7 +52,7 @@ class France extends \HEAT\Models\Circuit
     ],
     1509 => [
       'lane' => 1,
-      'pos' => NaN,
+      'pos' => 20,
     ],
     1511 => [
       'lane' => 2,
