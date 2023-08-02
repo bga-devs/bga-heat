@@ -4,6 +4,7 @@ interface Card {
     state: string;
     type: string;
     speed?: number;
+    text?: string;
 }
 
 //console.log(Object.values(CARDS_DATA).map(card => card.startingSpace));
@@ -26,16 +27,28 @@ class CardsManager extends CardManager<Card> {
 
     private setupFrontDiv(card: Card, div: HTMLElement, ignoreTooltip: boolean = false) { 
         const type = Number(card.type);
-        switch (type) {
-            case 110:
-                div.classList.add('stress');
-                break;
-            case 111:
-                div.classList.add('heat');
-                break;
-            default:
-                div.dataset.col = `${type % 100}`;
-                break;
+        div.classList.toggle('upgrade-card', type < 100);
+        if (type >= 100) {
+            switch (type) {
+                case 110:
+                    div.classList.add('stress');
+                    break;
+                case 111:
+                    div.classList.add('heat');
+                    break;
+                default:
+                    div.dataset.col = `${type % 100}`;
+                    break;
+            }
+        } else {
+            const imagePosition = type - 1;
+            const image_items_per_row = 10;
+            var row = Math.floor(imagePosition / image_items_per_row);
+            const xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+            const yBackgroundPercent = row * 100;
+            div.style.backgroundPosition = `-${xBackgroundPercent}% -${yBackgroundPercent}%`;
+
+            div.innerHTML = `<div class="text">${_(card.text)}</div>`
         }
 
         if (!ignoreTooltip) {            
@@ -63,22 +76,36 @@ class CardsManager extends CardManager<Card> {
     public getHtml(card: Card): string {
         const type = Number(card.type);
         let className = '';
+        let style = '';
         let col = null;
-        switch (type) {
-            case 110:
-                className ='stress';
-                break;
-            case 111:
-                className = 'heat';
-                break;
-            default:
-                col = `${type % 100}`;
-                break;
+        
+        if (type >= 100) {
+            switch (type) {
+                case 110:
+                    className ='stress';
+                    break;
+                case 111:
+                    className = 'heat';
+                    break;
+                default:
+                    col = `${type % 100}`;
+                    break;
+            }
+        } else {
+            className = 'upgrade-card';
+
+            const imagePosition = type - 1;
+            const image_items_per_row = 10;
+            var row = Math.floor(imagePosition / image_items_per_row);
+            const xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+            const yBackgroundPercent = row * 100;
+
+            style = `background-position: -${xBackgroundPercent}% -${yBackgroundPercent}%;`;
         }
 
         let html = `<div class="card personal-card" data-side="front">
             <div class="card-sides">
-                <div class="card-side front ${className}" ${col !== null ? `data-col="${col}"` : ''}>
+                <div class="card-side front ${className}" ${col !== null ? `data-col="${col}"` : ''} style="${style}">${type < 100 ? `<div class="text">${_(card.text)}</div>` : ''}
                 </div>
             </div>
         </div>`;

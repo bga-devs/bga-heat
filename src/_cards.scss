@@ -40,6 +40,20 @@
                         background-position-x: #{$col * 100% / 6};
                     }
                 }
+
+                &.upgrade-card {        
+                    background-image: url('img/upgrade-cards.jpg');  
+                    background-size: auto 500%; 
+
+                    .text {
+                        position: absolute;
+                        left: 48px;
+                        right: 48px;
+                        text-align: center;
+                        color: #231f20;
+                        font-size: 32px;
+                    }
+                }
             }
         }
     }

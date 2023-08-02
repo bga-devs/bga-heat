@@ -2103,16 +2103,28 @@ var CardsManager = /** @class */ (function (_super) {
     CardsManager.prototype.setupFrontDiv = function (card, div, ignoreTooltip) {
         if (ignoreTooltip === void 0) { ignoreTooltip = false; }
         var type = Number(card.type);
-        switch (type) {
-            case 110:
-                div.classList.add('stress');
-                break;
-            case 111:
-                div.classList.add('heat');
-                break;
-            default:
-                div.dataset.col = "".concat(type % 100);
-                break;
+        div.classList.toggle('upgrade-card', type < 100);
+        if (type >= 100) {
+            switch (type) {
+                case 110:
+                    div.classList.add('stress');
+                    break;
+                case 111:
+                    div.classList.add('heat');
+                    break;
+                default:
+                    div.dataset.col = "".concat(type % 100);
+                    break;
+            }
+        }
+        else {
+            var imagePosition = type - 1;
+            var image_items_per_row = 10;
+            var row = Math.floor(imagePosition / image_items_per_row);
+            var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+            var yBackgroundPercent = row * 100;
+            div.style.backgroundPosition = "-".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%");
+            div.innerHTML = "<div class=\"text\">".concat(_(card.text), "</div>");
         }
         if (!ignoreTooltip) {
             this.game.setTooltip(div.id, this.getTooltip(card));
@@ -2136,19 +2148,31 @@ var CardsManager = /** @class */ (function (_super) {
     CardsManager.prototype.getHtml = function (card) {
         var type = Number(card.type);
         var className = '';
+        var style = '';
         var col = null;
-        switch (type) {
-            case 110:
-                className = 'stress';
-                break;
-            case 111:
-                className = 'heat';
-                break;
-            default:
-                col = "".concat(type % 100);
-                break;
+        if (type >= 100) {
+            switch (type) {
+                case 110:
+                    className = 'stress';
+                    break;
+                case 111:
+                    className = 'heat';
+                    break;
+                default:
+                    col = "".concat(type % 100);
+                    break;
+            }
         }
-        var html = "<div class=\"card personal-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front ".concat(className, "\" ").concat(col !== null ? "data-col=\"".concat(col, "\"") : '', ">\n                </div>\n            </div>\n        </div>");
+        else {
+            className = 'upgrade-card';
+            var imagePosition = type - 1;
+            var image_items_per_row = 10;
+            var row = Math.floor(imagePosition / image_items_per_row);
+            var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+            var yBackgroundPercent = row * 100;
+            style = "background-position: -".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%;");
+        }
+        var html = "<div class=\"card personal-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front ".concat(className, "\" ").concat(col !== null ? "data-col=\"".concat(col, "\"") : '', " style=\"").concat(style, "\">").concat(type < 100 ? "<div class=\"text\">".concat(_(card.text), "</div>") : '', "\n                </div>\n            </div>\n        </div>");
         return html;
     };
     return CardsManager;
@@ -2791,7 +2815,7 @@ var Heat = /** @class */ (function () {
             var maxAllowed = Math.min(4, gear + 2);
             var allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
             var label = allowed ?
-                _('Set gear to ${gear} an play selected cards').replace('${gear}', "".concat(selection.length)) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
+                _('Set gear to ${gear} and play selected cards').replace('${gear}', "".concat(selection.length)) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
                 _('Select between ${min} and ${max} cards').replace('${min}', "".concat(minAllowed)).replace('${max}', "".concat(maxAllowed));
             document.getElementById("player-table-".concat(table.playerId, "-gear")).dataset.gear = "".concat(allowed ? selection.length : gear);
             var button = document.getElementById('actPlanification_button');

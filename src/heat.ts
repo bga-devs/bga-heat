@@ -532,7 +532,7 @@ class Heat implements HeatGame {
             const maxAllowed = Math.min(4, gear + 2);
             const allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
             const label = allowed ? 
-                _('Set gear to ${gear} an play selected cards').replace('${gear}', `${selection.length}`) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
+                _('Set gear to ${gear} and play selected cards').replace('${gear}', `${selection.length}`) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
                 _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
 
             document.getElementById(`player-table-${table.playerId}-gear`).dataset.gear = `${allowed ? selection.length : gear}`;

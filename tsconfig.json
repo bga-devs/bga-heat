@@ -33,7 +33,7 @@
         "node_modules/bga-cards/src/card-manager.ts",
         "src/cardsData.ts",
         "src/text-icons-formatter.ts",
-        "src/personal-cards.ts",
+        "src/cards.ts",
         "src/technology-tiles.ts",
         "src/table-center.ts",
         "src/player-table.ts",

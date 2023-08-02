@@ -548,6 +548,18 @@ height: 241px; */
 .personal-card .card-sides .card-side.front[data-col="6"] {
   background-position-x: 100%;
 }
+.personal-card .card-sides .card-side.front.upgrade-card {
+  background-image: url("img/upgrade-cards.jpg");
+  background-size: auto 500%;
+}
+.personal-card .card-sides .card-side.front.upgrade-card .text {
+  position: absolute;
+  left: 48px;
+  right: 48px;
+  text-align: center;
+  color: #231f20;
+  font-size: 32px;
+}
 .personal-card.bga-cards_selectable-card:not(.bga-cards_disabled-card):not(.bga-cards_selected-card) {
   animation: selectable-card-animation 1s alternate infinite ease-in-out;
 }
