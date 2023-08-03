@@ -111,7 +111,6 @@ trait RoundTrait
   public function actPlan($cardIds)
   {
     self::checkAction('actPlan');
-
     $player = Players::getCurrent();
     $planification = Globals::getPlanification();
     $planification[$player->getId()] = $cardIds;
@@ -156,15 +155,6 @@ trait RoundTrait
 
   public function stEndOfPlanification()
   {
-    $planification = Globals::getPlanification();
-
-    // Keep that hidden
-    // foreach($planification as $pId => $cardIds){
-    //   $constructor = Constructors::getOfPlayer($pId);
-    //   $constructor->setGear(count($cardIds));
-    //   Notifications::setGear()
-    // }
-
     $this->initCustomTurnOrder('reveal', null, 'stReveal', 'stEndRound');
   }
 
@@ -238,14 +228,24 @@ trait RoundTrait
     $constructor = Constructors::getActive();
 
     // Compute speed
-    $speed = 0;
+    $speeds = [0];
     foreach ($constructor->getPlayedCards() as $card) {
-      if (is_array($card['speed'])) {
-        die('TODO: multiple speed');
+      $t = [];
+
+      $cSpeeds = $card['speed'];
+      if (!is_array($cSpeeds)) {
+        $cSpeeds = [$cSpeeds];
       }
-      $speed += $card['speed'];
+
+      foreach ($cSpeeds as $cSpeed) {
+        foreach ($speeds as $speed) {
+          $t[] = $cSpeed + $speed;
+        }
+      }
+
+      $speeds = $t;
     }
-    $possibleSpeeds = [$speed];
+    $possibleSpeeds = $speeds;
 
     // Compute ending cells
     $speeds = [];
@@ -346,6 +346,12 @@ trait RoundTrait
   {
     $constructor = Constructors::getActive();
     $symbols = Globals::getSymbols();
+    // Remove symbols that do not apply at this step
+    foreach ([SLIPSTREAM] as $symbol) {
+      unset($symbols[$symbol]);
+    }
+
+    // Compute which ones are actually usable
     $doableSymbols = [];
     foreach ($symbols as $symbol => $n) {
       if ($constructor->canUseSymbol($symbol)) {
@@ -398,6 +404,12 @@ trait RoundTrait
       $constructor->incSpeed($speed);
       $this->moveCar($constructor, $speed);
     }
+    // REDUCE STRESS
+    elseif ($symbol == REDUCE) {
+      $cards = $constructor->getStressesInHand()->limit($n);
+      Cards::move($cards->getIds(), ['discard', $constructor->getId()]);
+      Notifications::reduceStress($constructor, $cards);
+    }
 
     // Loop on same state to resolve other pending symbols
     $this->gamestate->jumpToState(ST_REACT);
@@ -427,6 +439,22 @@ trait RoundTrait
   {
     $constructor = Constructors::getActive();
     $slipstreams = [2];
+
+    foreach ($constructor->getPlayedCards() as $card) {
+      $n = $card['symbols'][SLIPSTREAM] ?? 0;
+      if ($n == 0) {
+        continue;
+      }
+
+      $t = [];
+      foreach ($slipstreams as $speed) {
+        $t[] = $speed;
+        $t[] = $speed + $n;
+      }
+
+      $slipstreams = $t;
+    }
+
     // TODO : bonuses for optional slipstream increase
     // TODO : weather module optional slipstream increase
 

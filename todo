@@ -6,7 +6,13 @@ Backend :
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
 
 Frontend :
-  - card images for upgrades
+  - slipstream : args is : for each distance (which is the expected arg of actSlipstream), you get [cellId, path] (I've changed js manually for the moment)
+
+  - "reduce strees" icon for React
+  - discard notif : public discard if 'cards' is set up, eg for "reduce stress" effect the stress cards are public
+    => now that I am thinking about it, maybe the last card when discarding should also be public to update discard display, no ?
+
+  - tooltips for upgrades
 
   - payHeatsForCorner notif
   - payHeats notif (for heated boost for instance)
@@ -16,7 +22,7 @@ Frontend :
 
   - gear are buggy: not colored anymore
 
-  - error on notif reveal
+  - error on notif reveal => looks like sliding animation is not over when entering chooseSpeed state or something like this ?
   - reveal : handle when args.heat != null
 
   - display discard

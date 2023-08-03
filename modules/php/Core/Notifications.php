@@ -143,6 +143,15 @@ class Notifications
     ]);
   }
 
+  public function reduceStress($constructor, $cards)
+  {
+    self::notifyAll('discard', clienttranslate('${constructor_name} discards ${n} stress card(s) (reduce stress)'), [
+      'constructor' => $constructor,
+      'n' => count($cards),
+      'cards' => $cards,
+    ]);
+  }
+
   public function clearPlayedCards($constructor, $cardIds)
   {
     self::notifyAll('clearPlayedCards', clienttranslate('${constructor_name} discards played card(s)'), [

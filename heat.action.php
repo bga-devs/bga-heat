@@ -83,6 +83,14 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actSlipstream()
+  {
+    self::setAjaxMode();
+    $speed = self::getArg('speed', AT_posint, false);
+    $this->game->actSlipstream($speed);
+    self::ajaxResponse();
+  }
+
   //////////////////
   ///// UTILS  /////
   //////////////////

@@ -74,12 +74,12 @@ class Cards extends \HEAT\Helpers\Pieces
   /* Creation of the cards */
   public static function setupNewGame($options)
   {
+    $cards = [];
+
     foreach (Constructors::getAll() as $cId => $constructor) {
       if ($constructor->isAI()) {
         continue;
       }
-
-      $cards = [];
 
       // Speed cards
       $cards[] = ['type' => 101, 'nbr' => 3, 'location' => "deck-$cId"];
