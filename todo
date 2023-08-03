@@ -6,6 +6,10 @@ Backend :
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
 
 Frontend :
+  - react state : disable "Pass" button if "canPass" in args is set to false. Maybe add a tooltip to say that some mandatory things are pending
+
+  - scrapCards notif: flipping card from deck to discard
+
   - slipstream : args is : for each distance (which is the expected arg of actSlipstream), you get [cellId, path] (I've changed js manually for the moment)
 
   - "reduce strees" icon for React

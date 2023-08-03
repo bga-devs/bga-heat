@@ -131,6 +131,15 @@ class Constructor extends \HEAT\Helpers\DB_Model
     });
   }
 
+  public function scrapCards($n)
+  {
+    $cards = [];
+    for ($i = 0; $i < $n; $i++) {
+      $cards[] = Cards::scrap($this->id);
+    }
+    return $cards;
+  }
+
   public function canUseSymbol($symbol)
   {
     // Cooldown => must have something to cooldown in the hand
@@ -144,6 +153,10 @@ class Constructor extends \HEAT\Helpers\DB_Model
     // Heated boost => must be able to pay for it
     elseif ($symbol == \HEATED_BOOST) {
       return $this->getEngine()->count() > 0; // TODO : wheather can remove this
+    }
+    // Heat
+    elseif ($symbol == HEAT) {
+      return $this->getEngine()->count() > 0;
     }
 
     return true;

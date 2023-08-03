@@ -62,6 +62,12 @@ class Cards extends \HEAT\Helpers\Pieces
     return static::pickOneForLocation("deck-$cId", "discard-$cId");
   }
 
+  public function scrap($cId)
+  {
+    static::$autoreshuffleCustom["deck-$cId"] = "discard-$cId";
+    return static::pickOneForLocation("deck-$cId", "discard-$cId");
+  }
+
   ///////////////////////////////////
   //  ____       _
   // / ___|  ___| |_ _   _ _ __

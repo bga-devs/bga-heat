@@ -271,6 +271,23 @@ class Notifications
     ]);
   }
 
+  public function payHeats($constructor, $heats)
+  {
+    self::notifyAll('payHeats', clienttranslate('${constructor_name} discards ${n} heat(s) for its played card(s)'), [
+      'constructor' => $constructor,
+      'cards' => $heats->toArray(),
+      'n' => $heats->count(),
+    ]);
+  }
+
+  public function scrapCards($constructor, $cards)
+  {
+    self::notifyAll('scrapCards', clienttranslate('${constructor_name} scraps ${cards_images}'), [
+      'constructor' => $constructor,
+      'cards' => $cards,
+    ]);
+  }
+
   ///////////////////////////////////////////////////////////////
   //  _   _           _       _            _
   // | | | |_ __   __| | __ _| |_ ___     / \   _ __ __ _ ___

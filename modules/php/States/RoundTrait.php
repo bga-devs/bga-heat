@@ -347,7 +347,8 @@ trait RoundTrait
     $constructor = Constructors::getActive();
     $symbols = Globals::getSymbols();
     // Remove symbols that do not apply at this step
-    foreach ([SLIPSTREAM] as $symbol) {
+    $notReactSymbols = [SLIPSTREAM];
+    foreach ($notReactSymbols as $symbol) {
       unset($symbols[$symbol]);
     }
 
@@ -359,10 +360,14 @@ trait RoundTrait
       }
     }
 
+    // Mandatory symbols
+    $mandatorySymbols = [HEAT, SCRAP];
+    $canPass = empty(array_intersect($mandatorySymbols, array_keys($symbols)));
+
     return [
       'symbols' => $symbols,
       'doable' => $doableSymbols,
-      'canPass' => true,
+      'canPass' => $canPass,
     ];
   }
 
@@ -410,6 +415,16 @@ trait RoundTrait
       Cards::move($cards->getIds(), ['discard', $constructor->getId()]);
       Notifications::reduceStress($constructor, $cards);
     }
+    // PAY FOR HEAT
+    elseif ($symbol == HEAT) {
+      $heats = $constructor->payHeats($n);
+      Notifications::payHeats($constructor, $heats);
+    }
+    // SCRAP
+    elseif ($symbol == SCRAP) {
+      $cards = $constructor->scrapCards($n);
+      Notifications::scrapCards($constructor, $cards);
+    }
 
     // Loop on same state to resolve other pending symbols
     $this->gamestate->jumpToState(ST_REACT);
@@ -418,6 +433,10 @@ trait RoundTrait
   public function actPassReact()
   {
     self::checkAction('actPassReact');
+    if (!$this->argsReact()['canPass']) {
+      throw new \BgaVisibleSystemException('Cant pass react with mandatory symbols left. Should not happen');
+    }
+
     $this->stReactDone();
   }
 
