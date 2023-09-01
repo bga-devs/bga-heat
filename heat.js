@@ -2253,6 +2253,16 @@ var TechnologyTilesManager = /** @class */ (function (_super) {
 var MAP_WIDTH = 1650;
 var MAP_HEIGHT = 1093;
 var MAP_SCALE = 1650 / 1280;
+var LEADERBOARD_POSITIONS = {
+    '-1': { x: 0, y: 0, a: 0 },
+    '-2': { x: -60, y: 40, a: 0 },
+    '-3': { x: 60, y: 40, a: 0 },
+    '-4': { x: 0, y: 99, a: 0 },
+    '-5': { x: 0, y: 139, a: 0 },
+    '-6': { x: 0, y: 179, a: 0 },
+    '-7': { x: 0, y: 219, a: 0 },
+    '-8': { x: 0, y: 259, a: 0 },
+};
 var Circuit = /** @class */ (function () {
     function Circuit(game, gamedatas) {
         var _this = this;
@@ -2284,11 +2294,19 @@ var Circuit = /** @class */ (function () {
         document.getElementById('table-center').style.maxHeight = maxHeight;
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     };
+    Circuit.prototype.getCellPosition = function (carCell) {
+        var cell = structuredClone(this.MAP_DATAS[Math.max(0, carCell)]);
+        if (carCell < 0) {
+            cell.x += LEADERBOARD_POSITIONS[carCell].x;
+            cell.y += LEADERBOARD_POSITIONS[carCell].y;
+        }
+        return cell;
+    };
     Circuit.prototype.createCar = function (constructor) {
         var car = document.createElement('div');
         car.id = "car-".concat(constructor.id),
             car.classList.add('car');
-        var cell = this.MAP_DATAS[constructor.carCell];
+        var cell = this.getCellPosition(constructor.carCell);
         car.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
         car.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
@@ -2297,7 +2315,7 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.moveCar = function (constructorId, carCell) {
         var car = document.getElementById("car-".concat(constructorId));
-        var cell = this.MAP_DATAS[carCell];
+        var cell = this.getCellPosition(carCell);
         car.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
         car.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
@@ -2930,6 +2948,7 @@ var Heat = /** @class */ (function () {
             ['pDraw', ANIMATION_MS],
             ['clearPlayedCards', ANIMATION_MS],
             ['cooldown', ANIMATION_MS],
+            ['finishRace', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
@@ -3032,6 +3051,10 @@ var Heat = /** @class */ (function () {
         this.handCounters[playerId].incValue(-cards.length);
         playerTable.cooldown(cards);
         this.engineCounters[playerId].incValue(cards.length);
+    };
+    Heat.prototype.notif_finishRace = function (args) {
+        var constructor_id = args.constructor_id, pos = args.pos;
+        this.circuit.moveCar(constructor_id, -pos);
     };
     /*
     * [Undocumented] Called by BGA framework on any notification message

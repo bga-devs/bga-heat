@@ -2,6 +2,17 @@ const MAP_WIDTH = 1650;
 const MAP_HEIGHT = 1093;
 const MAP_SCALE = 1650 / 1280;
 
+const LEADERBOARD_POSITIONS = {
+    '-1': { x: 0, y: 0, a: 0 },
+    '-2': { x: -60, y: 40, a: 0 },
+    '-3': { x: 60, y: 40, a: 0 },
+    '-4': { x: 0, y: 99, a: 0 },
+    '-5': { x: 0, y: 139, a: 0 },
+    '-6': { x: 0, y: 179, a: 0 },
+    '-7': { x: 0, y: 219, a: 0 },
+    '-8': { x: 0, y: 259, a: 0 },
+}
+
 class Circuit {
     private mapDiv: HTMLDivElement;
     private scale: number = 1;
@@ -41,11 +52,22 @@ class Circuit {
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     }
 
+    private getCellPosition(carCell: number) {
+        const cell = structuredClone(this.MAP_DATAS[Math.max(0, carCell)]);
+
+        if (carCell < 0) {
+            cell.x += LEADERBOARD_POSITIONS[carCell].x;
+            cell.y += LEADERBOARD_POSITIONS[carCell].y;
+        }
+
+        return cell;
+    }
+
     private createCar(constructor: Constructor) {
         const car = document.createElement('div');
         car.id = `car-${constructor.id}`,
         car.classList.add('car');
-        let cell = this.MAP_DATAS[constructor.carCell];
+        const cell = this.getCellPosition(constructor.carCell);
         car.style.setProperty('--x', `${MAP_SCALE * cell.x}px`);
         car.style.setProperty('--y', `${MAP_SCALE * cell.y}px`);
         car.style.setProperty('--r', `${cell.a}deg`);
@@ -55,7 +77,7 @@ class Circuit {
 
     public moveCar(constructorId: number, carCell: number) {
         const car = document.getElementById(`car-${constructorId}`);
-        let cell = this.MAP_DATAS[carCell];
+        const cell = this.getCellPosition(carCell);
         car.style.setProperty('--x', `${MAP_SCALE * cell.x}px`);
         car.style.setProperty('--y', `${MAP_SCALE * cell.y}px`);
         car.style.setProperty('--r', `${cell.a}deg`);

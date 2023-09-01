@@ -13,7 +13,7 @@ interface Constructor {
     pId: number;
     ai: boolean;
     gear: number;
-    carCell: string;
+    carCell: number;
     turn: number;
     score: number;
     lvl; // TODO
@@ -144,4 +144,10 @@ interface NotifUpdateTurnOrderArgs {
 interface NotifCooldownArgs {
     constructor_id: number;
     cards: Card[];
+}
+
+// finishRace
+interface NotifFinishRaceArgs {
+    constructor_id: number;
+    pos: number;
 }

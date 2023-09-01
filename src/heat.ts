@@ -670,6 +670,7 @@ class Heat implements HeatGame {
             ['pDraw', ANIMATION_MS],
             ['clearPlayedCards', ANIMATION_MS],
             ['cooldown', ANIMATION_MS],
+            ['finishRace', ANIMATION_MS],
         ];
         
     
@@ -790,7 +791,11 @@ class Heat implements HeatGame {
         playerTable.cooldown(cards);
         this.engineCounters[playerId].incValue(cards.length);
     }
-    
+
+    notif_finishRace(args: NotifFinishRaceArgs) {
+        const { constructor_id, pos } = args;
+        this.circuit.moveCar(constructor_id, -pos);
+    }
     
     /*
     * [Undocumented] Called by BGA framework on any notification message

@@ -14,15 +14,11 @@ Frontend :
   - payHeatsForCorner notif
   - payHeats notif (for heated boost for instance)
    => maybe these two notifs can be merged ? Unless you want to add a red circle around the corner for instance for the payHeatsForCorner notif ? that could be cool
+   => it can be merged if you want, with an optional "corner" attribute if we want to highlight it
   - spinOut notif
    => also very similar but also contains the new cell and the additional stress cards drawn
 
-  - finishRace notif 
-    => carCell of constructor is now negative !
-     -X means the constructor finished race at position X
-
-
-
+  - place -X carCell for other maps (USA done)
 
   - react state : disable "Pass" button if "canPass" in args is set to false. Maybe add a tooltip to say that some mandatory things are pending
 
