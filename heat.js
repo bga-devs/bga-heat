@@ -3139,6 +3139,10 @@ var Heat = /** @class */ (function () {
                 if (args.card_image === '' && args.card) {
                     args.card_image = this.cardImageHtml(args.card, args);
                 }
+                if (args.finishIcon === '') {
+                    args.finishIcon = "<div class=\"turn icon\"></div>";
+                }
+                console.log(log, args);
                 if (args.cards_images === '' && args.cards) {
                     args.cards_images = Object.values(args.cards).map(function (card) { return _this.cardImageHtml(card, args); }).join('');
                 }

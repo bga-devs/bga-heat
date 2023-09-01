@@ -86,15 +86,15 @@ class Notifications
       $nbrLaps = Game::get()->getNbrLaps();
       $turn = $constructor->getTurn() + 1;
       $msg = clienttranslate(
-        '${finishIcon}${constructor_name} crosses the finish line and starts lap n°${n}/${lap} ${finishIcon}'
+        '${finishIcon} ${constructor_name} crosses the finish line and starts lap n°${n}/${lap} ${finishIcon}'
       );
       if ($turn == $nbrLaps) {
         $msg = clienttranslate(
-          '${finishIcon}${constructor_name} crosses the finish line and starts the final lap of the race ${finishIcon}'
+          '${finishIcon} ${constructor_name} crosses the finish line and starts the final lap of the race ${finishIcon}'
         );
       }
       if ($turn > $nbrLaps) {
-        $msg = clienttranslate('${finishIcon}${constructor_name} crosses the finish line and finishes the race ${finishIcon}');
+        $msg = clienttranslate('${finishIcon} ${constructor_name} crosses the finish line and finishes the race ${finishIcon}');
       }
 
       self::notifyAll('finishTurn', $msg, [

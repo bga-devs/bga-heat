@@ -17,10 +17,6 @@ Frontend :
   - spinOut notif
    => also very similar but also contains the new cell and the additional stress cards drawn
 
-  - finishTurn notif: every time someone cross the ending lane
-    (to test on USA, just set cell 833 for a constructor for instance to be right before finish line)
-    replace "${finishIcon}" by the finish line icon used in player panels
-
   - finishRace notif 
     => carCell of constructor is now negative !
      -X means the constructor finished race at position X
@@ -32,7 +28,7 @@ Frontend :
 
   - scrapCards notif: flipping card from deck to discard
 
-  - "reduce strees" icon for React
+  - "reduce stress" icon for React
   - discard notif : public discard if 'cards' is set up, eg for "reduce stress" effect the stress cards are public
     => now that I am thinking about it, maybe the last card when discarding should also be public to update discard display, no ?
 
