@@ -75,17 +75,9 @@
       right: 52px;
       transition: top 0.5s;
       
-      &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        border-radius: 50%;
-        background-image: url('img/stick.png');
-        background-size: auto 100%;
-      }
+      background-image: url('img/stick.png');
+      background-size: auto 100%;
+      box-shadow: 2px 2px 8px 5px black;
 
       /*&::after {
         content: '';
@@ -103,28 +95,16 @@
       &[data-gear="3"] { top: 401px; }
       &[data-gear="2"] { top: 529px; }
       &[data-gear="1"] { top: 657px; }
-    }
 
-    @each $playerColor in $playerColors {
-      $i: index($playerColors, $playerColor) - 1;
-      [data-color="#{$playerColor}"] .gear::after { 
-          background-position-x: #{$i * 100% / 3};
-      }
-    }
-
-    &[data-color="12151a"] {
-      .gear {
-        &::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          border-radius: 50%;
-          background: white;
-          box-shadow: 0px 0px 8px 5px white;
+      @each $playerColor in $playerColors {
+        $i: index($playerColors, $playerColor) - 1;
+        &[data-color="#{$playerColor}"] { 
+          background-position-x: #{$i * 100% / 5};
         }
+      }
+  
+      &[data-color="12151a"] {
+        box-shadow: 0px 0px 8px 5px white;
       }
     }
   }

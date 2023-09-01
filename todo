@@ -17,8 +17,6 @@ Frontend :
   - spinOut notif
    => also very similar but also contains the new cell and the additional stress cards drawn
 
-  - gear are buggy: not colored anymore
-
   - finishTurn notif: every time someone cross the ending lane
     (to test on USA, just set cell 833 for a constructor for instance to be right before finish line)
     replace "${finishIcon}" by the finish line icon used in player panels

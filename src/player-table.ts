@@ -61,7 +61,7 @@ class PlayerTable {
                 <div id="player-table-${this.playerId}-deck" class="deck"></div>
                 <div id="player-table-${this.playerId}-engine" class="engine"></div>
                 <div id="player-table-${this.playerId}-discard" class="discard"></div>
-                <div id="player-table-${this.playerId}-gear" class="gear" data-gear="${this.currentGear}"></div>
+                <div id="player-table-${this.playerId}-gear" class="gear" data-color="${player.color}" data-gear="${this.currentGear}"></div>
                 <div id="player-table-${this.playerId}-inplay-wrapper" class="inplay-wrapper">
                 <div class="hand-wrapper">
                     <div class="block-label">${_('Cards in play')}</div>
