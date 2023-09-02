@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <style>
+            .circuit {
+                width: 100vw;
+                height: 100vh;
+
+                /*background: url('./usa.svg'), url('../img/Circuits/usa.jpg');*/
+                background-repeat: no-repeat, no-repeat;
+                /*background-size: 100%, 100%;*/
+            }
+        </style>
+        <script>
+            function circuitChange() {
+                const circuit = document.getElementById('circuit').value;
+                const showSVG = document.getElementById('showSVG').checked;
+                document.querySelector(`.circuit`).style.backgroundImage = showSVG ?
+                    `url('./${circuit}.svg'), url('../img/Circuits/${circuit}.jpg')` :
+                    `url('../img/Circuits/${circuit}.jpg')`;
+            }
+        </script>
+    </head>
+    <body onload="circuitChange('usa')">
+        <select id="circuit" onchange="circuitChange()">
+            <option selected>usa</option>
+            <option>gb</option>
+            <option>italia</option>
+            <option>france</option>
+        </select>
+        <input type="checkbox" id="showSVG" checked onchange="circuitChange()" /><label for="showSVG">Show SVG</label>
+        <div class="circuit"></div>
+    </body>
+</html>
