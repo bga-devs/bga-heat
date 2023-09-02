@@ -1,0 +1,380 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+@font-face {
+    font-family: "Sriracha";
+    src: url("Sriracha-Regular.ttf");
+}
+
+/*
+ ____        _           _                                  
+/ ___| _ __ | | __ _ ___| |__  ___  ___ _ __ ___  ___ _ __  
+\___ \| '_ \| |/ _` / __| '_ \/ __|/ __| '__/ _ \/ _ \ '_ \ 
+ ___) | |_) | | (_| \__ \ | | \__ \ (__| | |  __/  __/ | | |
+|____/| .__/|_|\__,_|___/_| |_|___/\___|_|  \___|\___|_| |_|
+      |_|                                                   
+ */
+
+#splashscreen {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url("splash.jpg");
+    background-size: cover;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.5s;
+}
+
+#splashscreen.hidden {
+    transform: translateY(-100%);
+}
+
+#splashbox {
+    width: 1000px;
+    height: 600px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    border: 1px solid black;
+    padding: 15px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+#title {
+    width: 300px;
+    height: 100px;
+    background-image: url("title.png");
+    background-size: cover;
+}
+
+#subtitle {
+    font-size: 50px;
+    margin-top: -20px;
+    margin-bottom: 10px;
+    font-family: "Sriracha";
+}
+
+#split-hor {
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+    border-top: 2px solid black;
+}
+
+#col-create {
+    flex-basis: 50%;
+    border-right: 2px solid black;
+    padding: 10px;
+    font-size: 20px;
+}
+
+#col-create form div.form-group {
+    margin: 15px 0px;
+}
+
+#col-create form div.form-group label {
+    display: inline-block;
+    width: 150px;
+}
+
+#col-create form div.form-group input {
+    width: 300px;
+    font-size: 20px;
+}
+
+#circuit-files {
+    display: none;
+}
+
+#col-create form div.form-group label#circuit-files-label {
+    width: 460px;
+    height: 100px;
+    border: 2px dashed black;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#splashscreen button {
+    display: block;
+    margin: auto;
+
+    background: rgb(72, 113, 182);
+    border: 1px solid rgb(55, 87, 140);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 30px;
+    color: white;
+    font-weight: bold;
+    padding: 7px 15px;
+    cursor: pointer;
+}
+
+#col-create #col-load {
+    flex-basis: 50%;
+}
+
+#col-load {
+    padding: 10px;
+    padding-left: 20px;
+    font-size: 20px;
+}
+
+#col-load h3 {
+    font-family: "Sriracha";
+    font-size: 25px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+#col-load select {
+    font-size: 20px;
+    width: 400px;
+    margin-bottom: 10px;
+}
+
+/* 
+ _____    _ _ _             
+| ____|__| (_) |_ ___  _ __ 
+|  _| / _` | | __/ _ \| '__|
+| |__| (_| | | || (_) | |   
+|_____\__,_|_|\__\___/|_|   
+                            */
+
+#editor {
+    display: flex;
+    width: 100vw;
+    flex-wrap: wrap;
+}
+
+#top-bar {
+    flex-basis: 100%;
+    flex-shrink: 0;
+    height: 30px;
+    background: grey;
+    border-bottom: 1px solid black;
+    display: flex;
+}
+
+#top-bar > div {
+    min-width: 20px;
+    padding: 6px 9px;
+    border-right: 1px solid black;
+    text-align: center;
+}
+
+#circuit-files-status {
+    background-color: green;
+}
+
+#circuit-files-status.local {
+    background: rgb(244, 188, 188);
+}
+
+#add-urls {
+    display: none;
+    background: rgb(244, 188, 188);
+    cursor: pointer;
+}
+
+#circuit-files-status.local ~ #add-urls {
+    display: block;
+}
+
+#left-bar {
+    flex-grow: 1;
+    background: grey;
+    display: flex;
+    flex-flow: column;
+}
+
+div.section {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+div.section h2 {
+    margin: 0;
+    font-size: 16px;
+    text-align: center;
+    padding: 3px;
+    border-bottom: 1px solid rgb(71, 71, 71);
+    background: rgb(245, 142, 142);
+}
+
+div.section.computed h2 {
+    background: rgb(175, 245, 142);
+}
+
+div.section .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 3px 10px;
+}
+
+div.section .toolbar button {
+    border-radius: 4px;
+    background: rgb(189, 187, 187);
+    padding: 4px 8px;
+    border: 0;
+    border-bottom: 1px solid black;
+    height: 30px;
+}
+div.section .toolbar button:hover {
+    background: rgb(150, 150, 150);
+}
+
+div.section .toolbar button.active {
+    background: rgb(175, 245, 142);
+}
+
+#circuit-info,
+#cell-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 22px;
+    padding: 4px 8px;
+    border-bottom: 1px solid black;
+}
+
+#cell-indicator-counter {
+    display: inline-block;
+    width: 80px;
+    text-align: center;
+}
+
+#circuit-info {
+    background: rgb(196, 196, 196);
+}
+
+#filler {
+    flex-grow: 1;
+}
+
+textarea {
+    height: 200px;
+}
+
+#main-frame {
+    flex-grow: 0;
+    width: 1650px;
+    height: 100vh;
+    border-left: 1px solid black;
+    overflow: auto;
+    position: relative;
+}
+
+object {
+    background-size: 100%;
+}
+
+#centers {
+    position: relative;
+    pointer-events: none;
+}
+.center-indicator {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+}
+#main-frame.show-centers .center-indicator {
+    background: red;
+}
+#main-frame.show-positions .center-indicator::before {
+    content: attr(data-position);
+    background: white;
+    width: auto;
+    padding: 1px 2px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1px solid black;
+    font-size: 11px;
+    position: absolute;
+    top: -9px;
+    left: -10px;
+    line-height: 18px;
+    z-index: 10;
+}
+
+/* #main-frame.show-lanes .center-indicator[data-lane="1"] {
+    background: orange;
+    border: 2px solid orange;
+}
+#main-frame.show-lanes .center-indicator[data-lane="2"] {
+    background: rgb(212, 59, 212);
+    border: 2px solid rgb(212, 59, 212);
+}
+#main-frame.show-lanes .center-indicator[data-lane="3"] {
+    background: yellow;
+    border: 2px solid yellow;
+} */
+
+.direction-indicator {
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background: blue;
+    transform-origin: -2px 1px;
+    top: 1px;
+    left: 4px;
+}
+
+.direction-indicator::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid blue;
+    position: absolute;
+    right: -3px;
+    top: -5px;
+}
+
+#main-frame.show-lanes .center-indicator[data-lane="1"] .direction-indicator {
+    background: rgb(243, 111, 24);
+}
+#main-frame.show-lanes .center-indicator[data-lane="2"] .direction-indicator {
+    background: rgb(212, 59, 212);
+}
+#main-frame.show-lanes .center-indicator[data-lane="3"] .direction-indicator {
+    background: yellow;
+}
+#main-frame.show-lanes .center-indicator[data-lane="1"] .direction-indicator::after {
+    border-left-color: rgb(243, 111, 24);
+}
+#main-frame.show-lanes .center-indicator[data-lane="2"] .direction-indicator::after {
+    border-left-color: rgb(212, 59, 212);
+}
+#main-frame.show-lanes .center-indicator[data-lane="3"] .direction-indicator::after {
+    border-left-color: yellow;
+}
+
+.lane-end-indicator {
+    background: white;
+    width: 20px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1px solid black;
+    font-size: 11px;
+    position: absolute;
+    top: -9px;
+    left: -10px;
+    line-height: 18px;
+}
