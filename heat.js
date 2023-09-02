@@ -2737,7 +2737,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onEnteringSlipstream = function (args) {
         var _this = this;
         Object.entries(args.cells).forEach(function (entry) {
-            return _this.circuit.addMapIndicator(entry[1], function () { return _this.actSlipstream(Number(entry[0])); });
+            return _this.circuit.addMapIndicator(entry[1][0], function () { return _this.actSlipstream(Number(entry[0])); });
         });
     };
     Heat.prototype.onEnteringDiscard = function (args) {
@@ -2795,7 +2795,7 @@ var Heat = /** @class */ (function () {
                     this.onEnteringSlipstream(slipstreamArgs);
                     Object.entries(slipstreamArgs.cells).forEach(function (entry) {
                         _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), _('Move ${cell} cell(s)').replace('${cell}', "".concat(entry[0])), function () { return _this.actSlipstream(Number(entry[0])); });
-                        _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
+                        _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1][0]);
                     });
                     break;
                 case 'react':

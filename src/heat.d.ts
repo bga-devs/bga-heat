@@ -71,7 +71,7 @@ interface EnteringChooseSpeedArgs {
 }
 
 interface EnteringSlipstreamArgs {
-    cells: { [speed: number]: number /*destination cell*/ };
+    cells: { [speed: number]: [number, number[]] /*destination cell*/ };
 }
 
 interface EnteringReactArgs {

@@ -256,7 +256,7 @@ class Heat implements HeatGame {
 
     private onEnteringSlipstream(args: EnteringSlipstreamArgs) {
         Object.entries(args.cells).forEach(entry => 
-            this.circuit.addMapIndicator(entry[1], () => this.actSlipstream(Number(entry[0])))
+            this.circuit.addMapIndicator(entry[1][0], () => this.actSlipstream(Number(entry[0])))
         );
     }
 
@@ -325,7 +325,7 @@ class Heat implements HeatGame {
                         (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, _('Move ${cell} cell(s)').replace('${cell}', `${entry[0]}`), () => this.actSlipstream(Number(entry[0])))
                         this.linkButtonHoverToMapIndicator(
                             document.getElementById(`chooseSpeed${entry[0]}_button`),
-                            entry[1],
+                            entry[1][0],
                         );
                     });
                     break;
