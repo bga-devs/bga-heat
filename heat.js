@@ -2263,6 +2263,79 @@ var LEADERBOARD_POSITIONS = {
     '-7': { x: 0, y: 219, a: 0 },
     '-8': { x: 0, y: 259, a: 0 },
 };
+// Wrapper for the animation that use requestAnimationFrame
+var CarAnimation = /** @class */ (function () {
+    function CarAnimation(car, pathCells, scale) {
+        this.car = car;
+        this.pathCells = pathCells;
+        this.scale = scale;
+        // Control strength is how far the control point are from the center of the cell
+        //  => it should probably be something related/proportional to scale of current board
+        var controlStrength = 20;
+        var path = "";
+        pathCells.forEach(function (data, i) {
+            // We compute the control point based on angle
+            //  => we have a special case for i = 0 since it's the only one with a "positive control point" (ie that goes in the same direction as arrow)
+            var cp = {
+                x: data.x + Math.cos((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
+                y: data.y + Math.sin((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
+            };
+            // See "Shortand curve to" on https://developer.mozilla.org/fr/docs/Web/SVG/Tutorial/Paths
+            if (i == 0) {
+                path += "M ".concat(data.x, " ").concat(data.y, " C ").concat(cp.x, " ").concat(cp.y, ", ");
+            }
+            else if (i == 1) {
+                path += "".concat(cp.x, " ").concat(cp.y, ", ").concat(data.x, " ").concat(data.y, " ");
+            }
+            else {
+                path += "S ".concat(cp.x, " ").concat(cp.y, ", ").concat(data.x, " ").concat(data.y);
+            }
+        });
+        this.newpath = document.createElementNS('http://www.w3.org/2000/svg', "path");
+        this.newpath.setAttributeNS(null, "d", path);
+    }
+    CarAnimation.prototype.start = function () {
+        var _this = this;
+        this.duration = this.pathCells.length * 250;
+        this.resolve = null;
+        this.move(0);
+        setTimeout(function () {
+            _this.tZero = Date.now();
+            requestAnimationFrame(function () { return _this.run(); });
+        }, 0);
+        return new Promise(function (resolve, reject) {
+            _this.resolve = resolve;
+        });
+    };
+    // Just a wrapper to get the absolute position based on a floating number u in [0, 1] (0 mean start of animation, 1 is the end)
+    CarAnimation.prototype.getPos = function (u) {
+        return this.newpath.getPointAtLength(u * this.newpath.getTotalLength());
+    };
+    CarAnimation.prototype.move = function (u) {
+        var pos = this.getPos(u);
+        var posPrev = this.getPos(u - 0.01);
+        var posNext = this.getPos(u + 0.01);
+        var angle = -Math.atan2(posNext.x - posPrev.x, posNext.y - posPrev.y);
+        this.car.style.setProperty('--x', "".concat(this.scale * pos.x, "px"));
+        this.car.style.setProperty('--y', "".concat(this.scale * pos.y, "px"));
+        this.car.style.setProperty('--r', "".concat((angle * 180) / Math.PI + 90, "deg"));
+    };
+    CarAnimation.prototype.run = function () {
+        var _this = this;
+        var u = Math.min((Date.now() - this.tZero) / this.duration, 1);
+        this.move(u);
+        if (u < 1) {
+            // Keep requesting frames, till animation is ready
+            requestAnimationFrame(function () { return _this.run(); });
+        }
+        else {
+            if (this.resolve != null) {
+                this.resolve();
+            }
+        }
+    };
+    return CarAnimation;
+}());
 var Circuit = /** @class */ (function () {
     function Circuit(game, gamedatas) {
         var _this = this;
@@ -2313,12 +2386,18 @@ var Circuit = /** @class */ (function () {
         car.style.setProperty('--constructor-id', "".concat(constructor.id));
         this.mapDiv.insertAdjacentElement('beforeend', car);
     };
-    Circuit.prototype.moveCar = function (constructorId, carCell) {
+    Circuit.prototype.moveCar = function (constructorId, carCell, path) {
         var car = document.getElementById("car-".concat(constructorId));
-        var cell = this.getCellPosition(carCell);
-        car.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
-        car.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
-        car.style.setProperty('--r', "".concat(cell.a, "deg"));
+        if (path) {
+            return this.moveCarWithAnimation(car, path);
+        }
+        else {
+            var cell = this.getCellPosition(carCell);
+            car.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
+            car.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
+            car.style.setProperty('--r', "".concat(cell.a, "deg"));
+            return Promise.resolve(true);
+        }
     };
     Circuit.prototype.addMapIndicator = function (cellId, clickCallback) {
         var mapIndicator = document.createElement('div');
@@ -2334,6 +2413,35 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.removeMapIndicators = function () {
         this.mapDiv.querySelectorAll('.map-indicator').forEach(function (elem) { return elem.remove(); });
+    };
+    Circuit.prototype.getCellInfos = function (cellId) {
+        // This is just a wrapper to either return the datas about the cell (center x, center y, angle)
+        //      or simulate an "averaged cell" if two cells are given (to go through the middle of them)
+        if (Array.isArray(cellId)) {
+            var cellId1 = cellId[0];
+            var cellId2 = cellId[1];
+            return {
+                x: (this.MAP_DATAS[cellId1].x + this.MAP_DATAS[cellId2].x) / 2,
+                y: (this.MAP_DATAS[cellId1].y + this.MAP_DATAS[cellId2].y) / 2,
+                a: (this.MAP_DATAS[cellId1].a + this.MAP_DATAS[cellId2].a) / 2,
+            };
+        }
+        else {
+            return {
+                x: this.MAP_DATAS[cellId].x,
+                y: this.MAP_DATAS[cellId].y,
+                a: this.MAP_DATAS[cellId].a,
+            };
+        }
+    };
+    Circuit.prototype.getCellsInfos = function (pathCellIds) {
+        var _this = this;
+        return pathCellIds.map(function (cellId) { return _this.getCellInfos(cellId); });
+    };
+    Circuit.prototype.moveCarWithAnimation = function (car, pathCellIds) {
+        var pathCells = this.getCellsInfos(pathCellIds);
+        var animation = new CarAnimation(car, pathCells, MAP_SCALE);
+        return animation.start();
     };
     return Circuit;
 }());
@@ -2939,7 +3047,7 @@ var Heat = /** @class */ (function () {
         var notifs = [
             ['updatePlanification', ANIMATION_MS],
             ['reveal', undefined],
-            ['moveCar', ANIMATION_MS],
+            ['moveCar', undefined],
             ['updateTurnOrder', 1],
             ['payHeatsForCorner', ANIMATION_MS],
             ['discard', ANIMATION_MS],
@@ -3003,8 +3111,8 @@ var Heat = /** @class */ (function () {
         return Promise.all(promises);
     };
     Heat.prototype.notif_moveCar = function (args) {
-        var constructor_id = args.constructor_id, cell = args.cell;
-        this.circuit.moveCar(constructor_id, cell);
+        var constructor_id = args.constructor_id, cell = args.cell, path = args.path;
+        return this.circuit.moveCar(constructor_id, cell, path);
     };
     Heat.prototype.notif_updateTurnOrder = function (args) {
         var _this = this;

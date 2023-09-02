@@ -106,6 +106,7 @@ interface NotifMoveCarArgs {
     cell: number;
     speed: any; // TODO number as string
     nForward: number;
+    path: number[];
 }
 
 // payHeatsForCorner

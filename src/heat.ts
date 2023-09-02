@@ -661,7 +661,7 @@ class Heat implements HeatGame {
         const notifs = [
             ['updatePlanification', ANIMATION_MS],
             ['reveal', undefined],
-            ['moveCar', ANIMATION_MS],
+            ['moveCar', undefined],
             ['updateTurnOrder', 1],
             ['payHeatsForCorner', ANIMATION_MS],
             ['discard', ANIMATION_MS],
@@ -735,8 +735,8 @@ class Heat implements HeatGame {
     }  
 
     notif_moveCar(args: NotifMoveCarArgs) {
-        const { constructor_id, cell } = args;
-        this.circuit.moveCar(constructor_id, cell);
+        const { constructor_id, cell, path } = args;
+        return this.circuit.moveCar(constructor_id, cell, path);
     } 
 
     notif_updateTurnOrder(args: NotifUpdateTurnOrderArgs) {
