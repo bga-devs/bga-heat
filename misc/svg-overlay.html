@@ -2,8 +2,8 @@
     <head>
         <style>
             .circuit {
-                width: 100vw;
-                height: 100vh;
+                width: 1650px;
+                height: 1100px;
 
                 /*background: url('./usa.svg'), url('../img/Circuits/usa.jpg');*/
                 background-repeat: no-repeat, no-repeat;
@@ -18,6 +18,14 @@
                     `url('./${circuit}.svg'), url('../img/Circuits/${circuit}.jpg')` :
                     `url('../img/Circuits/${circuit}.jpg')`;
             }
+
+            function svgOffsetChange() {
+                const x = Number(document.getElementById('x').value);
+                const y = Number(document.getElementById('y').value);
+                const scale = Number(document.getElementById('scale').value);
+                document.querySelector(`.circuit`).style.backgroundPosition = `${x}px ${y}px, 0 0`;
+                document.querySelector(`.circuit`).style.backgroundSize = `${scale}%, 100%`;
+            }
         </script>
     </head>
     <body onload="circuitChange()">
@@ -28,6 +36,10 @@
             <option>france</option>
         </select>
         <input type="checkbox" id="showSVG" checked onchange="circuitChange()" /><label for="showSVG">Show SVG</label>
+         &nbsp; | &nbsp; 
+        x=<input type="number" id="x" value="0" onchange="svgOffsetChange()" />
+        y=<input type="number" id="y" value="0" onchange="svgOffsetChange()" />
+        scale=<input type="number" id="scale" value="100" onchange="svgOffsetChange()" />
         <div class="circuit"></div>
     </body>
 </html>
