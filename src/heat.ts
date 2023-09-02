@@ -730,8 +730,10 @@ class Heat implements HeatGame {
         const cards = Object.values(args.cards);
         this.handCounters[playerId].incValue(-cards.length);
         const promises = [playerTable.setInplay(cards)];
-        if (playerTable.hand) {
-            promises.push(playerTable.hand?.addCard(heat));
+        if (heat) {
+            if (playerTable.hand) {
+                promises.push(playerTable.hand?.addCard(heat));
+            }
             this.handCounters[playerId].incValue(1);
         }
         this.speedCounters[playerId].setValue(cards.map(card => card.speed ?? 0).reduce((a, b) => a + b, 0));

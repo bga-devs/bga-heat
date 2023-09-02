@@ -3106,8 +3106,10 @@ var Heat = /** @class */ (function () {
         var cards = Object.values(args.cards);
         this.handCounters[playerId].incValue(-cards.length);
         var promises = [playerTable.setInplay(cards)];
-        if (playerTable.hand) {
-            promises.push((_a = playerTable.hand) === null || _a === void 0 ? void 0 : _a.addCard(heat));
+        if (heat) {
+            if (playerTable.hand) {
+                promises.push((_a = playerTable.hand) === null || _a === void 0 ? void 0 : _a.addCard(heat));
+            }
             this.handCounters[playerId].incValue(1);
         }
         this.speedCounters[playerId].setValue(cards.map(function (card) { var _a; return (_a = card.speed) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0));

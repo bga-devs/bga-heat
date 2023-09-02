@@ -6,9 +6,6 @@ Backend :
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
 
 Frontend :
-  - error on notif reveal => looks like sliding animation is not over when entering chooseSpeed state or something like this ?
-  - reveal : handle when args.heat != null
-
   - slipstream : args is : for each distance (which is the expected arg of actSlipstream), you get [cellId, path] (I've changed js manually for the moment)
 
   - payHeatsForCorner notif
