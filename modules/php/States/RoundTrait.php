@@ -368,6 +368,7 @@ trait RoundTrait
       'symbols' => $symbols,
       'doable' => $doableSymbols,
       'canPass' => $canPass,
+      'descSuffix' => $canPass ? '' : 'Must',
     ];
   }
 

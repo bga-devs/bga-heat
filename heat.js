@@ -2631,21 +2631,21 @@ var Heat = /** @class */ (function () {
     //
     Heat.prototype.onEnteringState = function (stateName, args) {
         var _this = this;
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e, _f, _g;
         log('Entering state: ' + stateName, args.args);
-        if (args.args && args.args.descSuffix) {
+        if ((_a = args.args) === null || _a === void 0 ? void 0 : _a.descSuffix) {
             this.changePageTitle(args.args.descSuffix);
         }
-        if (args.args && args.args.optionalAction) {
+        if ((_b = args.args) === null || _b === void 0 ? void 0 : _b.optionalAction) {
             var base = args.args.descSuffix ? args.args.descSuffix : '';
             this.changePageTitle(base + 'skippable');
         }
         if ( /* TODO? this._activeStates.includes(stateName) ||*/this.isCurrentPlayerActive()) {
-            if (args.args && args.args.optionalAction && !args.args.automaticAction) {
+            if (((_c = args.args) === null || _c === void 0 ? void 0 : _c.optionalAction) && !args.args.automaticAction) {
                 this.addSecondaryActionButton('btnPassAction', _('Pass'), function () { return _this.takeAction('actPassOptionalAction'); }, 'restartAction');
             }
             // Undo last steps
-            (_b = (_a = args.args) === null || _a === void 0 ? void 0 : _a.previousSteps) === null || _b === void 0 ? void 0 : _b.forEach(function (stepId) {
+            (_e = (_d = args.args) === null || _d === void 0 ? void 0 : _d.previousSteps) === null || _e === void 0 ? void 0 : _e.forEach(function (stepId) {
                 var logEntry = $('logs').querySelector(".log.notif_newUndoableStep[data-step=\"".concat(stepId, "\"]"));
                 if (logEntry) {
                     _this.onClick(logEntry, function () { return _this.undoToStep(stepId); });
@@ -2656,8 +2656,8 @@ var Heat = /** @class */ (function () {
                 }
             });
             // Restart turn button
-            if (((_c = args.args) === null || _c === void 0 ? void 0 : _c.previousEngineChoices) >= 1 && !args.args.automaticAction) {
-                if ((_d = args.args) === null || _d === void 0 ? void 0 : _d.previousSteps) {
+            if (((_f = args.args) === null || _f === void 0 ? void 0 : _f.previousEngineChoices) >= 1 && !args.args.automaticAction) {
+                if ((_g = args.args) === null || _g === void 0 ? void 0 : _g.previousSteps) {
                     var lastStep_1 = Math.max.apply(Math, args.args.previousSteps);
                     if (lastStep_1 > 0)
                         this.addDangerActionButton('btnUndoLastStep', _('Undo last step'), function () { return _this.undoToStep(lastStep_1); }, 'restartAction');
@@ -2801,6 +2801,9 @@ var Heat = /** @class */ (function () {
                 case 'react':
                     var reactArgs = args;
                     this.addActionButton("actPassReact_button", _('Pass'), function () { return _this.actPassReact(); });
+                    if (!reactArgs.canPass) {
+                        document.getElementById("actPassReact_button").classList.add('disabled');
+                    }
                     Object.entries(reactArgs.symbols).forEach(function (entry, index) {
                         var label = "".concat(entry[0], " ").concat(entry[1]);
                         switch (entry[0]) {

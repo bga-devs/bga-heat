@@ -125,8 +125,10 @@ $machinestates = [
 
   ST_REACT => [
     'name' => 'react',
-    'description' => clienttranslate('${actplayer} must/may react'),
-    'descriptionmyturn' => clienttranslate('${you} must/may react'),
+    'description' => clienttranslate('${actplayer} may react'),
+    'descriptionmyturn' => clienttranslate('${you} may react'),
+    'descriptionMust' => clienttranslate('${actplayer} must react'),
+    'descriptionmyturnMust' => clienttranslate('${you} must react'),
     'type' => 'activeplayer',
     'args' => 'argsReact',
     'possibleactions' => ['actReact', 'actPassReact'],

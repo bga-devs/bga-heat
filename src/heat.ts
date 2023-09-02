@@ -134,17 +134,17 @@ class Heat implements HeatGame {
     public onEnteringState(stateName: string, args: any) {
         log('Entering state: ' + stateName, args.args);
 
-        if (args.args && args.args.descSuffix) {
+        if (args.args?.descSuffix) {
           this.changePageTitle(args.args.descSuffix);
         }
   
-        if (args.args && args.args.optionalAction) {
+        if (args.args?.optionalAction) {
           let base = args.args.descSuffix ? args.args.descSuffix : '';
           this.changePageTitle(base + 'skippable');
         }
 
         if (/* TODO? this._activeStates.includes(stateName) ||*/ (this as any).isCurrentPlayerActive()) {  
-            if (args.args && args.args.optionalAction && !args.args.automaticAction) {
+            if (args.args?.optionalAction && !args.args.automaticAction) {
             this.addSecondaryActionButton(
                 'btnPassAction',
                 _('Pass'),
@@ -332,6 +332,10 @@ class Heat implements HeatGame {
                 case 'react':
                     const reactArgs = args as EnteringReactArgs;
                     (this as any).addActionButton(`actPassReact_button`, _('Pass'), () => this.actPassReact());
+                    if (!reactArgs.canPass) {
+                        document.getElementById(`actPassReact_button`).classList.add('disabled');
+                    }
+
                     Object.entries(reactArgs.symbols).forEach((entry, index) => {
                         let label = `${entry[0]} ${entry[1]}`;
                         switch (entry[0]) {

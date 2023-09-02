@@ -20,8 +20,6 @@ Frontend :
 
   - place -X carCell for other maps (USA done)
 
-  - react state : disable "Pass" button if "canPass" in args is set to false. Maybe add a tooltip to say that some mandatory things are pending
-
   - scrapCards notif: flipping card from deck to discard
 
   - "reduce stress" icon for React
