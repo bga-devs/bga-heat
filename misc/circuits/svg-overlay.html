@@ -15,8 +15,8 @@
                 const circuit = document.getElementById('circuit').value;
                 const showSVG = document.getElementById('showSVG').checked;
                 document.querySelector(`.circuit`).style.backgroundImage = showSVG ?
-                    `url('./${circuit}.svg'), url('../img/Circuits/${circuit}.jpg')` :
-                    `url('../img/Circuits/${circuit}.jpg')`;
+                    `url('./${circuit}.svg'), url('../../img/Circuits/${circuit}.jpg')` :
+                    `url('../../img/Circuits/${circuit}.jpg')`;
             }
 
             function svgOffsetChange() {
