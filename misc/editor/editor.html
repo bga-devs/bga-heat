@@ -14,26 +14,15 @@
             <form>
               <div class="form-group">
                 <label for="circuit-id">Unique id:</label>
-                <input
-                  type="text"
-                  id="circuit-id"
-                  placeholder="No space, no special char. Eg: USA"
-                />
+                <input type="text" id="circuit-id" placeholder="No space, no special char. Eg: USA" />
               </div>
               <div class="form-group">
                 <label for="circuit-name">Name:</label>
                 <input type="text" id="circuit-name" />
               </div>
               <div class="form-group">
-                <label id="circuit-files-label" for="circuit-files">
-                  Click here to load JPEG + SVG images
-                </label>
-                <input
-                  type="file"
-                  id="circuit-files"
-                  multiple
-                  accept=".jpg,.svg"
-                />
+                <label id="circuit-files-label" for="circuit-files"> Click here to load JPEG + SVG images </label>
+                <input type="file" id="circuit-files" multiple accept=".jpg,.svg" />
               </div>
 
               <button id="btn-create" type="button">Create new</button>
@@ -54,6 +43,10 @@
 
     <div id="editor">
       <div id="top-bar">
+        <div id="save-btn">
+          &#128190;
+          <a id="download-anchor" style="display: none"></a>
+        </div>
         <div id="circuit-files-status">Local</div>
         <div id="add-urls">🔗</div>
         <div id="display-circuit-id"></div>
@@ -61,9 +54,7 @@
         <div id="display-circuit-lap"></div>
       </div>
       <div id="left-bar">
-        <div id="cell-indicator">
-          Cell: <span id="cell-indicator-counter">----</span>
-        </div>
+        <div id="cell-indicator">Cell: <span id="cell-indicator-counter">----</span></div>
         <div class="section" id="section-centers">
           <h2>Centers</h2>
           <div class="toolbar">
@@ -89,39 +80,16 @@
             <button id="generate-neighbours">↺</button>
           </div>
         </div>
-        <div class="section" id="section-adjacence">
-          <h2>Adjacence</h2>
-          <div class="toolbar">
-            <button id="show-adjacence">👁</button>
-            <button id="edit-adjacence">✏</button>
-            <button id="generate-adjacence">↺</button>
-          </div>
-        </div>
         <div class="section" id="section-lanes">
           <h2>Lanes</h2>
           <div class="toolbar">
-            <button id="check-lanes">✓👁?</button>
             <button id="end1-lanes">1🏁</button>
             <button id="end2-lanes">2🏁</button>
           </div>
           <div class="toolbar">
             <button id="show-lanes">👁</button>
-            <button
-              id="edit-lanes"
-              disabled="disabled"
-              style="pointer-events: none"
-            >
-              ✏
-            </button>
+            <button id="edit-lanes" disabled="disabled" style="pointer-events: none">✏</button>
             <button id="generate-lanes">↺</button>
-          </div>
-        </div>
-        <div class="section" id="section-positions">
-          <h2>Positions</h2>
-          <div class="toolbar">
-            <button id="show-positions">👁</button>
-            <button id="edit-positions">✏</button>
-            <button id="generate-positions">↺</button>
           </div>
         </div>
 
