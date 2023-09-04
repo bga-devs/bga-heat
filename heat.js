@@ -2251,17 +2251,17 @@ var TechnologyTilesManager = /** @class */ (function (_super) {
     return TechnologyTilesManager;
 }(CardManager));
 var MAP_WIDTH = 1650;
-var MAP_HEIGHT = 1093;
-var MAP_SCALE = 1650 / 1280;
+var MAP_HEIGHT = 1100;
+var MAP_SCALE = 1;
 var LEADERBOARD_POSITIONS = {
     '-1': { x: 0, y: 0, a: 0 },
-    '-2': { x: -60, y: 40, a: 0 },
-    '-3': { x: 60, y: 40, a: 0 },
-    '-4': { x: 0, y: 99, a: 0 },
-    '-5': { x: 0, y: 139, a: 0 },
-    '-6': { x: 0, y: 179, a: 0 },
-    '-7': { x: 0, y: 219, a: 0 },
-    '-8': { x: 0, y: 259, a: 0 },
+    '-2': { x: -77, y: 52, a: 0 },
+    '-3': { x: 77, y: 52, a: 0 },
+    '-4': { x: 0, y: 128, a: 0 },
+    '-5': { x: 0, y: 180, a: 0 },
+    '-6': { x: 0, y: 232, a: 0 },
+    '-7': { x: 0, y: 284, a: 0 },
+    '-8': { x: 0, y: 336, a: 0 },
 };
 // Wrapper for the animation that use requestAnimationFrame
 var CarAnimation = /** @class */ (function () {
