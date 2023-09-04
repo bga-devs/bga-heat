@@ -118,8 +118,6 @@ function loadCircuitFromStorage(circuitId) {
   $('splashscreen').classList.add('hidden');
 }
 
-loadCircuitFromStorage('USA');
-
 //////////////////////////////////
 //  _____    _ _ _
 // | ____|__| (_) |_ ___  _ __
@@ -631,7 +629,7 @@ function generateNeighbours() {
 }
 
 function computeNeighbours(id) {
-  let center = DATAS.cells[id].center;
+  let center = getCenter(id);
 
   // Keep only the cells within the cone angle
   let coneAngle = Math.PI / 3;
@@ -644,7 +642,7 @@ function computeNeighbours(id) {
   // Sort cells by distance
   let dists = {};
   ids.forEach((cellId) => {
-    let center2 = DATAS.cells[cellId].center;
+    let center2 = getCenter(cellId);
     dists[cellId] = (center.x - center2.x) * (center.x - center2.x) + (center.y - center2.y) * (center.y - center2.y);
   });
   ids = ids.sort(function (id1, id2) {

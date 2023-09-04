@@ -1,7 +1,7 @@
 {
   "id": "USA",
   "name": "USA",
-  "assets": { "jpg": "usa.jpg", "svg": "usa.svg" },
+  "assets": { "jpg": "circuits/usa.jpg", "svg": "circuits/usa.svg" },
   "cells": {
     "817": {
       "neighbours": [825, 823],
