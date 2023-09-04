@@ -9,8 +9,27 @@ class Circuit
   protected $startingCells = [];
   protected $cells = [];
   protected $posToCells = [];
-  public function __construct()
+  public function __construct($datas)
   {
+    $lane = null;
+    foreach ($datas['corners'] as $pos => $info) {
+      $this->corners[$pos] = $info['speed'];
+      $lane = $info['lane'];
+      $this->raceLines[] = $lane;
+    }
+    array_unshift($this->raceLines, $lane);
+    $this->startingCells = $datas['startingCells'];
+    $this->nbrLaps = $datas['nbrLaps'];
+    $this->stressCards = $datas['stressCards'];
+    $this->heatCards = $datas['heatCards'];
+
+    foreach ($datas['cells'] as $cellId => $info) {
+      $this->cells[(int) $cellId] = [
+        'pos' => $info['position'],
+        'lane' => $info['lane'],
+      ];
+    }
+
     foreach ($this->cells as $cellId => $cellPos) {
       $this->posToCells[2 * $cellPos['pos'] + $cellPos['lane']] = $cellId;
     }

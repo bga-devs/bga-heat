@@ -56,14 +56,8 @@ trait RaceTrait
   function getCircuit()
   {
     if (!isset($this->circuit)) {
-      $names = [
-        'usa' => 'USA',
-        'italia' => 'Italia',
-        'gb' => 'GB',
-        'france' => 'France',
-      ];
-      $className = '\\HEAT\\Circuits\\' . $names[Globals::getCircuit()];
-      $this->circuit = new $className();
+      $circuitDatas = Globals::getCircuitDatas();
+      $this->circuit = new \HEAT\Models\Circuit($circuitDatas);
     }
 
     return $this->circuit;

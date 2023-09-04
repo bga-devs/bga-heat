@@ -28,6 +28,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
 
     // Game options
     'circuit' => 'str',
+    'circuitDatas' => 'obj',
     'countConstructors' => 'int', // Useful when companies DB is not filled up yet
   ];
 
@@ -166,5 +167,19 @@ class Globals extends \HEAT\Helpers\DB_Manager
       \HEAT\OPTION_CIRCUIT_FRANCE => 'france',
     ];
     self::setCircuit($circuits[$options[\HEAT\OPTION_CIRCUIT]]);
+    self::loadCircuitDatas();
+  }
+
+  public static function loadCircuitDatas()
+  {
+    $names = [
+      'usa' => 'USA',
+      'italia' => 'Italia',
+      'gb' => 'GB',
+      'france' => 'France',
+    ];
+    $fileName = __DIR__ . '/../Circuits/' . $names[Globals::getCircuit()] . '.php';
+    include_once $fileName;
+    Globals::setCircuitDatas($circuitDatas);
   }
 }
