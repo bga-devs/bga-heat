@@ -58,9 +58,21 @@
       }
     }
 
+    .deck {
+      position: absolute;
+      left: 51px;
+      top: 316px;
+    }
+
     .engine {
       position: absolute;
       left: 407px;
+      top: 316px;
+    }
+
+    .discard {
+      position: absolute;
+      left: 756px;
       top: 316px;
     }
 

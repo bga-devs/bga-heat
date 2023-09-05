@@ -904,9 +904,19 @@ height: 241px; */
 .player-table .player-board .bga-cards_deck-counter.round {
   font-size: 22px;
 }
+.player-table .player-board .deck {
+  position: absolute;
+  left: 51px;
+  top: 316px;
+}
 .player-table .player-board .engine {
   position: absolute;
   left: 407px;
+  top: 316px;
+}
+.player-table .player-board .discard {
+  position: absolute;
+  left: 756px;
   top: 316px;
 }
 .player-table .player-board .gear {

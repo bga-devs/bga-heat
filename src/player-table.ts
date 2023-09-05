@@ -34,7 +34,9 @@ class InPlayStock extends LineStock<Card> {
 class PlayerTable {
     public playerId: number;
     public hand?: LineStock<Card>;
+    public deck: Deck<Card>;
     public engine: Deck<Card>;
+    public discard: Deck<Card>;
     public inplay: InPlayStock;
 
     private currentPlayer: boolean;
@@ -82,9 +84,25 @@ class PlayerTable {
             this.hand.addCards(constructor.hand);
         }
         
+        this.deck = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-deck`), {
+            cardNumber: constructor.deckCount,
+            topCard: constructor.deckCount ? { id: `${this.playerId}-top-deck` } as Card : null, // TODO
+            counter: {
+                extraClasses: 'round',
+            }
+        });
+        
         this.engine = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-engine`), {
             cardNumber: Object.values(constructor.engine).length,
             topCard: Object.values(constructor.engine)[0],
+            counter: {
+                extraClasses: 'round',
+            }
+        });
+        
+        this.discard = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-discard`), {
+            cardNumber: constructor.discard ? 1 : 0, // TODO
+            topCard: constructor.discard,
             counter: {
                 extraClasses: 'round',
             }
@@ -125,5 +143,22 @@ class PlayerTable {
     
     public cooldown(cards: Card[]) {
         this.engine.addCards(cards);
+    }
+    
+    public payHeats(cards: Card[]) {
+        this.discard.addCards(cards);
+    }
+    
+    public spinOut(stresses: number[]) {
+        if (this.currentPlayer) {
+            this.hand.addCards(stresses.map(id => ({
+                id: `${id}`, // TODO
+                type: '110',
+                location: 'hand',
+                state: ''
+            } as Card)));
+        }
+
+        this.setCurrentGear(1);
     }
 }

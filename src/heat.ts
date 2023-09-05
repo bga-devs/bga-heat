@@ -657,7 +657,8 @@ class Heat implements HeatGame {
             ['reveal', undefined],
             ['moveCar', undefined],
             ['updateTurnOrder', 1],
-            ['payHeatsForCorner', ANIMATION_MS],
+            ['payHeats', ANIMATION_MS],
+            ['spinOut', ANIMATION_MS],
             ['discard', ANIMATION_MS],
             ['pDiscard', ANIMATION_MS],
             ['draw', ANIMATION_MS],
@@ -745,8 +746,31 @@ class Heat implements HeatGame {
         });
     }
 
-    notif_payHeatsForCorner(args: NotifPayHeatsForCornerArgs) {
-        // TODO
+    notif_payHeats(args: NotifPayHeatsArgs) {
+        const { constructor_id, cards, speed, limit, corner } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        const playerTable = this.getPlayerTable(playerId);
+
+        this.engineCounters[playerId].incValue(-cards.length);
+
+        return playerTable.payHeats(cards);
+    }
+
+    notif_spinOut(args: NotifSpinOutArgs) {
+        const { constructor_id, cell, stresses } = args;
+
+        const promise = this.notif_payHeats(args);
+
+        this.circuit.moveCar(constructor_id, cell);
+
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        const playerTable = this.getPlayerTable(playerId);
+        
+        this.handCounters[playerId].incValue(stresses.length);
+
+        playerTable.spinOut(stresses);
+
+        return promise;
     }
 
     private getPlayerIdFromConstructorId(constructorId: number): number | undefined {
@@ -775,14 +799,15 @@ class Heat implements HeatGame {
 
     notif_clearPlayedCards(args: NotifClearPlayedCardsArgs) {
         const { constructor_id, cardIds } = args;
-        const playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        const playerTable = this.getPlayerTable(playerId);
         playerTable.clearPlayedCards(cardIds);
     }
 
     notif_cooldown(args: NotifCooldownArgs) {
         const { constructor_id, cards } = args;
-        const playerId = this.getPlayerIdFromConstructorId(args.constructor_id);
-        const playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        const playerTable = this.getPlayerTable(playerId);
         this.handCounters[playerId].incValue(-cards.length);
         playerTable.cooldown(cards);
         this.engineCounters[playerId].incValue(cards.length);

@@ -22,6 +22,8 @@ interface Constructor {
     handCount: number;
     speed: number;
     inplay?: { [id: number]: Card};
+    discard: Card;
+    deckCount: number;
 }
 
 interface Cell {
@@ -123,13 +125,19 @@ interface NotifMoveCarArgs {
     path: number[];
 }
 
-// payHeatsForCorner
-interface NotifPayHeatsForCornerArgs {
+// payHeats
+interface NotifPayHeatsArgs {
     constructor_id: number;
-    n: number;
     cards: Card[];
     speed: number;
     limit: number;
+    corner?: number;
+}
+
+// spinOut
+interface NotifSpinOutArgs extends NotifPayHeatsArgs {
+    cell: number;
+    stresses: number[];
 }
 
 // draw, discard
