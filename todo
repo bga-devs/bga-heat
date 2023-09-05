@@ -15,8 +15,6 @@ Frontend :
   - payHeatsForCorner notif merged with payHeats
     => contains field "corner" that matchs the key in the circuitDatas corners where you can get x,y of center of circle of corner
 
-  - place -X carCell for other maps (USA coordinates : 0: { x: 376, y: 82, a: 0 },)
-
   - scrapCards notif: flipping card from deck to discard
 
   - "reduce stress" icon for React

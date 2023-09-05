@@ -133,7 +133,7 @@ class Circuit {
     }
 
     private getCellPosition(carCell: number) {
-        const cell = structuredClone(this.circuitDatas.cells[Math.max(0, carCell)]);
+        const cell = structuredClone(carCell < 0 ? this.circuitDatas.podium : this.circuitDatas.cells[carCell]);
 
         if (carCell < 0) {
             cell.x += LEADERBOARD_POSITIONS[carCell].x;

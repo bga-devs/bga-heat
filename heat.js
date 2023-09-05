@@ -2287,7 +2287,7 @@ var Circuit = /** @class */ (function () {
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     };
     Circuit.prototype.getCellPosition = function (carCell) {
-        var cell = structuredClone(this.circuitDatas.cells[Math.max(0, carCell)]);
+        var cell = structuredClone(carCell < 0 ? this.circuitDatas.podium : this.circuitDatas.cells[carCell]);
         if (carCell < 0) {
             cell.x += LEADERBOARD_POSITIONS[carCell].x;
             cell.y += LEADERBOARD_POSITIONS[carCell].y;

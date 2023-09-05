@@ -24,12 +24,19 @@ interface Constructor {
     inplay?: { [id: number]: Card};
 }
 
+interface Cell {
+    x: number;
+    y: number;
+    a: number;
+}
+
 interface CircuitDatas {
     assets: {
         jpg: string;
     };
-    cells: { [id: number]:  { a: number; x: number, y: number; } };
+    cells: { [id: number]:  Cell };
     corners: { [id: number]:  { x: number, y: number; lane: number; speed: number; } };
+    podium: Cell;
 }
 
 interface HeatGamedatas {

@@ -3,7 +3,7 @@ namespace HEAT\Circuits;
 
 $circuitDatas = [
   'id' => 'GB',
-  'name' => clienttranslate('Great-Britan'),
+  'name' => clienttranslate('Great-Britain'),
   'assets' => [
     'jpg' => 'circuits/gb.jpg',
   ],
@@ -11,11 +11,7 @@ $circuitDatas = [
   'stressCards' => 3,
   'heatCards' => 6,
   'startingCells' => [889, 887, 897, 895, 905, 903, 911, 913],
-  'podium' => [
-    'x' => 0,
-    'y' => 0,
-    'a' => 0,
-  ],
+  'podium' => ['x' => 148, 'y' => 122, 'a' => 0],
   'corners' => [
     15 => ['speed' => 10, 'lane' => 1, 'x' => 0, 'y' => 0],
     30 => ['speed' => 6, 'lane' => 1, 'x' => 0, 'y' => 0],
