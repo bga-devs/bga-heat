@@ -180,6 +180,11 @@ body {
     cursor: pointer;
 }
 
+#save-compressed-btn {
+    background: #566182;
+    cursor: pointer;
+}
+
 #circuit-files-status {
     background-color: green;
 }

@@ -222,6 +222,38 @@ function exportJSON() {
 }
 $('save-btn').addEventListener('click', () => exportJSON());
 
+function exportCompressedJSON() {
+  let d = {
+    id: DATAS.id,
+    name: DATAS.name,
+    assets: { jpg: DATAS.assets.jpg },
+    nbrLaps: DATAS.nbrLaps || 0,
+    stressCards: DATAS.stressCards || 0,
+    heatCards: DATAS.heatCards || 0,
+    startingCells: [],
+    podium: { x: 0, y: 0, a: 0 },
+    corners: {},
+    cells: {},
+  };
+
+  forEachCell((cellId, cell) => {
+    let infos = DATAS.cells[cellId];
+    d.cells[parseInt(cellId)] = {
+      lane: infos.lane,
+      position: infos.position,
+      x: parseInt(infos.x),
+      y: parseInt(infos.y),
+      a: parseInt(infos.a),
+    };
+  });
+
+  let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(d));
+  let dlAnchorElem2 = document.getElementById('download-anchor2');
+  dlAnchorElem2.setAttribute('href', dataStr);
+  dlAnchorElem2.setAttribute('download', DATAS.id + '-min.json');
+  dlAnchorElem2.click();
+}
+$('save-compressed-btn').addEventListener('click', () => exportCompressedJSON());
 /////////////////
 /////////////////
 ///  ADD URLS
