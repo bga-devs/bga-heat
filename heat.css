@@ -664,6 +664,12 @@ height: 241px; */
   justify-content: center;
   align-items: center;
 }
+.player-board .podium-counter {
+  display: none;
+}
+.player-board .podium-counter.finished {
+  display: initial;
+}
 
 .player-table {
   min-width: 640px;
@@ -885,21 +891,24 @@ html, .mode_3d #game_play_area_background {
   background-position-x: 0%;
 }
 .icon.engine {
-  background-position-x: 16.6666666667%;
+  background-position-x: 14.2857142857%;
 }
 .icon.heat {
-  background-position-x: 33.3333333333%;
+  background-position-x: 28.5714285714%;
 }
 .icon.cooldown {
-  background-position-x: 50%;
+  background-position-x: 42.8571428571%;
 }
 .icon.stress {
-  background-position-x: 66.6666666667%;
+  background-position-x: 57.1428571429%;
 }
 .icon.boost {
-  background-position-x: 83.3333333333%;
+  background-position-x: 71.4285714286%;
 }
 .icon.speed {
+  background-position-x: 85.7142857143%;
+}
+.icon.podium {
   background-position-x: 100%;
 }
 

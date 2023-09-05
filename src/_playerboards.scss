@@ -42,4 +42,12 @@
     justify-content: center;
     align-items: center;
   }
+
+  .podium-counter {
+    display: none;
+
+    &.finished {
+      display: initial;
+    }
+  }
 }

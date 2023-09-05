@@ -458,6 +458,10 @@ class Heat implements HeatGame {
                         ${constructor.no + 1}
                     </div>
                 </div>
+                <div id="podium-wrapper-${player.id}" class="podium-counter">
+                    <div class="podium icon"></div>
+                    <span id="podium-counter-${player.id}"></span>
+                </div>
             </div>`;
 
             dojo.place(html, `player_board_${player.id}`);
@@ -482,12 +486,18 @@ class Heat implements HeatGame {
             if (constructor.turn >= 0) {
                 this.turnCounters[playerId].setValue(constructor.turn + 1);
             }
+
+            if (constructor.carCell < 0) {
+                this.setRank(playerId, -constructor.carCell);
+            }
         });
 
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
         this.setTooltipToClass('speed-counter', _('Speed'));
         this.setTooltipToClass('turn-counter', _('Turns'));
+        this.setTooltipToClass('order-counter', _('Player order'));
+        this.setTooltipToClass('podium-counter', _('Rank'));
     }
 
     private createPlayerTables(gamedatas: HeatGamedatas) {
@@ -816,6 +826,14 @@ class Heat implements HeatGame {
     notif_finishRace(args: NotifFinishRaceArgs) {
         const { constructor_id, pos } = args;
         this.circuit.moveCar(constructor_id, -pos);
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        this.setRank(playerId, pos);
+    }
+
+    private setRank(playerId: number, pos: number) {
+        console.log(playerId, pos);
+        document.getElementById(`podium-wrapper-${playerId}`).classList.add('finished');
+        document.getElementById(`podium-counter-${playerId}`).innerHTML = ''+pos;
     }
     
     /*
