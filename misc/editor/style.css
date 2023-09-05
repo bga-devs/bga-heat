@@ -185,6 +185,12 @@ body {
     cursor: pointer;
 }
 
+#number-laps,
+#stress-cards,
+#heat-cards {
+    cursor: pointer;
+}
+
 #circuit-files-status {
     background-color: green;
 }

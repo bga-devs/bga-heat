@@ -300,6 +300,34 @@ $('add-urls').addEventListener('click', async () => {
   saveCircuit();
 });
 
+////////////////////////////////
+//  ___        __
+// |_ _|_ __  / _| ___  ___
+//  | || '_ \| |_ / _ \/ __|
+//  | || | | |  _| (_) \__ \
+// |___|_| |_|_|  \___/|___/
+////////////////////////////////
+$('number-laps').addEventListener('click', () => {
+  let nLaps = prompt('How many laps?');
+  DATAS.nbrLaps = nLaps;
+  updateStatus();
+  saveCircuit();
+});
+
+$('heat-cards').addEventListener('click', () => {
+  let nCards = prompt('How many heat cards?');
+  DATAS.heatCards = nCards;
+  updateStatus();
+  saveCircuit();
+});
+
+$('stress-cards').addEventListener('click', () => {
+  let nCards = prompt('How many stress cards?');
+  DATAS.stressCards = nCards;
+  updateStatus();
+  saveCircuit();
+});
+
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
@@ -316,6 +344,9 @@ function updateStatus() {
   let isLocal = DATAS.assets == 'local';
   $('circuit-files-status').innerHTML = isLocal ? 'Local' : 'Online';
   $('circuit-files-status').classList.toggle('local', isLocal);
+  $('stress-cards-value').innerHTML = DATAS.stressCards || 0;
+  $('heat-cards-value').innerHTML = DATAS.heatCards || 0;
+  $('number-laps-value').innerHTML = DATAS.nbrLaps || 0;
 
   SECTIONS.forEach((section) => {
     $(`section-${section}`).classList.toggle('computed', DATAS.computed[section] || false);
@@ -753,6 +784,9 @@ function generateLanes() {
   }
 
   // Compute neighbours
+  let startingCells = [];
+  const startingCellPosition = Object.keys(CELLS).length / 2 - 3;
+
   let currentIds = [DATAS.computed.laneEnds['end1'], DATAS.computed.laneEnds['end2']];
   let lap = Object.keys(CELLS).length / 2;
   for (let i = 1; i <= lap; i++) {
@@ -782,9 +816,14 @@ function generateLanes() {
     DATAS.cells[cellId0].position = i;
     DATAS.cells[cellId1].position = i;
     currentIds = [cellId0, cellId1];
+    if (i >= startingCellPosition) {
+      startingCells.unshift(cellId1);
+      startingCells.unshift(cellId0);
+    }
   }
 
   DATAS.computed.lanes = true;
+  DATAS.startingCells = startingCells;
   saveCircuit();
   toggleShow('lanes', true);
   updateCenters();
