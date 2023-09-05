@@ -94,7 +94,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
 
   public function getDiscard()
   {
-    return Cards::getDiscard($this->id)->first();
+    return Cards::getDiscard($this->id);
   }
 
   public function resolveBoost()

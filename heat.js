@@ -2415,16 +2415,18 @@ var PlayerTable = /** @class */ (function () {
                 extraClasses: 'round',
             }
         });
+        var engineCards = Object.values(constructor.engine);
         this.engine = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-engine")), {
-            cardNumber: Object.values(constructor.engine).length,
-            topCard: Object.values(constructor.engine)[0],
+            cardNumber: engineCards.length,
+            topCard: engineCards[0],
             counter: {
                 extraClasses: 'round',
             }
         });
+        var discardCards = Object.values(constructor.discard);
         this.discard = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-discard")), {
-            cardNumber: constructor.discard ? 1 : 0,
-            topCard: constructor.discard,
+            cardNumber: discardCards.length,
+            topCard: discardCards[0],
             counter: {
                 extraClasses: 'round',
             }

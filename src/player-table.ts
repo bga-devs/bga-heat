@@ -92,17 +92,19 @@ class PlayerTable {
             }
         });
         
+        const engineCards = Object.values(constructor.engine);
         this.engine = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-engine`), {
-            cardNumber: Object.values(constructor.engine).length,
-            topCard: Object.values(constructor.engine)[0],
+            cardNumber: engineCards.length,
+            topCard: engineCards[0], // TODO check if ordered
             counter: {
                 extraClasses: 'round',
             }
         });
         
+        const discardCards = Object.values(constructor.discard);
         this.discard = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-discard`), {
-            cardNumber: constructor.discard ? 1 : 0, // TODO
-            topCard: constructor.discard,
+            cardNumber: discardCards.length,
+            topCard: discardCards[0], // TODO check if ordered
             counter: {
                 extraClasses: 'round',
             }

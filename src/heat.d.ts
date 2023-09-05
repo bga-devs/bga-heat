@@ -22,7 +22,7 @@ interface Constructor {
     handCount: number;
     speed: number;
     inplay?: { [id: number]: Card};
-    discard: Card;
+    discard: { [id: number]: Card};
     deckCount: number;
 }
 
