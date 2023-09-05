@@ -1,18 +1,19 @@
 Other :
 
-Backend :
-  
+Backend : 
   - planification : shouldnt be able to select heat (unless very rare case where you can play nothing) => moved to back, as front makes _private.cards selectable, and heat is in the least (player colored heat at least)
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
   - check my answer in Frontend to merge payHeats notifs
 
 Frontend :
-  - payHeatsForCorner notif
-  - payHeats notif (for heated boost for instance)
-   => maybe these two notifs can be merged ? Unless you want to add a red circle around the corner for instance for the payHeatsForCorner notif ? that could be cool
-   => it can be merged if you want, with an optional "corner" attribute if we want to highlight it
-  - spinOut notif
-   => also very similar but also contains the new cell and the additional stress cards drawn
+  - notifications are too fast
+  - planification : button is reset when someone else cancel while you are selecting
+  - resolveBoost:  cards are not added on "played cards"
+  - slipstream : it's never mandatory => add a pass button that call the same action with 0 as argument
+  - notif finishRace : error cell is undefined. Broken when reloading as well.
+
+  - payHeatsForCorner notif merged with payHeats
+    => contains field "corner" that matchs the key in the circuitDatas corners where you can get x,y of center of circle of corner
 
   - place -X carCell for other maps (USA coordinates : 0: { x: 376, y: 82, a: 0 },)
 

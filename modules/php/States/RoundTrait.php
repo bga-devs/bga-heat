@@ -553,7 +553,7 @@ trait RoundTrait
             break;
           } else {
             $cards = $constructor->payHeats($delta);
-            Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit);
+            Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit, $position);
           }
         }
       }

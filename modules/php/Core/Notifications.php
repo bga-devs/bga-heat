@@ -204,10 +204,10 @@ class Notifications
     ]);
   }
 
-  public function payHeatsForCorner($constructor, $cards, $speed, $limit)
+  public function payHeatsForCorner($constructor, $cards, $speed, $limit, $position)
   {
     self::notifyAll(
-      'payHeatsForCorner',
+      'payHeats',
       clienttranslate('${constructor_name} discards ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit}'),
       [
         'constructor' => $constructor,
@@ -215,6 +215,7 @@ class Notifications
         'cards' => $cards->toArray(),
         'speed' => $speed,
         'limit' => $limit,
+        'corner' => $position,
       ]
     );
   }

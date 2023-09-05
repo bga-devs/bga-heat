@@ -25,7 +25,7 @@ class Circuit
 
     foreach ($datas['cells'] as $cellId => $info) {
       $this->cells[(int) $cellId] = [
-        'pos' => $info['position'],
+        'pos' => $info['position'] - 1, // OFFSET OF 1 !
         'lane' => $info['lane'],
       ];
     }
