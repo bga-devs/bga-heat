@@ -22,14 +22,23 @@ interface Constructor {
     handCount: number;
     speed: number;
     inplay?: { [id: number]: Card};
+    discard: Card;
+    deckCount: number;
+}
+
+interface Cell {
+    x: number;
+    y: number;
+    a: number;
 }
 
 interface CircuitDatas {
     assets: {
         jpg: string;
     };
-    cells: { [id: number]:  { a: number; x: number, y: number; } };
+    cells: { [id: number]:  Cell };
     corners: { [id: number]:  { x: number, y: number; lane: number; speed: number; } };
+    podium: Cell;
 }
 
 interface HeatGamedatas {
@@ -116,13 +125,19 @@ interface NotifMoveCarArgs {
     path: number[];
 }
 
-// payHeatsForCorner
-interface NotifPayHeatsForCornerArgs {
+// payHeats
+interface NotifPayHeatsArgs {
     constructor_id: number;
-    n: number;
     cards: Card[];
     speed: number;
     limit: number;
+    corner?: number;
+}
+
+// spinOut
+interface NotifSpinOutArgs extends NotifPayHeatsArgs {
+    cell: number;
+    stresses: number[];
 }
 
 // draw, discard

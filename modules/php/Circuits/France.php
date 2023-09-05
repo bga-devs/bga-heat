@@ -11,11 +11,7 @@ $circuitDatas = [
   'stressCards' => 6,
   'heatCards' => 2,
   'startingCells' => [1729, 1745, 1727, 1743, 1723, 1739, 1707, 1731],
-  'podium' => [
-    'x' => 0,
-    'y' => 0,
-    'a' => 0,
-  ],
+  'podium' => ['x' => 160, 'y' => 722, 'a' => 0],
   'corners' => [
     12 => ['speed' => 5, 'lane' => 1, 'x' => 0, 'y' => 0],
     20 => ['speed' => 2, 'lane' => 1, 'x' => 0, 'y' => 0],

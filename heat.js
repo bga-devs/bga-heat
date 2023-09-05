@@ -2287,7 +2287,7 @@ var Circuit = /** @class */ (function () {
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     };
     Circuit.prototype.getCellPosition = function (carCell) {
-        var cell = structuredClone(this.circuitDatas.cells[Math.max(0, carCell)]);
+        var cell = structuredClone(carCell < 0 ? this.circuitDatas.podium : this.circuitDatas.cells[carCell]);
         if (carCell < 0) {
             cell.x += LEADERBOARD_POSITIONS[carCell].x;
             cell.y += LEADERBOARD_POSITIONS[carCell].y;
@@ -2408,9 +2408,23 @@ var PlayerTable = /** @class */ (function () {
             this.hand.onSelectionChange = function (selection) { return _this.game.onHandCardSelectionChange(selection); };
             this.hand.addCards(constructor.hand);
         }
+        this.deck = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-deck")), {
+            cardNumber: constructor.deckCount,
+            topCard: constructor.deckCount ? { id: "".concat(this.playerId, "-top-deck") } : null,
+            counter: {
+                extraClasses: 'round',
+            }
+        });
         this.engine = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-engine")), {
             cardNumber: Object.values(constructor.engine).length,
             topCard: Object.values(constructor.engine)[0],
+            counter: {
+                extraClasses: 'round',
+            }
+        });
+        this.discard = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-discard")), {
+            cardNumber: constructor.discard ? 1 : 0,
+            topCard: constructor.discard,
             counter: {
                 extraClasses: 'round',
             }
@@ -2446,6 +2460,20 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.cooldown = function (cards) {
         this.engine.addCards(cards);
+    };
+    PlayerTable.prototype.payHeats = function (cards) {
+        this.discard.addCards(cards);
+    };
+    PlayerTable.prototype.spinOut = function (stresses) {
+        if (this.currentPlayer) {
+            this.hand.addCards(stresses.map(function (id) { return ({
+                id: "".concat(id),
+                type: '110',
+                location: 'hand',
+                state: ''
+            }); }));
+        }
+        this.setCurrentGear(1);
     };
     return PlayerTable;
 }());
@@ -2959,7 +2987,8 @@ var Heat = /** @class */ (function () {
             ['reveal', undefined],
             ['moveCar', undefined],
             ['updateTurnOrder', 1],
-            ['payHeatsForCorner', ANIMATION_MS],
+            ['payHeats', ANIMATION_MS],
+            ['spinOut', ANIMATION_MS],
             ['discard', ANIMATION_MS],
             ['pDiscard', ANIMATION_MS],
             ['draw', ANIMATION_MS],
@@ -3036,8 +3065,22 @@ var Heat = /** @class */ (function () {
             }
         });
     };
-    Heat.prototype.notif_payHeatsForCorner = function (args) {
-        // TODO
+    Heat.prototype.notif_payHeats = function (args) {
+        var constructor_id = args.constructor_id, cards = args.cards, speed = args.speed, limit = args.limit, corner = args.corner;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        var playerTable = this.getPlayerTable(playerId);
+        this.engineCounters[playerId].incValue(-cards.length);
+        return playerTable.payHeats(cards);
+    };
+    Heat.prototype.notif_spinOut = function (args) {
+        var constructor_id = args.constructor_id, cell = args.cell, stresses = args.stresses;
+        var promise = this.notif_payHeats(args);
+        this.circuit.moveCar(constructor_id, cell);
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        var playerTable = this.getPlayerTable(playerId);
+        this.handCounters[playerId].incValue(stresses.length);
+        playerTable.spinOut(stresses);
+        return promise;
     };
     Heat.prototype.getPlayerIdFromConstructorId = function (constructorId) {
         var _a;
@@ -3061,13 +3104,14 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_clearPlayedCards = function (args) {
         var constructor_id = args.constructor_id, cardIds = args.cardIds;
-        var playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        var playerTable = this.getPlayerTable(playerId);
         playerTable.clearPlayedCards(cardIds);
     };
     Heat.prototype.notif_cooldown = function (args) {
         var constructor_id = args.constructor_id, cards = args.cards;
-        var playerId = this.getPlayerIdFromConstructorId(args.constructor_id);
-        var playerTable = this.getPlayerTable(this.gamedatas.constructors[constructor_id].pId);
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        var playerTable = this.getPlayerTable(playerId);
         this.handCounters[playerId].incValue(-cards.length);
         playerTable.cooldown(cards);
         this.engineCounters[playerId].incValue(cards.length);
