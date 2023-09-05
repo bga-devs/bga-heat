@@ -24,6 +24,14 @@ interface Constructor {
     inplay?: { [id: number]: Card};
 }
 
+interface CircuitDatas {
+    assets: {
+        jpg: string;
+    };
+    cells: { [id: number]:  { a: number; x: number, y: number; } };
+    corners: { [id: number]:  { x: number, y: number; lane: number; speed: number; } };
+}
+
 interface HeatGamedatas {
     current_player_id: string;
     decision: {decision_type: string};
@@ -37,7 +45,7 @@ interface HeatGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
-    circuit: string;
+    circuitDatas: CircuitDatas;
     nbrLaps: number;
     constructors: { [id: number]: Constructor };
 }
@@ -45,7 +53,6 @@ interface HeatGamedatas {
 interface HeatGame extends Game {
     animationManager: AnimationManager;
     cardsManager: CardsManager;
-    technologyTilesManager: TechnologyTilesManager;
 
     getPlayerId(): number;
     getPlayer(playerId: number): HeatPlayer;

@@ -14,7 +14,7 @@ Frontend :
   - spinOut notif
    => also very similar but also contains the new cell and the additional stress cards drawn
 
-  - place -X carCell for other maps (USA done)
+  - place -X carCell for other maps (USA coordinates : 0: { x: 376, y: 82, a: 0 },)
 
   - scrapCards notif: flipping card from deck to discard
 
@@ -29,8 +29,7 @@ Frontend :
   
   - make speed counter work => updates when notif reveal, with sum of cards.speed. I need to check what can change this counter, probably reacts ? Maybe clean it at notif clearPlayedCards ?
 
-  - move car animation : follow path sent by backend in notif
-   => a reaaaaaally cool plus would be to have the log entries hoverable and you would get the path drawing display on hover (like the white path I had on my little animation test)
+  - move car animation : => a reaaaaaally cool plus would be to have the log entries hoverable and you would get the path drawing display on hover (like the white path I had on my little animation test)
 
   - user pref : voir seulement le haut des cartes en main => garder environ 1/6 de la hauteur et mettre le plateau joueur par dessus, permet d'avoir une vue globale plus complète
 

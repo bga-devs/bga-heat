@@ -14,18 +14,9 @@ const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
 const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
 
-function formatTextIcons(str: string) {
-    return str
-        .replace(/\[Heat\]/ig, '<div class="heat icon"></div>')
-        .replace(/\[Cooldown\]/ig, '<div class="cooldown icon"></div>')
-        .replace(/\[Speed\]/ig, '<div class="speed icon"></div>')
-        .replace(/\[Boost\]/ig, '<div class="boost icon"></div>');
-}
-
 class Heat implements HeatGame {
     public animationManager: AnimationManager;
     public cardsManager: CardsManager;
-    public technologyTilesManager: TechnologyTilesManager;
 
     private zoomManager: ZoomManager;
     private gamedatas: HeatGamedatas;
@@ -73,7 +64,7 @@ class Heat implements HeatGame {
         });
 
         g_img_preload.push(...[
-            `Circuits/${gamedatas.circuit}.jpg`,
+            gamedatas.circuitDatas.assets.jpg,
         ], 
         ...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
 
@@ -85,7 +76,6 @@ class Heat implements HeatGame {
 
         this.animationManager = new AnimationManager(this);
         this.cardsManager = new CardsManager(this);
-        this.technologyTilesManager = new TechnologyTilesManager(this);
         
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
@@ -921,8 +911,6 @@ class Heat implements HeatGame {
                 if (args.finishIcon === '') {
                     args.finishIcon = `<div class="turn icon"></div>`;
                 }
-
-                console.log(log, args);
 
                 if (args.cards_images === '' && args.cards) {
                     args.cards_images = Object.values(args.cards).map((card: Card) => this.cardImageHtml(card, args)).join('');

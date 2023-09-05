@@ -96,12 +96,13 @@ class Circuit {
     private mapDiv: HTMLDivElement;
     private scale: number = 1;
 
-    private MAP_DATAS = window['MAP_DATAS'];
+    private circuitDatas: CircuitDatas;;
         
     constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
+        this.circuitDatas = gamedatas.circuitDatas;
         this.mapDiv = document.getElementById('circuit') as HTMLDivElement;
 
-        this.mapDiv.style.backgroundImage = `url('${g_gamethemeurl}img/Circuits/${gamedatas.circuit}.jpg')`;
+        this.mapDiv.style.backgroundImage = `url('${g_gamethemeurl}img/${this.circuitDatas.assets.jpg}')`;
 
         Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
     }
@@ -132,7 +133,7 @@ class Circuit {
     }
 
     private getCellPosition(carCell: number) {
-        const cell = structuredClone(this.MAP_DATAS[Math.max(0, carCell)]);
+        const cell = structuredClone(this.circuitDatas.cells[Math.max(0, carCell)]);
 
         if (carCell < 0) {
             cell.x += LEADERBOARD_POSITIONS[carCell].x;
@@ -171,7 +172,7 @@ class Circuit {
         const mapIndicator = document.createElement('div');
         mapIndicator.id = `map-indicator-${cellId}`,
         mapIndicator.classList.add('map-indicator');
-        let cell = this.MAP_DATAS[cellId];
+        let cell = this.circuitDatas.cells[cellId];
         mapIndicator.style.setProperty('--x', `${MAP_SCALE * cell.x}px`);
         mapIndicator.style.setProperty('--y', `${MAP_SCALE * cell.y}px`);
         this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
@@ -192,16 +193,12 @@ class Circuit {
             let cellId1 = cellId[0];
             let cellId2 = cellId[1];
             return {
-                x: (this.MAP_DATAS[cellId1].x + this.MAP_DATAS[cellId2].x) / 2,
-                y: (this.MAP_DATAS[cellId1].y + this.MAP_DATAS[cellId2].y) / 2,
-                a: (this.MAP_DATAS[cellId1].a + this.MAP_DATAS[cellId2].a) / 2,
+                x: (this.circuitDatas.cells[cellId1].x + this.circuitDatas.cells[cellId2].x) / 2,
+                y: (this.circuitDatas.cells[cellId1].y + this.circuitDatas.cells[cellId2].y) / 2,
+                a: (this.circuitDatas.cells[cellId1].a + this.circuitDatas.cells[cellId2].a) / 2,
             };
-            } else {
-            return {
-                x: this.MAP_DATAS[cellId].x,
-                y: this.MAP_DATAS[cellId].y,
-                a: this.MAP_DATAS[cellId].a,
-            };
+        } else {
+            return this.circuitDatas.cells[cellId];
         }
     }
 
