@@ -99,8 +99,27 @@ trait RoundTrait
       }
       $pId = $constructor->getPId();
       $hand = $constructor->getHand();
+
+      // Compute corresponding speeds
+      $speeds = $hand->map(function ($card) {
+        return $card['speed'];
+      });
+      // Compute max speed
+      $maxSpeed = 0;
+      foreach ($speeds as $speed) {
+        $maxSpeed += is_array($speed) ? max($speed) : $speed;
+      }
+      // Compute corresponding cells
+      $cells = [];
+      for ($i = 0; $i <= $maxSpeed; $i++) {
+        list($newCell, $nSpacesForward, $extraTurns, $path) = $this->getCircuit()->getReachedCell($constructor, $i);
+        $cells[$i] = $newCell;
+      }
+
       $args['_private'][$pId] = [
         'cards' => $hand->getIds(),
+        'speeds' => $speeds,
+        'cells' => $cells,
         'selection' => $planification[$pId] ?? null,
       ];
     }

@@ -160,6 +160,10 @@ class Circuit
 
   public function getReachedCell($constructor, $speed)
   {
+    if ($speed == 0) {
+      return [$constructor->getCarCell(), 0, 0, []];
+    }
+
     $cId = $constructor->getId();
     $currentPosition = $this->getPosition($constructor);
     $currentLine = $this->getLine($constructor);
