@@ -220,7 +220,7 @@ class Notifications
     );
   }
 
-  public function spinOut($constructor, $speed, $limit, $cards, $cell, $stresses)
+  public function spinOut($constructor, $speed, $limit, $position, $cards, $cell, $stresses)
   {
     self::notifyAll(
       'spinOut',
@@ -233,6 +233,7 @@ class Notifications
         'cards' => $cards->toArray(),
         'speed' => $speed,
         'limit' => $limit,
+        'corner' => $position,
         'cell' => $cell,
         'stresses' => $stresses,
       ]

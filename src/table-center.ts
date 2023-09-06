@@ -1,6 +1,5 @@
 const MAP_WIDTH = 1650;
 const MAP_HEIGHT = 1100;
-const MAP_SCALE = 1;
 
 const LEADERBOARD_POSITIONS = {
     '-1': { x: 0, y: 0, a: 0 },
@@ -20,7 +19,7 @@ class CarAnimation {
     private resolve: any;
     private tZero: number;
 
-    constructor(private car: HTMLElement, private pathCells: { x: number; y: number; a: number; }[], private scale: number) {
+    constructor(private car: HTMLElement, private pathCells: { x: number; y: number; a: number; }[]) {
         // Control strength is how far the control point are from the center of the cell
         //  => it should probably be something related/proportional to scale of current board
         let controlStrength = 20;
@@ -72,8 +71,8 @@ class CarAnimation {
         const posPrev = this.getPos(u - 0.01);
         const posNext = this.getPos(u + 0.01);
         const angle = -Math.atan2(posNext.x - posPrev.x, posNext.y - posPrev.y);
-        this.car.style.setProperty('--x', `${this.scale * pos.x}px`);
-        this.car.style.setProperty('--y', `${this.scale * pos.y}px`);
+        this.car.style.setProperty('--x', `${pos.x}px`);
+        this.car.style.setProperty('--y', `${pos.y}px`);
         this.car.style.setProperty('--r', `${(angle * 180) / Math.PI + 90}deg`);
     }
 
@@ -96,7 +95,7 @@ class Circuit {
     private mapDiv: HTMLDivElement;
     private scale: number = 1;
 
-    private circuitDatas: CircuitDatas;;
+    private circuitDatas: CircuitDatas;
         
     constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
         this.circuitDatas = gamedatas.circuitDatas;
@@ -105,6 +104,8 @@ class Circuit {
         this.mapDiv.style.backgroundImage = `url('${g_gamethemeurl}img/${this.circuitDatas.assets.jpg}')`;
 
         Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
+
+        Object.entries(this.circuitDatas.corners).forEach((entry) => this.createCorner({...entry[1], id: Number(entry[0]) }));
     }
 
     /** 
@@ -131,6 +132,15 @@ class Circuit {
         document.getElementById('table-center').style.maxHeight = maxHeight;
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     }
+    
+    private createCorner(corner: Corner): void {
+        const cornerDiv = document.createElement('div');
+        cornerDiv.id = `corner-${corner.id}`,
+        cornerDiv.classList.add('corner');
+        cornerDiv.style.setProperty('--x', `${corner.x}px`);
+        cornerDiv.style.setProperty('--y', `${corner.y}px`);
+        this.mapDiv.insertAdjacentElement('beforeend', cornerDiv);
+    }
 
     private getCellPosition(carCell: number) {
         const cell = structuredClone(carCell < 0 ? this.circuitDatas.podium : this.circuitDatas.cells[carCell]);
@@ -148,8 +158,8 @@ class Circuit {
         car.id = `car-${constructor.id}`,
         car.classList.add('car');
         const cell = this.getCellPosition(constructor.carCell);
-        car.style.setProperty('--x', `${MAP_SCALE * cell.x}px`);
-        car.style.setProperty('--y', `${MAP_SCALE * cell.y}px`);
+        car.style.setProperty('--x', `${cell.x}px`);
+        car.style.setProperty('--y', `${cell.y}px`);
         car.style.setProperty('--r', `${cell.a}deg`);
         car.style.setProperty('--constructor-id', `${constructor.id}`);
         this.mapDiv.insertAdjacentElement('beforeend', car);
@@ -161,11 +171,33 @@ class Circuit {
             return this.moveCarWithAnimation(car, path);
         } else {
             const cell = this.getCellPosition(carCell);
-            car.style.setProperty('--x', `${MAP_SCALE * cell.x}px`);
-            car.style.setProperty('--y', `${MAP_SCALE * cell.y}px`);
+            car.style.setProperty('--x', `${cell.x}px`);
+            car.style.setProperty('--y', `${cell.y}px`);
             car.style.setProperty('--r', `${cell.a}deg`);
             return Promise.resolve(true);
         }
+    }
+    
+
+    public spinOutWithAnimation(constructorId: number, carCell: number, cellsDiff: number): Promise<any> {
+        return new Promise((resolve) => {
+            const car = document.getElementById(`car-${constructorId}`);
+            const time = cellsDiff * 250;
+            car.style.setProperty('--transition-time', `${time}ms`);
+            car.classList.add('spin-out');
+            car.clientWidth;
+            const cell = this.getCellPosition(carCell);
+            car.style.setProperty('--x', `${cell.x}px`);
+            car.style.setProperty('--y', `${cell.y}px`);
+            car.style.setProperty('--r', `${cell.a + 1080}deg`);
+
+            setTimeout(() => {
+                car.classList.remove('spin-out');
+                car.clientWidth;
+                car.style.setProperty('--r', `${cell.a}deg`);
+                resolve(true);
+            }, time + 200);
+        });
     }
     
     public addMapIndicator(cellId: number, clickCallback?: () => void): void {
@@ -173,8 +205,8 @@ class Circuit {
         mapIndicator.id = `map-indicator-${cellId}`,
         mapIndicator.classList.add('map-indicator');
         let cell = this.circuitDatas.cells[cellId];
-        mapIndicator.style.setProperty('--x', `${MAP_SCALE * cell.x}px`);
-        mapIndicator.style.setProperty('--y', `${MAP_SCALE * cell.y}px`);
+        mapIndicator.style.setProperty('--x', `${cell.x}px`);
+        mapIndicator.style.setProperty('--y', `${cell.y}px`);
         this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
 
         if (clickCallback) {
@@ -209,7 +241,11 @@ class Circuit {
     private moveCarWithAnimation(car: HTMLElement, pathCellIds: number[]): Promise<any> {        
         const pathCells = this.getCellsInfos(pathCellIds);
         
-        const animation = new CarAnimation(car, pathCells, MAP_SCALE);        
+        const animation = new CarAnimation(car, pathCells);        
         return animation.start();
+    }
+    
+    public showCorner(id: number, color?: string) {
+        document.getElementById(`corner-${id}`)?.style.setProperty('--color', color ?? 'transparent');
     }
 }

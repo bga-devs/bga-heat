@@ -42,10 +42,14 @@ class PlayerTable {
     private currentPlayer: boolean;
     private currentGear: number;
 
+    private fakeDeckCard: Card;
+
     constructor(private game: HeatGame, player: HeatPlayer, constructor: Constructor) {
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         this.currentGear = constructor.gear;
+
+        this.fakeDeckCard = { id: `${this.playerId}-top-deck` } as Card;
 
         let html = `
         <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color}; --personal-card-background-y: ${constructor.id * 100 / 6}%;">
@@ -86,7 +90,7 @@ class PlayerTable {
         
         this.deck = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-deck`), {
             cardNumber: constructor.deckCount,
-            topCard: constructor.deckCount ? { id: `${this.playerId}-top-deck` } as Card : null, // TODO
+            topCard: constructor.deckCount ? this.fakeDeckCard : null,
             counter: {
                 extraClasses: 'round',
             }
@@ -143,17 +147,39 @@ class PlayerTable {
         // TODO move them to discard instead
     }
     
-    public cooldown(cards: Card[]) {
-        this.engine.addCards(cards);
+    public cooldown(cards: Card[]): Promise<any> {
+        return this.engine.addCards(cards);
     }
     
-    public payHeats(cards: Card[]) {
-        this.discard.addCards(cards);
+    public async payHeats(cards: Card[]): Promise<any> {
+        if (this.engine.getCardNumber() > cards.length) {
+            this.engine.addCard({
+                id: `${this.playerId}-top-engine`,
+                type: '111',
+                location: 'engine',
+                state: ''
+            } as Card, undefined, <AddCardToDeckSettings>{
+                autoUpdateCardNumber: false,
+                autoRemovePreviousCards: false,
+            });
+        }
+        
+        this.engine.addCards(cards, undefined, <AddCardToDeckSettings>{
+            autoUpdateCardNumber: false,
+            autoRemovePreviousCards: false,
+        });
+
+        await this.discard.addCards(cards, undefined, <AddCardToDeckSettings>{
+            autoRemovePreviousCards: false,
+        }, 250);
+
+        return true;
     }
     
-    public spinOut(stresses: number[]) {
+    public spinOut(stresses: number[]): Promise<any> {
+        let promise = null;
         if (this.currentPlayer) {
-            this.hand.addCards(stresses.map(id => ({
+            promise = this.hand.addCards(stresses.map(id => ({
                 id: `${id}`, // TODO
                 type: '110',
                 location: 'hand',
@@ -162,5 +188,16 @@ class PlayerTable {
         }
 
         this.setCurrentGear(1);
+
+        return promise ?? Promise.resolve(true);
+    }
+    
+    public drawCards(cards: Card[]): Promise<any> {
+        return this.hand.addCards(cards, { fromStock: this.deck });
+    }
+    
+    public incDeckCount(inc: number) {
+        const count = this.deck.getCardNumber() + inc;
+        this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
     }
 }

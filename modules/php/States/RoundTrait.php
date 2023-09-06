@@ -568,7 +568,7 @@ trait RoundTrait
             $stresses = Cards::addStress($constructor, $constructor->getGear() <= 2 ? 1 : 2);
             $constructor->setCarCell($cell);
             $constructor->setGear(1);
-            Notifications::spinOut($constructor, $speed, $limit, $cards, $cell, $stresses);
+            Notifications::spinOut($constructor, $speed, $limit, $position, $cards, $cell, $stresses);
             break;
           } else {
             $cards = $constructor->payHeats($delta);

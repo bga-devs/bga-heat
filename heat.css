@@ -605,6 +605,9 @@ height: 241px; */
   transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 }
+.car.spin-out {
+  transition: transform var(--transition-time);
+}
 
 .map-indicator {
   position: absolute;
@@ -623,6 +626,17 @@ height: 241px; */
 .map-indicator.hover, .map-indicator:hover {
   background: yellow;
   box-shadow: 0 0 5px 5px yellow;
+}
+
+.corner {
+  --color: transparent;
+  position: absolute;
+  left: calc(var(--x) - 24px);
+  top: calc(var(--y) - 24px);
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 0 5px 5px var(--color);
+  border-radius: 50%;
 }
 
 .player-board {

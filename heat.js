@@ -2170,7 +2170,6 @@ var CardsManager = /** @class */ (function (_super) {
 }(CardManager));
 var MAP_WIDTH = 1650;
 var MAP_HEIGHT = 1100;
-var MAP_SCALE = 1;
 var LEADERBOARD_POSITIONS = {
     '-1': { x: 0, y: 0, a: 0 },
     '-2': { x: -77, y: 52, a: 0 },
@@ -2183,10 +2182,9 @@ var LEADERBOARD_POSITIONS = {
 };
 // Wrapper for the animation that use requestAnimationFrame
 var CarAnimation = /** @class */ (function () {
-    function CarAnimation(car, pathCells, scale) {
+    function CarAnimation(car, pathCells) {
         this.car = car;
         this.pathCells = pathCells;
-        this.scale = scale;
         // Control strength is how far the control point are from the center of the cell
         //  => it should probably be something related/proportional to scale of current board
         var controlStrength = 20;
@@ -2234,8 +2232,8 @@ var CarAnimation = /** @class */ (function () {
         var posPrev = this.getPos(u - 0.01);
         var posNext = this.getPos(u + 0.01);
         var angle = -Math.atan2(posNext.x - posPrev.x, posNext.y - posPrev.y);
-        this.car.style.setProperty('--x', "".concat(this.scale * pos.x, "px"));
-        this.car.style.setProperty('--y', "".concat(this.scale * pos.y, "px"));
+        this.car.style.setProperty('--x', "".concat(pos.x, "px"));
+        this.car.style.setProperty('--y', "".concat(pos.y, "px"));
         this.car.style.setProperty('--r', "".concat((angle * 180) / Math.PI + 90, "deg"));
     };
     CarAnimation.prototype.run = function () {
@@ -2263,8 +2261,8 @@ var Circuit = /** @class */ (function () {
         this.mapDiv = document.getElementById('circuit');
         this.mapDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
         Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
+        Object.entries(this.circuitDatas.corners).forEach(function (entry) { return _this.createCorner(__assign(__assign({}, entry[1]), { id: Number(entry[0]) })); });
     }
-    ;
     /**
      * Set map size, depending on available screen size.
      * Player table will be placed left or bottom, depending on window ratio.
@@ -2286,6 +2284,14 @@ var Circuit = /** @class */ (function () {
         document.getElementById('table-center').style.maxHeight = maxHeight;
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     };
+    Circuit.prototype.createCorner = function (corner) {
+        var cornerDiv = document.createElement('div');
+        cornerDiv.id = "corner-".concat(corner.id),
+            cornerDiv.classList.add('corner');
+        cornerDiv.style.setProperty('--x', "".concat(corner.x, "px"));
+        cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
+        this.mapDiv.insertAdjacentElement('beforeend', cornerDiv);
+    };
     Circuit.prototype.getCellPosition = function (carCell) {
         var cell = structuredClone(carCell < 0 ? this.circuitDatas.podium : this.circuitDatas.cells[carCell]);
         if (carCell < 0) {
@@ -2299,8 +2305,8 @@ var Circuit = /** @class */ (function () {
         car.id = "car-".concat(constructor.id),
             car.classList.add('car');
         var cell = this.getCellPosition(constructor.carCell);
-        car.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
-        car.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
+        car.style.setProperty('--x', "".concat(cell.x, "px"));
+        car.style.setProperty('--y', "".concat(cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
         car.style.setProperty('--constructor-id', "".concat(constructor.id));
         this.mapDiv.insertAdjacentElement('beforeend', car);
@@ -2312,19 +2318,39 @@ var Circuit = /** @class */ (function () {
         }
         else {
             var cell = this.getCellPosition(carCell);
-            car.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
-            car.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
+            car.style.setProperty('--x', "".concat(cell.x, "px"));
+            car.style.setProperty('--y', "".concat(cell.y, "px"));
             car.style.setProperty('--r', "".concat(cell.a, "deg"));
             return Promise.resolve(true);
         }
+    };
+    Circuit.prototype.spinOutWithAnimation = function (constructorId, carCell, cellsDiff) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var car = document.getElementById("car-".concat(constructorId));
+            var time = cellsDiff * 250;
+            car.style.setProperty('--transition-time', "".concat(time, "ms"));
+            car.classList.add('spin-out');
+            car.clientWidth;
+            var cell = _this.getCellPosition(carCell);
+            car.style.setProperty('--x', "".concat(cell.x, "px"));
+            car.style.setProperty('--y', "".concat(cell.y, "px"));
+            car.style.setProperty('--r', "".concat(cell.a + 1080, "deg"));
+            setTimeout(function () {
+                car.classList.remove('spin-out');
+                car.clientWidth;
+                car.style.setProperty('--r', "".concat(cell.a, "deg"));
+                resolve(true);
+            }, time + 200);
+        });
     };
     Circuit.prototype.addMapIndicator = function (cellId, clickCallback) {
         var mapIndicator = document.createElement('div');
         mapIndicator.id = "map-indicator-".concat(cellId),
             mapIndicator.classList.add('map-indicator');
         var cell = this.circuitDatas.cells[cellId];
-        mapIndicator.style.setProperty('--x', "".concat(MAP_SCALE * cell.x, "px"));
-        mapIndicator.style.setProperty('--y', "".concat(MAP_SCALE * cell.y, "px"));
+        mapIndicator.style.setProperty('--x', "".concat(cell.x, "px"));
+        mapIndicator.style.setProperty('--y', "".concat(cell.y, "px"));
         this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);
@@ -2355,8 +2381,12 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.moveCarWithAnimation = function (car, pathCellIds) {
         var pathCells = this.getCellsInfos(pathCellIds);
-        var animation = new CarAnimation(car, pathCells, MAP_SCALE);
+        var animation = new CarAnimation(car, pathCells);
         return animation.start();
+    };
+    Circuit.prototype.showCorner = function (id, color) {
+        var _a;
+        (_a = document.getElementById("corner-".concat(id))) === null || _a === void 0 ? void 0 : _a.style.setProperty('--color', color !== null && color !== void 0 ? color : 'transparent');
     };
     return Circuit;
 }());
@@ -2395,6 +2425,7 @@ var PlayerTable = /** @class */ (function () {
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         this.currentGear = constructor.gear;
+        this.fakeDeckCard = { id: "".concat(this.playerId, "-top-deck") };
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" style=\"--player-color: #").concat(player.color, "; --personal-card-background-y: ").concat(constructor.id * 100 / 6, "%;\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"name-wrapper\">").concat(player.name, "</div>\n        ");
         if (this.currentPlayer) {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
@@ -2410,7 +2441,7 @@ var PlayerTable = /** @class */ (function () {
         }
         this.deck = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-deck")), {
             cardNumber: constructor.deckCount,
-            topCard: constructor.deckCount ? { id: "".concat(this.playerId, "-top-deck") } : null,
+            topCard: constructor.deckCount ? this.fakeDeckCard : null,
             counter: {
                 extraClasses: 'round',
             }
@@ -2461,14 +2492,42 @@ var PlayerTable = /** @class */ (function () {
         // TODO move them to discard instead
     };
     PlayerTable.prototype.cooldown = function (cards) {
-        this.engine.addCards(cards);
+        return this.engine.addCards(cards);
     };
     PlayerTable.prototype.payHeats = function (cards) {
-        this.discard.addCards(cards);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (this.engine.getCardNumber() > cards.length) {
+                            this.engine.addCard({
+                                id: "".concat(this.playerId, "-top-engine"),
+                                type: '111',
+                                location: 'engine',
+                                state: ''
+                            }, undefined, {
+                                autoUpdateCardNumber: false,
+                                autoRemovePreviousCards: false,
+                            });
+                        }
+                        this.engine.addCards(cards, undefined, {
+                            autoUpdateCardNumber: false,
+                            autoRemovePreviousCards: false,
+                        });
+                        return [4 /*yield*/, this.discard.addCards(cards, undefined, {
+                                autoRemovePreviousCards: false,
+                            }, 250)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, true];
+                }
+            });
+        });
     };
     PlayerTable.prototype.spinOut = function (stresses) {
+        var promise = null;
         if (this.currentPlayer) {
-            this.hand.addCards(stresses.map(function (id) { return ({
+            promise = this.hand.addCards(stresses.map(function (id) { return ({
                 id: "".concat(id),
                 type: '110',
                 location: 'hand',
@@ -2476,6 +2535,14 @@ var PlayerTable = /** @class */ (function () {
             }); }));
         }
         this.setCurrentGear(1);
+        return promise !== null && promise !== void 0 ? promise : Promise.resolve(true);
+    };
+    PlayerTable.prototype.drawCards = function (cards) {
+        return this.hand.addCards(cards, { fromStock: this.deck });
+    };
+    PlayerTable.prototype.incDeckCount = function (inc) {
+        var count = this.deck.getCardNumber() + inc;
+        this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
     };
     return PlayerTable;
 }());
@@ -2741,6 +2808,7 @@ var Heat = /** @class */ (function () {
                         _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), _('Move ${cell} cell(s)').replace('${cell}', "".concat(entry[0])), function () { return _this.actSlipstream(Number(entry[0])); });
                         _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1][0]);
                     });
+                    this.addActionButton("actPassSlipstream_button", _('Pass'), function () { return _this.actSlipstream(0); });
                     break;
                 case 'react':
                     var reactArgs = args;
@@ -3009,8 +3077,8 @@ var Heat = /** @class */ (function () {
             ['reveal', undefined],
             ['moveCar', undefined],
             ['updateTurnOrder', 1],
-            ['payHeats', ANIMATION_MS],
-            ['spinOut', ANIMATION_MS],
+            ['payHeats', undefined],
+            ['spinOut', undefined],
             ['discard', ANIMATION_MS],
             ['pDiscard', ANIMATION_MS],
             ['draw', ANIMATION_MS],
@@ -3046,10 +3114,10 @@ var Heat = /** @class */ (function () {
             });
         }
         this.notifqueue.setIgnoreNotificationCheck('discard', function (notif) {
-            return _this.getPlayerIdFromConstructorId(notif.args.player_id) == _this.getPlayerId();
+            return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
         });
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
-            return _this.getPlayerIdFromConstructorId(notif.args.player_id) == _this.getPlayerId();
+            return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
         });
     };
     Heat.prototype.notif_updatePlanification = function (args) {
@@ -3087,29 +3155,68 @@ var Heat = /** @class */ (function () {
             }
         });
     };
-    Heat.prototype.notif_payHeats = function (args) {
-        var constructor_id = args.constructor_id, cards = args.cards, speed = args.speed, limit = args.limit, corner = args.corner;
-        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        var playerTable = this.getPlayerTable(playerId);
-        this.engineCounters[playerId].incValue(-cards.length);
-        return playerTable.payHeats(cards);
+    Heat.prototype.notif_payHeats = function (args, color) {
+        if (color === void 0) { color = 'orange'; }
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, cards, corner, playerId, playerTable;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, cards = args.cards, corner = args.corner;
+                        playerId = this.getPlayerIdFromConstructorId(constructor_id);
+                        playerTable = this.getPlayerTable(playerId);
+                        this.engineCounters[playerId].incValue(-cards.length);
+                        this.circuit.showCorner(corner, color);
+                        return [4 /*yield*/, playerTable.payHeats(cards)];
+                    case 1:
+                        _a.sent();
+                        this.circuit.showCorner(corner);
+                        return [2 /*return*/, true];
+                }
+            });
+        });
     };
     Heat.prototype.notif_spinOut = function (args) {
-        var constructor_id = args.constructor_id, cell = args.cell, stresses = args.stresses;
-        var promise = this.notif_payHeats(args);
-        this.circuit.moveCar(constructor_id, cell);
-        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        var playerTable = this.getPlayerTable(playerId);
-        this.handCounters[playerId].incValue(stresses.length);
-        playerTable.spinOut(stresses);
-        return promise;
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, cell, stresses, playerId, playerTable;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, cell = args.cell, stresses = args.stresses;
+                        return [4 /*yield*/, this.notif_payHeats(args, 'red')];
+                    case 1:
+                        _a.sent();
+                        if (!this.animationManager.animationsActive()) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.circuit.spinOutWithAnimation(constructor_id, cell, 15)];
+                    case 2:
+                        _a.sent(); // TODO
+                        return [3 /*break*/, 4];
+                    case 3:
+                        this.circuit.moveCar(constructor_id, cell);
+                        _a.label = 4;
+                    case 4:
+                        playerId = this.getPlayerIdFromConstructorId(constructor_id);
+                        playerTable = this.getPlayerTable(playerId);
+                        this.handCounters[playerId].incValue(stresses.length);
+                        return [4 /*yield*/, playerTable.spinOut(stresses)];
+                    case 5:
+                        _a.sent();
+                        return [2 /*return*/, true];
+                }
+            });
+        });
     };
     Heat.prototype.getPlayerIdFromConstructorId = function (constructorId) {
         var _a;
         return (_a = this.gamedatas.constructors[constructorId]) === null || _a === void 0 ? void 0 : _a.pId;
     };
     Heat.prototype.notif_draw = function (args) {
-        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(args.n);
+        var constructor_id = args.constructor_id;
+        var n = Number(args.n);
+        this.handCounters[this.getPlayerIdFromConstructorId(constructor_id)].incValue(n);
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        var playerTable = this.getPlayerTable(playerId);
+        playerTable.incDeckCount(-n);
     };
     Heat.prototype.notif_discard = function (args) {
         this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-args.n);
@@ -3117,7 +3224,9 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_pDraw = function (args) {
         var cards = Object.values(args.cards);
         this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(cards.length);
-        this.getCurrentPlayerTable().hand.addCards(cards);
+        var playerTable = this.getCurrentPlayerTable();
+        playerTable.drawCards(cards);
+        //playerTable.incDeckCount(-cards.length);
     };
     Heat.prototype.notif_pDiscard = function (args) {
         var cards = Object.values(args.cards);

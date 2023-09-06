@@ -326,6 +326,7 @@ class Heat implements HeatGame {
                             entry[1][0],
                         );
                     });
+                    (this as any).addActionButton(`actPassSlipstream_button`, _('Pass'), () => this.actSlipstream(0));
                     break;
                 case 'react':
                     const reactArgs = args as EnteringReactArgs;
@@ -684,8 +685,8 @@ class Heat implements HeatGame {
             ['reveal', undefined],
             ['moveCar', undefined],
             ['updateTurnOrder', 1],
-            ['payHeats', ANIMATION_MS],
-            ['spinOut', ANIMATION_MS],
+            ['payHeats', undefined],
+            ['spinOut', undefined],
             ['discard', ANIMATION_MS],
             ['pDiscard', ANIMATION_MS],
             ['draw', ANIMATION_MS],
@@ -729,10 +730,10 @@ class Heat implements HeatGame {
         }
 
         (this as any).notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) => 
-            this.getPlayerIdFromConstructorId(notif.args.player_id) == this.getPlayerId()
+            this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
         );
         (this as any).notifqueue.setIgnoreNotificationCheck('draw', (notif: Notif<any>) => 
-            this.getPlayerIdFromConstructorId(notif.args.player_id) == this.getPlayerId()
+            this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
         );
     }
     
@@ -773,31 +774,41 @@ class Heat implements HeatGame {
         });
     }
 
-    notif_payHeats(args: NotifPayHeatsArgs) {
-        const { constructor_id, cards, speed, limit, corner } = args;
+    async notif_payHeats(args: NotifPayHeatsArgs, color = 'orange') {
+        const { constructor_id, cards, corner } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
 
         this.engineCounters[playerId].incValue(-cards.length);
 
-        return playerTable.payHeats(cards);
+        this.circuit.showCorner(corner, color);
+
+        await playerTable.payHeats(cards);
+
+        this.circuit.showCorner(corner);
+
+        return true;
     }
 
-    notif_spinOut(args: NotifSpinOutArgs) {
+    async notif_spinOut(args: NotifSpinOutArgs) {
         const { constructor_id, cell, stresses } = args;
 
-        const promise = this.notif_payHeats(args);
+        await this.notif_payHeats(args, 'red');
 
-        this.circuit.moveCar(constructor_id, cell);
+        if (this.animationManager.animationsActive()) {
+            await this.circuit.spinOutWithAnimation(constructor_id, cell, 15); // TODO
+        } else {
+            this.circuit.moveCar(constructor_id, cell);
+        }
 
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
         
         this.handCounters[playerId].incValue(stresses.length);
 
-        playerTable.spinOut(stresses);
+        await playerTable.spinOut(stresses);
 
-        return promise;
+        return true;
     }
 
     private getPlayerIdFromConstructorId(constructorId: number): number | undefined {
@@ -805,7 +816,12 @@ class Heat implements HeatGame {
     }
 
     notif_draw(args: NotifCardsArgs) {
-        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(args.n);
+        const { constructor_id } = args;
+        const n = Number(args.n);
+        this.handCounters[this.getPlayerIdFromConstructorId(constructor_id)].incValue(n);
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        const playerTable = this.getPlayerTable(playerId);
+        playerTable.incDeckCount(-n);
     }
 
     notif_discard(args: NotifCardsArgs) {
@@ -815,7 +831,9 @@ class Heat implements HeatGame {
     notif_pDraw(args: NotifPCardsArgs) {
         const cards = Object.values(args.cards);
         this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(cards.length);
-        this.getCurrentPlayerTable().hand.addCards(cards);
+        const playerTable = this.getCurrentPlayerTable();
+        playerTable.drawCards(cards);
+        //playerTable.incDeckCount(-cards.length);
     }
 
     notif_pDiscard(args: NotifPCardsArgs) {

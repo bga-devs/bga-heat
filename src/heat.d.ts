@@ -32,12 +32,20 @@ interface Cell {
     a: number;
 }
 
+interface Corner {
+    id?: number;
+    x: number, 
+    y: number; 
+    lane: number; 
+    speed: number;
+}
+
 interface CircuitDatas {
     assets: {
         jpg: string;
     };
     cells: { [id: number]:  Cell };
-    corners: { [id: number]:  { x: number, y: number; lane: number; speed: number; } };
+    corners: { [id: number]: Corner };
     podium: Cell;
 }
 
