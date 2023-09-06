@@ -634,6 +634,9 @@ height: 241px; */
 .player-board.spectator-mode * {
   background: white !important;
 }
+.player-board.finished {
+  background-color: lightgray;
+}
 .player-board .icon {
   margin-right: 5px;
 }
@@ -930,6 +933,7 @@ html, .mode_3d #game_play_area_background {
   flex-wrap: wrap;
   gap: 20px;
   flex-direction: column;
+  padding-top: 32px;
 }
 
 #logs .log.notif_newUndoableStep {

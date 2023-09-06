@@ -75,11 +75,15 @@ interface HeatGame extends Game {
     addSecondaryActionButton(id, text, callback, zone?): void
 }
 
+interface EnteringPlanificationPrivateArgs {
+    cards: number[];
+    selection: string[];
+    cells: { [speed: number]: number /*destination cell*/ };
+    speeds: { [cardId: number]: number};
+}
+
 interface EnteringPlanificationArgs {    
-    _private?: {
-        cards: number[];
-        selection: string[];
-    }
+    _private?: EnteringPlanificationPrivateArgs;
 }
 
 interface EnteringChooseSpeedArgs {

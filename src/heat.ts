@@ -90,14 +90,15 @@ class Heat implements HeatGame {
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
         
-        /*this.zoomManager = new ZoomManager({
+        this.zoomManager = new ZoomManager({
             element: document.getElementById('tables'),
             smooth: false,
             zoomControls: {
                 color: 'black',
             },
+            defaultZoom: 0.75,
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
-        });*/
+        });
 
         new HelpManager(this, { 
             buttons: [
@@ -263,14 +264,21 @@ class Heat implements HeatGame {
 
         switch (stateName) {
             case 'planification':
-            case 'discard':
-                this.onLeavingHandSelection();
+                this.onLeavingPlanification();
                 break;
             case 'chooseSpeed':
             case 'slipstream':
                 this.onLeavingChooseSpeed();
                 break;
+            case 'discard':
+                this.onLeavingHandSelection();
+                break;
         }
+    }
+
+    private onLeavingPlanification() {
+        this.onLeavingHandSelection();
+        this.circuit.removeMapIndicators();
     }
 
     private onLeavingHandSelection() {
@@ -484,7 +492,7 @@ class Heat implements HeatGame {
             this.turnCounters[playerId] = new ebg.counter();
             this.turnCounters[playerId].create(`turn-counter-${playerId}`);
             if (constructor.turn >= 0) {
-                this.turnCounters[playerId].setValue(constructor.turn + 1);
+                this.turnCounters[playerId].setValue(Math.min(gamedatas.nbrLaps, constructor.turn + 1));
             }
 
             if (constructor.carCell < 0) {
@@ -544,8 +552,17 @@ class Heat implements HeatGame {
             const button = document.getElementById('actPlanification_button');
             button.innerHTML = label;
             button.classList.toggle('disabled', !allowed);
-        } else
-        if (this.gamedatas.gamestate.name == 'discard') {
+
+            this.circuit.removeMapIndicators();
+            const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
+            if (privateArgs) {
+                const totalSpeed = selection.map(card => privateArgs.speeds[card.id] ?? 0).reduce((a, b) => a + b, 0);
+                if (totalSpeed) {
+                    this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]);
+                }
+            }
+
+        } else if (this.gamedatas.gamestate.name == 'discard') {
             const label = selection.length ? 
                 _('Discard ${number} selected cards').replace('${number}', `${selection.length}`) :
                 _('No additional discard');
@@ -831,7 +848,7 @@ class Heat implements HeatGame {
     }
 
     private setRank(playerId: number, pos: number) {
-        console.log(playerId, pos);
+        document.getElementById(`overall_player_board_${playerId}`).classList.add('finished');
         document.getElementById(`podium-wrapper-${playerId}`).classList.add('finished');
         document.getElementById(`podium-counter-${playerId}`).innerHTML = ''+pos;
     }

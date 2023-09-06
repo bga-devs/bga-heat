@@ -8,6 +8,10 @@
     }
   }
 
+  &.finished {
+    background-color: lightgray;
+  }
+
   .icon {
     margin-right: 5px;
   }

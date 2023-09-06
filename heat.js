@@ -2539,14 +2539,15 @@ var Heat = /** @class */ (function () {
         this.circuit = new Circuit(this, gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
-        /*this.zoomManager = new ZoomManager({
+        this.zoomManager = new ZoomManager({
             element: document.getElementById('tables'),
             smooth: false,
             zoomControls: {
                 color: 'black',
             },
+            defaultZoom: 0.75,
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
-        });*/
+        });
         new HelpManager(this, {
             buttons: [
                 new BgaHelpPopinButton({
@@ -2687,14 +2688,20 @@ var Heat = /** @class */ (function () {
         document.getElementById('restartAction').innerHTML = '';
         switch (stateName) {
             case 'planification':
-            case 'discard':
-                this.onLeavingHandSelection();
+                this.onLeavingPlanification();
                 break;
             case 'chooseSpeed':
             case 'slipstream':
                 this.onLeavingChooseSpeed();
                 break;
+            case 'discard':
+                this.onLeavingHandSelection();
+                break;
         }
+    };
+    Heat.prototype.onLeavingPlanification = function () {
+        this.onLeavingHandSelection();
+        this.circuit.removeMapIndicators();
     };
     Heat.prototype.onLeavingHandSelection = function () {
         var _a;
@@ -2847,7 +2854,7 @@ var Heat = /** @class */ (function () {
             _this.turnCounters[playerId] = new ebg.counter();
             _this.turnCounters[playerId].create("turn-counter-".concat(playerId));
             if (constructor.turn >= 0) {
-                _this.turnCounters[playerId].setValue(constructor.turn + 1);
+                _this.turnCounters[playerId].setValue(Math.min(gamedatas.nbrLaps, constructor.turn + 1));
             }
             if (constructor.carCell < 0) {
                 _this.setRank(playerId, -constructor.carCell);
@@ -2892,6 +2899,14 @@ var Heat = /** @class */ (function () {
             var button = document.getElementById('actPlanification_button');
             button.innerHTML = label;
             button.classList.toggle('disabled', !allowed);
+            this.circuit.removeMapIndicators();
+            var privateArgs_1 = this.gamedatas.gamestate.args._private;
+            if (privateArgs_1) {
+                var totalSpeed = selection.map(function (card) { var _a; return (_a = privateArgs_1.speeds[card.id]) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0);
+                if (totalSpeed) {
+                    this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed]);
+                }
+            }
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
             var label = selection.length ?
@@ -3130,7 +3145,7 @@ var Heat = /** @class */ (function () {
         this.setRank(playerId, pos);
     };
     Heat.prototype.setRank = function (playerId, pos) {
-        console.log(playerId, pos);
+        document.getElementById("overall_player_board_".concat(playerId)).classList.add('finished');
         document.getElementById("podium-wrapper-".concat(playerId)).classList.add('finished');
         document.getElementById("podium-counter-".concat(playerId)).innerHTML = '' + pos;
     };

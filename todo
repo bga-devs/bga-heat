@@ -5,29 +5,6 @@ Backend :
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
 
 Frontend :
-  - planification : display speedS and cellS while selecting cards :
-      let speeds = [0];
-      selectedCards.forEach(cardId => {
-        let t = [];
-        let cSpeeds = args.speeds[cardId];
-        if(!is_array(cSpeeds)) cSpeeds = [cSpeeds];
-
-        cSpeeds.forEach(cSpeed => {
-          speeds.forEach(speed => {
-            t.push(cSpeed + speed);
-          })
-        })
-
-        speeds = t;
-      })
-
-     // Compute ending cells
-     let cellls = [];
-     speeds.forEach(speed => {
-      cells.push(args.cells[speed]);
-     })
-
-
   - notifications are too fast
   - planification : button is reset when someone else cancel while you are selecting
   - resolveBoost:  cards are not added on "played cards"

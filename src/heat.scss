@@ -83,6 +83,7 @@ html, .mode_3d #game_play_area_background {
   flex-wrap: wrap;
   gap: 20px;
   flex-direction: column;
+  padding-top: 32px;
 }
 
 #logs .log.notif_newUndoableStep {
