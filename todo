@@ -6,7 +6,6 @@ Backend :
 
 Frontend :
   - notifications are too fast
-  - planification : button is reset when someone else cancel while you are selecting
   - resolveBoost:  cards are not added on "played cards"
   - slipstream : it's never mandatory => add a pass button that call the same action with 0 as argument
   - deck & discard piles.

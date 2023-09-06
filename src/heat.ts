@@ -303,7 +303,7 @@ class Heat implements HeatGame {
             switch (stateName) {
                 case 'planification':
                     (this as any).addActionButton(`actPlanification_button`, '', () => this.actPlanification());
-                    this.onHandCardSelectionChange([]);
+                    this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
                     break;
                 case 'chooseSpeed':
                     const chooseSpeedArgs = args as EnteringChooseSpeedArgs;

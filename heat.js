@@ -2724,7 +2724,7 @@ var Heat = /** @class */ (function () {
             switch (stateName) {
                 case 'planification':
                     this.addActionButton("actPlanification_button", '', function () { return _this.actPlanification(); });
-                    this.onHandCardSelectionChange([]);
+                    this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
                     break;
                 case 'chooseSpeed':
                     var chooseSpeedArgs = args;
