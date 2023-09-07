@@ -297,6 +297,13 @@ class Notifications
     ]);
   }
 
+  public static function endOfRace($scores)
+  {
+    self::notifyAll('endOfRace', clienttranslate('End of the race'), [
+      'scores' => $scores,
+    ]);
+  }
+
   ///////////////////////////////////////////////////////////////
   //  _   _           _       _            _
   // | | | |_ __   __| | __ _| |_ ___     / \   _ __ __ _ ___

@@ -45,6 +45,52 @@ trait RaceTrait
     $this->gamestate->nextState('startRound');
   }
 
+  function stFinishRace()
+  {
+    $scores = Globals::getScores();
+    $score = [];
+    $podium = [9, 6, 4, 3, 2, 1];
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      $podiumPos = -$constructor->getCarCell() - 1;
+      $score[$cId] = $podium[$podiumPos] ?? 0;
+      $constructor->incScore($score[$cId]);
+    }
+
+    $circuitId = $this->getCircuit()->getId();
+    $scores[$circuitId] = $score;
+    Globals::setScores($scores);
+    Notifications::endOfRace($scores);
+
+    if (false) {
+      // TOURNAMENT
+    } else {
+      $this->gamestate->jumpToState(ST_PRE_END_OF_GAME);
+    }
+  }
+
+  function stPreEndOfGame()
+  {
+    if (Players::count() == 1) {
+      $player = null;
+      $playerScore = null;
+      $maxScore = 0;
+      foreach (Constructors::getAll() as $cId => $constructor) {
+        $maxScore = max($maxScore, $constructor->getScore());
+        if (!$constructor->isAI()) {
+          $player = Players::get($constructor->getPId());
+          $playerScore = $constructor->getScore();
+        }
+      }
+
+      // If the real player is not #1, set score to 0
+      if ($maxScore != $playerScore) {
+        $player->setScore(0);
+      }
+    }
+
+    $this->gamestate->nextState();
+  }
+
   ///////////////////////////////////
   //   ____ _                _ _
   //  / ___(_)_ __ ___ _   _(_) |_

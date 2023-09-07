@@ -87,6 +87,8 @@ class Heat extends Table
 
       'isLegend' => Globals::isLegend(),
       'legendCard' => LegendCards::getCurrentCard(),
+
+      'scores' => Globals::getScores(),
     ];
   }
 

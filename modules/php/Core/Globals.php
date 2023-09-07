@@ -25,6 +25,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'previousPosition' => 'int',
     'previousTurn' => 'int',
     'symbols' => 'obj',
+    'scores' => 'obj',
 
     'legend' => 'bool',
     'legendCards' => 'obj',

@@ -4,6 +4,7 @@ use HEAT\Managers\Constructors;
 
 class Circuit
 {
+  protected $id = null;
   protected $corners = [];
   protected $legendLines = [];
   protected $raceLines = [];
@@ -12,6 +13,8 @@ class Circuit
   protected $posToCells = [];
   public function __construct($datas)
   {
+    $this->id = $datas['id'];
+
     $lane = null;
     foreach ($datas['corners'] as $pos => $info) {
       $this->corners[$pos] = $info['speed'];
@@ -35,6 +38,10 @@ class Circuit
     foreach ($this->cells as $cellId => $cellPos) {
       $this->posToCells[2 * $cellPos['pos'] + $cellPos['lane']] = $cellId;
     }
+  }
+  public function getId()
+  {
+    return $this->id;
   }
 
   protected $nbrLaps = 0;

@@ -58,6 +58,14 @@ class Constructor extends \HEAT\Helpers\DB_Model
     return $this->getCarCell() < 0;
   }
 
+  public function incScore($n)
+  {
+    parent::incScore($n);
+    if (!$this->isAI()) {
+      Players::get($this->pId)->incScore($n);
+    }
+  }
+
   public function getPosition()
   {
     return Game::get()

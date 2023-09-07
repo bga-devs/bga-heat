@@ -67,7 +67,8 @@ trait RoundTrait
     }
     Globals::setFinishedConstructors($finished);
     if (empty($order)) {
-      die('End of race');
+      $this->stFinishRace();
+      return;
     }
 
     Globals::setTurnOrder($order);
