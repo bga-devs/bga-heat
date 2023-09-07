@@ -24,7 +24,7 @@
   transform:  translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 
-  &.spin-out {
+  &.with-transition {
     transition: transform var(--transition-time);
   }
 }

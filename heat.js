@@ -2363,16 +2363,34 @@ var Circuit = /** @class */ (function () {
             var car = document.getElementById("car-".concat(constructorId));
             var time = cellsDiff * 250;
             car.style.setProperty('--transition-time', "".concat(time, "ms"));
-            car.classList.add('spin-out');
+            car.classList.add('with-transition');
             car.clientWidth;
             var cell = _this.getCellPosition(carCell);
             car.style.setProperty('--x', "".concat(cell.x, "px"));
             car.style.setProperty('--y', "".concat(cell.y, "px"));
             car.style.setProperty('--r', "".concat(cell.a + 1080, "deg"));
             setTimeout(function () {
-                car.classList.remove('spin-out');
+                car.classList.remove('with-transition');
                 car.clientWidth;
                 car.style.setProperty('--r', "".concat(cell.a, "deg"));
+                resolve(true);
+            }, time + 200);
+        });
+    };
+    Circuit.prototype.finishRace = function (constructorId, pos) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var car = document.getElementById("car-".concat(constructorId));
+            var time = 1500;
+            car.style.setProperty('--transition-time', "".concat(time, "ms"));
+            car.classList.add('with-transition');
+            car.clientWidth;
+            var cell = _this.getCellPosition(-pos);
+            car.style.setProperty('--x', "".concat(cell.x, "px"));
+            car.style.setProperty('--y', "".concat(cell.y, "px"));
+            car.style.setProperty('--r', "".concat(cell.a, "deg"));
+            setTimeout(function () {
+                car.classList.remove('with-transition');
                 resolve(true);
             }, time + 200);
         });
@@ -2793,7 +2811,9 @@ var Heat = /** @class */ (function () {
         this.updatePageTitle();
     };
     Heat.prototype.onEnteringPlanification = function (args) {
-        this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
+        if (args._private) {
+            this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
+        }
     };
     Heat.prototype.onEnteringChooseSpeed = function (args) {
         var _this = this;
@@ -3344,18 +3364,35 @@ var Heat = /** @class */ (function () {
         (_b = this.engineCounters[constructor_id]) === null || _b === void 0 ? void 0 : _b.incValue(cards.length);
     };
     Heat.prototype.notif_finishRace = function (args) {
-        var constructor_id = args.constructor_id, pos = args.pos;
-        this.circuit.moveCar(constructor_id, -pos);
-        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        this.setRank(playerId, pos);
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, pos;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, pos = args.pos;
+                        if (!this.animationManager.animationsActive()) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.circuit.finishRace(constructor_id, pos)];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        this.circuit.moveCar(constructor_id, -pos);
+                        _a.label = 3;
+                    case 3:
+                        this.setRank(constructor_id, pos);
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     Heat.prototype.notif_newLegendCard = function (args) {
         return this.legendTable.newLegendCard(args.card);
     };
-    Heat.prototype.setRank = function (playerId, pos) {
+    Heat.prototype.setRank = function (constructorId, pos) {
+        var playerId = this.getPlayerIdFromConstructorId(constructorId);
         document.getElementById("overall_player_board_".concat(playerId)).classList.add('finished');
-        document.getElementById("podium-wrapper-".concat(playerId)).classList.add('finished');
-        document.getElementById("podium-counter-".concat(playerId)).innerHTML = '' + pos;
+        document.getElementById("podium-wrapper-".concat(constructorId)).classList.add('finished');
+        document.getElementById("podium-counter-".concat(constructorId)).innerHTML = '' + pos;
     };
     /*
     * [Undocumented] Called by BGA framework on any notification message

@@ -646,7 +646,7 @@ height: 241px; */
   transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 }
-.car.spin-out {
+.car.with-transition {
   transition: transform var(--transition-time);
 }
 

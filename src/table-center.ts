@@ -184,7 +184,7 @@ class Circuit {
             const car = document.getElementById(`car-${constructorId}`);
             const time = cellsDiff * 250;
             car.style.setProperty('--transition-time', `${time}ms`);
-            car.classList.add('spin-out');
+            car.classList.add('with-transition');
             car.clientWidth;
             const cell = this.getCellPosition(carCell);
             car.style.setProperty('--x', `${cell.x}px`);
@@ -192,9 +192,28 @@ class Circuit {
             car.style.setProperty('--r', `${cell.a + 1080}deg`);
 
             setTimeout(() => {
-                car.classList.remove('spin-out');
+                car.classList.remove('with-transition');
                 car.clientWidth;
                 car.style.setProperty('--r', `${cell.a}deg`);
+                resolve(true);
+            }, time + 200);
+        });
+    }
+    
+    public finishRace(constructorId: number, pos: number): Promise<any> {
+        return new Promise((resolve) => {
+            const car = document.getElementById(`car-${constructorId}`);
+            const time = 1500;
+            car.style.setProperty('--transition-time', `${time}ms`);
+            car.classList.add('with-transition');
+            car.clientWidth;
+            const cell = this.getCellPosition(-pos);
+            car.style.setProperty('--x', `${cell.x}px`);
+            car.style.setProperty('--y', `${cell.y}px`);
+            car.style.setProperty('--r', `${cell.a}deg`);
+
+            setTimeout(() => {
+                car.classList.remove('with-transition');
                 resolve(true);
             }, time + 200);
         });

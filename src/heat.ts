@@ -239,7 +239,9 @@ class Heat implements HeatGame {
     }
 
     private onEnteringPlanification(args: EnteringPlanificationArgs) {
-        this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
+        if (args._private) {
+            this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
+        }
     }
 
     private onEnteringChooseSpeed(args: EnteringChooseSpeedArgs) {
@@ -908,21 +910,26 @@ class Heat implements HeatGame {
         this.engineCounters[constructor_id]?.incValue(cards.length);
     }
 
-    notif_finishRace(args: NotifFinishRaceArgs) {
+    async notif_finishRace(args: NotifFinishRaceArgs) {
         const { constructor_id, pos } = args;
-        this.circuit.moveCar(constructor_id, -pos);
-        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        this.setRank(playerId, pos);
+        if (this.animationManager.animationsActive()) {
+            await this.circuit.finishRace(constructor_id, pos);
+        } else {
+            this.circuit.moveCar(constructor_id, -pos);
+        }
+        
+        this.setRank(constructor_id, pos);
     }
 
     notif_newLegendCard(args: NotifNewLegendCardArgs) {
         return this.legendTable.newLegendCard(args.card);
     }
 
-    private setRank(playerId: number, pos: number) {
+    private setRank(constructorId: number, pos: number) {
+        const playerId = this.getPlayerIdFromConstructorId(constructorId);
         document.getElementById(`overall_player_board_${playerId}`).classList.add('finished');
-        document.getElementById(`podium-wrapper-${playerId}`).classList.add('finished');
-        document.getElementById(`podium-counter-${playerId}`).innerHTML = ''+pos;
+        document.getElementById(`podium-wrapper-${constructorId}`).classList.add('finished');
+        document.getElementById(`podium-counter-${constructorId}`).innerHTML = ''+pos;
     }
     
     /*
