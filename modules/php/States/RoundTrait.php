@@ -25,9 +25,15 @@ trait RoundTrait
     if (empty($pIds)) {
       die('Every human as finished the game');
     }
+
     Globals::setLegendCardDrawn(false);
-    $this->gamestate->setPlayersMultiactive($pIds, '', true);
-    $this->gamestate->nextState('planification');
+    if (empty($pIds)) {
+      $this->gamestate->nextState('planification');
+      $this->stEndOfPlanification();
+    } else {
+      $this->gamestate->setPlayersMultiactive($pIds, '', true);
+      $this->gamestate->nextState('planification');
+    }
   }
 
   function stEndRound()
@@ -628,6 +634,11 @@ trait RoundTrait
     if (empty($cardIds)) {
       $this->actDiscard([]);
     }
+
+    $constructor = Constructors::getActive();
+    if ($constructor->getTurn() >= $this->getNbrLaps()) {
+      $this->actDiscard([]);
+    }
   }
 
   public function actDiscard($cardIds)
@@ -658,6 +669,12 @@ trait RoundTrait
 
   public function stReplenish()
   {
+    $constructor = Constructors::getActive();
+    if ($constructor->getTurn() >= $this->getNbrLaps()) {
+      $this->nextPlayerCustomOrder('reveal');
+      return;
+    }
+
     // Discard played cards
     $constructor = Constructors::getActive();
     $cardIds = $constructor->getPlayedCards()->getIds();
