@@ -2488,8 +2488,7 @@ var PlayerTable = /** @class */ (function () {
         return this.inplay.addCards(cards);
     };
     PlayerTable.prototype.clearPlayedCards = function (cardIds) {
-        this.inplay.removeAll();
-        // TODO move them to discard instead
+        return this.discard.addCards(this.inplay.getCards());
     };
     PlayerTable.prototype.cooldown = function (cards) {
         return this.engine.addCards(cards);
@@ -3083,7 +3082,7 @@ var Heat = /** @class */ (function () {
             ['pDiscard', ANIMATION_MS],
             ['draw', ANIMATION_MS],
             ['pDraw', ANIMATION_MS],
-            ['clearPlayedCards', ANIMATION_MS],
+            ['clearPlayedCards', undefined],
             ['cooldown', ANIMATION_MS],
             ['finishRace', ANIMATION_MS],
         ];
@@ -3231,13 +3230,24 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_pDiscard = function (args) {
         var cards = Object.values(args.cards);
         this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-cards.length);
-        this.getCurrentPlayerTable().hand.removeCards(cards);
+        this.getCurrentPlayerTable().discard.addCards(cards);
     };
     Heat.prototype.notif_clearPlayedCards = function (args) {
-        var constructor_id = args.constructor_id, cardIds = args.cardIds;
-        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        var playerTable = this.getPlayerTable(playerId);
-        playerTable.clearPlayedCards(cardIds);
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, cardIds, playerId, playerTable;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, cardIds = args.cardIds;
+                        playerId = this.getPlayerIdFromConstructorId(constructor_id);
+                        playerTable = this.getPlayerTable(playerId);
+                        return [4 /*yield*/, playerTable.clearPlayedCards(cardIds)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     Heat.prototype.notif_cooldown = function (args) {
         var constructor_id = args.constructor_id, cards = args.cards;

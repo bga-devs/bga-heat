@@ -142,9 +142,8 @@ class PlayerTable {
         return this.inplay.addCards(cards);
     }
     
-    public clearPlayedCards(cardIds: number[]) {
-        this.inplay.removeAll();
-        // TODO move them to discard instead
+    public clearPlayedCards(cardIds: number[]): Promise<any> {
+        return this.discard.addCards(this.inplay.getCards());
     }
     
     public cooldown(cards: Card[]): Promise<any> {
