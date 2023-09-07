@@ -34,7 +34,10 @@ trait LegendTrait
       }
       // Otherwise, stop before second corner
       else {
-        die('TODO: multiple corners crossed');
+        $cornerPos = $cornersCrossed[1];
+        $length = $this->getCircuit()->getLength();
+        $speed = ($cornerPos - 1 - $pos + $length) % $length;
+        $this->moveCar($constructor, $speed);
       }
     }
     // B => approaching the corner
@@ -49,7 +52,7 @@ trait LegendTrait
       // If yes, then go to the "slot cell" instead
       else {
         $length = $this->getCircuit()->getLength();
-        $speed = ($cornerPos - $slot - 1 - $pos + $length) % $length;
+        $speed = ($cornerPos - 1 - $slot - $pos + $length) % $length;
         $this->moveCar($constructor, $speed);
       }
     }
