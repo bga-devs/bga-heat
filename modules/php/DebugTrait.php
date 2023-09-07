@@ -11,6 +11,11 @@ use HEAT\Helpers\Collection;
 
 trait DebugTrait
 {
+  function tp()
+  {
+    var_dump($this->getCircuit()->isFree(7, 1));
+  }
+
   function move($speed)
   {
     $constructor = Constructors::getActive();

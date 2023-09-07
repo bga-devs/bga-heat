@@ -82,37 +82,37 @@ $game_options = [
     ],
   ],
 
-  OPTION_NBR_LAPS => [
-    'name' => totranslate('Number of laps'),
-    'values' => [
-      0 => [
-        'name' => clienttranslate('Default'),
-      ],
-      1 => [
-        'name' => clienttranslate('Single lap'),
-        'tmdisplay' => clienttranslate('[1 lap]'),
-      ],
-      2 => [
-        'name' => clienttranslate('2 laps'),
-        'tmdisplay' => clienttranslate('[2 laps]'),
-      ],
-      3 => [
-        'name' => clienttranslate('3 laps'),
-        'tmdisplay' => clienttranslate('[3 laps]'),
-      ],
-      4 => [
-        'name' => clienttranslate('4 laps'),
-        'tmdisplay' => clienttranslate('[4 laps]'),
-      ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroptionisnot',
-        'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_TOURNAMENT],
-      ],
-    ],
-  ],
+  // OPTION_NBR_LAPS => [
+  //   'name' => totranslate('Number of laps'),
+  //   'values' => [
+  //     0 => [
+  //       'name' => clienttranslate('Default'),
+  //     ],
+  //     1 => [
+  //       'name' => clienttranslate('Single lap'),
+  //       'tmdisplay' => clienttranslate('[1 lap]'),
+  //     ],
+  //     2 => [
+  //       'name' => clienttranslate('2 laps'),
+  //       'tmdisplay' => clienttranslate('[2 laps]'),
+  //     ],
+  //     3 => [
+  //       'name' => clienttranslate('3 laps'),
+  //       'tmdisplay' => clienttranslate('[3 laps]'),
+  //     ],
+  //     4 => [
+  //       'name' => clienttranslate('4 laps'),
+  //       'tmdisplay' => clienttranslate('[4 laps]'),
+  //     ],
+  //   ],
+  //   'displaycondition' => [
+  //     [
+  //       'type' => 'otheroptionisnot',
+  //       'id' => OPTION_SETUP,
+  //       'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_TOURNAMENT],
+  //     ],
+  //   ],
+  // ],
 
   OPTION_GARAGE_MODULE => [
     'name' => totranslate('Garage module'),

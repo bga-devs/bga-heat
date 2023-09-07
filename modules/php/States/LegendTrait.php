@@ -17,7 +17,7 @@ trait LegendTrait
     $pos = $constructor->getPosition();
     $turn = $constructor->getTurn();
     $cornerPos = $this->getCircuit()->getNextCorner($pos);
-    $linePos = $this->getCircuit()->getLegendLine($cornerPos);
+    $linePos = $this->getCircuit()->getLegendLane($cornerPos);
 
     LegendCards::drawIfNeeded();
     list($slot, $number) = LegendCards::getCurrentCardInfos($constructor);

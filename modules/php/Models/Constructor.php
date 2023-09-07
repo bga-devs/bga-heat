@@ -73,11 +73,11 @@ class Constructor extends \HEAT\Helpers\DB_Model
       ->getPosition($this);
   }
 
-  public function getLine()
+  public function getLane()
   {
     return Game::get()
       ->getCircuit()
-      ->getLine($this);
+      ->getLane($this);
   }
 
   public function getDeck()

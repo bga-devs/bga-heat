@@ -41,8 +41,8 @@ trait RoundTrait
       }
 
       $position = $constructor->getPosition();
-      $line = $constructor->getLine();
-      $raceLine = $this->getCircuit()->getRaceLine($position);
+      $line = $constructor->getLane();
+      $raceLine = $this->getCircuit()->getRaceLane($position);
       $uid = ($length * $constructor->getTurn() + $position) * 2 + ($line == $raceLine ? 1 : 0);
       $positions[$uid] = $constructor;
     }

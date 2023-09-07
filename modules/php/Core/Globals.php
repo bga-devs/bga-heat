@@ -168,7 +168,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     $nLegends = $options[\HEAT\OPTION_LEGEND] ?? 0;
     self::setCountConstructors(count($players) + $nLegends);
     self::setLegend($nLegends > 0);
-    self::setNbrLaps($options[\HEAT\OPTION_NBR_LAPS]);
+    self::setNbrLaps($options[\HEAT\OPTION_NBR_LAPS] ?? 0);
 
     $circuits = [
       \HEAT\OPTION_CIRCUIT_USA => 'usa',

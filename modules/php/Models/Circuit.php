@@ -7,8 +7,8 @@ class Circuit
 {
   protected $id = null;
   protected $corners = [];
-  protected $legendLines = [];
-  protected $raceLines = [];
+  protected $legendLanes = [];
+  protected $raceLanes = [];
   protected $startingCells = [];
   protected $cells = [];
   protected $posToCells = [];
@@ -19,11 +19,11 @@ class Circuit
     $lane = null;
     foreach ($datas['corners'] as $pos => $info) {
       $this->corners[$pos] = $info['speed'];
-      $this->legendLines[$pos] = $info['legend'];
+      $this->legendLanes[$pos] = $info['legend'];
       $lane = $info['lane'];
-      $this->raceLines[] = $lane;
+      $this->raceLanes[] = $lane;
     }
-    array_unshift($this->raceLines, $lane);
+    array_unshift($this->raceLanes, $lane);
     $this->startingCells = $datas['startingCells'];
     $this->nbrLaps = $datas['nbrLaps'];
     $this->stressCards = $datas['stressCards'];
@@ -83,6 +83,7 @@ class Circuit
 
   public function isFree($position, $lane, $exclude = null)
   {
+    $position = $position % $this->getLength();
     foreach (Constructors::getAll() as $cId => $constructor) {
       if ((!is_null($exclude) && $cId == $exclude) || $constructor->isFinished()) {
         continue;
@@ -97,7 +98,7 @@ class Circuit
     return true;
   }
 
-  public function getRaceLine($position)
+  public function getRaceLane($position)
   {
     $position = $position % $this->getLength();
     $i = 0;
@@ -108,20 +109,20 @@ class Circuit
         $i++;
       }
     }
-    return $this->raceLines[$i];
+    return $this->raceLanes[$i];
   }
 
-  public function getFreeLine($position, $exclude = null)
+  public function getFreeLane($position, $exclude = null)
   {
-    // Try raceline first
-    $raceLine = $this->getRaceLine($position);
-    if ($this->isFree($position, $raceLine, $exclude)) {
-      return $raceLine;
+    // Try racelane first
+    $raceLane = $this->getRaceLane($position);
+    if ($this->isFree($position, $raceLane, $exclude)) {
+      return $raceLane;
     }
     // Otherwise, try the other one
-    $raceLine = 3 - $raceLine;
-    if ($this->isFree($position, $raceLine, $exclude)) {
-      return $raceLine;
+    $raceLane = 3 - $raceLane;
+    if ($this->isFree($position, $raceLane, $exclude)) {
+      return $raceLane;
     }
     // Otherwise, return 0 if both are full
     return 0;
@@ -129,11 +130,11 @@ class Circuit
 
   public function getFreeCell($position)
   {
-    $line = $this->getFreeLine($position);
-    if ($line == 0) {
+    $lane = $this->getFreeLane($position);
+    if ($lane == 0) {
       die('Trying to get free cell on a busy position');
     }
-    return $this->getCell($position, $line);
+    return $this->getCell($position, $lane);
   }
 
   public function getPosition($constructor)
@@ -142,22 +143,22 @@ class Circuit
     return $this->cells[$currentCell]['pos'];
   }
 
-  public function getLine($constructor)
+  public function getLane($constructor)
   {
     $currentCell = $constructor->getCarCell();
     return $this->cells[$currentCell]['lane'];
   }
 
-  public function getCell($position, $line)
+  public function getCell($position, $lane)
   {
     $pos = $position % $this->getLength();
-    return $this->posToCells[2 * $pos + $line];
+    return $this->posToCells[2 * $pos + $lane];
   }
 
   public function getFirstFreePosition($position, $cId)
   {
     $avoidInfiniteLoop = 0;
-    while ($this->getFreeLine($position, $cId) == 0 && $avoidInfiniteLoop++ < 10) {
+    while ($this->getFreeLane($position, $cId) == 0 && $avoidInfiniteLoop++ < 10) {
       $position--;
     }
     if ($avoidInfiniteLoop >= 10) {
@@ -180,7 +181,7 @@ class Circuit
 
     $cId = $constructor->getId();
     $currentPosition = $this->getPosition($constructor);
-    $currentLine = $this->getLine($constructor);
+    $currentLane = $this->getLane($constructor);
 
     // Find the first position that is not already full with cars
     $newPosition = $this->getFirstFreePosition($currentPosition + $speed, $cId);
@@ -188,17 +189,17 @@ class Circuit
     // Compute the path
     $path = [$constructor->getCarCell()];
     for ($pos = $currentPosition + 1; $pos < $newPosition; $pos++) {
-      if ($currentLine == 1.5) {
-        $currentLine = $this->getRaceLine($pos);
+      if ($currentLane == 1.5) {
+        $currentLane = $this->getRaceLane($pos);
       }
 
-      if ($this->isFree($pos, $currentLine)) {
-        $path[] = $this->getCell($pos, $currentLine);
-      } elseif ($this->isFree($pos, 3 - $currentLine)) {
-        $currentLine = 3 - $currentLine;
-        $path[] = $this->getCell($pos, $currentLine);
+      if ($this->isFree($pos, $currentLane)) {
+        $path[] = $this->getCell($pos, $currentLane);
+      } elseif ($this->isFree($pos, 3 - $currentLane)) {
+        $currentLane = 3 - $currentLane;
+        $path[] = $this->getCell($pos, $currentLane);
       } else {
-        $currentLine = 1.5;
+        $currentLane = 1.5;
         $path[] = [$this->getCell($pos, 1), $this->getCell($pos, 2)];
       }
     }
@@ -220,13 +221,13 @@ class Circuit
     // TODO : check section and weather condition that might prevent slipstream
 
     // Is there a car next to me or in front of me ?
-    $currentLine = $this->getLine($constructor);
+    $currentLane = $this->getLane($constructor);
     $nextPosition = ($currentPosition + 1) % $this->getLength();
-    if ($this->isFree($currentPosition, 3 - $currentLine) && $this->isFree($nextPosition, 1) && $this->isFree($nextPosition, 2)) {
+    if ($this->isFree($currentPosition, 3 - $currentLane) && $this->isFree($nextPosition, 1) && $this->isFree($nextPosition, 2)) {
       return false;
     }
 
-    // Cant slipstream on last last if that makes you cross finish line
+    // Cant slipstream on last last if that makes you cross finish lane
     $newPosition = $currentPosition + $n;
     $extraTurn = intdiv($newPosition, $this->getLength());
     if ($constructor->getTurn() + $extraTurn >= $this->getNbrLaps()) {
@@ -275,8 +276,8 @@ class Circuit
     return array_keys($this->corners)[0];
   }
 
-  public function getLegendLine($cornerPos)
+  public function getLegendLane($cornerPos)
   {
-    return $this->legendLines[$cornerPos];
+    return $this->legendLanes[$cornerPos];
   }
 }
