@@ -2879,19 +2879,29 @@ var Heat = /** @class */ (function () {
                         document.getElementById("actPassReact_button").classList.add('disabled');
                     }
                     Object.entries(reactArgs.symbols).forEach(function (entry, index) {
-                        var label = "".concat(entry[0], " ").concat(entry[1]);
+                        var label = "";
+                        var tooltip = "";
+                        var number = Number(entry[1]);
                         switch (entry[0]) {
                             case 'cooldown':
-                                label = "".concat(entry[1], " [Cooldown]");
+                                label = "".concat(number, " [Cooldown]");
+                                var heats = _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return [106, 111].includes(card.type); }).length;
+                                if (heats < number) {
+                                    label += "(- ".concat(heats, " [Heat])");
+                                }
+                                tooltip = "\n                                <strong>".concat(_("Cooldown"), "</strong>\n                                <br><br>\n                                ").concat(_("Cooldown allows you to take a Heat card from your hand and put it back in your Engine (so you can use the Heat card again). The number in the Cooldown symbol indicates how many Heat you can move in this way. You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1)."), "</i>");
                                 break;
                             case 'adrenaline':
-                                label = "+".concat(entry[1], " [Speed]");
+                                label = "+".concat(number, " [Speed]");
+                                tooltip = "\n                                <strong>".concat(_("Adrenaline"), "</strong>\n                                <br><br>\n                                ").concat(_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space)."), "\n                                <br><br>\n                                <i>").concat(_("Note: Adrenaline cannot be saved for future rounds"), "</i>");
                                 break;
                             case 'heated-boost':
-                                label = "[Heat] > [Boost]";
+                                label = "[Boost] > [Speed]";
+                                tooltip = "\n                                <strong>".concat(_("Boost"), "</strong>\n                                <br><br>\n                                ").concat(_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                                <br><br>\n                                <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>");
                                 break;
                         }
                         _this.addActionButton("actReact".concat(index, "_button"), formatTextIcons(label), function () { return _this.actReact(entry[0]); });
+                        _this.setTooltip("actReact".concat(index, "_button"), tooltip);
                     });
                     break;
                 case 'discard':
