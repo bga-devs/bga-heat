@@ -36,6 +36,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'circuit' => 'str',
     'circuitDatas' => 'obj',
     'countConstructors' => 'int', // Useful when companies DB is not filled up yet
+    'nbrLaps' => 'int',
   ];
 
   protected static $table = 'global_variables';
@@ -167,6 +168,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     $nLegends = $options[\HEAT\OPTION_LEGEND] ?? 0;
     self::setCountConstructors(count($players) + $nLegends);
     self::setLegend($nLegends > 0);
+    self::setNbrLaps($options[\HEAT\OPTION_NBR_LAPS]);
 
     $circuits = [
       \HEAT\OPTION_CIRCUIT_USA => 'usa',

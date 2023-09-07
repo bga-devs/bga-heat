@@ -1,6 +1,7 @@
 <?php
 namespace HEAT\Models;
 use HEAT\Managers\Constructors;
+use HEAT\Core\Globals;
 
 class Circuit
 {
@@ -49,9 +50,13 @@ class Circuit
   protected $heatCards = 0;
   public function getNbrLaps()
   {
-    $initial = $this->nbrLaps;
-    // TODO : weather + event
-    return $initial;
+    $n = $this->nbrLaps;
+    $optionNbrLaps = Globals::getNbrLaps();
+    if ($optionNbrLaps != 0) {
+      $n = $optionNbrLaps;
+    }
+    // TODO : weather + event ??
+    return $n;
   }
   public function getStressCards()
   {
