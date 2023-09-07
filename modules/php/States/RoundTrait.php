@@ -100,7 +100,9 @@ trait RoundTrait
         continue;
       }
       $pId = $constructor->getPId();
-      $hand = $constructor->getHand();
+      $hand = $constructor->getHand()->filter(function ($card) {
+        return $card['effect'] != HEAT;
+      });
 
       // Compute corresponding speeds
       $speeds = $hand->map(function ($card) {
