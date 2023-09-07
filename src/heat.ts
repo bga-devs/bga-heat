@@ -17,11 +17,13 @@ const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', '
 class Heat implements HeatGame {
     public animationManager: AnimationManager;
     public cardsManager: CardsManager;
+    public legendCardsManager: LegendCardsManager;
 
     private zoomManager: ZoomManager;
     private gamedatas: HeatGamedatas;
     private circuit: Circuit;
     private playersTables: PlayerTable[] = [];
+    private legendTable?: LegendTable;
     private handCounters: Counter[] = [];
     private engineCounters: Counter[] = [];
     private speedCounters: Counter[] = [];
@@ -76,6 +78,7 @@ class Heat implements HeatGame {
 
         this.animationManager = new AnimationManager(this);
         this.cardsManager = new CardsManager(this);
+        this.legendCardsManager = new LegendCardsManager(this);
         
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
@@ -436,68 +439,89 @@ class Heat implements HeatGame {
     }
 
     private createPlayerPanels(gamedatas: HeatGamedatas) {
+        const constructors = Object.values(gamedatas.constructors)
+        constructors.filter(constructor => constructor.ai).forEach(constructor => {
+            document.getElementById('player_boards').insertAdjacentHTML('beforeend', `
+            <div id="overall_player_board_${constructor.pId}" class="player-board current-player-board">					
+                <div class="player_board_inner" id="player_board_inner_982fff">
+                    
+                    <div class="emblemwrap" id="avatar_active_wrap_${constructor.id}">
+                        <div src="img/gear.png" alt="" class="avatar avatar_active legend_avatar" id="avatar_active_${constructor.id}" style="--constructor-id: ${constructor.id}"></div>
+                    </div>
+                                               
+                    <div class="player-name" id="player_name_${constructor.id}">
+                        ${constructor.name}
+                    </div>
+                    <div id="player_board_${constructor.pId}" class="player_board_content">
+                        <div class="player_score">
+                            <span id="player_score_${constructor.id}" class="player_score_value">-</span> <i class="fa fa-star" id="icon_point_${constructor.id}"></i>           
+                        </div>
+                    </div>
+                </div>
+            </div>`);
+        });
 
-        Object.values(gamedatas.players).forEach(player => {
-            const playerId = Number(player.id);
-            const constructor = this.getPlayerConstructor(playerId);
+        constructors.forEach(constructor => {
 
-            let html = `<div class="counters">
-                <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
+            let html = constructor.ai ? '' : `<div class="counters">
+                <div id="playerhand-counter-wrapper-${constructor.id}" class="playerhand-counter">
                     <div class="player-hand-card"></div> 
-                    <span id="playerhand-counter-${player.id}"></span>
+                    <span id="playerhand-counter-${constructor.id}"></span>
                 </div>
-                <div id="engine-counter-wrapper-${player.id}" class="engine-counter">
+                <div id="engine-counter-wrapper-${constructor.id}" class="engine-counter">
                     <div class="engine icon"></div>
-                    <span id="engine-counter-${player.id}"></span>
+                    <span id="engine-counter-${constructor.id}"></span>
                 </div>
-            </div>
+            </div>`;
+            html += `
             <div class="counters">
-                <div id="speed-counter-wrapper-${player.id}" class="speed-counter">
+                <div id="speed-counter-wrapper-${constructor.id}" class="speed-counter">
                     <div class="speed icon"></div>
-                    <span id="speed-counter-${player.id}">-</span>
+                    <span id="speed-counter-${constructor.id}">-</span>
                 </div>
-                <div id="turn-counter-wrapper-${player.id}" class="turn-counter">
+                <div id="turn-counter-wrapper-${constructor.id}" class="turn-counter">
                     <div class="turn icon"></div>
-                    <span id="turn-counter-${player.id}">-</span> / ${gamedatas.nbrLaps}
+                    <span id="turn-counter-${constructor.id}">-</span> / ${gamedatas.nbrLaps}
                 </div>
             </div>
             <div class="counters">
                 <div>
-                    <div id="order-${player.id}" class="order-counter">
+                    <div id="order-${constructor.id}" class="order-counter">
                         ${constructor.no + 1}
                     </div>
                 </div>
-                <div id="podium-wrapper-${player.id}" class="podium-counter">
+                <div id="podium-wrapper-${constructor.id}" class="podium-counter">
                     <div class="podium icon"></div>
-                    <span id="podium-counter-${player.id}"></span>
+                    <span id="podium-counter-${constructor.id}"></span>
                 </div>
             </div>`;
 
-            dojo.place(html, `player_board_${player.id}`);
+            dojo.place(html, `player_board_${constructor.pId}`);
 
+            if (!constructor.ai) {
+                this.handCounters[constructor.id] = new ebg.counter();
+                this.handCounters[constructor.id].create(`playerhand-counter-${constructor.id}`);
+                this.handCounters[constructor.id].setValue(constructor.handCount);
 
-            this.handCounters[playerId] = new ebg.counter();
-            this.handCounters[playerId].create(`playerhand-counter-${playerId}`);
-            this.handCounters[playerId].setValue(constructor.handCount);
-
-            this.engineCounters[playerId] = new ebg.counter();
-            this.engineCounters[playerId].create(`engine-counter-${playerId}`);
-            this.engineCounters[playerId].setValue(Object.values(constructor.engine).length);
-
-            this.speedCounters[playerId] = new ebg.counter();
-            this.speedCounters[playerId].create(`speed-counter-${playerId}`);
-            if (constructor.speed !== null && constructor.speed >= 0) {
-                this.speedCounters[playerId].setValue(constructor.speed);
+                this.engineCounters[constructor.id] = new ebg.counter();
+                this.engineCounters[constructor.id].create(`engine-counter-${constructor.id}`);
+                this.engineCounters[constructor.id].setValue(Object.values(constructor.engine).length);
             }
 
-            this.turnCounters[playerId] = new ebg.counter();
-            this.turnCounters[playerId].create(`turn-counter-${playerId}`);
+            this.speedCounters[constructor.id] = new ebg.counter();
+            this.speedCounters[constructor.id].create(`speed-counter-${constructor.id}`);
+            if (constructor.speed !== null && constructor.speed >= 0) {
+                this.speedCounters[constructor.id].setValue(constructor.speed);
+            }
+
+            this.turnCounters[constructor.id] = new ebg.counter();
+            this.turnCounters[constructor.id].create(`turn-counter-${constructor.id}`);
             if (constructor.turn >= 0) {
-                this.turnCounters[playerId].setValue(Math.min(gamedatas.nbrLaps, constructor.turn + 1));
+                this.turnCounters[constructor.id].setValue(Math.min(gamedatas.nbrLaps, constructor.turn + 1));
             }
 
             if (constructor.carCell < 0) {
-                this.setRank(playerId, -constructor.carCell);
+                this.setRank(constructor.id, -constructor.carCell);
             }
         });
 
@@ -515,6 +539,10 @@ class Heat implements HeatGame {
         orderedPlayers.forEach(player => 
             this.createPlayerTable(gamedatas, Number(player.id))
         );
+        
+        if (gamedatas.isLegend) {
+            this.legendTable = new LegendTable(this, gamedatas.legendCard);
+        }
     }
 
     private getPlayerConstructor(playerId: number) {
@@ -694,6 +722,7 @@ class Heat implements HeatGame {
             ['clearPlayedCards', undefined],
             ['cooldown', ANIMATION_MS],
             ['finishRace', ANIMATION_MS],
+            ['newLegendCard', undefined],
         ];
         
     
@@ -747,15 +776,15 @@ class Heat implements HeatGame {
         const playerTable = this.getPlayerTable(playerId);
         playerTable.setCurrentGear(gear);
         const cards = Object.values(args.cards);
-        this.handCounters[playerId].incValue(-cards.length);
+        this.handCounters[constructor_id]?.incValue(-cards.length);
         const promises = [playerTable.setInplay(cards)];
         if (heat) {
             if (playerTable.hand) {
                 promises.push(playerTable.hand?.addCard(heat));
             }
-            this.handCounters[playerId].incValue(1);
+            this.handCounters[constructor_id]?.incValue(1);
         }
-        this.speedCounters[playerId].setValue(cards.map(card => card.speed ?? 0).reduce((a, b) => a + b, 0));
+        this.speedCounters[constructor_id].setValue(cards.map(card => card.speed ?? 0).reduce((a, b) => a + b, 0));
         return Promise.all(promises);
     }  
 
@@ -766,12 +795,7 @@ class Heat implements HeatGame {
 
     notif_updateTurnOrder(args: NotifUpdateTurnOrderArgs) {
         const { constructor_ids } = args;
-        constructor_ids.forEach((constructorId: number, index: number) => {
-            const playerId = this.getPlayerIdFromConstructorId(constructorId);
-            if (playerId) {
-                document.getElementById(`order-${playerId}`).innerHTML = `${index + 1}`;
-            }
-        });
+        constructor_ids.forEach((constructorId: number, index: number) => document.getElementById(`order-${constructorId}`).innerHTML = `${index + 1}`);
     }
 
     async notif_payHeats(args: NotifPayHeatsArgs, color = 'orange') {
@@ -779,7 +803,7 @@ class Heat implements HeatGame {
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
 
-        this.engineCounters[playerId].incValue(-cards.length);
+        this.engineCounters[constructor_id]?.incValue(-cards.length);
 
         this.circuit.showCorner(corner, color);
 
@@ -791,12 +815,12 @@ class Heat implements HeatGame {
     }
 
     async notif_spinOut(args: NotifSpinOutArgs) {
-        const { constructor_id, cell, stresses } = args;
+        const { constructor_id, cell, stresses, nCellsBack } = args;
 
         await this.notif_payHeats(args, 'red');
 
         if (this.animationManager.animationsActive()) {
-            await this.circuit.spinOutWithAnimation(constructor_id, cell, 15); // TODO
+            await this.circuit.spinOutWithAnimation(constructor_id, cell, nCellsBack);
         } else {
             this.circuit.moveCar(constructor_id, cell);
         }
@@ -804,7 +828,7 @@ class Heat implements HeatGame {
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
         
-        this.handCounters[playerId].incValue(stresses.length);
+        this.handCounters[constructor_id]?.incValue(stresses.length);
 
         await playerTable.spinOut(stresses);
 
@@ -818,27 +842,30 @@ class Heat implements HeatGame {
     notif_draw(args: NotifCardsArgs) {
         const { constructor_id } = args;
         const n = Number(args.n);
-        this.handCounters[this.getPlayerIdFromConstructorId(constructor_id)].incValue(n);
+        this.handCounters[constructor_id]?.incValue(n);
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
         playerTable.incDeckCount(-n);
     }
 
     notif_discard(args: NotifCardsArgs) {
-        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-args.n);
+        const { constructor_id } = args;
+        this.handCounters[constructor_id]?.incValue(-args.n);
     }
 
     notif_pDraw(args: NotifPCardsArgs) {
+        const { constructor_id } = args;
         const cards = Object.values(args.cards);
-        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(cards.length);
+        this.handCounters[constructor_id]?.incValue(cards.length);
         const playerTable = this.getCurrentPlayerTable();
         playerTable.drawCards(cards);
         //playerTable.incDeckCount(-cards.length);
     }
 
     notif_pDiscard(args: NotifPCardsArgs) {
+        const { constructor_id } = args;
         const cards = Object.values(args.cards);
-        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-cards.length);
+        this.handCounters[constructor_id]?.incValue(-cards.length);
         this.getCurrentPlayerTable().discard.addCards(cards);
     }
 
@@ -853,9 +880,9 @@ class Heat implements HeatGame {
         const { constructor_id, cards } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
-        this.handCounters[playerId].incValue(-cards.length);
+        this.handCounters[constructor_id]?.incValue(-cards.length);
         playerTable.cooldown(cards);
-        this.engineCounters[playerId].incValue(cards.length);
+        this.engineCounters[constructor_id]?.incValue(cards.length);
     }
 
     notif_finishRace(args: NotifFinishRaceArgs) {
@@ -863,6 +890,10 @@ class Heat implements HeatGame {
         this.circuit.moveCar(constructor_id, -pos);
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         this.setRank(playerId, pos);
+    }
+
+    notif_newLegendCard(args: NotifNewLegendCardArgs) {
+        return this.legendTable.newLegendCard(args.card);
     }
 
     private setRank(playerId: number, pos: number) {

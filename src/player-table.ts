@@ -49,7 +49,7 @@ class PlayerTable {
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         this.currentGear = constructor.gear;
 
-        this.fakeDeckCard = { id: `${this.playerId}-top-deck` } as Card;
+        this.fakeDeckCard = { id: `${this.playerId}-top-deck` as any } as Card;
 
         let html = `
         <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color}; --personal-card-background-y: ${constructor.id * 100 / 6}%;">
@@ -153,8 +153,8 @@ class PlayerTable {
     public async payHeats(cards: Card[]): Promise<any> {
         if (this.engine.getCardNumber() > cards.length) {
             this.engine.addCard({
-                id: `${this.playerId}-top-engine`,
-                type: '111',
+                id: `${this.playerId}-top-engine` as any,
+                type: 111,
                 location: 'engine',
                 state: ''
             } as Card, undefined, <AddCardToDeckSettings>{
@@ -179,8 +179,8 @@ class PlayerTable {
         let promise = null;
         if (this.currentPlayer) {
             promise = this.hand.addCards(stresses.map(id => ({
-                id: `${id}`, // TODO
-                type: '110',
+                id,
+                type: 110,
                 location: 'hand',
                 state: ''
             } as Card)));

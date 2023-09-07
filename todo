@@ -3,11 +3,10 @@ Other :
 Backend : 
   - planification : shouldnt be able to select heat (unless very rare case where you can play nothing) => moved to back, as front makes _private.cards selectable, and heat is in the least (player colored heat at least)
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
+  - player should not do planification if he has finished the race
+  - pass when no react, or only useless cooldown ?
 
 Frontend :
-  - add number of cell between before and after spinOut in spinOut notif
-    => 'nCellsBack' field
-
   - scores / end of game :
     * notification endOfRace contains scores, also sent in getAllDatas.
       format :
@@ -16,10 +15,6 @@ Frontend :
       ]
   
   - car animation : adjust a bit end of animation to make sure car rotation is lined up with the cell (slightly off when the last move of the car is a change of lane)
-  
-  - legends : 
-      * add fake player's panel
-      * newLegendCard notif
 
   - notifications are too fast
   - resolveBoost: cards are not added on "played cards"

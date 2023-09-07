@@ -581,6 +581,47 @@ height: 241px; */
     box-shadow: 0 0 5px 3px white;
   }
 }
+.legend-card {
+  position: relative;
+  width: 362px;
+  height: 225px;
+  border-radius: 8px;
+}
+.legend-card .card-sides .card-side {
+  border-radius: 8px;
+  background-image: url("img/legend-cards.jpg");
+  background-size: 100% auto;
+}
+.legend-card .card-sides .card-side > * {
+  pointer-events: all !important;
+  user-select: none;
+}
+.legend-card .card-sides .card-side.front {
+  background-position-y: 100%;
+}
+.legend-card .card-sides .card-side.front .table {
+  position: absolute;
+  top: 74px;
+  bottom: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr;
+  align-items: center;
+  justify-items: center;
+}
+.legend-card .card-sides .card-side.front .legend-icon {
+  width: 64px;
+  height: 64px;
+  background: url("img/legend-icons.png");
+  background-size: 100% auto;
+  background-position-y: calc(var(--color) * 20%);
+  color: white;
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
+  text-align: center;
+  font-size: 36px;
+  line-height: 100px;
+}
+
 #table-center {
   display: flex;
   justify-content: center;
@@ -688,6 +729,12 @@ height: 241px; */
   display: initial;
 }
 
+.legend_avatar {
+  background: url("img/legend-icons.png");
+  background-size: 100% auto;
+  background-position-y: calc(var(--constructor-id) * 20%);
+}
+
 .player-table {
   min-width: 640px;
   width: 100%;
@@ -702,14 +749,6 @@ height: 241px; */
   flex-direction: column;
   align-items: center;
 }
-.player-table .personal-card.created-card {
-  box-shadow: unset;
-  outline: 4px solid green;
-}
-.player-table .personal-card.discarded-card {
-  box-shadow: unset;
-  outline: 4px solid red;
-}
 .player-table .name-wrapper {
   color: var(--player-color);
   position: relative;
@@ -718,7 +757,6 @@ height: 241px; */
   justify-content: center;
   align-items: center;
   font-size: 20pt;
-  font-family: "apotek-comp", sans-serif;
 }
 .player-table .player-board {
   position: relative;
@@ -863,6 +901,35 @@ height: 241px; */
   border-radius: 10px;
   align-self: stretch;
   margin-bottom: 10px;
+}
+
+#legend-table {
+  min-width: 640px;
+  width: 100%;
+  position: relative;
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#legend-table #legend-board {
+  position: relative;
+  width: 1200px;
+  height: 793px;
+  padding: 0;
+  margin: 0;
+  background-size: contain;
+  background-image: url("img/mats/legend.jpg");
+}
+#legend-table #legend-board .deck {
+  position: absolute;
+  left: 115px;
+  top: 478px;
+}
+#legend-table #legend-board .discard {
+  position: absolute;
+  left: 729px;
+  top: 478px;
 }
 
 #help-popin h1 {

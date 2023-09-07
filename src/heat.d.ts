@@ -65,11 +65,14 @@ interface HeatGamedatas {
     circuitDatas: CircuitDatas;
     nbrLaps: number;
     constructors: { [id: number]: Constructor };
+    isLegend: boolean;
+    legendCard: LegendCard;
 }
 
 interface HeatGame extends Game {
     animationManager: AnimationManager;
     cardsManager: CardsManager;
+    legendCardsManager: LegendCardsManager;
 
     getPlayerId(): number;
     getPlayer(playerId: number): HeatPlayer;
@@ -150,6 +153,7 @@ interface NotifPayHeatsArgs {
 interface NotifSpinOutArgs extends NotifPayHeatsArgs {
     cell: number;
     stresses: number[];
+    nCellsBack: number;
 }
 
 // draw, discard
@@ -185,4 +189,9 @@ interface NotifCooldownArgs {
 interface NotifFinishRaceArgs {
     constructor_id: number;
     pos: number;
+}
+
+// newLegendCard
+interface NotifNewLegendCardArgs {
+    card: LegendCard;
 }

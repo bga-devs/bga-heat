@@ -1,0 +1,47 @@
+.legend-card {
+    position: relative;
+    width: 362px;
+    height: 225px;
+    border-radius: 8px;    
+
+    .card-sides {
+        .card-side {
+            border-radius: 8px;
+            background-image: url('img/legend-cards.jpg');  
+            background-size: 100% auto; 
+
+            &>* {
+                pointer-events: all !important;
+                user-select: none;
+            }
+
+            &.front {
+                background-position-y: 100%;
+
+                .table {
+                    position: absolute;
+                    top: 74px;
+                    bottom: 0;
+                    width: 100%;
+                    display: grid;
+                    grid-template-columns: 1fr 2fr 2fr 1fr;
+                    align-items: center;
+                    justify-items: center;
+                }
+
+                .legend-icon {
+                    width: 64px;
+                    height: 64px;
+                    background: url('img/legend-icons.png');
+                    background-size: 100% auto;
+                    background-position-y: calc(var(--color) * 20%);
+                    color: white;
+                    text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
+                    text-align: center;
+                    font-size: 36px;
+                    line-height: 100px;
+                }
+            }
+        }
+    }
+}

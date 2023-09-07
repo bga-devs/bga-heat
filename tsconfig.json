@@ -33,8 +33,10 @@
         "node_modules/bga-cards/src/card-manager.ts",
         "src/text-icons-formatter.ts",
         "src/cards.ts",
+        "src/legend-cards.ts",
         "src/table-center.ts",
         "src/player-table.ts",
+        "src/legend-table.ts",
         "src/heat.ts",
         "src/define.ts"
     ]

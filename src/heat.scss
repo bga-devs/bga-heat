@@ -5,9 +5,11 @@ $playerColors: '12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d';
 @import '../node_modules/bga-jump-to/bga-jump-to';
 @import '../node_modules/bga-cards/bga-cards';
 @import 'cards';
+@import 'legend-cards';
 @import 'table-center';
 @import 'playerboards';
 @import 'player-table';
+@import 'legend-table';
 @import 'help';
 
 /* make space between buttons on touch devices */

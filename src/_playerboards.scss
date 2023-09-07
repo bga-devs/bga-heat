@@ -55,3 +55,9 @@
     }
   }
 }
+
+.legend_avatar {
+  background: url('img/legend-icons.png');
+  background-size: 100% auto;
+  background-position-y: calc(var(--constructor-id) * 20%);
+}

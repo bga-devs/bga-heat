@@ -2123,17 +2123,17 @@ var CardsManager = /** @class */ (function (_super) {
     };
     CardsManager.prototype.getTooltip = function (card) {
         switch (card.type) {
-            case '101':
-            case '102':
-            case '103':
-            case '104':
+            case 101:
+            case 102:
+            case 103:
+            case 104:
                 return "".concat(_('Speed card'), "<br>\n                ").concat(_('Speed:'), " <strong>").concat(Number(card.type) - 100, "</strong>\n                ");
-            case '100':
-            case '105':
+            case 100:
+            case 105:
                 return "".concat(_('Starting upgrade'), "<br>\n                ").concat(_('Speed:'), " ").concat(Number(card.type) - 100, "\n                ");
-            case '110': return _('Stress card');
-            case '106':
-            case '111': return _('Heat card');
+            case 110: return _('Stress card');
+            case 106:
+            case 111: return _('Heat card');
         }
     };
     CardsManager.prototype.getHtml = function (card) {
@@ -2167,6 +2167,39 @@ var CardsManager = /** @class */ (function (_super) {
         return html;
     };
     return CardsManager;
+}(CardManager));
+var LegendCardsManager = /** @class */ (function (_super) {
+    __extends(LegendCardsManager, _super);
+    function LegendCardsManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return "legend-card-".concat(JSON.stringify(card).replace(/"/g, '')); },
+            setupDiv: function (card, div) {
+                div.classList.add('legend-card');
+            },
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            isCardVisible: function (card) { return Object.values(card).length > 0; },
+            cardWidth: 362,
+            cardHeight: 225,
+            animationManager: game.animationManager,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    LegendCardsManager.prototype.setupFrontDiv = function (card, div) {
+        if (!Object.values(card).length) {
+            return;
+        }
+        var html = "<div class=\"table\">";
+        [0, 1, 2, 3].forEach(function (cornerBonus, index) {
+            html += "<div>".concat(Object.entries(card[index]).map(function (_a) {
+                var color = _a[0], number = _a[1];
+                return "<div class=\"legend-icon\" style=\"--color: ".concat(color, "\">").concat(number, "</div>");
+            }).join(''), "</div>");
+        });
+        html += "</div>";
+        div.innerHTML = html;
+    };
+    return LegendCardsManager;
 }(CardManager));
 var MAP_WIDTH = 1650;
 var MAP_HEIGHT = 1100;
@@ -2501,7 +2534,7 @@ var PlayerTable = /** @class */ (function () {
                         if (this.engine.getCardNumber() > cards.length) {
                             this.engine.addCard({
                                 id: "".concat(this.playerId, "-top-engine"),
-                                type: '111',
+                                type: 111,
                                 location: 'engine',
                                 state: ''
                             }, undefined, {
@@ -2527,8 +2560,8 @@ var PlayerTable = /** @class */ (function () {
         var promise = null;
         if (this.currentPlayer) {
             promise = this.hand.addCards(stresses.map(function (id) { return ({
-                id: "".concat(id),
-                type: '110',
+                id: id,
+                type: 110,
                 location: 'hand',
                 state: ''
             }); }));
@@ -2544,6 +2577,35 @@ var PlayerTable = /** @class */ (function () {
         this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
     };
     return PlayerTable;
+}());
+var LegendTable = /** @class */ (function () {
+    function LegendTable(game, legendCard) {
+        this.game = game;
+        var html = "\n        <div id=\"legend-table\">\n            <div id=\"legend-board\" class=\"player-board\">\n                <div id=\"legend-deck\" class=\"deck\"></div>\n                <div id=\"legend-discard\" class=\"discard\"></div>\n            </div>\n        </div>\n        ";
+        dojo.place(html, document.getElementById('tables'));
+        this.deck = new Deck(this.game.legendCardsManager, document.getElementById("legend-deck"), {
+            topCard: [],
+        });
+        this.discard = new Deck(this.game.legendCardsManager, document.getElementById("legend-discard"), {
+            topCard: legendCard,
+        });
+    }
+    LegendTable.prototype.newLegendCard = function (card) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.deck.addCard(card, undefined, { visible: false, autoRemovePreviousCards: false, })];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.discard.addCard(card)];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/, true];
+                }
+            });
+        });
+    };
+    return LegendTable;
 }());
 var ANIMATION_MS = 500;
 var ACTION_TIMER_DURATION = 5;
@@ -2594,6 +2656,7 @@ var Heat = /** @class */ (function () {
         log('gamedatas', gamedatas);
         this.animationManager = new AnimationManager(this);
         this.cardsManager = new CardsManager(this);
+        this.legendCardsManager = new LegendCardsManager(this);
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
             topEntries: [
@@ -2902,29 +2965,34 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;
-        Object.values(gamedatas.players).forEach(function (player) {
-            var playerId = Number(player.id);
-            var constructor = _this.getPlayerConstructor(playerId);
-            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(player.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-").concat(player.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(player.id, "\">-</span>\n                </div>\n                <div id=\"turn-counter-wrapper-").concat(player.id, "\" class=\"turn-counter\">\n                    <div class=\"turn icon\"></div>\n                    <span id=\"turn-counter-").concat(player.id, "\">-</span> / ").concat(gamedatas.nbrLaps, "\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(player.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(player.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>");
-            dojo.place(html, "player_board_".concat(player.id));
-            _this.handCounters[playerId] = new ebg.counter();
-            _this.handCounters[playerId].create("playerhand-counter-".concat(playerId));
-            _this.handCounters[playerId].setValue(constructor.handCount);
-            _this.engineCounters[playerId] = new ebg.counter();
-            _this.engineCounters[playerId].create("engine-counter-".concat(playerId));
-            _this.engineCounters[playerId].setValue(Object.values(constructor.engine).length);
-            _this.speedCounters[playerId] = new ebg.counter();
-            _this.speedCounters[playerId].create("speed-counter-".concat(playerId));
-            if (constructor.speed !== null && constructor.speed >= 0) {
-                _this.speedCounters[playerId].setValue(constructor.speed);
+        var constructors = Object.values(gamedatas.constructors);
+        constructors.filter(function (constructor) { return constructor.ai; }).forEach(function (constructor) {
+            document.getElementById('player_boards').insertAdjacentHTML('beforeend', "\n            <div id=\"overall_player_board_".concat(constructor.pId, "\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n                    \n                    <div class=\"emblemwrap\" id=\"avatar_active_wrap_").concat(constructor.id, "\">\n                        <div src=\"img/gear.png\" alt=\"\" class=\"avatar avatar_active legend_avatar\" id=\"avatar_active_").concat(constructor.id, "\" style=\"--constructor-id: ").concat(constructor.id, "\"></div>\n                    </div>\n                                               \n                    <div class=\"player-name\" id=\"player_name_").concat(constructor.id, "\">\n                        ").concat(constructor.name, "\n                    </div>\n                    <div id=\"player_board_").concat(constructor.pId, "\" class=\"player_board_content\">\n                        <div class=\"player_score\">\n                            <span id=\"player_score_").concat(constructor.id, "\" class=\"player_score_value\">-</span> <i class=\"fa fa-star\" id=\"icon_point_").concat(constructor.id, "\"></i>           \n                        </div>\n                    </div>\n                </div>\n            </div>"));
+        });
+        constructors.forEach(function (constructor) {
+            var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
+            html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"turn-counter-wrapper-").concat(constructor.id, "\" class=\"turn-counter\">\n                    <div class=\"turn icon\"></div>\n                    <span id=\"turn-counter-").concat(constructor.id, "\">-</span> / ").concat(gamedatas.nbrLaps, "\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
+            dojo.place(html, "player_board_".concat(constructor.pId));
+            if (!constructor.ai) {
+                _this.handCounters[constructor.id] = new ebg.counter();
+                _this.handCounters[constructor.id].create("playerhand-counter-".concat(constructor.id));
+                _this.handCounters[constructor.id].setValue(constructor.handCount);
+                _this.engineCounters[constructor.id] = new ebg.counter();
+                _this.engineCounters[constructor.id].create("engine-counter-".concat(constructor.id));
+                _this.engineCounters[constructor.id].setValue(Object.values(constructor.engine).length);
             }
-            _this.turnCounters[playerId] = new ebg.counter();
-            _this.turnCounters[playerId].create("turn-counter-".concat(playerId));
+            _this.speedCounters[constructor.id] = new ebg.counter();
+            _this.speedCounters[constructor.id].create("speed-counter-".concat(constructor.id));
+            if (constructor.speed !== null && constructor.speed >= 0) {
+                _this.speedCounters[constructor.id].setValue(constructor.speed);
+            }
+            _this.turnCounters[constructor.id] = new ebg.counter();
+            _this.turnCounters[constructor.id].create("turn-counter-".concat(constructor.id));
             if (constructor.turn >= 0) {
-                _this.turnCounters[playerId].setValue(Math.min(gamedatas.nbrLaps, constructor.turn + 1));
+                _this.turnCounters[constructor.id].setValue(Math.min(gamedatas.nbrLaps, constructor.turn + 1));
             }
             if (constructor.carCell < 0) {
-                _this.setRank(playerId, -constructor.carCell);
+                _this.setRank(constructor.id, -constructor.carCell);
             }
         });
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
@@ -2940,6 +3008,9 @@ var Heat = /** @class */ (function () {
         orderedPlayers.forEach(function (player) {
             return _this.createPlayerTable(gamedatas, Number(player.id));
         });
+        if (gamedatas.isLegend) {
+            this.legendTable = new LegendTable(this, gamedatas.legendCard);
+        }
     };
     Heat.prototype.getPlayerConstructor = function (playerId) {
         return Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == playerId; });
@@ -3085,6 +3156,7 @@ var Heat = /** @class */ (function () {
             ['clearPlayedCards', undefined],
             ['cooldown', ANIMATION_MS],
             ['finishRace', ANIMATION_MS],
+            ['newLegendCard', undefined],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
@@ -3123,21 +3195,21 @@ var Heat = /** @class */ (function () {
         // TODO
     };
     Heat.prototype.notif_reveal = function (args) {
-        var _a;
+        var _a, _b, _c;
         var constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
         playerTable.setCurrentGear(gear);
         var cards = Object.values(args.cards);
-        this.handCounters[playerId].incValue(-cards.length);
+        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
         var promises = [playerTable.setInplay(cards)];
         if (heat) {
             if (playerTable.hand) {
-                promises.push((_a = playerTable.hand) === null || _a === void 0 ? void 0 : _a.addCard(heat));
+                promises.push((_b = playerTable.hand) === null || _b === void 0 ? void 0 : _b.addCard(heat));
             }
-            this.handCounters[playerId].incValue(1);
+            (_c = this.handCounters[constructor_id]) === null || _c === void 0 ? void 0 : _c.incValue(1);
         }
-        this.speedCounters[playerId].setValue(cards.map(function (card) { var _a; return (_a = card.speed) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0));
+        this.speedCounters[constructor_id].setValue(cards.map(function (card) { var _a; return (_a = card.speed) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0));
         return Promise.all(promises);
     };
     Heat.prototype.notif_moveCar = function (args) {
@@ -3145,30 +3217,25 @@ var Heat = /** @class */ (function () {
         return this.circuit.moveCar(constructor_id, cell, path);
     };
     Heat.prototype.notif_updateTurnOrder = function (args) {
-        var _this = this;
         var constructor_ids = args.constructor_ids;
-        constructor_ids.forEach(function (constructorId, index) {
-            var playerId = _this.getPlayerIdFromConstructorId(constructorId);
-            if (playerId) {
-                document.getElementById("order-".concat(playerId)).innerHTML = "".concat(index + 1);
-            }
-        });
+        constructor_ids.forEach(function (constructorId, index) { return document.getElementById("order-".concat(constructorId)).innerHTML = "".concat(index + 1); });
     };
     Heat.prototype.notif_payHeats = function (args, color) {
+        var _a;
         if (color === void 0) { color = 'orange'; }
         return __awaiter(this, void 0, void 0, function () {
             var constructor_id, cards, corner, playerId, playerTable;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         constructor_id = args.constructor_id, cards = args.cards, corner = args.corner;
                         playerId = this.getPlayerIdFromConstructorId(constructor_id);
                         playerTable = this.getPlayerTable(playerId);
-                        this.engineCounters[playerId].incValue(-cards.length);
+                        (_a = this.engineCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
                         this.circuit.showCorner(corner, color);
                         return [4 /*yield*/, playerTable.payHeats(cards)];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         this.circuit.showCorner(corner);
                         return [2 /*return*/, true];
                 }
@@ -3176,30 +3243,31 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.notif_spinOut = function (args) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, cell, stresses, playerId, playerTable;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var constructor_id, cell, stresses, nCellsBack, playerId, playerTable;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        constructor_id = args.constructor_id, cell = args.cell, stresses = args.stresses;
+                        constructor_id = args.constructor_id, cell = args.cell, stresses = args.stresses, nCellsBack = args.nCellsBack;
                         return [4 /*yield*/, this.notif_payHeats(args, 'red')];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         if (!this.animationManager.animationsActive()) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.circuit.spinOutWithAnimation(constructor_id, cell, 15)];
+                        return [4 /*yield*/, this.circuit.spinOutWithAnimation(constructor_id, cell, nCellsBack)];
                     case 2:
-                        _a.sent(); // TODO
+                        _b.sent();
                         return [3 /*break*/, 4];
                     case 3:
                         this.circuit.moveCar(constructor_id, cell);
-                        _a.label = 4;
+                        _b.label = 4;
                     case 4:
                         playerId = this.getPlayerIdFromConstructorId(constructor_id);
                         playerTable = this.getPlayerTable(playerId);
-                        this.handCounters[playerId].incValue(stresses.length);
+                        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(stresses.length);
                         return [4 /*yield*/, playerTable.spinOut(stresses)];
                     case 5:
-                        _a.sent();
+                        _b.sent();
                         return [2 /*return*/, true];
                 }
             });
@@ -3210,26 +3278,33 @@ var Heat = /** @class */ (function () {
         return (_a = this.gamedatas.constructors[constructorId]) === null || _a === void 0 ? void 0 : _a.pId;
     };
     Heat.prototype.notif_draw = function (args) {
+        var _a;
         var constructor_id = args.constructor_id;
         var n = Number(args.n);
-        this.handCounters[this.getPlayerIdFromConstructorId(constructor_id)].incValue(n);
+        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(n);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
         playerTable.incDeckCount(-n);
     };
     Heat.prototype.notif_discard = function (args) {
-        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-args.n);
+        var _a;
+        var constructor_id = args.constructor_id;
+        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-args.n);
     };
     Heat.prototype.notif_pDraw = function (args) {
+        var _a;
+        var constructor_id = args.constructor_id;
         var cards = Object.values(args.cards);
-        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(cards.length);
+        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(cards.length);
         var playerTable = this.getCurrentPlayerTable();
         playerTable.drawCards(cards);
         //playerTable.incDeckCount(-cards.length);
     };
     Heat.prototype.notif_pDiscard = function (args) {
+        var _a;
+        var constructor_id = args.constructor_id;
         var cards = Object.values(args.cards);
-        this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-cards.length);
+        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
         this.getCurrentPlayerTable().discard.addCards(cards);
     };
     Heat.prototype.notif_clearPlayedCards = function (args) {
@@ -3250,18 +3325,22 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.notif_cooldown = function (args) {
+        var _a, _b;
         var constructor_id = args.constructor_id, cards = args.cards;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
-        this.handCounters[playerId].incValue(-cards.length);
+        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
         playerTable.cooldown(cards);
-        this.engineCounters[playerId].incValue(cards.length);
+        (_b = this.engineCounters[constructor_id]) === null || _b === void 0 ? void 0 : _b.incValue(cards.length);
     };
     Heat.prototype.notif_finishRace = function (args) {
         var constructor_id = args.constructor_id, pos = args.pos;
         this.circuit.moveCar(constructor_id, -pos);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         this.setRank(playerId, pos);
+    };
+    Heat.prototype.notif_newLegendCard = function (args) {
+        return this.legendTable.newLegendCard(args.card);
     };
     Heat.prototype.setRank = function (playerId, pos) {
         document.getElementById("overall_player_board_".concat(playerId)).classList.add('finished');

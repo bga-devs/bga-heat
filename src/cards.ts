@@ -1,8 +1,8 @@
 interface Card {
-    id: string;
+    id: number;
     location: string;
     state: string;
-    type: string;
+    type: number;
     speed?: number;
     text?: string;
 }
@@ -58,18 +58,18 @@ class CardsManager extends CardManager<Card> {
 
     private getTooltip(card: Card): string {
         switch (card.type) {
-            case '101': case '102': case '103': case '104':
+            case 101: case 102: case 103: case 104:
                 return `${_('Speed card')}<br>
                 ${_('Speed:')} <strong>${Number(card.type) - 100}</strong>
                 `;
 
-            case '100': case '105':
+            case 100: case 105:
                 return `${_('Starting upgrade')}<br>
                 ${_('Speed:')} ${Number(card.type) - 100}
                 `;
 
-            case '110': return _('Stress card');
-            case '106': case '111': return _('Heat card');
+            case 110: return _('Stress card');
+            case 106: case 111: return _('Heat card');
         }
     }
     
