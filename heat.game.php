@@ -35,6 +35,7 @@ require_once APP_GAMEMODULE_PATH . 'module/table/table.game.php';
 use HEAT\Managers\Cards;
 use HEAT\Managers\Players;
 use HEAT\Managers\Constructors;
+use HEAT\Managers\LegendCards;
 use HEAT\Helpers\Log;
 use HEAT\Core\Globals;
 use HEAT\Core\Preferences;
@@ -46,6 +47,7 @@ class Heat extends Table
   use HEAT\States\SetupTrait;
   use HEAT\States\RaceTrait;
   use HEAT\States\RoundTrait;
+  use HEAT\States\LegendTrait;
 
   public static $instance = null;
   function __construct()
@@ -82,6 +84,9 @@ class Heat extends Table
       'circuit' => Globals::getCircuit(),
       'circuitDatas' => Globals::getCircuitDatas(),
       'nbrLaps' => $this->getNbrLaps(),
+
+      'isLegend' => Globals::isLegend(),
+      'legendCard' => LegendCards::getCurrentCard(),
     ];
   }
 

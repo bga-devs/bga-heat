@@ -119,7 +119,7 @@ class Cards extends \HEAT\Helpers\Pieces
     self::shuffle('upgrades');
 
     // Draw them if random mode is selected
-    if ($options[\HEAT\OPTION_GARAGE_CHOICE] == \HEAT\OPTION_GARAGE_RANDOM) {
+    if ($garage != \HEAT\OPTION_DISABLED && $options[\HEAT\OPTION_GARAGE_CHOICE] == \HEAT\OPTION_GARAGE_RANDOM) {
       foreach (Constructors::getAll() as $cId => $constructor) {
         if ($constructor->isAI()) {
           continue;

@@ -26,6 +26,11 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'previousTurn' => 'int',
     'symbols' => 'obj',
 
+    'legend' => 'bool',
+    'legendCards' => 'obj',
+    'legendCard' => 'int',
+    'legendCardDrawn' => 'bool',
+
     // Game options
     'circuit' => 'str',
     'circuitDatas' => 'obj',
@@ -158,7 +163,9 @@ class Globals extends \HEAT\Helpers\DB_Manager
    */
   public static function setupNewGame($players, $options)
   {
-    self::setCountConstructors(count($players) + ($options[\HEAT\OPTION_LEGEND] ?? 0));
+    $nLegends = $options[\HEAT\OPTION_LEGEND] ?? 0;
+    self::setCountConstructors(count($players) + $nLegends);
+    self::setLegend($nLegends > 0);
 
     $circuits = [
       \HEAT\OPTION_CIRCUIT_USA => 'usa',

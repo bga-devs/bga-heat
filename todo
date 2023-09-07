@@ -8,6 +8,12 @@ Backend :
   - change card ids & types to numbers instead of strings ?
 
 Frontend :
+  - car animation : adjust a bit end of animation to make sure car rotation is lined up with the cell (slightly off when the last move of the car is a change of lane)
+  
+  - legends : 
+      * add fake player's panel
+      * newLegendCard notif
+
   - notifications are too fast
   - resolveBoost: cards are not added on "played cards"
 

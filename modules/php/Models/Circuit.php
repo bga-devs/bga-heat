@@ -5,6 +5,7 @@ use HEAT\Managers\Constructors;
 class Circuit
 {
   protected $corners = [];
+  protected $legendLines = [];
   protected $raceLines = [];
   protected $startingCells = [];
   protected $cells = [];
@@ -14,6 +15,7 @@ class Circuit
     $lane = null;
     foreach ($datas['corners'] as $pos => $info) {
       $this->corners[$pos] = $info['speed'];
+      $this->legendLines[$pos] = $info['legend'];
       $lane = $info['lane'];
       $this->raceLines[] = $lane;
     }
@@ -237,10 +239,32 @@ class Circuit
     for ($pos = $uid1 + 1; $pos <= min($uid2, $length * $this->getNbrLaps()); $pos++) {
       $position = $pos % $length;
       if (array_key_exists($position, $this->corners)) {
-        $corners[] = [$position, $this->corners[$position]];
+        $corners[] = $position;
       }
     }
 
     return $corners;
+  }
+
+  public function getCornerMaxSpeed($cornerPos)
+  {
+    // TODO : handle weather
+    return $this->corners[$cornerPos];
+  }
+
+  public function getNextCorner($position)
+  {
+    foreach ($this->corners as $pos => $infos) {
+      if ($pos > $position) {
+        return $pos;
+      }
+    }
+
+    return array_keys($this->corners)[0];
+  }
+
+  public function getLegendLine($cornerPos)
+  {
+    return $this->legendLines[$cornerPos];
   }
 }

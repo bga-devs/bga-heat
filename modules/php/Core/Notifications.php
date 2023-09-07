@@ -204,7 +204,7 @@ class Notifications
     ]);
   }
 
-  public function payHeatsForCorner($constructor, $cards, $speed, $limit, $position)
+  public function payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos)
   {
     self::notifyAll(
       'payHeats',
@@ -215,12 +215,12 @@ class Notifications
         'cards' => $cards->toArray(),
         'speed' => $speed,
         'limit' => $limit,
-        'corner' => $position,
+        'corner' => $cornerPos,
       ]
     );
   }
 
-  public function spinOut($constructor, $speed, $limit, $position, $cards, $cell, $stresses)
+  public function spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses)
   {
     self::notifyAll(
       'spinOut',
@@ -233,7 +233,7 @@ class Notifications
         'cards' => $cards->toArray(),
         'speed' => $speed,
         'limit' => $limit,
-        'corner' => $position,
+        'corner' => $cornerPos,
         'cell' => $cell,
         'stresses' => $stresses,
       ]
@@ -287,6 +287,13 @@ class Notifications
     self::notifyAll('scrapCards', clienttranslate('${constructor_name} scraps ${cards_images}'), [
       'constructor' => $constructor,
       'cards' => $cards,
+    ]);
+  }
+
+  public static function newLegendCard($card)
+  {
+    self::notifyAll('newLegendCard', clienttranslate('A new legend card is revealed'), [
+      'card' => $card,
     ]);
   }
 

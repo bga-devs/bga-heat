@@ -7,6 +7,7 @@ use HEAT\Core\Stats;
 use HEAT\Core\Preferences;
 use HEAT\Managers\Players;
 use HEAT\Managers\Cards;
+use HEAT\Managers\LegendCards;
 use HEAT\Managers\Constructors;
 use HEAT\Managers\Actions;
 use HEAT\Helpers\Utils;
@@ -72,6 +73,7 @@ trait SetupTrait
 
     Globals::setTurnOrder($constructors);
     Cards::setupNewGame($options);
+    LegendCards::setupNewGame();
 
     $this->setGameStateInitialValue('logging', true);
     $this->activeNextPlayer();

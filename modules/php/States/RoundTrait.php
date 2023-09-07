@@ -25,6 +25,7 @@ trait RoundTrait
     if (empty($pIds)) {
       die('Every human as finished the game');
     }
+    Globals::setLegendCardDrawn(false);
     $this->gamestate->setPlayersMultiactive($pIds, '', true);
     $this->gamestate->nextState('planification');
   }
@@ -188,6 +189,10 @@ trait RoundTrait
   public function stReveal()
   {
     $constructor = Constructors::getActive();
+    if ($constructor->isAI()) {
+      $this->stLegendTurn();
+      return;
+    }
     $planification = Globals::getPlanification();
     $cardIds = $planification[$constructor->getPId()];
 
@@ -554,9 +559,8 @@ trait RoundTrait
     // For each corner, check speed against max speed of corner
     if (!empty($corners)) {
       $speed = $constructor->getSpeed();
-      foreach ($corners as $corner) {
-        list($position, $limit) = $corner;
-        // TODO : weather can modify limit as well as some upgrade cards
+      foreach ($corners as $cornerPos) {
+        $limit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
         $delta = $speed - $limit;
         // Have we overspeed ?
         if ($delta > 0) {
@@ -564,15 +568,15 @@ trait RoundTrait
           $available = $constructor->getEngine()->count();
           if ($delta > $available) {
             $cards = $constructor->payHeats($available);
-            $cell = $this->getCircuit()->getFirstFreeCell($position - 1, $constructor->getId());
+            $cell = $this->getCircuit()->getFirstFreeCell($cornerPos - 1, $constructor->getId());
             $stresses = Cards::addStress($constructor, $constructor->getGear() <= 2 ? 1 : 2);
             $constructor->setCarCell($cell);
             $constructor->setGear(1);
-            Notifications::spinOut($constructor, $speed, $limit, $position, $cards, $cell, $stresses);
+            Notifications::spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses);
             break;
           } else {
             $cards = $constructor->payHeats($delta);
-            Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit, $position);
+            Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos);
           }
         }
       }
