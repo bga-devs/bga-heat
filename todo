@@ -3,11 +3,11 @@ Other :
 Backend : 
   - planification : shouldnt be able to select heat (unless very rare case where you can play nothing) => moved to back, as front makes _private.cards selectable, and heat is in the least (player colored heat at least)
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
-  - make corners x & y in circuitDatas to their real value instead of always 0
-  - add number of cell between before and after spinOut in spinOut notif
-  - change card ids & types to numbers instead of strings ?
 
 Frontend :
+  - add number of cell between before and after spinOut in spinOut notif
+    => 'nCellsBack' field
+
   - scores / end of game :
     * notification endOfRace contains scores, also sent in getAllDatas.
       format :

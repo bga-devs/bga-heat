@@ -22,7 +22,10 @@ class Cards extends \HEAT\Helpers\Pieces
 
   protected static function cast($card)
   {
-    return array_merge($card, self::getDatas()[$card['type']]);
+    $datas = array_merge($card, self::getDatas()[$card['type']]);
+    $datas['id'] = (int) $datas['id'];
+    $datas['type'] = (int) $datas['type'];
+    return $datas;
   }
 
   public static function getDeck($cId)
