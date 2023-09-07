@@ -691,7 +691,7 @@ class Heat implements HeatGame {
             ['pDiscard', ANIMATION_MS],
             ['draw', ANIMATION_MS],
             ['pDraw', ANIMATION_MS],
-            ['clearPlayedCards', ANIMATION_MS],
+            ['clearPlayedCards', undefined],
             ['cooldown', ANIMATION_MS],
             ['finishRace', ANIMATION_MS],
         ];
@@ -839,14 +839,14 @@ class Heat implements HeatGame {
     notif_pDiscard(args: NotifPCardsArgs) {
         const cards = Object.values(args.cards);
         this.handCounters[this.getPlayerIdFromConstructorId(args.constructor_id)].incValue(-cards.length);
-        this.getCurrentPlayerTable().hand.removeCards(cards);
+        this.getCurrentPlayerTable().discard.addCards(cards);
     }
 
-    notif_clearPlayedCards(args: NotifClearPlayedCardsArgs) {
+    async notif_clearPlayedCards(args: NotifClearPlayedCardsArgs) {
         const { constructor_id, cardIds } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
-        playerTable.clearPlayedCards(cardIds);
+        await playerTable.clearPlayedCards(cardIds);
     }
 
     notif_cooldown(args: NotifCooldownArgs) {
