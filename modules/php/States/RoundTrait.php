@@ -96,7 +96,7 @@ trait RoundTrait
     $planification = Globals::getPlanification();
     $args = ['_private' => []];
     foreach (Constructors::getAll() as $constructor) {
-      if ($constructor->isAI()) {
+      if ($constructor->isAI() || $constructor->isFinished()) {
         continue;
       }
       $pId = $constructor->getPId();
@@ -160,8 +160,13 @@ trait RoundTrait
     // => use that instead of BGA framework feature because in some rare case a player
     //    might become inactive eventhough the selection failed (seen in Agricola and Rauha at least already)
     $planification = Globals::getPlanification();
-    $players = Players::getAll();
-    $ids = $players->getIds();
+    $ids = [];
+    foreach (Constructors::getAll() as $constructor) {
+      if ($constructor->isAI() || $constructor->isFinished()) {
+        continue;
+      }
+      $ids[] = $constructor->getPId();
+    }
     $ids = array_diff($ids, array_keys($planification));
 
     // At least one player need to make a choice
