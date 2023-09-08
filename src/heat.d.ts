@@ -80,7 +80,7 @@ interface HeatGame extends Game {
     getPlayer(playerId: number): HeatPlayer;
     getGameStateName(): string;
     getCurrentPlayerTable(): PlayerTable | null;
-
+    getGarageModuleIconTooltip(symbol: string, number: number): string;
     setTooltip(id: string, html: string): void;
     onHandCardSelectionChange(selection: Card[]): void;
     changePageTitle(suffix?: string, save?: boolean): void;
@@ -158,10 +158,15 @@ interface NotifSpinOutArgs extends NotifPayHeatsArgs {
     nCellsBack: number;
 }
 
-// draw, discard
+// draw
 interface NotifCardsArgs {
     constructor_id: number;
     n: number;
+}
+
+// discard
+interface NotifDiscardCardsArgs extends NotifCardsArgs {
+    cards?: { [id: number]: Card};
 }
 
 // pDraw, pDiscard

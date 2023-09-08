@@ -2122,91 +2122,116 @@ var CardsManager = /** @class */ (function (_super) {
             this.game.setTooltip(div.id, this.getTooltip(card));
         }
     };
+    CardsManager.prototype.getGarageModuleTextTooltip = function (card) {
+        switch (card.type) {
+            // 4 wheel drive
+            case 4:
+            case 5:
+            case 6:
+            case 18:
+            case 19:
+            case 20:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they flip cards like Stress."));
+            // Body
+            case 4:
+            case 5:
+            case 6:
+            case 18:
+            case 19:
+            case 20:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("A safer car with better balance that does not understeer. These cards allow you to discard Stress cards."));
+            // Brakes
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Brakes are all about how late you can make a decision to overtake or step on the brake, and still stay on the track. These cards have variable speed where you make a decision as you reveal the cards."));
+            // Cooling systems
+            case 11:
+            case 12:
+            case 13:
+            case 21:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Provides a more stable and clean drive ; a better fuel economy and less stress to the car. These are cooldown cards."));
+            // R.P.M.
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 29:
+            case 30:
+            case 31:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("A powerful engine allows your car to respond faster. When played at key moments, those cards make it easier for you to accelerate past opponents. They are cards that help you slipstream and overtake all over the track, but are most effective in and around corners."));
+            // Fuel
+            case 22:
+            case 23:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Racing fuel is highly regulated. These are the super fuel “illegal“ cards."));
+            // Gas pedal
+            case 24:
+            case 25:
+            case 26:
+            case 27:
+            case 28:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("The car reacts more quickly to pressure on the accelerator. These cards increase your overall speed."));
+            // Suspension
+            case 32:
+            case 33:
+            case 34:
+            case 35:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Giving you a smoother drive, these cards can be played round after round."));
+            // tires
+            case 36:
+            case 37:
+            case 38:
+            case 39:
+            case 40:
+            case 41:
+                return "<strong>".concat(_(card.text), "</strong><br>\n            ").concat(_("It is about grip through width and durability. These cards allow you to go faster on corners or sacrifice the grip for a lot of cooldown."));
+            // turbocharger
+            case 42:
+            case 43:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("A bigger engine giving you more horsepower and a higher top speed but also increasing weight and wear. These are the highest valued cards and require you to pay Heat."));
+            // wings
+            case 44:
+            case 45:
+            case 46:
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Creates downforce in corners but it lowers the top speed. These cards help you drive faster in corners but they are also unreliable, thus requiring Heat."));
+            case 101:
+            case 102:
+            case 103:
+            case 104:
+                return "<strong>".concat(_('Speed card'), "</strong><br>\n                ").concat(_('Speed:'), " <strong>").concat(Number(card.type) - 100, "</strong>\n                ");
+            case 100:
+            case 105:
+                return "<strong>".concat(_('Starting upgrade'), "</strong><br>\n                ").concat(_('Speed:'), " ").concat(Number(card.type) - 100, "\n                ");
+        }
+    };
     CardsManager.prototype.getTooltip = function (card) {
+        var _this = this;
         switch (card.effect) {
             case 'heat': return "<strong>".concat(_('Heat card'), "</strong>");
             case 'stress': return "<strong>".concat(_('Stress card'), "</strong>");
-            default: switch (card.type) {
-                // 4 wheel drive
-                case 4:
-                case 5:
-                case 6:
-                case 18:
-                case 19:
-                case 20:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they flip cards like Stress."));
-                // Body
-                case 4:
-                case 5:
-                case 6:
-                case 18:
-                case 19:
-                case 20:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("A safer car with better balance that does not understeer. These cards allow you to discard Stress cards."));
-                // Brakes
-                case 7:
-                case 8:
-                case 9:
-                case 10:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("Brakes are all about how late you can make a decision to overtake or step on the brake, and still stay on the track. These cards have variable speed where you make a decision as you reveal the cards."));
-                // Cooling systems
-                case 11:
-                case 12:
-                case 13:
-                case 21:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("Provides a more stable and clean drive ; a better fuel economy and less stress to the car. These are cooldown cards."));
-                // R.P.M.
-                case 14:
-                case 15:
-                case 16:
-                case 17:
-                case 29:
-                case 30:
-                case 31:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("A powerful engine allows your car to respond faster. When played at key moments, those cards make it easier for you to accelerate past opponents. They are cards that help you slipstream and overtake all over the track, but are most effective in and around corners."));
-                // Fuel
-                case 22:
-                case 23:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("Racing fuel is highly regulated. These are the super fuel “illegal“ cards."));
-                // Gas pedal
-                case 24:
-                case 25:
-                case 26:
-                case 27:
-                case 28:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("The car reacts more quickly to pressure on the accelerator. These cards increase your overall speed."));
-                // Suspension
-                case 32:
-                case 33:
-                case 34:
-                case 35:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("Giving you a smoother drive, these cards can be played round after round."));
-                // tires
-                case 36:
-                case 37:
-                case 38:
-                case 39:
-                case 40:
-                case 41:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("It is about grip through width and durability. These cards allow you to go faster on corners or sacrifice the grip for a lot of cooldown."));
-                // turbocharger
-                case 42:
-                case 43:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("A bigger engine giving you more horsepower and a higher top speed but also increasing weight and wear. These are the highest valued cards and require you to pay Heat."));
-                // wings
-                case 44:
-                case 45:
-                case 46:
-                    return "<strong>".concat(_(card.text), "</strong><br>\n                    ").concat(_("Creates downforce in corners but it lowers the top speed. These cards help you drive faster in corners but they are also unreliable, thus requiring Heat."));
-                case 101:
-                case 102:
-                case 103:
-                case 104:
-                    return "<strong>".concat(_('Speed card'), "</strong><br>\n                    ").concat(_('Speed:'), " <strong>").concat(Number(card.type) - 100, "</strong>\n                    ");
-                case 100:
-                case 105:
-                    return "<strong>".concat(_('Starting upgrade'), "</strong><br>\n                    ").concat(_('Speed:'), " ").concat(Number(card.type) - 100, "\n                    ");
-            }
+            case 'basic_upgrade':
+            case 'advanced_upgrade':
+                var tooltip = this.getGarageModuleTextTooltip(card);
+                var icons = Object.entries(card.symbols).map(function (_a) {
+                    var symbol = _a[0], number = _a[1];
+                    return _this.game.getGarageModuleIconTooltip(symbol, number);
+                }).join('<br>');
+                if (icons != '') {
+                    tooltip += "<br><br>".concat(icons);
+                }
+                return tooltip;
+            default:
+                switch (card.type) {
+                    case 101:
+                    case 102:
+                    case 103:
+                    case 104:
+                        return "<strong>".concat(_('Speed card'), "</strong><br>\n                        ").concat(_('Speed:'), " <strong>").concat(Number(card.type) - 100, "</strong>\n                        ");
+                    case 100:
+                    case 105:
+                        return "<strong>".concat(_('Starting upgrade'), "</strong><br>\n                        ").concat(_('Speed:'), " ").concat(Number(card.type) - 100, "\n                        ");
+                }
         }
     };
     CardsManager.prototype.getHtml = function (card) {
@@ -3025,6 +3050,10 @@ var Heat = /** @class */ (function () {
                         var tooltip = "";
                         var number = Number(entry[1]);
                         switch (entry[0]) {
+                            case 'adrenaline':
+                                label = "+".concat(number, " [Speed]");
+                                tooltip = "\n                                <strong>".concat(_("Adrenaline"), "</strong>\n                                <br><br>\n                                ").concat(_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space)."), "\n                                <br><br>\n                                <i>").concat(_("Note: Adrenaline cannot be saved for future rounds"), "</i>");
+                                break;
                             case 'cooldown':
                                 label = "".concat(number, " [Cooldown]");
                                 var heats = _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == 'heat'; }).length;
@@ -3033,13 +3062,13 @@ var Heat = /** @class */ (function () {
                                 }
                                 tooltip = "\n                                <strong>".concat(_("Cooldown"), "</strong>\n                                <br><br>\n                                ").concat(_("Cooldown allows you to take a Heat card from your hand and put it back in your Engine (so you can use the Heat card again). The number in the Cooldown symbol indicates how many Heat you can move in this way. You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1)."), "</i>");
                                 break;
-                            case 'adrenaline':
-                                label = "+".concat(number, " [Speed]");
-                                tooltip = "\n                                <strong>".concat(_("Adrenaline"), "</strong>\n                                <br><br>\n                                ").concat(_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space)."), "\n                                <br><br>\n                                <i>").concat(_("Note: Adrenaline cannot be saved for future rounds"), "</i>");
-                                break;
                             case 'heated-boost':
                                 label = "[Boost] > [Speed]";
                                 tooltip = "\n                                <strong>".concat(_("Boost"), "</strong>\n                                <br><br>\n                                ").concat(_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                                <br><br>\n                                <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>");
+                                break;
+                            case 'reduce':
+                                label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
+                                tooltip = _this.getGarageModuleIconTooltip('reduce', number);
                                 break;
                         }
                         _this.addActionButton("actReact".concat(index, "_button"), formatTextIcons(label), function () { return _this.actReact(entry[0]); });
@@ -3090,6 +3119,17 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.getGameStateName = function () {
         return this.gamedatas.gamestate.name;
+    };
+    Heat.prototype.getGarageModuleIconTooltip = function (symbol, number) {
+        console.log('getGarageModuleIconTooltip', symbol, number);
+        switch (symbol) {
+            case 'adjust':
+                return "<div>\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong>\n                    <br>\n                    ").concat((number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number), "\n                </div>");
+            case 'reduce':
+                return "<div>\n                    <strong>".concat(_("Reduce Stress"), "</strong>\n                    <br>\n                    ").concat(_("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number), "\n                </div>");
+            case 'scrap':
+                return "<div>\n                    <strong>".concat(_("Scrap"), "</strong>\n                    <br>\n                    ").concat(_("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number), "\n                </div>");
+        }
     };
     Heat.prototype.setupPreferences = function () {
         var _this = this;
@@ -3340,7 +3380,7 @@ var Heat = /** @class */ (function () {
             });
         }
         this.notifqueue.setIgnoreNotificationCheck('discard', function (notif) {
-            return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
+            return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId() && !notif.args.cards;
         });
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
             return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
@@ -3443,8 +3483,11 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_discard = function (args) {
         var _a;
-        var constructor_id = args.constructor_id;
+        var constructor_id = args.constructor_id, cards = args.cards;
         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-args.n);
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        var playerTable = this.getPlayerTable(playerId);
+        playerTable.discard.addCards(Object.values(cards));
     };
     Heat.prototype.notif_pDraw = function (args) {
         var _a;

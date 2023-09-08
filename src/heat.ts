@@ -345,6 +345,15 @@ class Heat implements HeatGame {
                         let tooltip = ``;
                         const number = Number(entry[1]);
                         switch (entry[0]) {
+                            case 'adrenaline':
+                                label = `+${number} [Speed]`;
+                                tooltip = `
+                                <strong>${_("Adrenaline")}</strong>
+                                <br><br>
+                                ${_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).")}
+                                <br><br>
+                                <i>${_("Note: Adrenaline cannot be saved for future rounds")}</i>`;
+                                break;
                             case 'cooldown':
                                 label = `${number} [Cooldown]`;
                                 const heats = this.getCurrentPlayerTable().hand.getCards().filter(card => card.effect == 'heat').length;
@@ -356,15 +365,6 @@ class Heat implements HeatGame {
                                 <br><br>
                                 ${_("Cooldown allows you to take a Heat card from your hand and put it back in your Engine (so you can use the Heat card again). The number in the Cooldown symbol indicates how many Heat you can move in this way. You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).")}</i>`;
                                 break;
-                            case 'adrenaline':
-                                label = `+${number} [Speed]`;
-                                tooltip = `
-                                <strong>${_("Adrenaline")}</strong>
-                                <br><br>
-                                ${_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).")}
-                                <br><br>
-                                <i>${_("Note: Adrenaline cannot be saved for future rounds")}</i>`;
-                                break;
                             case 'heated-boost':
                                 label = `[Boost] > [Speed]`;
                                 tooltip = `
@@ -373,6 +373,10 @@ class Heat implements HeatGame {
                                 ${_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly.")}
                                 <br><br>
                                 <i>${_("Note: Boost increases your Speed value for the purpose of the Check Corner step.")}</i>`;
+                                break;
+                            case 'reduce':
+                                label = `<div class="icon reduce-stress">${number}</div>`;
+                                tooltip = this.getGarageModuleIconTooltip('reduce', number);
                                 break;
                         }
 
@@ -432,6 +436,30 @@ class Heat implements HeatGame {
 
     public getGameStateName(): string {
         return this.gamedatas.gamestate.name;
+    }    
+
+    public getGarageModuleIconTooltip(symbol: string, number: number): string {
+        console.log('getGarageModuleIconTooltip', symbol, number);
+        switch (symbol) {
+            case 'adjust':
+                return `<div>
+                    <strong>${_("Adjust Speed Limit")}</strong>
+                    <br>
+                    ${ (number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number) }
+                </div>`;
+            case 'reduce':
+                return `<div>
+                    <strong>${_("Reduce Stress")}</strong>
+                    <br>
+                    ${ _("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number) }
+                </div>`;
+            case 'scrap':
+                return `<div>
+                    <strong>${_("Scrap")}</strong>
+                    <br>
+                    ${ _("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number) }
+                </div>`;
+        }
     }
 
     private setupPreferences() {
@@ -787,7 +815,7 @@ class Heat implements HeatGame {
         }
 
         (this as any).notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) => 
-            this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
+            this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && !notif.args.cards
         );
         (this as any).notifqueue.setIgnoreNotificationCheck('draw', (notif: Notif<any>) => 
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
@@ -876,9 +904,12 @@ class Heat implements HeatGame {
         playerTable.incDeckCount(-n);
     }
 
-    notif_discard(args: NotifCardsArgs) {
-        const { constructor_id } = args;
+    notif_discard(args: NotifDiscardCardsArgs) {
+        const { constructor_id, cards } = args;
         this.handCounters[constructor_id]?.incValue(-args.n);
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        const playerTable = this.getPlayerTable(playerId);
+        playerTable.discard.addCards(Object.values(cards));
     }
 
     notif_pDraw(args: NotifPCardsArgs) {

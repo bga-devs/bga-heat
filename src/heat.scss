@@ -36,30 +36,38 @@ html, .mode_3d #game_play_area_background {
   background-repeat: no-repeat;
   background-position: center;
   vertical-align: middle;
+  font-size: 18px;
+  line-height: 24px;
+  color: white;
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
+  text-align: center;
   
   &.turn {
-    background-position-x: #{0 * 100% / 7};
+    background-position-x: #{0 * 100% / 8};
   }
   &.engine {
-    background-position-x: #{1 * 100% / 7};
+    background-position-x: #{1 * 100% / 8};
   }
   &.heat {
-    background-position-x: #{2 * 100% / 7};
+    background-position-x: #{2 * 100% / 8};
   }
   &.cooldown {
-    background-position-x: #{3 * 100% / 7};
+    background-position-x: #{3 * 100% / 8};
   }
   &.stress {
-    background-position-x: #{4 * 100% / 7};
+    background-position-x: #{4 * 100% / 8};
   }
   &.boost {
-    background-position-x: #{5 * 100% / 7};
+    background-position-x: #{5 * 100% / 8};
   }
   &.speed {
-    background-position-x: #{6 * 100% / 7};
+    background-position-x: #{6 * 100% / 8};
   }
   &.podium {
-    background-position-x: #{7 * 100% / 7};
+    background-position-x: #{7 * 100% / 8};
+  }
+  &.reduce-stress {
+    background-position-x: #{8 * 100% / 8};
   }
 }
 

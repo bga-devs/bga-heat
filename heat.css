@@ -970,29 +970,37 @@ html, .mode_3d #game_play_area_background {
   background-repeat: no-repeat;
   background-position: center;
   vertical-align: middle;
+  font-size: 18px;
+  line-height: 24px;
+  color: white;
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
+  text-align: center;
 }
 .icon.turn {
   background-position-x: 0%;
 }
 .icon.engine {
-  background-position-x: 14.2857142857%;
+  background-position-x: 12.5%;
 }
 .icon.heat {
-  background-position-x: 28.5714285714%;
+  background-position-x: 25%;
 }
 .icon.cooldown {
-  background-position-x: 42.8571428571%;
+  background-position-x: 37.5%;
 }
 .icon.stress {
-  background-position-x: 57.1428571429%;
+  background-position-x: 50%;
 }
 .icon.boost {
-  background-position-x: 71.4285714286%;
+  background-position-x: 62.5%;
 }
 .icon.speed {
-  background-position-x: 85.7142857143%;
+  background-position-x: 75%;
 }
 .icon.podium {
+  background-position-x: 87.5%;
+}
+.icon.reduce-stress {
   background-position-x: 100%;
 }
 
