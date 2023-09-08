@@ -71,9 +71,9 @@
   background-image: url('img/weather-cards.jpg'); 
   background-size: 100% auto;
 
-  @for $type from 1 through 6 {
+  @for $type from 0 through 5 {
     &[data-card-type="#{$type}"]  {
-      background-position-y: #{($type - 1) * 100% / 5};
+      background-position-y: #{$type * 100% / 5};
     }
   }
 }
@@ -89,9 +89,9 @@
   background-image: url('img/weather-tokens.jpg'); 
   background-size: 100% auto;
 
-  @for $type from 1 through 6 {
+  @for $type from 0 through 5 {
     &[data-token-type="#{$type}"]  {
-      background-position-y: #{($type - 1) * 100% / 5};
+      background-position-y: #{$type * 100% / 5};
     }
   }
 }

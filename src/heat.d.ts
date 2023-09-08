@@ -38,6 +38,15 @@ interface Corner {
     y: number; 
     lane: number; 
     speed: number;
+    tentX: number;
+    tentY: number;
+    sectorTentX: number;
+    sectorTentY: number;
+}
+
+interface Weather {
+    card: number;
+    tokens: { [cornerId: number]: number };
 }
 
 interface CircuitDatas {
@@ -48,6 +57,7 @@ interface CircuitDatas {
     };
     cells: { [id: number]:  Cell };
     corners: { [id: number]: Corner };
+    weatherCardPos: Cell;
     podium: Cell;
 }
 
@@ -69,6 +79,7 @@ interface HeatGamedatas {
     constructors: { [id: number]: Constructor };
     isLegend: boolean;
     legendCard: LegendCard;
+    weather: Weather;
 }
 
 interface HeatGame extends Game {

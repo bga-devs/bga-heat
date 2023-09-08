@@ -10,7 +10,9 @@ const LEADERBOARD_POSITIONS = {
     '-6': { x: 0, y: 232, a: 0 },
     '-7': { x: 0, y: 284, a: 0 },
     '-8': { x: 0, y: 336, a: 0 },
-}
+};
+
+const WEATHER_TOKENS_ON_SECTOR_TENT = [1, 5, 6];
 
 // Wrapper for the animation that use requestAnimationFrame
 class CarAnimation {
@@ -106,7 +108,7 @@ class Circuit {
         Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
 
         this.createCorners(this.circuitDatas.corners);
-        this.createWeather(this.circuitDatas);
+        this.createWeather(gamedatas.weather, this.circuitDatas);
     }
 
     /** 
@@ -135,7 +137,7 @@ class Circuit {
     }
     
     private createCorners(corners: { [id: number]: Corner }): void {
-        Object.entries(corners).forEach((entry) => this.createCorner({...entry[1], id: Number(entry[0]) }));
+        Object.entries(corners).forEach(([stringId, corner]) => this.createCorner({...corner, id: Number(stringId) }));
     }
     
     private createCorner(corner: Corner): void {
@@ -147,30 +149,36 @@ class Circuit {
         this.mapDiv.insertAdjacentElement('beforeend', cornerDiv);
     }
     
-    private createWeather(todo: CircuitDatas): void {
-        this.createWeatherCard(todo);
-        this.createWeatherTokens(todo);
+    private createWeather(weather: Weather, circuitDatas: CircuitDatas): void {
+        if (weather?.tokens) {
+            this.createWeatherCard(weather.card, circuitDatas.weatherCardPos);
+            this.createWeatherTokens(weather.tokens, circuitDatas.corners);
+        }
     }
     
-    private createWeatherCard(todo: CircuitDatas): void {
-        const cardPosition = { x: 119, y: 288 };
-
+    private createWeatherCard(type: number, wheatherCardPos: Cell): void {
         const weatherCardDiv = document.createElement('div');
         weatherCardDiv.classList.add('weather-card');
-        weatherCardDiv.dataset.cardType = `${4}`;
-        weatherCardDiv.style.setProperty('--x', `${cardPosition.x}px`);
-        weatherCardDiv.style.setProperty('--y', `${cardPosition.y}px`);
+        weatherCardDiv.dataset.cardType = `${type}`;
+        weatherCardDiv.style.setProperty('--x', `${wheatherCardPos.x}px`);
+        weatherCardDiv.style.setProperty('--y', `${wheatherCardPos.y}px`);
         this.mapDiv.insertAdjacentElement('beforeend', weatherCardDiv);
     }
     
-    private createWeatherTokens(todo: CircuitDatas): void {
-        const tokenPosition = { x: 1517, y: 272 };
-
+    private createWeatherTokens(tokens:  { [id: number]: number }, corners: { [id: number]: Corner }): void {
+        Object.entries(tokens).forEach(([cornerId, type]) => {
+            const field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
+            const corner = corners[cornerId];
+            this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`]);
+        });
+    }
+    
+    private createWeatherToken(type: number, x: number, y: number): void {
         const weatherTokenDiv = document.createElement('div');
         weatherTokenDiv.classList.add('weather-token');
-        weatherTokenDiv.dataset.tokenType = `${4}`;
-        weatherTokenDiv.style.setProperty('--x', `${tokenPosition.x}px`);
-        weatherTokenDiv.style.setProperty('--y', `${tokenPosition.y}px`);
+        weatherTokenDiv.dataset.tokenType = `${type}`;
+        weatherTokenDiv.style.setProperty('--x', `${x}px`);
+        weatherTokenDiv.style.setProperty('--y', `${y}px`);
         this.mapDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
     }
 

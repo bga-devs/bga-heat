@@ -691,22 +691,22 @@ height: 241px; */
   background-image: url("img/weather-cards.jpg");
   background-size: 100% auto;
 }
-.weather-card[data-card-type="1"] {
+.weather-card[data-card-type="0"] {
   background-position-y: 0%;
 }
-.weather-card[data-card-type="2"] {
+.weather-card[data-card-type="1"] {
   background-position-y: 20%;
 }
-.weather-card[data-card-type="3"] {
+.weather-card[data-card-type="2"] {
   background-position-y: 40%;
 }
-.weather-card[data-card-type="4"] {
+.weather-card[data-card-type="3"] {
   background-position-y: 60%;
 }
-.weather-card[data-card-type="5"] {
+.weather-card[data-card-type="4"] {
   background-position-y: 80%;
 }
-.weather-card[data-card-type="6"] {
+.weather-card[data-card-type="5"] {
   background-position-y: 100%;
 }
 
@@ -721,22 +721,22 @@ height: 241px; */
   background-image: url("img/weather-tokens.jpg");
   background-size: 100% auto;
 }
-.weather-token[data-token-type="1"] {
+.weather-token[data-token-type="0"] {
   background-position-y: 0%;
 }
-.weather-token[data-token-type="2"] {
+.weather-token[data-token-type="1"] {
   background-position-y: 20%;
 }
-.weather-token[data-token-type="3"] {
+.weather-token[data-token-type="2"] {
   background-position-y: 40%;
 }
-.weather-token[data-token-type="4"] {
+.weather-token[data-token-type="3"] {
   background-position-y: 60%;
 }
-.weather-token[data-token-type="5"] {
+.weather-token[data-token-type="4"] {
   background-position-y: 80%;
 }
-.weather-token[data-token-type="6"] {
+.weather-token[data-token-type="5"] {
   background-position-y: 100%;
 }
 

@@ -2309,6 +2309,7 @@ var LEADERBOARD_POSITIONS = {
     '-7': { x: 0, y: 284, a: 0 },
     '-8': { x: 0, y: 336, a: 0 },
 };
+var WEATHER_TOKENS_ON_SECTOR_TENT = [1, 5, 6];
 // Wrapper for the animation that use requestAnimationFrame
 var CarAnimation = /** @class */ (function () {
     function CarAnimation(car, pathCells) {
@@ -2391,7 +2392,7 @@ var Circuit = /** @class */ (function () {
         this.mapDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
         Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
         this.createCorners(this.circuitDatas.corners);
-        this.createWeather(this.circuitDatas);
+        this.createWeather(gamedatas.weather, this.circuitDatas);
     }
     /**
      * Set map size, depending on available screen size.
@@ -2416,7 +2417,10 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.createCorners = function (corners) {
         var _this = this;
-        Object.entries(corners).forEach(function (entry) { return _this.createCorner(__assign(__assign({}, entry[1]), { id: Number(entry[0]) })); });
+        Object.entries(corners).forEach(function (_a) {
+            var stringId = _a[0], corner = _a[1];
+            return _this.createCorner(__assign(__assign({}, corner), { id: Number(stringId) }));
+        });
     };
     Circuit.prototype.createCorner = function (corner) {
         var cornerDiv = document.createElement('div');
@@ -2426,26 +2430,35 @@ var Circuit = /** @class */ (function () {
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
         this.mapDiv.insertAdjacentElement('beforeend', cornerDiv);
     };
-    Circuit.prototype.createWeather = function (todo) {
-        this.createWeatherCard(todo);
-        this.createWeatherTokens(todo);
+    Circuit.prototype.createWeather = function (weather, circuitDatas) {
+        if (weather === null || weather === void 0 ? void 0 : weather.tokens) {
+            this.createWeatherCard(weather.card, circuitDatas.weatherCardPos);
+            this.createWeatherTokens(weather.tokens, circuitDatas.corners);
+        }
     };
-    Circuit.prototype.createWeatherCard = function (todo) {
-        var cardPosition = { x: 119, y: 288 };
+    Circuit.prototype.createWeatherCard = function (type, wheatherCardPos) {
         var weatherCardDiv = document.createElement('div');
         weatherCardDiv.classList.add('weather-card');
-        weatherCardDiv.dataset.cardType = "".concat(4);
-        weatherCardDiv.style.setProperty('--x', "".concat(cardPosition.x, "px"));
-        weatherCardDiv.style.setProperty('--y', "".concat(cardPosition.y, "px"));
+        weatherCardDiv.dataset.cardType = "".concat(type);
+        weatherCardDiv.style.setProperty('--x', "".concat(wheatherCardPos.x, "px"));
+        weatherCardDiv.style.setProperty('--y', "".concat(wheatherCardPos.y, "px"));
         this.mapDiv.insertAdjacentElement('beforeend', weatherCardDiv);
     };
-    Circuit.prototype.createWeatherTokens = function (todo) {
-        var tokenPosition = { x: 1517, y: 272 };
+    Circuit.prototype.createWeatherTokens = function (tokens, corners) {
+        var _this = this;
+        Object.entries(tokens).forEach(function (_a) {
+            var cornerId = _a[0], type = _a[1];
+            var field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
+            var corner = corners[cornerId];
+            _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")]);
+        });
+    };
+    Circuit.prototype.createWeatherToken = function (type, x, y) {
         var weatherTokenDiv = document.createElement('div');
         weatherTokenDiv.classList.add('weather-token');
-        weatherTokenDiv.dataset.tokenType = "".concat(4);
-        weatherTokenDiv.style.setProperty('--x', "".concat(tokenPosition.x, "px"));
-        weatherTokenDiv.style.setProperty('--y', "".concat(tokenPosition.y, "px"));
+        weatherTokenDiv.dataset.tokenType = "".concat(type);
+        weatherTokenDiv.style.setProperty('--x', "".concat(x, "px"));
+        weatherTokenDiv.style.setProperty('--y', "".concat(y, "px"));
         this.mapDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
     };
     Circuit.prototype.getCellPosition = function (carCell) {
