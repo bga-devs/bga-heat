@@ -2345,9 +2345,10 @@ var Circuit = /** @class */ (function () {
         this.mapDiv.insertAdjacentElement('beforeend', car);
     };
     Circuit.prototype.moveCar = function (constructorId, carCell, path) {
+        var _this = this;
         var car = document.getElementById("car-".concat(constructorId));
         if (path) {
-            return this.moveCarWithAnimation(car, path);
+            return this.moveCarWithAnimation(car, path).then(function () { return _this.moveCar(constructorId, carCell); });
         }
         else {
             var cell = this.getCellPosition(carCell);
