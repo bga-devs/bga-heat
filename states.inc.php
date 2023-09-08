@@ -60,7 +60,25 @@ $machinestates = [
     'type' => 'game',
     'action' => 'stSetupRace',
     'updateGameProgression' => true,
-    'transitions' => ['start' => ST_START_RACE],
+    'transitions' => ['start' => ST_START_RACE, 'draft' => ST_PREPARE_GARAGE_DRAFT],
+  ],
+
+  ST_PREPARE_GARAGE_DRAFT => [
+    'name' => 'prepareGarageDraft',
+    'description' => '',
+    'type' => 'game',
+    'action' => 'stPrepareGarageDraft',
+    'transitions' => ['done' => ST_SETUP_RACE],
+  ],
+
+  ST_DRAFT_GARAGE => [
+    'name' => 'chooseUpgrade',
+    'description' => clienttranslate('${actplayer} must choose an Upgrade card (draft round n°${round}/3)'),
+    'descriptionmyturn' => clienttranslate('${you} must choose an Upgrade card (draft round n°${round}/3)'),
+    'type' => 'activeplayer',
+    'args' => 'argsChooseUpgrade',
+    'possibleactions' => ['actChooseUpgrade'],
+    'transitions' => ['start' => ST_START_RACE, 'draft' => ST_PREPARE_GARAGE_DRAFT],
   ],
 
   ST_START_RACE => [

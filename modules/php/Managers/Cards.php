@@ -175,6 +175,13 @@ class Cards extends \HEAT\Helpers\Pieces
     return self::create($cards, null);
   }
 
+  public static function drawMarket()
+  {
+    $n = Players::count() + 3;
+    $cards = self::pickForLocation($n, 'upgrades', 'market');
+    return $cards;
+  }
+
   ////////////////////////////////
   //  ____        _
   // |  _ \  __ _| |_ __ _ ___

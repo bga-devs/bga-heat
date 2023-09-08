@@ -305,6 +305,35 @@ class Notifications
     ]);
   }
 
+  public static function newMarket($round, $cards)
+  {
+    self::notifyAll('newMarket', clienttranslate('Starting round n°${round}/3 of Upgrade card drafting'), [
+      'round' => $round,
+      'cards' => $cards,
+    ]);
+  }
+
+  public static function chooseUpgrade($constructor, $card)
+  {
+    self::notifyAll('chooseUpgrade', clienttranslate('${constructor_name} chooses an ${card_image}'), [
+      'constructor' => $constructor,
+      'card' => $card,
+    ]);
+  }
+
+  public static function endDraftRound($round, $cardIds)
+  {
+    self::notifyAll('endDraftRound', clienttranslate('End of draft round n°${round}, removing leftover cards'), [
+      'round' => $round,
+      'cardIds' => $cardIds,
+    ]);
+  }
+
+  public static function reformingDeckWithUpgrades()
+  {
+    self::notifyAll('reformingDeckWithUpgrades', clienttranslate('End of draft phase, reforming deck with upgrade cards'), []);
+  }
+
   ///////////////////////////////////////////////////////////////
   //  _   _           _       _            _
   // | | | |_ __   __| | __ _| |_ ___     / \   _ __ __ _ ___

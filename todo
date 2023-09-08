@@ -6,6 +6,8 @@ Backend :
   - pass when no react, or only useless cooldown ? I think I would let it visible when there is still a cooldown action, even if useless.
 
 Frontend :
+  - draft phase
+
   - notifications are too fast
 
   - "reduce stress" icon for React

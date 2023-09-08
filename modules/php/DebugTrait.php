@@ -13,7 +13,8 @@ trait DebugTrait
 {
   function tp()
   {
-    var_dump($this->getCircuit()->isFree(7, 1));
+    $this->actChooseUpgrade(13);
+    //    var_dump($this->getCircuit()->isFree(7, 1));
   }
 
   function move($speed)
@@ -29,7 +30,7 @@ trait DebugTrait
 
   function endGame()
   {
-    $this->DbQuery("UPDATE constructors SET `turn` = 2");
+    $this->DbQuery('UPDATE constructors SET `turn` = 2');
   }
 
   /*
