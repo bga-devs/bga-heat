@@ -84,6 +84,7 @@ class Heat extends Table
       'circuit' => Globals::getCircuit(),
       'circuitDatas' => Globals::getCircuitDatas(),
       'nbrLaps' => $this->getNbrLaps(),
+      'weather' => Globals::getWeather(),
 
       'isLegend' => Globals::isLegend(),
       'legendCard' => LegendCards::getCurrentCard(),

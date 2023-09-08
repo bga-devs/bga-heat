@@ -334,6 +334,20 @@ class Notifications
     self::notifyAll('reformingDeckWithUpgrades', clienttranslate('End of draft phase, reforming deck with upgrade cards'), []);
   }
 
+  public static function weatherHeats($constructor, $heats, $location)
+  {
+    self::notifyAll(
+      'weatherHeats',
+      clienttranslate('${constructor_name} moves ${card_names} to ${loc} because of weather card'),
+      [
+        'i18n' => ['loc'],
+        'constructor' => $constructor,
+        'cards' => $heat,
+        'location' => $location,
+      ]
+    );
+  }
+
   ///////////////////////////////////////////////////////////////
   //  _   _           _       _            _
   // | | | |_ __   __| | __ _| |_ ___     / \   _ __ __ _ ___

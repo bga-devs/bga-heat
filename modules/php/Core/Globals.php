@@ -186,6 +186,16 @@ class Globals extends \HEAT\Helpers\DB_Manager
     self::loadCircuitDatas();
   }
 
+  public static function getWeatherCard()
+  {
+    $weather = Globals::getWeather();
+    if (!empty($weather)) {
+      return $weather['card'];
+    } else {
+      return null;
+    }
+  }
+
   public static function loadCircuitDatas()
   {
     $names = [

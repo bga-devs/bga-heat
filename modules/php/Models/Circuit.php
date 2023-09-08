@@ -44,6 +44,10 @@ class Circuit
   {
     return $this->id;
   }
+  public function getCorners()
+  {
+    return $this->corners;
+  }
 
   protected $nbrLaps = 0;
   protected $stressCards = 0;
@@ -58,17 +62,37 @@ class Circuit
     // TODO : weather + event ??
     return $n;
   }
+
   public function getStressCards()
   {
-    $initial = $this->stressCards;
-    // TODO : weather + event
-    return $initial;
+    $value = $this->stressCards;
+
+    // Weather
+    $weatherCard = Globals::getWeatherCard();
+    if ($weatherCard == 0) {
+      $value--;
+    } elseif ($weatherCard == 2) {
+      $value++;
+    }
+
+    // TODO : event
+    return $value;
   }
+
   public function getHeatCards()
   {
-    $initial = $this->heatCards;
-    // TODO : weather + event
-    return $initial;
+    $value = $this->heatCards;
+
+    // Weather
+    $weatherCard = Globals::getWeatherCard();
+    if ($weatherCard == 1) {
+      $value++;
+    } elseif ($weatherCard == 3) {
+      $value--;
+    }
+
+    // TODO : event
+    return $value;
   }
 
   public function getStartingCells()

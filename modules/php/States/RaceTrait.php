@@ -26,7 +26,19 @@ trait RaceTrait
 
     // Weather
     if (Globals::isWeatherModule()) {
-      die('TODO: weather module');
+      // Draw a card
+      $weatherCard = bga_rand(0, 5);
+      // Draw tokens
+      $tokens = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
+      shuffle($tokens);
+      $cornerTokens = [];
+      foreach ($this->getCircuit()->getCorners() as $cornerPos => $infos) {
+        $cornerTokens[$cornerPos] = array_shift($tokens);
+      }
+      Globals::setWeather([
+        'card' => $weatherCard,
+        'tokens' => $cornerTokens,
+      ]);
     }
 
     // Draw heat and stress cards
@@ -46,6 +58,20 @@ trait RaceTrait
     foreach (Constructors::getAll() as $cId => $constructor) {
       if ($constructor->isAI()) {
         continue;
+      }
+
+      $weatherCard = Globals::getWeatherCard();
+      // Move 3 heat to deck
+      if ($weatherCard == 4) {
+        $heats = $constructor->getEngine()->limit(3);
+        Cards::move($heats->getIds(), "deck-$cId");
+        Notifications::weatherHeats($constructor, $heats, clienttranslate('deck'));
+      }
+      // Move 3 heat to discard
+      elseif ($weatherCard == 5) {
+        $heats = $constructor->getEngine()->limit(3);
+        Cards::move($heats->getIds(), "discard-$cId");
+        Notifications::weatherHeats($constructor, $heats, clienttranslate('discard'));
       }
 
       Cards::shuffle("deck-$cId");
