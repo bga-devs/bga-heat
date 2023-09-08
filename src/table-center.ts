@@ -105,7 +105,8 @@ class Circuit {
 
         Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
 
-        Object.entries(this.circuitDatas.corners).forEach((entry) => this.createCorner({...entry[1], id: Number(entry[0]) }));
+        this.createCorners(this.circuitDatas.corners);
+        this.createWeather(this.circuitDatas);
     }
 
     /** 
@@ -133,6 +134,10 @@ class Circuit {
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     }
     
+    private createCorners(corners: { [id: number]: Corner }): void {
+        Object.entries(corners).forEach((entry) => this.createCorner({...entry[1], id: Number(entry[0]) }));
+    }
+    
     private createCorner(corner: Corner): void {
         const cornerDiv = document.createElement('div');
         cornerDiv.id = `corner-${corner.id}`,
@@ -140,6 +145,33 @@ class Circuit {
         cornerDiv.style.setProperty('--x', `${corner.x}px`);
         cornerDiv.style.setProperty('--y', `${corner.y}px`);
         this.mapDiv.insertAdjacentElement('beforeend', cornerDiv);
+    }
+    
+    private createWeather(todo: CircuitDatas): void {
+        this.createWeatherCard(todo);
+        this.createWeatherTokens(todo);
+    }
+    
+    private createWeatherCard(todo: CircuitDatas): void {
+        const cardPosition = { x: 119, y: 288 };
+
+        const weatherCardDiv = document.createElement('div');
+        weatherCardDiv.classList.add('weather-card');
+        weatherCardDiv.dataset.cardType = `${4}`;
+        weatherCardDiv.style.setProperty('--x', `${cardPosition.x}px`);
+        weatherCardDiv.style.setProperty('--y', `${cardPosition.y}px`);
+        this.mapDiv.insertAdjacentElement('beforeend', weatherCardDiv);
+    }
+    
+    private createWeatherTokens(todo: CircuitDatas): void {
+        const tokenPosition = { x: 1517, y: 272 };
+
+        const weatherTokenDiv = document.createElement('div');
+        weatherTokenDiv.classList.add('weather-token');
+        weatherTokenDiv.dataset.tokenType = `${4}`;
+        weatherTokenDiv.style.setProperty('--x', `${tokenPosition.x}px`);
+        weatherTokenDiv.style.setProperty('--y', `${tokenPosition.y}px`);
+        this.mapDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
     }
 
     private getCellPosition(carCell: number) {

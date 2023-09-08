@@ -2390,7 +2390,8 @@ var Circuit = /** @class */ (function () {
         this.mapDiv = document.getElementById('circuit');
         this.mapDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
         Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
-        Object.entries(this.circuitDatas.corners).forEach(function (entry) { return _this.createCorner(__assign(__assign({}, entry[1]), { id: Number(entry[0]) })); });
+        this.createCorners(this.circuitDatas.corners);
+        this.createWeather(this.circuitDatas);
     }
     /**
      * Set map size, depending on available screen size.
@@ -2413,6 +2414,10 @@ var Circuit = /** @class */ (function () {
         document.getElementById('table-center').style.maxHeight = maxHeight;
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     };
+    Circuit.prototype.createCorners = function (corners) {
+        var _this = this;
+        Object.entries(corners).forEach(function (entry) { return _this.createCorner(__assign(__assign({}, entry[1]), { id: Number(entry[0]) })); });
+    };
     Circuit.prototype.createCorner = function (corner) {
         var cornerDiv = document.createElement('div');
         cornerDiv.id = "corner-".concat(corner.id),
@@ -2420,6 +2425,28 @@ var Circuit = /** @class */ (function () {
         cornerDiv.style.setProperty('--x', "".concat(corner.x, "px"));
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
         this.mapDiv.insertAdjacentElement('beforeend', cornerDiv);
+    };
+    Circuit.prototype.createWeather = function (todo) {
+        this.createWeatherCard(todo);
+        this.createWeatherTokens(todo);
+    };
+    Circuit.prototype.createWeatherCard = function (todo) {
+        var cardPosition = { x: 119, y: 288 };
+        var weatherCardDiv = document.createElement('div');
+        weatherCardDiv.classList.add('weather-card');
+        weatherCardDiv.dataset.cardType = "".concat(4);
+        weatherCardDiv.style.setProperty('--x', "".concat(cardPosition.x, "px"));
+        weatherCardDiv.style.setProperty('--y', "".concat(cardPosition.y, "px"));
+        this.mapDiv.insertAdjacentElement('beforeend', weatherCardDiv);
+    };
+    Circuit.prototype.createWeatherTokens = function (todo) {
+        var tokenPosition = { x: 1517, y: 272 };
+        var weatherTokenDiv = document.createElement('div');
+        weatherTokenDiv.classList.add('weather-token');
+        weatherTokenDiv.dataset.tokenType = "".concat(4);
+        weatherTokenDiv.style.setProperty('--x', "".concat(tokenPosition.x, "px"));
+        weatherTokenDiv.style.setProperty('--y', "".concat(tokenPosition.y, "px"));
+        this.mapDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
     };
     Circuit.prototype.getCellPosition = function (carCell) {
         var cell = structuredClone(carCell < 0 ? this.circuitDatas.podium : this.circuitDatas.cells[carCell]);

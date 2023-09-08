@@ -59,3 +59,39 @@
   box-shadow: 0 0 5px 5px var(--color);
   border-radius: 50%;
 }
+
+.weather-card {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 167px;
+  height: 127.5px;
+  box-shadow: 0 0 5px 5px white;
+  border-radius: 8px; 
+  background-image: url('img/weather-cards.jpg'); 
+  background-size: 100% auto;
+
+  @for $type from 1 through 6 {
+    &[data-card-type="#{$type}"]  {
+      background-position-y: #{($type - 1) * 100% / 5};
+    }
+  }
+}
+
+.weather-token {
+  position: absolute;
+  left: calc(var(--x) - 30px);
+  top: calc(var(--y) - 30px);
+  width: 60px;
+  height: 60px;
+  box-shadow: 0 0 5px 5px white;
+  border-radius: 8px; 
+  background-image: url('img/weather-tokens.jpg'); 
+  background-size: 100% auto;
+
+  @for $type from 1 through 6 {
+    &[data-token-type="#{$type}"]  {
+      background-position-y: #{($type - 1) * 100% / 5};
+    }
+  }
+}
