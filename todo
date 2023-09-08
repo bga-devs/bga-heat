@@ -6,13 +6,6 @@ Backend :
   - pass when no react, or only useless cooldown ?
 
 Frontend :
-  - scores / end of game :
-    * notification endOfRace contains scores, also sent in getAllDatas.
-      format :
-      [
-        circuitId => [ constructorId1 => score1, constructorId2 => score2]
-      ]
-  
   - car animation : adjust a bit end of animation to make sure car rotation is lined up with the cell (slightly off when the last move of the car is a change of lane)
 
   - notifications are too fast

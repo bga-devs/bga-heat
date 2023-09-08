@@ -2997,7 +2997,7 @@ var Heat = /** @class */ (function () {
         var _this = this;
         var constructors = Object.values(gamedatas.constructors);
         constructors.filter(function (constructor) { return constructor.ai; }).forEach(function (constructor) {
-            document.getElementById('player_boards').insertAdjacentHTML('beforeend', "\n            <div id=\"overall_player_board_".concat(constructor.pId, "\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n                    \n                    <div class=\"emblemwrap\" id=\"avatar_active_wrap_").concat(constructor.id, "\">\n                        <div src=\"img/gear.png\" alt=\"\" class=\"avatar avatar_active legend_avatar\" id=\"avatar_active_").concat(constructor.id, "\" style=\"--constructor-id: ").concat(constructor.id, "\"></div>\n                    </div>\n                                               \n                    <div class=\"player-name\" id=\"player_name_").concat(constructor.id, "\">\n                        ").concat(constructor.name, "\n                    </div>\n                    <div id=\"player_board_").concat(constructor.pId, "\" class=\"player_board_content\">\n                        <div class=\"player_score\">\n                            <span id=\"player_score_").concat(constructor.id, "\" class=\"player_score_value\">-</span> <i class=\"fa fa-star\" id=\"icon_point_").concat(constructor.id, "\"></i>           \n                        </div>\n                    </div>\n                </div>\n            </div>"));
+            document.getElementById('player_boards').insertAdjacentHTML('beforeend', "\n            <div id=\"overall_player_board_".concat(constructor.pId, "\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n                    \n                    <div class=\"emblemwrap\" id=\"avatar_active_wrap_").concat(constructor.id, "\">\n                        <div src=\"img/gear.png\" alt=\"\" class=\"avatar avatar_active legend_avatar\" id=\"avatar_active_").concat(constructor.id, "\" style=\"--constructor-id: ").concat(constructor.id, "\"></div>\n                    </div>\n                                               \n                    <div class=\"player-name\" id=\"player_name_").concat(constructor.id, "\">\n                        ").concat(constructor.name, "\n                    </div>\n                    <div id=\"player_board_").concat(constructor.pId, "\" class=\"player_board_content\">\n                        <div class=\"player_score\">\n                            <span id=\"player_score_").concat(constructor.pId, "\" class=\"player_score_value\">-</span> <i class=\"fa fa-star\" id=\"icon_point_").concat(constructor.id, "\"></i>           \n                        </div>\n                    </div>\n                </div>\n            </div>"));
         });
         constructors.forEach(function (constructor) {
             var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
@@ -3186,6 +3186,7 @@ var Heat = /** @class */ (function () {
             ['clearPlayedCards', undefined],
             ['cooldown', ANIMATION_MS],
             ['finishRace', ANIMATION_MS],
+            ['endOfRace', 1],
             ['newLegendCard', undefined],
         ];
         notifs.forEach(function (notif) {
@@ -3383,6 +3384,22 @@ var Heat = /** @class */ (function () {
                         return [2 /*return*/];
                 }
             });
+        });
+    };
+    Heat.prototype.setScore = function (playerId, score) {
+        if (this.scoreCtrl[playerId]) {
+            this.scoreCtrl[playerId].toValue(score);
+        }
+        else {
+            document.getElementById("player_score_".concat(playerId)).innerText = "".concat(score);
+        }
+    };
+    Heat.prototype.notif_endOfRace = function (args) {
+        var _this = this;
+        var scores = args.scores[this.gamedatas.circuitDatas.id];
+        Object.entries(scores).forEach(function (_a) {
+            var constructorId = _a[0], score = _a[1];
+            return _this.setScore(_this.gamedatas.constructors[constructorId].pId, score);
         });
     };
     Heat.prototype.notif_newLegendCard = function (args) {

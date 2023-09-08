@@ -479,7 +479,7 @@ class Heat implements HeatGame {
                     </div>
                     <div id="player_board_${constructor.pId}" class="player_board_content">
                         <div class="player_score">
-                            <span id="player_score_${constructor.id}" class="player_score_value">-</span> <i class="fa fa-star" id="icon_point_${constructor.id}"></i>           
+                            <span id="player_score_${constructor.pId}" class="player_score_value">-</span> <i class="fa fa-star" id="icon_point_${constructor.id}"></i>           
                         </div>
                     </div>
                 </div>
@@ -747,6 +747,7 @@ class Heat implements HeatGame {
             ['clearPlayedCards', undefined],
             ['cooldown', ANIMATION_MS],
             ['finishRace', ANIMATION_MS],
+            ['endOfRace', 1],
             ['newLegendCard', undefined],
         ];
         
@@ -919,6 +920,20 @@ class Heat implements HeatGame {
         }
         
         this.setRank(constructor_id, pos);
+    }
+
+    private setScore(playerId: number, score: number) {
+        if ((this as any).scoreCtrl[playerId]) {
+            (this as any).scoreCtrl[playerId].toValue(score);
+        } else {
+            document.getElementById(`player_score_${playerId}`).innerText = `${score}`;
+        }
+    }
+    
+    notif_endOfRace(args: NotifEndOfRaceArgs) {
+        const scores = args.scores[this.gamedatas.circuitDatas.id];
+        
+        Object.entries(scores).forEach(([constructorId, score]) => this.setScore(this.gamedatas.constructors[constructorId].pId, score));
     }
 
     notif_newLegendCard(args: NotifNewLegendCardArgs) {

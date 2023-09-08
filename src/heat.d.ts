@@ -41,6 +41,8 @@ interface Corner {
 }
 
 interface CircuitDatas {
+    id: string;
+    name: string;
     assets: {
         jpg: string;
     };
@@ -189,6 +191,11 @@ interface NotifCooldownArgs {
 interface NotifFinishRaceArgs {
     constructor_id: number;
     pos: number;
+}
+
+// endOfRace
+interface NotifEndOfRaceArgs {
+    scores: { [circuitId: string]: { [constructor_id: number]: number}};
 }
 
 // newLegendCard
