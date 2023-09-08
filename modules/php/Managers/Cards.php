@@ -253,7 +253,7 @@ class Cards extends \HEAT\Helpers\Pieces
       25 => $f(ADVANCED_UPGRADE, 2, [SCRAP => 2, DIRECT => 1], clienttranslate('Gas pedal')),
       26 => $f(ADVANCED_UPGRADE, 3, [SCRAP => 3, DIRECT => 1], clienttranslate('Gas pedal')),
       27 => $f(ADVANCED_UPGRADE, 4, [HEAT => 1, COOLDOWN => 1, DIRECT => 1], clienttranslate('Gas pedal')),
-      28 => $f(ADVANCED_UPGRADE, 1, [SCRAP => 1, SCRAP => 5, ACCELERATE => 1], clienttranslate('Gas pedal')),
+      28 => $f(ADVANCED_UPGRADE, 1, [DIRECT => 1, SCRAP => 5, ACCELERATE => 1], clienttranslate('Gas pedal')),
       // R.P.M.
       29 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, SLIPSTREAM => 3], clienttranslate('R.P.M.')),
       30 => $f(ADVANCED_UPGRADE, 1, [HEAT => 1, SLIPSTREAM => 3], clienttranslate('R.P.M.')),

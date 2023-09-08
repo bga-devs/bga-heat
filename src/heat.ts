@@ -360,10 +360,7 @@ class Heat implements HeatGame {
                                 if (heats < number) {
                                     label += `(- ${heats} [Heat])`;
                                 }
-                                tooltip = `
-                                <strong>${_("Cooldown")}</strong>
-                                <br><br>
-                                ${_("Cooldown allows you to take a Heat card from your hand and put it back in your Engine (so you can use the Heat card again). The number in the Cooldown symbol indicates how many Heat you can move in this way. You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).")}</i>`;
+                                tooltip = this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                 break;
                             case 'heated-boost':
                                 label = `[Boost] > [Speed]`;
@@ -439,26 +436,78 @@ class Heat implements HeatGame {
     }    
 
     public getGarageModuleIconTooltip(symbol: string, number: number): string {
-        console.log('getGarageModuleIconTooltip', symbol, number);
         switch (symbol) {
+            case 'accelerate':
+                return `
+                    <strong>${_("Accelerate")}</strong>
+                    <br>
+                    ${ _("You may increase your Speed by ${number} for every card flipped this turn (from Upgrades, Stress and Boost). If you do, you must increase it for all the flipped cards.").replace('${number}', number) }
+                `;
             case 'adjust':
-                return `<div>
+                return `
                     <strong>${_("Adjust Speed Limit")}</strong>
                     <br>
                     ${ (number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number) }
-                </div>`;
+                `;
+            case 'boost':
+                return `
+                    <strong>${_("Boost")}</strong>
+                    <br>
+                    ${_("Flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly.")}
+                    <br>
+                    <i>${_("Note: Boost increases your Speed value for the purpose of the Check Corner step.")}</i>
+                `;
+            case 'cooldown':
+                return `
+                    <strong>${_("Cooldown")}</strong>
+                    <br>
+                    ${_("Cooldown allows you to take ${number} Heat card(s) from your hand and put it back in your Engine (so you can use the Heat card again). ").replace('${number}', number) }
+                `;
+            case 'direct':
+                return `
+                    <strong>${_("Direct Play")}</strong>
+                    <br>
+                    ${ _("You may play this card from your hand. If you do, it applies as if you played it normally, including Speed and mandatory/optional icons.") }
+                `;
+            case 'heat':
+                return `
+                    <strong>${_("Heat")}</strong>
+                    <br>
+                    ${ _("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number) }
+                `;
             case 'reduce':
-                return `<div>
+                return `
                     <strong>${_("Reduce Stress")}</strong>
                     <br>
                     ${ _("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number) }
-                </div>`;
+                `;
+            case 'refresh':
+                return `
+                    <strong>${_("Refresh")}</strong>
+                    <br>
+                    ${ _("You may place this card back on top of your draw deck at the end of the React step.") }
+                `;
+            case 'salvage':
+                return `
+                    <strong>${_("Salvage")}</strong>
+                    <br>
+                    ${ _("You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.").replace('${number}', number) }
+                `;
             case 'scrap':
-                return `<div>
+                return `
                     <strong>${_("Scrap")}</strong>
                     <br>
                     ${ _("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number) }
-                </div>`;
+                `;
+            case 'slipstream':
+                return `
+                    <strong>${_("Slipstream boost")}</strong>
+                    <br>
+                    ${ _("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number) }
+                `;
+                
+            default:
+                console.log('getGarageModuleIconTooltip', symbol, number); // TODO
         }
     }
 

@@ -62,7 +62,7 @@ class CardsManager extends CardManager<Card> {
     private getGarageModuleTextTooltip(card: Card): string {
         switch (card.type) {
             // 4 wheel drive
-            case 4: case 5: case 6: case 18: case 19: case 20:
+            case 1: case 2: case 3: case 47:
                 return `<strong>${_(card.text)}</strong><br>
                 ${_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they flip cards like Stress.")}`;
             // Body
@@ -125,7 +125,7 @@ class CardsManager extends CardManager<Card> {
             case 'stress': return `<strong>${_('Stress card')}</strong>`;
             case 'basic_upgrade': case 'advanced_upgrade': 
                 let tooltip = this.getGarageModuleTextTooltip(card);
-                const icons = Object.entries(card.symbols).map(([symbol, number]) => this.game.getGarageModuleIconTooltip(symbol, number)).join('<br>');
+                const icons = Object.entries(card.symbols).map(([symbol, number]) => `<div>${this.game.getGarageModuleIconTooltip(symbol, number)}</div>`).join('<br>');
                 if (icons != '') {
                     tooltip += `<br><br>${icons}`;
                 }

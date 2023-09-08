@@ -2125,12 +2125,10 @@ var CardsManager = /** @class */ (function (_super) {
     CardsManager.prototype.getGarageModuleTextTooltip = function (card) {
         switch (card.type) {
             // 4 wheel drive
-            case 4:
-            case 5:
-            case 6:
-            case 18:
-            case 19:
-            case 20:
+            case 1:
+            case 2:
+            case 3:
+            case 47:
                 return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they flip cards like Stress."));
             // Body
             case 4:
@@ -2215,7 +2213,7 @@ var CardsManager = /** @class */ (function (_super) {
                 var tooltip = this.getGarageModuleTextTooltip(card);
                 var icons = Object.entries(card.symbols).map(function (_a) {
                     var symbol = _a[0], number = _a[1];
-                    return _this.game.getGarageModuleIconTooltip(symbol, number);
+                    return "<div>".concat(_this.game.getGarageModuleIconTooltip(symbol, number), "</div>");
                 }).join('<br>');
                 if (icons != '') {
                     tooltip += "<br><br>".concat(icons);
@@ -3060,7 +3058,7 @@ var Heat = /** @class */ (function () {
                                 if (heats < number) {
                                     label += "(- ".concat(heats, " [Heat])");
                                 }
-                                tooltip = "\n                                <strong>".concat(_("Cooldown"), "</strong>\n                                <br><br>\n                                ").concat(_("Cooldown allows you to take a Heat card from your hand and put it back in your Engine (so you can use the Heat card again). The number in the Cooldown symbol indicates how many Heat you can move in this way. You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1)."), "</i>");
+                                tooltip = _this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                 break;
                             case 'heated-boost':
                                 label = "[Boost] > [Speed]";
@@ -3121,14 +3119,31 @@ var Heat = /** @class */ (function () {
         return this.gamedatas.gamestate.name;
     };
     Heat.prototype.getGarageModuleIconTooltip = function (symbol, number) {
-        console.log('getGarageModuleIconTooltip', symbol, number);
         switch (symbol) {
+            case 'accelerate':
+                return "\n                    <strong>".concat(_("Accelerate"), "</strong>\n                    <br>\n                    ").concat(_("You may increase your Speed by ${number} for every card flipped this turn (from Upgrades, Stress and Boost). If you do, you must increase it for all the flipped cards.").replace('${number}', number), "\n                ");
             case 'adjust':
-                return "<div>\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong>\n                    <br>\n                    ").concat((number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number), "\n                </div>");
+                return "\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong>\n                    <br>\n                    ").concat((number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number), "\n                ");
+            case 'boost':
+                return "\n                    <strong>".concat(_("Boost"), "</strong>\n                    <br>\n                    ").concat(_("Flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                    <br>\n                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>\n                ");
+            case 'cooldown':
+                return "\n                    <strong>".concat(_("Cooldown"), "</strong>\n                    <br>\n                    ").concat(_("Cooldown allows you to take ${number} Heat card(s) from your hand and put it back in your Engine (so you can use the Heat card again). ").replace('${number}', number), "\n                ");
+            case 'direct':
+                return "\n                    <strong>".concat(_("Direct Play"), "</strong>\n                    <br>\n                    ").concat(_("You may play this card from your hand. If you do, it applies as if you played it normally, including Speed and mandatory/optional icons."), "\n                ");
+            case 'heat':
+                return "\n                    <strong>".concat(_("Heat"), "</strong>\n                    <br>\n                    ").concat(_("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number), "\n                ");
             case 'reduce':
-                return "<div>\n                    <strong>".concat(_("Reduce Stress"), "</strong>\n                    <br>\n                    ").concat(_("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number), "\n                </div>");
+                return "\n                    <strong>".concat(_("Reduce Stress"), "</strong>\n                    <br>\n                    ").concat(_("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number), "\n                ");
+            case 'refresh':
+                return "\n                    <strong>".concat(_("Refresh"), "</strong>\n                    <br>\n                    ").concat(_("You may place this card back on top of your draw deck at the end of the React step."), "\n                ");
+            case 'salvage':
+                return "\n                    <strong>".concat(_("Salvage"), "</strong>\n                    <br>\n                    ").concat(_("You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.").replace('${number}', number), "\n                ");
             case 'scrap':
-                return "<div>\n                    <strong>".concat(_("Scrap"), "</strong>\n                    <br>\n                    ").concat(_("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number), "\n                </div>");
+                return "\n                    <strong>".concat(_("Scrap"), "</strong>\n                    <br>\n                    ").concat(_("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number), "\n                ");
+            case 'slipstream':
+                return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number), "\n                ");
+            default:
+                console.log('getGarageModuleIconTooltip', symbol, number); // TODO
         }
     };
     Heat.prototype.setupPreferences = function () {
