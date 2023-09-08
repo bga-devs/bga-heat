@@ -209,6 +209,7 @@ class Circuit
 
     // Find the first position that is not already full with cars
     $newPosition = $this->getFirstFreePosition($currentPosition + $speed, $cId);
+    $isMovingForward = $newPosition > $currentPosition;
 
     // Compute the path
     $path = [$constructor->getCarCell()];
@@ -234,7 +235,7 @@ class Circuit
     $newPosition = $newPosition % $this->getLength();
 
     // Now get the cell
-    if ($newPosition > $currentPosition) {
+    if ($isMovingForward) {
       $cellId = $this->getFreeCell($newPosition);
       $path[] = $cellId;
     } else {
