@@ -32,14 +32,15 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'legendCard' => 'int',
     'legendCardDrawn' => 'bool',
 
-    'draftRound' => 'int',
-
     // Game options
     'circuit' => 'str',
     'circuitDatas' => 'obj',
     'countConstructors' => 'int', // Useful when companies DB is not filled up yet
     'nbrLaps' => 'int',
     'garageModuleMode' => 'int',
+    'draftRound' => 'int',
+    'weatherModule' => 'bool',
+    'weather' => 'obj',
   ];
 
   protected static $table = 'global_variables';
@@ -173,6 +174,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     self::setLegend($nLegends > 0);
     self::setNbrLaps($options[\HEAT\OPTION_NBR_LAPS] ?? 0);
     self::setGarageModuleMode($options[\HEAT\OPTION_GARAGE_CHOICE] ?? \HEAT\OPTION_GARAGE_RANDOM);
+    self::setWeatherModule(($options[\HEAT\OPTION_WEATHER_MODULE] ?? \HEAT\OPTION_DISABLED) == \HEAT\OPTION_WEATHER_ENABLED);
 
     $circuits = [
       \HEAT\OPTION_CIRCUIT_USA => 'usa',

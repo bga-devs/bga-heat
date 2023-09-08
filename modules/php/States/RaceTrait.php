@@ -24,6 +24,11 @@ trait RaceTrait
       $constructor->setSpeed(null);
     }
 
+    // Weather
+    if (Globals::isWeatherModule()) {
+      die('TODO: weather module');
+    }
+
     // Draw heat and stress cards
     Cards::setupRace();
 
