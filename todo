@@ -7,7 +7,7 @@ Backend :
   - make last card of a discard notif always visible ?
 
 Frontend :
-  - draft phase
+  - test the end of the draft phase (hand cleaned & refilled ?)
 
   - notifications are too fast
   

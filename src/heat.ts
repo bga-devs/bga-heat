@@ -28,6 +28,7 @@ class Heat implements HeatGame {
     private engineCounters: Counter[] = [];
     private speedCounters: Counter[] = [];
     private turnCounters: Counter[] = [];
+    private market?: LineStock<Card>;
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -238,6 +239,16 @@ class Heat implements HeatGame {
       (this as any).updatePageTitle();
     }
 
+    private onEnteringChooseUpgrade(args: EnteringChooseUpgradeArgs) {
+        if (!this.market) {
+            this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
+            this.market.onCardClick = card => this.actChooseUpgrade(card.id);
+        }
+        this.market.addCards(Object.values(args.market));
+
+        this.market.setSelectionMode((this as any).isCurrentPlayerActive() ? 'single' : 'none');
+    }
+
     private onEnteringPlanification(args: EnteringPlanificationArgs) {
         if (args._private) {
             this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
@@ -301,6 +312,9 @@ class Heat implements HeatGame {
         switch (stateName) {
             case 'planification':
                 this.onEnteringPlanification(args);
+                break;
+            case 'chooseUpgrade':
+                this.onEnteringChooseUpgrade(args);
                 break;
         }
 
@@ -702,6 +716,16 @@ class Heat implements HeatGame {
             button.innerHTML = label;
         }
     }
+
+    private actChooseUpgrade(cardId: number) {
+        if(!(this as any).checkAction('actChooseUpgrade')) {
+            return;
+        }
+
+        this.takeAction('actChooseUpgrade', {
+            cardId
+        });
+    }
   	
     public actPlanification() {
         if(!(this as any).checkAction('actPlan')) {
@@ -811,6 +835,9 @@ class Heat implements HeatGame {
         });
 
         const notifs = [
+            ['chooseUpgrade', ANIMATION_MS],
+            ['endDraftRound', ANIMATION_MS],
+            ['reformingDeckWithUpgrades', ANIMATION_MS],
             ['updatePlanification', ANIMATION_MS],
             ['reveal', undefined],
             ['moveCar', undefined],
@@ -870,6 +897,36 @@ class Heat implements HeatGame {
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
         );
     }
+    
+    notif_newMarket(args: NotifChooseUpgradeArgs) {
+        const { constructor_id, card } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        if (playerId == this.getPlayerId()) {
+            this.getCurrentPlayerTable().hand.addCard(card);
+        } else {
+            this.market.removeCard(card);
+        }
+    }  
+    
+    notif_chooseUpgrade(args: NotifChooseUpgradeArgs) {
+        const { constructor_id, card } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        if (playerId == this.getPlayerId()) {
+            this.getCurrentPlayerTable().hand.addCard(card);
+        } else {
+            this.market.removeCard(card);
+        }
+    }  
+    
+    notif_endDraftRound() {
+        this.market?.removeAll();
+    }  
+    
+    notif_reformingDeckWithUpgrades() {
+        document.getElementById('market')?.remove();
+        this.getCurrentPlayerTable()?.hand.removeAll();
+        this.market = null;
+    } 
     
     notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
         // TODO

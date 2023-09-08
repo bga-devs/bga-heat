@@ -88,6 +88,10 @@ interface HeatGame extends Game {
     addSecondaryActionButton(id, text, callback, zone?): void
 }
 
+interface EnteringChooseUpgradeArgs {
+    market: { [cardId: number]: Card};
+}
+
 interface EnteringPlanificationPrivateArgs {
     cards: number[];
     selection: string[];
@@ -116,6 +120,12 @@ interface EnteringDiscardArgs {
     _private?: {
         cardIds: number[];
     }
+}
+
+// chooseUpgrade
+interface NotifChooseUpgradeArgs {
+    constructor_id: number;
+    card: Card;
 }
 
 // updatePlanification

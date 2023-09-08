@@ -2955,6 +2955,15 @@ var Heat = /** @class */ (function () {
             this.gamedatas.gamestate.description = this.gamedatas.gamestate['description' + suffix];
         this.updatePageTitle();
     };
+    Heat.prototype.onEnteringChooseUpgrade = function (args) {
+        var _this = this;
+        if (!this.market) {
+            this.market = new LineStock(this.cardsManager, document.getElementById("market"));
+            this.market.onCardClick = function (card) { return _this.actChooseUpgrade(card.id); };
+        }
+        this.market.addCards(Object.values(args.market));
+        this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
+    };
     Heat.prototype.onEnteringPlanification = function (args) {
         if (args._private) {
             this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
@@ -3012,6 +3021,9 @@ var Heat = /** @class */ (function () {
         switch (stateName) {
             case 'planification':
                 this.onEnteringPlanification(args);
+                break;
+            case 'chooseUpgrade':
+                this.onEnteringChooseUpgrade(args);
                 break;
         }
         if (this.isCurrentPlayerActive()) {
@@ -3261,6 +3273,14 @@ var Heat = /** @class */ (function () {
             button.innerHTML = label;
         }
     };
+    Heat.prototype.actChooseUpgrade = function (cardId) {
+        if (!this.checkAction('actChooseUpgrade')) {
+            return;
+        }
+        this.takeAction('actChooseUpgrade', {
+            cardId: cardId
+        });
+    };
     Heat.prototype.actPlanification = function () {
         if (!this.checkAction('actPlan')) {
             return;
@@ -3350,6 +3370,9 @@ var Heat = /** @class */ (function () {
             _this.addLogClass();
         });
         var notifs = [
+            ['chooseUpgrade', ANIMATION_MS],
+            ['endDraftRound', ANIMATION_MS],
+            ['reformingDeckWithUpgrades', ANIMATION_MS],
             ['updatePlanification', ANIMATION_MS],
             ['reveal', undefined],
             ['moveCar', undefined],
@@ -3400,6 +3423,36 @@ var Heat = /** @class */ (function () {
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
             return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
         });
+    };
+    Heat.prototype.notif_newMarket = function (args) {
+        var constructor_id = args.constructor_id, card = args.card;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        if (playerId == this.getPlayerId()) {
+            this.getCurrentPlayerTable().hand.addCard(card);
+        }
+        else {
+            this.market.removeCard(card);
+        }
+    };
+    Heat.prototype.notif_chooseUpgrade = function (args) {
+        var constructor_id = args.constructor_id, card = args.card;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        if (playerId == this.getPlayerId()) {
+            this.getCurrentPlayerTable().hand.addCard(card);
+        }
+        else {
+            this.market.removeCard(card);
+        }
+    };
+    Heat.prototype.notif_endDraftRound = function () {
+        var _a;
+        (_a = this.market) === null || _a === void 0 ? void 0 : _a.removeAll();
+    };
+    Heat.prototype.notif_reformingDeckWithUpgrades = function () {
+        var _a, _b;
+        (_a = document.getElementById('market')) === null || _a === void 0 ? void 0 : _a.remove();
+        (_b = this.getCurrentPlayerTable()) === null || _b === void 0 ? void 0 : _b.hand.removeAll();
+        this.market = null;
     };
     Heat.prototype.notif_updatePlanification = function (args) {
         // TODO
