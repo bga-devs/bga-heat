@@ -156,6 +156,7 @@ class PlayerTable {
                 id: `${this.playerId}-top-engine` as any,
                 type: 111,
                 location: 'engine',
+                effect: 'heat',
                 state: ''
             } as Card, undefined, <AddCardToDeckSettings>{
                 autoUpdateCardNumber: false,
@@ -181,6 +182,7 @@ class PlayerTable {
             promise = this.hand.addCards(stresses.map(id => ({
                 id,
                 type: 110,
+                effect: 'stress',
                 location: 'hand',
                 state: ''
             } as Card)));

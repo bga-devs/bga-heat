@@ -347,7 +347,7 @@ class Heat implements HeatGame {
                         switch (entry[0]) {
                             case 'cooldown':
                                 label = `${number} [Cooldown]`;
-                                const heats = this.getCurrentPlayerTable().hand.getCards().filter(card => [106, 111].includes(card.type)).length;
+                                const heats = this.getCurrentPlayerTable().hand.getCards().filter(card => card.effect == 'heat').length;
                                 if (heats < number) {
                                     label += `(- ${heats} [Heat])`;
                                 }
