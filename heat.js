@@ -2595,6 +2595,52 @@ var PlayerTable = /** @class */ (function () {
         var count = this.deck.getCardNumber() + inc;
         this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
     };
+    PlayerTable.prototype.scrapCards = function (cards) {
+        return __awaiter(this, void 0, void 0, function () {
+            var i, discardedCard;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        i = 0;
+                        _a.label = 1;
+                    case 1:
+                        if (!(i < cards.length)) return [3 /*break*/, 4];
+                        discardedCard = cards[i];
+                        this.deck.addCard(discardedCard, undefined, {
+                            autoUpdateCardNumber: false,
+                            autoRemovePreviousCards: false,
+                        });
+                        return [4 /*yield*/, this.discard.addCard(discardedCard)];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3:
+                        i++;
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/, true];
+                }
+            });
+        });
+    };
+    PlayerTable.prototype.resolveBoost = function (cards, card) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.scrapCards(cards)];
+                    case 1:
+                        _a.sent();
+                        this.deck.addCard(card, undefined, {
+                            autoUpdateCardNumber: false,
+                            autoRemovePreviousCards: false,
+                        });
+                        return [4 /*yield*/, this.inplay.addCard(card)];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/, true];
+                }
+            });
+        });
+    };
     return PlayerTable;
 }());
 var LegendTable = /** @class */ (function () {
@@ -3189,6 +3235,8 @@ var Heat = /** @class */ (function () {
             ['finishRace', ANIMATION_MS],
             ['endOfRace', 1],
             ['newLegendCard', undefined],
+            ['scrapCards', undefined],
+            ['resolveBoost', undefined],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
@@ -3405,6 +3453,16 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_newLegendCard = function (args) {
         return this.legendTable.newLegendCard(args.card);
+    };
+    Heat.prototype.notif_scrapCards = function (args) {
+        var constructor_id = args.constructor_id, cards = args.cards;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).scrapCards(Object.values(cards));
+    };
+    Heat.prototype.notif_resolveBoost = function (args) {
+        var constructor_id = args.constructor_id, cards = args.cards, card = args.card;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
     };
     Heat.prototype.setRank = function (constructorId, pos) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);

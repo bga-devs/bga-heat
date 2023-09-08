@@ -749,6 +749,8 @@ class Heat implements HeatGame {
             ['finishRace', ANIMATION_MS],
             ['endOfRace', 1],
             ['newLegendCard', undefined],
+            ['scrapCards', undefined],
+            ['resolveBoost', undefined],
         ];
         
     
@@ -939,6 +941,19 @@ class Heat implements HeatGame {
     notif_newLegendCard(args: NotifNewLegendCardArgs) {
         return this.legendTable.newLegendCard(args.card);
     }
+
+    notif_scrapCards(args: NotifScrapCardsArgs) {
+        const { constructor_id, cards } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).scrapCards(Object.values(cards));
+    }
+
+    notif_resolveBoost(args: NotifResolveBoostArgs) {
+        const { constructor_id, cards, card } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
+    }
+    
 
     private setRank(constructorId: number, pos: number) {
         const playerId = this.getPlayerIdFromConstructorId(constructorId);

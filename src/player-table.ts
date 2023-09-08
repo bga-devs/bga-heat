@@ -199,4 +199,29 @@ class PlayerTable {
         const count = this.deck.getCardNumber() + inc;
         this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
     }
+    
+    public async scrapCards(cards: Card[]): Promise<any> {
+        for (let i = 0; i < cards.length; i++) {
+            const discardedCard = cards[i];
+            this.deck.addCard(discardedCard, undefined, <AddCardToDeckSettings>{
+                autoUpdateCardNumber: false,
+                autoRemovePreviousCards: false,
+            });
+            await this.discard.addCard(discardedCard);
+        }
+
+        return true;
+    }
+    
+    public async resolveBoost(cards: Card[], card: Card): Promise<any> {
+        await this.scrapCards(cards);
+
+        this.deck.addCard(card, undefined, <AddCardToDeckSettings>{
+            autoUpdateCardNumber: false,
+            autoRemovePreviousCards: false,
+        });
+        await this.inplay.addCard(card);
+
+        return true;
+    }
 }

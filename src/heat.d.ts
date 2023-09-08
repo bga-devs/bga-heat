@@ -202,3 +202,14 @@ interface NotifEndOfRaceArgs {
 interface NotifNewLegendCardArgs {
     card: LegendCard;
 }
+
+// scrapCards
+interface NotifScrapCardsArgs {
+    constructor_id: number;
+    cards: { [id: number]: Card}; // cards to discard (from deck)
+}
+
+// resolveBoost
+interface NotifResolveBoostArgs extends NotifScrapCardsArgs {
+    card: Card; // card to add inPlay
+}

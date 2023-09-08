@@ -3,21 +3,16 @@ Other :
 Backend : 
   - planification : shouldnt be able to select heat (unless very rare case where you can play nothing) => moved to back, as front makes _private.cards selectable, and heat is in the least (player colored heat at least)
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
-  - pass when no react, or only useless cooldown ?
+  - pass when no react, or only useless cooldown ? I think I would let it visible when there is still a cooldown action, even if useless.
 
 Frontend :
   - notifications are too fast
-  - resolveBoost: cards are not added on "played cards"
-
-  - scrapCards notif: flipping card from deck to discard
 
   - "reduce stress" icon for React
   - discard notif : public discard if 'cards' is set up, eg for "reduce stress" effect the stress cards are public
     => now that I am thinking about it, maybe the last card when discarding should also be public to update discard display, no ?
 
   - tooltips for upgrades
-
-  - display discard
   
   - make speed counter work => updates when notif reveal, with sum of cards.speed. I need to check what can change this counter, probably reacts ? Maybe clean it at notif clearPlayedCards ?
 
