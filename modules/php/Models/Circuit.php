@@ -234,8 +234,12 @@ class Circuit
     $newPosition = $newPosition % $this->getLength();
 
     // Now get the cell
-    $cellId = $this->getFreeCell($newPosition);
-    $path[] = $cellId;
+    if ($newPosition > $currentPosition) {
+      $cellId = $this->getFreeCell($newPosition);
+      $path[] = $cellId;
+    } else {
+      $cellId = $path[0];
+    }
     return [$cellId, $nSpacesForward, $extraTurn, $path];
   }
 
