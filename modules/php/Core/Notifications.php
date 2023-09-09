@@ -310,7 +310,7 @@ class Notifications
 
   public function refresh($constructor, $card)
   {
-    self::notifyAll('refresh', clienttranslate('${constructor_name} puts back ${card_name} on the top of their deck'), [
+    self::notifyAll('refresh', clienttranslate('${constructor_name} puts back ${card_image} on the top of their deck'), [
       'constructor' => $constructor,
       'card' => $card,
     ]);
