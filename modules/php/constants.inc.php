@@ -78,6 +78,26 @@ const HEATED_BOOST = 'heated-boost';
  * MISC
  */
 
+const WEATHER_CLOUD = 0;
+const WEATHER_FOG = 1;
+const WEATHER_STORM = 2;
+const WEATHER_SNOW = 3;
+const WEATHER_RAIN = 4;
+const WEATHER_SUN = 5;
+
+const ROAD_CONDITION_WEATHER = 0;
+const ROAD_CONDITION_MORE_HEAT = 1;
+const ROAD_CONDITION_REDUCE_SPEED = 2;
+const ROAD_CONDITION_INCREASE_SPEED = 3;
+const ROAD_CONDITION_FREE_BOOST = 4;
+const ROAD_CONDITION_INCREASE_SLIPSTREAM = 5;
+
+// Road condition tokens from weather card
+const ROAD_CONDITION_NO_COOLDOWN = 100;
+const ROAD_CONDITION_NO_SLIPSTREAM = 101;
+const ROAD_CONDITION_SLIPSTREAM_BOOST = 102;
+const ROAD_CONDITION_COOLING_BONUS = 103;
+
 /******************
  ****** STATS ******
  ******************/

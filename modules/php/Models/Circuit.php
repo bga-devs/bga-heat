@@ -69,9 +69,9 @@ class Circuit
 
     // Weather
     $weatherCard = Globals::getWeatherCard();
-    if ($weatherCard == 0) {
+    if ($weatherCard == WEATHER_CLOUD) {
       $value--;
-    } elseif ($weatherCard == 2) {
+    } elseif ($weatherCard == WEATHER_STORM) {
       $value++;
     }
 
@@ -85,9 +85,9 @@ class Circuit
 
     // Weather
     $weatherCard = Globals::getWeatherCard();
-    if ($weatherCard == 1) {
+    if ($weatherCard == WEATHER_FOG) {
       $value++;
-    } elseif ($weatherCard == 3) {
+    } elseif ($weatherCard == WEATHER_SNOW) {
       $value--;
     }
 
@@ -290,10 +290,18 @@ class Circuit
 
   public function getCornerMaxSpeed($cornerPos)
   {
-    // TODO : handle weather
-    return $this->corners[$cornerPos];
+    $limit = $this->corners[$cornerPos];
+    $weather = $this->getCornerWeather($cornerPos);
+    if ($weather == \ROAD_CONDITION_INCREASE_SPEED) {
+      $limit++;
+    } elseif ($weather == \ROAD_CONDITION_REDUCE_SPEED) {
+      $limit--;
+    }
+
+    return $limit;
   }
 
+  // Get corner ahead
   public function getNextCorner($position)
   {
     foreach ($this->corners as $pos => $infos) {
@@ -303,6 +311,44 @@ class Circuit
     }
 
     return array_keys($this->corners)[0];
+  }
+
+  // Get "current" corner = corner behind
+  public function getSector($position)
+  {
+    $prevPos = array_keys($this->corners)[count($this->corners) - 1];
+    foreach ($this->corners as $pos => $infos) {
+      if ($pos > $position) {
+        return $prevPos;
+      }
+      $prevPos = $pos;
+    }
+
+    return $prevPos;
+  }
+
+  public function getCornerWeather($corner)
+  {
+    $weather = Globals::getWeather();
+    return $weather['tokens'][$corner] ?? null;
+  }
+
+  public function getRoadCondition($position)
+  {
+    $corner = $this->getSector($position);
+    $token = $this->getCornerWeather($corner);
+    if ($token == \ROAD_CONDITION_WEATHER) {
+      $map = [
+        WEATHER_CLOUD => ROAD_CONDITION_NO_COOLDOWN,
+        WEATHER_FOG => ROAD_CONDITION_NO_SLIPSTREAM,
+        WEATHER_STORM => ROAD_CONDITION_SLIPSTREAM_BOOST,
+        WEATHER_SNOW => ROAD_CONDITION_COOLING_BONUS,
+        WEATHER_RAIN => ROAD_CONDITION_COOLING_BONUS,
+        WEATHER_SUN => ROAD_CONDITION_SLIPSTREAM_BOOST,
+      ];
+      $token = $map[Globals::getWeatherCard()];
+    }
+    return $token;
   }
 
   public function getLegendLane($cornerPos)

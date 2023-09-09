@@ -346,6 +346,7 @@ trait RoundTrait
   {
     $constructor = Constructors::getActive();
     $symbols = Globals::getSymbols();
+    $roadCondition = $constructor->getRoadCondition();
 
     // Adrenaline
     $no = $constructor->getNo();
@@ -365,7 +366,20 @@ trait RoundTrait
     }
 
     // Add the boost symbol
-    $symbols[HEATED_BOOST] = 1;
+    if ($roadCondition == ROAD_CONDITION_FREE_BOOST) {
+      $symbols[BOOST] = 1;
+    } else {
+      $symbols[HEATED_BOOST] = 1;
+    }
+
+    // Weather might add 1 cooldown
+    if ($roadCondition == ROAD_CONDITION_COOLING_BONUS) {
+      $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
+    }
+    // Weather might disable cooldown
+    if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
+      unset($symbols[COOLDOWN]);
+    }
 
     // Save all the symbols and proceed to React phase
     Globals::setSymbols($symbols);
@@ -497,8 +511,24 @@ trait RoundTrait
   {
     $constructor = Constructors::getActive();
     $slipstreams = [2];
+    $cards = $constructor->getPlayedCards();
 
-    foreach ($constructor->getPlayedCards() as $card) {
+    // Weather might change slipstream
+    $roadCondition = $constructor->getRoadCondition();
+    if ($roadCondition == \ROAD_CONDITION_NO_SLIPSTREAM) {
+      return ['cells' => []];
+    } else {
+      $map = [
+        ROAD_CONDITION_INCREASE_SLIPSTREAM => 1,
+        ROAD_CONDITION_SLIPSTREAM_BOOST => 2,
+      ];
+      $slipstreamBonus = $map[$roadCondition] ?? 0;
+      $cards[] = [
+        'symbols' => [SLIPSTREAM => $slipstreamBonus],
+      ];
+    }
+
+    foreach ($cards as $card) {
       $n = $card['symbols'][SLIPSTREAM] ?? 0;
       if ($n == 0) {
         continue;
@@ -578,6 +608,12 @@ trait RoundTrait
         $delta = $speed - $limit;
         // Have we overspeed ?
         if ($delta > 0) {
+          // Road condition can increase number of heat to pay
+          $roadCondition = $this->getCircuit()->getRoadCondition($cornerPos);
+          if ($roadCondition == \ROAD_CONDITION_MORE_HEAT) {
+            $delta++;
+          }
+
           // Are we spinning out ??
           $available = $constructor->getEngine()->count();
           if ($delta > $available) {
