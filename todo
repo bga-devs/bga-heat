@@ -5,9 +5,12 @@ Backend :
   - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
   - pass when no react, or only useless cooldown ? I think I would let it visible when there is still a cooldown action, even if useless.
   - make last card of a discard notif always visible ?
+  - when using Refresh reaction, skip other reaction. And make sure there is no mandatory reaction pending.
+  - skip salvage (with logs) if empty discard
 
 Frontend :
   - test the end of the draft phase (hand cleaned & refilled ?)
+  - salvage state
 
   - notifications are too fast
   

@@ -107,7 +107,7 @@ interface EnteringPlanificationPrivateArgs {
     cards: number[];
     selection: string[];
     cells: { [speed: number]: number /*destination cell*/ };
-    speeds: { [cardId: number]: number};
+    speeds: { [cardId: number]: number | number[]};
 }
 
 interface EnteringPlanificationArgs {    
@@ -124,7 +124,8 @@ interface EnteringSlipstreamArgs {
 
 interface EnteringReactArgs {
     canPass: boolean;
-    symbols: { [symbol: string]: number };
+    symbols: { [symbol: string]: number | number[] };
+    flippedCards: number;
 }
 
 interface EnteringDiscardArgs {    
@@ -239,3 +240,11 @@ interface NotifScrapCardsArgs {
 interface NotifResolveBoostArgs extends NotifScrapCardsArgs {
     card: Card; // card to add inPlay
 }
+
+// accelerate
+interface NotifAccelerateArgs {
+    constructor_id: number;
+    speed: number;
+}
+
+

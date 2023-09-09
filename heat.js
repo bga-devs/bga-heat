@@ -3140,39 +3140,80 @@ var Heat = /** @class */ (function () {
                     this.addActionButton("actPassSlipstream_button", _('Pass'), function () { return _this.actSlipstream(0); });
                     break;
                 case 'react':
-                    var reactArgs = args;
+                    var reactArgs_1 = args;
                     this.addActionButton("actPassReact_button", _('Pass'), function () { return _this.actPassReact(); });
-                    if (!reactArgs.canPass) {
+                    if (!reactArgs_1.canPass) {
                         document.getElementById("actPassReact_button").classList.add('disabled');
                     }
-                    Object.entries(reactArgs.symbols).forEach(function (entry, index) {
-                        var label = "";
-                        var tooltip = "";
-                        var number = Number(entry[1]);
-                        switch (entry[0]) {
-                            case 'adrenaline':
-                                label = "+".concat(number, " [Speed]");
-                                tooltip = "\n                                <strong>".concat(_("Adrenaline"), "</strong>\n                                <br><br>\n                                ").concat(_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space)."), "\n                                <br><br>\n                                <i>").concat(_("Note: Adrenaline cannot be saved for future rounds"), "</i>");
-                                break;
-                            case 'cooldown':
-                                label = "".concat(number, " [Cooldown]");
-                                var heats = _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == 'heat'; }).length;
-                                if (heats < number) {
-                                    label += "(- ".concat(heats, " [Heat])");
+                    Object.entries(reactArgs_1.symbols).forEach(function (entry, index) {
+                        var type = entry[0];
+                        var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
+                        numbers.forEach(function (number) {
+                            var label = "";
+                            var tooltip = "";
+                            switch (type) {
+                                case 'accelerate':
+                                    //label = `+1 [Speed]<br>${this.cardImageHtml(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number), { constructor_id: this.getConstructorId() })}`;
+                                    label = "+".concat(reactArgs_1.flippedCards, " [Speed]<br>(").concat(_(_this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; }).text), ")");
+                                    tooltip = _this.getGarageModuleIconTooltip('accelerate', reactArgs_1.flippedCards);
+                                    break;
+                                case 'adjust':
+                                    label = "<div class=\"icon adjust\" style=\"color: #".concat(number > 0 ? '438741' : 'a93423', ";\">").concat(number > 0 ? "+".concat(number) : number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltip('adjust', number);
+                                    break;
+                                case 'adrenaline':
+                                    label = "+".concat(number, " [Speed]");
+                                    tooltip = "\n                                    <strong>".concat(_("Adrenaline"), "</strong>\n                                    <br><br>\n                                    ").concat(_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space)."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Adrenaline cannot be saved for future rounds"), "</i>");
+                                    break;
+                                case 'cooldown':
+                                    label = "".concat(number, " [Cooldown]");
+                                    var heats = _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == 'heat'; }).length;
+                                    if (heats < number) {
+                                        label += "(- ".concat(heats, " [Heat])");
+                                    }
+                                    tooltip = _this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
+                                    break;
+                                case 'direct':
+                                    label = "<div class=\"icon direct\"></div><br>(".concat(_(_this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; }).text), ")");
+                                    tooltip = _this.getGarageModuleIconTooltip('direct', 1);
+                                    break;
+                                case 'heat':
+                                    label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltip('heat', number);
+                                    break;
+                                case 'heated-boost':
+                                    label = "[Boost] > [Speed] (1[Heat])";
+                                    tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>");
+                                    break;
+                                case 'reduce':
+                                    label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltip('reduce', number);
+                                    break;
+                                case 'refresh':
+                                    label = "<div class=\"icon refresh\"></div>";
+                                    tooltip = _this.getGarageModuleIconTooltip('refresh', 1);
+                                    break;
+                                case 'salvage':
+                                    label = "<div class=\"icon salvage\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltip('salvage', number);
+                                    break;
+                                case 'scrap':
+                                    label = "<div class=\"icon scrap\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltip('scrap', number);
+                                    break;
+                            }
+                            var callback = function () { return _this.actReact(type, Array.isArray(entry[1]) ? number : undefined); };
+                            if (type == 'refresh') {
+                                if (!reactArgs_1.canPass) {
+                                    callback = function () { return _this.showMessage(_("You must resolve the mandatory reactions before Refresh !"), 'error'); };
                                 }
-                                tooltip = _this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
-                                break;
-                            case 'heated-boost':
-                                label = "[Boost] > [Speed]";
-                                tooltip = "\n                                <strong>".concat(_("Boost"), "</strong>\n                                <br><br>\n                                ").concat(_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                                <br><br>\n                                <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>");
-                                break;
-                            case 'reduce':
-                                label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
-                                tooltip = _this.getGarageModuleIconTooltip('reduce', number);
-                                break;
-                        }
-                        _this.addActionButton("actReact".concat(index, "_button"), formatTextIcons(label), function () { return _this.actReact(entry[0]); });
-                        _this.setTooltip("actReact".concat(index, "_button"), tooltip);
+                                else if (Object.keys(reactArgs_1.symbols).some(function (t) { return t != 'refresh'; })) {
+                                    callback = function () { return _this.confirmationDialog(_("If you use Refresh now, it will skip the other optional reactions."), function () { return _this.actReact(type, Array.isArray(entry[1]) ? number : undefined); }); };
+                                }
+                            }
+                            _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
+                            _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), tooltip);
+                        });
                     });
                     break;
                 case 'discard':
@@ -3206,6 +3247,10 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.getPlayerId = function () {
         return Number(this.player_id);
+    };
+    Heat.prototype.getConstructorId = function () {
+        var _this = this;
+        return Number(Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); }).id);
     };
     Heat.prototype.getPlayer = function (playerId) {
         return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
@@ -3244,8 +3289,6 @@ var Heat = /** @class */ (function () {
                 return "\n                    <strong>".concat(_("Scrap"), "</strong>\n                    <br>\n                    ").concat(_("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number), "\n                ");
             case 'slipstream':
                 return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number), "\n                ");
-            default:
-                console.log('getGarageModuleIconTooltip', symbol, number); // TODO
         }
     };
     Heat.prototype.setupPreferences = function () {
@@ -3332,27 +3375,48 @@ var Heat = /** @class */ (function () {
         var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Assets"), "</h2>\n            TODO\n        </div>");
         return html;
     };
+    Heat.prototype.getPossibleSpeeds = function (selectedCards, args) {
+        var speeds = [0];
+        selectedCards.forEach(function (card) {
+            var t = [];
+            var cSpeeds = args.speeds[card.id];
+            if (!Array.isArray(cSpeeds)) {
+                cSpeeds = [cSpeeds];
+            }
+            cSpeeds.forEach(function (cSpeed) {
+                speeds.forEach(function (speed) {
+                    t.push(cSpeed + speed);
+                });
+            });
+            speeds = t;
+        });
+        return speeds;
+    };
     Heat.prototype.onHandCardSelectionChange = function (selection) {
+        var _this = this;
         if (this.gamedatas.gamestate.name == 'planification') {
             var table = this.getCurrentPlayerTable();
             var gear = table.getCurrentGear();
             var minAllowed = Math.max(1, gear - 2);
             var maxAllowed = Math.min(4, gear + 2);
             var allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
+            var useHeat = allowed && Math.abs(selection.length - gear) == 2;
             var label = allowed ?
-                _('Set gear to ${gear} and play selected cards').replace('${gear}', "".concat(selection.length)) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
+                _('Set gear to ${gear} and play selected cards').replace('${gear}', "".concat(selection.length)) + (useHeat ? formatTextIcons(' (+1 [Heat])') : '') :
                 _('Select between ${min} and ${max} cards').replace('${min}', "".concat(minAllowed)).replace('${max}', "".concat(maxAllowed));
             document.getElementById("player-table-".concat(table.playerId, "-gear")).dataset.gear = "".concat(allowed ? selection.length : gear);
             var button = document.getElementById('actPlanification_button');
             button.innerHTML = label;
+            // we let the user able to click, so the back will explain in the error why he can't
+            /*if (allowed && useHeat && this.engineCounters[this.getConstructorId()].getValue() == 0) {
+                allowed = false;
+            }*/
             button.classList.toggle('disabled', !allowed);
             this.circuit.removeMapIndicators();
             var privateArgs_1 = this.gamedatas.gamestate.args._private;
             if (privateArgs_1) {
-                var totalSpeed = selection.map(function (card) { var _a; return (_a = privateArgs_1.speeds[card.id]) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0);
-                if (totalSpeed) {
-                    this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed]);
-                }
+                var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
+                totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed]); });
             }
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
@@ -3405,12 +3469,13 @@ var Heat = /** @class */ (function () {
         }
         this.takeAction('actPassReact');
     };
-    Heat.prototype.actReact = function (symbol) {
+    Heat.prototype.actReact = function (symbol, arg) {
         if (!this.checkAction('actReact')) {
             return;
         }
         this.takeAction('actReact', {
-            symbol: symbol
+            symbol: symbol,
+            arg: arg
         });
     };
     Heat.prototype.actDiscard = function () {
@@ -3480,6 +3545,7 @@ var Heat = /** @class */ (function () {
             ['newLegendCard', undefined],
             ['scrapCards', undefined],
             ['resolveBoost', undefined],
+            ['accelerate', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
@@ -3739,6 +3805,10 @@ var Heat = /** @class */ (function () {
         var constructor_id = args.constructor_id, cards = args.cards, card = args.card;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
+    };
+    Heat.prototype.notif_accelerate = function (args) {
+        var constructor_id = args.constructor_id, speed = args.speed;
+        this.speedCounters[constructor_id].incValue(speed);
     };
     Heat.prototype.setRank = function (constructorId, pos) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);

@@ -355,44 +355,88 @@ class Heat implements HeatGame {
                     }
 
                     Object.entries(reactArgs.symbols).forEach((entry, index) => {
-                        let label = ``;
-                        let tooltip = ``;
-                        const number = Number(entry[1]);
-                        switch (entry[0]) {
-                            case 'adrenaline':
-                                label = `+${number} [Speed]`;
-                                tooltip = `
-                                <strong>${_("Adrenaline")}</strong>
-                                <br><br>
-                                ${_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).")}
-                                <br><br>
-                                <i>${_("Note: Adrenaline cannot be saved for future rounds")}</i>`;
-                                break;
-                            case 'cooldown':
-                                label = `${number} [Cooldown]`;
-                                const heats = this.getCurrentPlayerTable().hand.getCards().filter(card => card.effect == 'heat').length;
-                                if (heats < number) {
-                                    label += `(- ${heats} [Heat])`;
-                                }
-                                tooltip = this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
-                                break;
-                            case 'heated-boost':
-                                label = `[Boost] > [Speed]`;
-                                tooltip = `
-                                <strong>${_("Boost")}</strong>
-                                <br><br>
-                                ${_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly.")}
-                                <br><br>
-                                <i>${_("Note: Boost increases your Speed value for the purpose of the Check Corner step.")}</i>`;
-                                break;
-                            case 'reduce':
-                                label = `<div class="icon reduce-stress">${number}</div>`;
-                                tooltip = this.getGarageModuleIconTooltip('reduce', number);
-                                break;
-                        }
+                        const type = entry[0];
+                        const numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
+                        numbers.forEach(number => {
+                            let label = ``;
+                            let tooltip = ``;
+                            switch (type) {
+                                case 'accelerate':
+                                    //label = `+1 [Speed]<br>${this.cardImageHtml(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number), { constructor_id: this.getConstructorId() })}`;
+                                    label = `+${reactArgs.flippedCards} [Speed]<br>(${_(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number).text) })`;
+                                    tooltip = this.getGarageModuleIconTooltip('accelerate', reactArgs.flippedCards);
+                                    break;
+                                case 'adjust':
+                                    label = `<div class="icon adjust" style="color: #${number > 0 ? '438741' : 'a93423'};">${number > 0 ? `+${number}` : number}</div>`;
+                                    tooltip = this.getGarageModuleIconTooltip('adjust', number);
+                                    break;
+                                case 'adrenaline':
+                                    label = `+${number} [Speed]`;
+                                    tooltip = `
+                                    <strong>${_("Adrenaline")}</strong>
+                                    <br><br>
+                                    ${_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).")}
+                                    <br><br>
+                                    <i>${_("Note: Adrenaline cannot be saved for future rounds")}</i>`;
+                                    break;
+                                case 'cooldown':
+                                    label = `${number} [Cooldown]`;
+                                    const heats = this.getCurrentPlayerTable().hand.getCards().filter(card => card.effect == 'heat').length;
+                                    if (heats < number) {
+                                        label += `(- ${heats} [Heat])`;
+                                    }
+                                    tooltip = this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
+                                    break;
+                                case 'direct':
+                                    label = `<div class="icon direct"></div><br>(${_(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number).text) })`;
+                                    tooltip = this.getGarageModuleIconTooltip('direct', 1);
+                                    break;
+                                case 'heat':
+                                    label = `<div class="icon forced-heat">${number}</div>`;
+                                    tooltip = this.getGarageModuleIconTooltip('heat', number);
+                                    break;
+                                case 'heated-boost':
+                                    label = `[Boost] > [Speed] (1[Heat])`;
+                                    tooltip = `
+                                    <strong>${_("Boost")}</strong>
+                                    <br><br>
+                                    ${_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly.")}
+                                    <br><br>
+                                    <i>${_("Note: Boost increases your Speed value for the purpose of the Check Corner step.")}</i>`;
+                                    break;
+                                case 'reduce':
+                                    label = `<div class="icon reduce-stress">${number}</div>`;
+                                    tooltip = this.getGarageModuleIconTooltip('reduce', number);
+                                    break;
+                                case 'refresh':
+                                    label = `<div class="icon refresh"></div>`;
+                                    tooltip = this.getGarageModuleIconTooltip('refresh', 1);
+                                    break;
+                                case 'salvage':
+                                    label = `<div class="icon salvage">${number}</div>`;
+                                    tooltip = this.getGarageModuleIconTooltip('salvage', number);
+                                    break;
+                                case 'scrap':
+                                    label = `<div class="icon scrap">${number}</div>`;
+                                    tooltip = this.getGarageModuleIconTooltip('scrap', number);
+                                    break;
+                            }
 
-                        (this as any).addActionButton(`actReact${index}_button`, formatTextIcons(label), () => this.actReact(entry[0]));
-                        this.setTooltip(`actReact${index}_button`, tooltip);
+                            let callback = () => this.actReact(type, Array.isArray(entry[1]) ? number : undefined);
+                            if (type == 'refresh') {
+                                if (!reactArgs.canPass) {
+                                    callback = () => (this as any).showMessage(_("You must resolve the mandatory reactions before Refresh !"), 'error');
+                                } else if (Object.keys(reactArgs.symbols).some(t => t != 'refresh')) {
+                                    callback = () => (this as any).confirmationDialog(
+                                        _("If you use Refresh now, it will skip the other optional reactions."),
+                                        () => this.actReact(type, Array.isArray(entry[1]) ? number : undefined)
+                                    );
+                                }
+                            }
+
+                            (this as any).addActionButton(`actReact${type}_${number}_button`, formatTextIcons(label), callback);
+                            this.setTooltip(`actReact${type}_${number}_button`, tooltip);
+                        });
                     });
                     break;
                 case 'discard':
@@ -431,6 +475,10 @@ class Heat implements HeatGame {
 
     public getPlayerId(): number {
         return Number((this as any).player_id);
+    }
+
+    private getConstructorId(): number {
+        return Number(Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId()).id);
     }
 
     public getPlayer(playerId: number): HeatPlayer {
@@ -519,9 +567,6 @@ class Heat implements HeatGame {
                     <br>
                     ${ _("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number) }
                 `;
-                
-            default:
-                console.log('getGarageModuleIconTooltip', symbol, number); // TODO
         }
     }
 
@@ -679,6 +724,27 @@ class Heat implements HeatGame {
 
         return html;
     }
+
+    private getPossibleSpeeds(selectedCards: Card[], args: EnteringPlanificationPrivateArgs) {
+        let speeds = [0];
+        selectedCards.forEach(card => {
+          let t = [];
+          let cSpeeds = args.speeds[card.id];
+          if (!Array.isArray(cSpeeds)) {
+            cSpeeds = [cSpeeds];
+          }
+  
+          cSpeeds.forEach(cSpeed => {
+            speeds.forEach(speed => {
+              t.push(cSpeed + speed);
+            })
+          })
+  
+          speeds = t;
+        });
+
+       return speeds;
+    }
     
     public onHandCardSelectionChange(selection: Card[]): void {
         if (this.gamedatas.gamestate.name == 'planification') {
@@ -687,24 +753,27 @@ class Heat implements HeatGame {
 
             const minAllowed = Math.max(1, gear - 2);
             const maxAllowed = Math.min(4, gear + 2);
-            const allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
+            let allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
+            const useHeat = allowed && Math.abs(selection.length - gear) == 2;
             const label = allowed ? 
-                _('Set gear to ${gear} and play selected cards').replace('${gear}', `${selection.length}`) + (Math.abs(selection.length - gear) == 2 ? formatTextIcons(' (+1 [Heat])') : '') :
+                _('Set gear to ${gear} and play selected cards').replace('${gear}', `${selection.length}`) + (useHeat ? formatTextIcons(' (+1 [Heat])') : '') :
                 _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
 
             document.getElementById(`player-table-${table.playerId}-gear`).dataset.gear = `${allowed ? selection.length : gear}`;
 
             const button = document.getElementById('actPlanification_button');
             button.innerHTML = label;
+            // we let the user able to click, so the back will explain in the error why he can't
+            /*if (allowed && useHeat && this.engineCounters[this.getConstructorId()].getValue() == 0) {
+                allowed = false;
+            }*/
             button.classList.toggle('disabled', !allowed);
 
             this.circuit.removeMapIndicators();
             const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
             if (privateArgs) {
-                const totalSpeed = selection.map(card => privateArgs.speeds[card.id] ?? 0).reduce((a, b) => a + b, 0);
-                if (totalSpeed) {
-                    this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]);
-                }
+                const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
+                totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]));
             }
 
         } else if (this.gamedatas.gamestate.name == 'discard') {
@@ -771,13 +840,14 @@ class Heat implements HeatGame {
         this.takeAction('actPassReact');
     }
   	
-    public actReact(symbol: string) {
+    public actReact(symbol: string, arg?: number) {
         if(!(this as any).checkAction('actReact')) {
             return;
         }
 
         this.takeAction('actReact', {
-            symbol
+            symbol,
+            arg
         });
     }
   	
@@ -855,6 +925,7 @@ class Heat implements HeatGame {
             ['newLegendCard', undefined],
             ['scrapCards', undefined],
             ['resolveBoost', undefined],
+            ['accelerate', ANIMATION_MS],
         ];
         
     
@@ -1090,7 +1161,11 @@ class Heat implements HeatGame {
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
     }
-    
+
+    notif_accelerate(args: NotifAccelerateArgs) {
+        const { constructor_id, speed } = args;
+        this.speedCounters[constructor_id].incValue(speed);
+    }  
 
     private setRank(constructorId: number, pos: number) {
         const playerId = this.getPlayerIdFromConstructorId(constructorId);

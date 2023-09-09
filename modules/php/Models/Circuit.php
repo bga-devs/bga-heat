@@ -337,7 +337,7 @@ class Circuit
   {
     $corner = $this->getSector($position);
     $token = $this->getCornerWeather($corner);
-    if ($token == \ROAD_CONDITION_WEATHER) {
+    if ($token === \ROAD_CONDITION_WEATHER) {
       $map = [
         WEATHER_CLOUD => ROAD_CONDITION_NO_COOLDOWN,
         WEATHER_FOG => ROAD_CONDITION_NO_SLIPSTREAM,

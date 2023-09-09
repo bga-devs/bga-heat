@@ -500,7 +500,7 @@ trait RoundTrait
     elseif ($symbol == ACCELERATE) {
       $cardId = $arg;
       $card = Cards::getSingle($cardId);
-      $n = Globals::setFlippedCards();
+      $n = Globals::getFlippedCards();
       $constructor->incSpeed($n);
       Notifications::accelerate($constructor, $card, $n);
       // Move car

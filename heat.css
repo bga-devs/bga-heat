@@ -1040,27 +1040,45 @@ html, .mode_3d #game_play_area_background {
   background-position-x: 0%;
 }
 .icon.engine {
-  background-position-x: 12.5%;
+  background-position-x: 7.1428571429%;
 }
 .icon.heat {
-  background-position-x: 25%;
+  background-position-x: 14.2857142857%;
 }
 .icon.cooldown {
-  background-position-x: 37.5%;
+  background-position-x: 21.4285714286%;
 }
 .icon.stress {
-  background-position-x: 50%;
+  background-position-x: 28.5714285714%;
 }
 .icon.boost {
-  background-position-x: 62.5%;
+  background-position-x: 35.7142857143%;
 }
 .icon.speed {
-  background-position-x: 75%;
+  background-position-x: 42.8571428571%;
 }
 .icon.podium {
-  background-position-x: 87.5%;
+  background-position-x: 50%;
 }
 .icon.reduce-stress {
+  background-position-x: 57.1428571429%;
+}
+.icon.scrap {
+  background-position-x: 64.2857142857%;
+}
+.icon.direct {
+  background-position-x: 71.4285714286%;
+}
+.icon.adjust {
+  background-position-x: 78.5714285714%;
+}
+.icon.forced-heat {
+  background-position-x: 85.7142857143%;
+}
+.icon.refresh {
+  background-position-x: 92.8571428571%;
+}
+.icon.salvage {
   background-position-x: 100%;
 }
 
