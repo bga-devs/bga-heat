@@ -338,11 +338,11 @@ class Notifications
   {
     self::notifyAll(
       'weatherHeats',
-      clienttranslate('${constructor_name} moves ${card_names} to ${loc} because of weather card'),
+      clienttranslate('${constructor_name} moves ${cards_images} to ${loc} because of weather card'),
       [
         'i18n' => ['loc'],
         'constructor' => $constructor,
-        'cards' => $heat,
+        'cards' => $heats,
         'location' => $location,
       ]
     );
