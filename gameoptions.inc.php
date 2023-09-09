@@ -46,140 +46,9 @@ $game_options = [
         'name' => clienttranslate('Standard'),
         'description' => clienttranslate('Customize the race by choosing the circuit and additional modules'),
       ],
-      OPTION_SETUP_TOURNAMENT => [
+      OPTION_SETUP_CHAMPIONSHIP => [
         'name' => clienttranslate('Championship'),
         'tmdisplay' => clienttranslate('[Championship]'),
-      ],
-    ],
-  ],
-
-  OPTION_CIRCUIT => [
-    'name' => totranslate('Circuit'),
-    'values' => [
-      OPTION_CIRCUIT_USA => [
-        'name' => clienttranslate('USA'),
-        'tmdisplay' => clienttranslate('[USA]'),
-      ],
-      OPTION_CIRCUIT_ITALIA => [
-        'name' => clienttranslate('Italia'),
-        'tmdisplay' => clienttranslate('[Italia]'),
-      ],
-      OPTION_CIRCUIT_GB => [
-        'name' => clienttranslate('Great-Britain'),
-        'tmdisplay' => clienttranslate('[GB]'),
-      ],
-      OPTION_CIRCUIT_FRANCE => [
-        'name' => clienttranslate('France'),
-        'tmdisplay' => clienttranslate('[France]'),
-      ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroptionisnot',
-        'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_TOURNAMENT],
-      ],
-    ],
-  ],
-
-  // OPTION_NBR_LAPS => [
-  //   'name' => totranslate('Number of laps'),
-  //   'values' => [
-  //     0 => [
-  //       'name' => clienttranslate('Default'),
-  //     ],
-  //     1 => [
-  //       'name' => clienttranslate('Single lap'),
-  //       'tmdisplay' => clienttranslate('[1 lap]'),
-  //     ],
-  //     2 => [
-  //       'name' => clienttranslate('2 laps'),
-  //       'tmdisplay' => clienttranslate('[2 laps]'),
-  //     ],
-  //     3 => [
-  //       'name' => clienttranslate('3 laps'),
-  //       'tmdisplay' => clienttranslate('[3 laps]'),
-  //     ],
-  //     4 => [
-  //       'name' => clienttranslate('4 laps'),
-  //       'tmdisplay' => clienttranslate('[4 laps]'),
-  //     ],
-  //   ],
-  //   'displaycondition' => [
-  //     [
-  //       'type' => 'otheroptionisnot',
-  //       'id' => OPTION_SETUP,
-  //       'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_TOURNAMENT],
-  //     ],
-  //   ],
-  // ],
-
-  OPTION_GARAGE_MODULE => [
-    'name' => totranslate('Garage module'),
-    'values' => [
-      OPTION_DISABLED => [
-        'name' => clienttranslate('Disabled'),
-      ],
-      OPTION_GARAGE_BASIC => [
-        'name' => clienttranslate('Basic upgrades only'),
-        'tmdisplay' => clienttranslate('[Garage: basic]'),
-      ],
-      OPTION_GARAGE_ADVANCED => [
-        'name' => clienttranslate('Advanced upgrades only'),
-        'tmdisplay' => clienttranslate('[Garage: advanced]'),
-      ],
-      OPTION_GARAGE_MIXED => [
-        'name' => clienttranslate('All upgrades'),
-        'tmdisplay' => clienttranslate('[Garage]'),
-      ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroptionisnot',
-        'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_TOURNAMENT],
-      ],
-    ],
-  ],
-
-  OPTION_GARAGE_CHOICE => [
-    'name' => totranslate('Choosing upgrades'),
-    'values' => [
-      OPTION_GARAGE_RANDOM => [
-        'name' => clienttranslate('Random'),
-        'tmdisplay' => clienttranslate('[Random upgrades]'),
-        'description' => clienttranslate('No draft. 3 random upgrades'),
-      ],
-      OPTION_GARAGE_DRAFT => [
-        'name' => clienttranslate('Draft'),
-        'description' => clienttranslate('3 rounds of upgrade cards drafting'),
-      ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroptionisnot',
-        'id' => OPTION_GARAGE_MODULE,
-        'value' => [OPTION_DISABLED],
-      ],
-    ],
-  ],
-
-  OPTION_WEATHER_MODULE => [
-    'name' => totranslate('Weather module'),
-    'values' => [
-      OPTION_DISABLED => [
-        'name' => clienttranslate('Disabled'),
-      ],
-      OPTION_WEATHER_ENABLED => [
-        'name' => clienttranslate('Enabled'),
-        'tmdisplay' => clienttranslate('[Weather]'),
-      ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroptionisnot',
-        'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_TOURNAMENT],
       ],
     ],
   ],
@@ -261,6 +130,162 @@ $game_options = [
           'value' => 1,
           'message' => clienttranslate('Number of lengeds + players can\'t exceed 6'),
         ],
+      ],
+    ],
+  ],
+
+  OPTION_CIRCUIT => [
+    'name' => totranslate('Circuit'),
+    'values' => [
+      OPTION_CIRCUIT_USA => [
+        'name' => clienttranslate('USA'),
+        'tmdisplay' => clienttranslate('[USA]'),
+      ],
+      OPTION_CIRCUIT_ITALIA => [
+        'name' => clienttranslate('Italia'),
+        'tmdisplay' => clienttranslate('[Italia]'),
+      ],
+      OPTION_CIRCUIT_GB => [
+        'name' => clienttranslate('Great-Britain'),
+        'tmdisplay' => clienttranslate('[GB]'),
+      ],
+      OPTION_CIRCUIT_FRANCE => [
+        'name' => clienttranslate('France'),
+        'tmdisplay' => clienttranslate('[France]'),
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_CHAMPIONSHIP],
+      ],
+    ],
+  ],
+
+  // OPTION_NBR_LAPS => [
+  //   'name' => totranslate('Number of laps'),
+  //   'values' => [
+  //     0 => [
+  //       'name' => clienttranslate('Default'),
+  //     ],
+  //     1 => [
+  //       'name' => clienttranslate('Single lap'),
+  //       'tmdisplay' => clienttranslate('[1 lap]'),
+  //     ],
+  //     2 => [
+  //       'name' => clienttranslate('2 laps'),
+  //       'tmdisplay' => clienttranslate('[2 laps]'),
+  //     ],
+  //     3 => [
+  //       'name' => clienttranslate('3 laps'),
+  //       'tmdisplay' => clienttranslate('[3 laps]'),
+  //     ],
+  //     4 => [
+  //       'name' => clienttranslate('4 laps'),
+  //       'tmdisplay' => clienttranslate('[4 laps]'),
+  //     ],
+  //   ],
+  //   'displaycondition' => [
+  //     [
+  //       'type' => 'otheroptionisnot',
+  //       'id' => OPTION_SETUP,
+  //       'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_CHAMPIONSHIP],
+  //     ],
+  //   ],
+  // ],
+
+  OPTION_GARAGE_MODULE => [
+    'name' => totranslate('Garage module'),
+    'values' => [
+      OPTION_DISABLED => [
+        'name' => clienttranslate('Disabled'),
+      ],
+      OPTION_GARAGE_BASIC => [
+        'name' => clienttranslate('Basic upgrades only'),
+        'tmdisplay' => clienttranslate('[Garage: basic]'),
+      ],
+      OPTION_GARAGE_ADVANCED => [
+        'name' => clienttranslate('Advanced upgrades only'),
+        'tmdisplay' => clienttranslate('[Garage: advanced]'),
+      ],
+      OPTION_GARAGE_MIXED => [
+        'name' => clienttranslate('All upgrades'),
+        'tmdisplay' => clienttranslate('[Garage]'),
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_CHAMPIONSHIP],
+      ],
+    ],
+  ],
+
+  OPTION_GARAGE_CHOICE => [
+    'name' => totranslate('Choosing upgrades'),
+    'values' => [
+      OPTION_GARAGE_RANDOM => [
+        'name' => clienttranslate('Random'),
+        'tmdisplay' => clienttranslate('[Random upgrades]'),
+        'description' => clienttranslate('No draft. 3 random upgrades'),
+      ],
+      OPTION_GARAGE_DRAFT => [
+        'name' => clienttranslate('Draft'),
+        'description' => clienttranslate('3 rounds of upgrade cards drafting'),
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_GARAGE_MODULE,
+        'value' => [OPTION_DISABLED],
+      ],
+    ],
+  ],
+
+  OPTION_WEATHER_MODULE => [
+    'name' => totranslate('Weather module'),
+    'values' => [
+      OPTION_DISABLED => [
+        'name' => clienttranslate('Disabled'),
+      ],
+      OPTION_WEATHER_ENABLED => [
+        'name' => clienttranslate('Enabled'),
+        'tmdisplay' => clienttranslate('[Weather]'),
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_CHAMPIONSHIP],
+      ],
+    ],
+  ],
+
+  OPTION_CHAMPIONSHIP => [
+    'name' => totranslate('Championship'),
+    'values' => [
+      OPTION_CHAMPIONSHIP_SEASON_61 => [
+        'name' => clienttranslate('Season 1961 (3 races)'),
+      ],
+      OPTION_CHAMPIONSHIP_SEASON_62 => [
+        'name' => clienttranslate('Season 1962 (3 races)'),
+      ],
+      OPTION_CHAMPIONSHIP_SEASON_63 => [
+        'name' => clienttranslate('Season 1963 (4 races)'),
+      ],
+      OPTION_CHAMPIONSHIP_CUSTOM => [
+        'name' => clienttranslate('Custom championship'),
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionis',
+        'id' => OPTION_SETUP,
+        'value' => OPTION_SETUP_CHAMPIONSHIP,
       ],
     ],
   ],
