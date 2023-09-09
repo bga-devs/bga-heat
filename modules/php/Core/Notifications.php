@@ -346,6 +346,15 @@ class Notifications
     ]);
   }
 
+  public static function accelerate($constructor, $card, $n)
+  {
+    self::notifyAll('accelerate', clienttranslate('${constructor_name} accelerates using ${card_image}'), [
+      'constructor' => $constructor,
+      'card' => $card,
+      'speed' => $n,
+    ]);
+  }
+
   public static function endDraftRound($round, $cardIds)
   {
     self::notifyAll('endDraftRound', clienttranslate('End of draft round n°${round}, removing leftover cards'), [

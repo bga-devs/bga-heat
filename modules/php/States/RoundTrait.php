@@ -498,9 +498,11 @@ trait RoundTrait
     }
     // ACCELERATE
     elseif ($symbol == ACCELERATE) {
+      $cardId = $arg;
+      $card = Cards::getSingle($cardId);
       $n = Globals::setFlippedCards();
       $constructor->incSpeed($n);
-      Notifications::accelerate($constructor, $n);
+      Notifications::accelerate($constructor, $card, $n);
       // Move car
       $this->moveCar($constructor, $n);
     }
