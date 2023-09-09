@@ -2309,7 +2309,7 @@ var LEADERBOARD_POSITIONS = {
     '-7': { x: 0, y: 284, a: 0 },
     '-8': { x: 0, y: 336, a: 0 },
 };
-var WEATHER_TOKENS_ON_SECTOR_TENT = [1, 5, 6];
+var WEATHER_TOKENS_ON_SECTOR_TENT = [0, 4, 5];
 // Wrapper for the animation that use requestAnimationFrame
 var CarAnimation = /** @class */ (function () {
     function CarAnimation(car, pathCells) {
@@ -2433,33 +2433,83 @@ var Circuit = /** @class */ (function () {
     Circuit.prototype.createWeather = function (weather, circuitDatas) {
         if (weather === null || weather === void 0 ? void 0 : weather.tokens) {
             this.createWeatherCard(weather.card, circuitDatas.weatherCardPos);
-            this.createWeatherTokens(weather.tokens, circuitDatas.corners);
+            this.createWeatherTokens(weather.tokens, circuitDatas.corners, weather.card);
         }
     };
     Circuit.prototype.createWeatherCard = function (type, wheatherCardPos) {
         var weatherCardDiv = document.createElement('div');
+        weatherCardDiv.id = 'weather-card';
         weatherCardDiv.classList.add('weather-card');
         weatherCardDiv.dataset.cardType = "".concat(type);
         weatherCardDiv.style.setProperty('--x', "".concat(wheatherCardPos.x, "px"));
         weatherCardDiv.style.setProperty('--y', "".concat(wheatherCardPos.y, "px"));
         this.mapDiv.insertAdjacentElement('beforeend', weatherCardDiv);
+        this.game.setTooltip(weatherCardDiv.id, "".concat(this.getWeatherCardSetupTooltip(type), "<br><br>").concat(this.getWeatherCardEffectTooltip(type)));
     };
-    Circuit.prototype.createWeatherTokens = function (tokens, corners) {
+    Circuit.prototype.getWeatherCardSetupTooltip = function (type) {
+        switch (type) {
+            case 0:
+                return _("Remove 1 Stress card from your deck.");
+            case 1:
+                return _("Place 1 extra Heat card in your Engine.");
+            case 2:
+                return _("Shuffle 1 extra Stress card into your deck.");
+            case 3:
+                return _("Remove 1 Heat card from your Engine.");
+            case 4:
+                return _("Shuffle 3 of your Heat cards into your draw deck.");
+            case 5:
+                return _("Place 3 of your Heat cards into your discard pile.");
+        }
+    };
+    Circuit.prototype.getWeatherCardEffectTooltip = function (type) {
+        switch (type) {
+            case 0:
+                return "\n                    <strong>".concat(_("No cooling"), "</strong>\n                    <br>\n                    ").concat(_("No Cooldown allowed in this sector during the React step."), "\n                ");
+            case 1:
+                return "\n                    <strong>".concat(_("No slipstream"), "</strong>\n                    <br>\n                    ").concat(_("You cannot start slipstreaming from this sector (you may slipstream into it)."), "\n                    ");
+            case 2:
+            case 5:
+                return "<strong>".concat(_("Slipstream boost"), "</strong>\n                <br>\n                ").concat(_("If you choose to Slipstream, you may add 2 extra Spaces to the usual 2 Spaces. Your car must be located in this sector before you slipstream."), "\n                ");
+            case 3:
+            case 4:
+                return "<strong>".concat(_("Cooling Bonus"), "</strong>\n                <br>\n                ").concat(_("+1 Cooldown in this sector during the React step."), "\n                ");
+        }
+    };
+    Circuit.prototype.createWeatherTokens = function (tokens, corners, cardType) {
         var _this = this;
         Object.entries(tokens).forEach(function (_a) {
             var cornerId = _a[0], type = _a[1];
             var field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             var corner = corners[cornerId];
-            _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")]);
+            _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType);
         });
     };
-    Circuit.prototype.createWeatherToken = function (type, x, y) {
+    Circuit.prototype.createWeatherToken = function (type, x, y, cardType) {
         var weatherTokenDiv = document.createElement('div');
+        weatherTokenDiv.id = "weather-token-".concat(type, "-").concat(document.querySelectorAll(".weather-token[id^=\"weather-token-\"]").length);
         weatherTokenDiv.classList.add('weather-token');
         weatherTokenDiv.dataset.tokenType = "".concat(type);
         weatherTokenDiv.style.setProperty('--x', "".concat(x, "px"));
         weatherTokenDiv.style.setProperty('--y', "".concat(y, "px"));
         this.mapDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
+        this.game.setTooltip(weatherTokenDiv.id, this.getWeatherTokenTooltip(type, cardType));
+    };
+    Circuit.prototype.getWeatherTokenTooltip = function (type, cardType) {
+        switch (type) {
+            case 0:
+                return "\n                    <strong>".concat(_("Weather"), "</strong>\n                    <br>\n                    ").concat(_("Weather effect applies to this sector:"), "\n                    <br>\n                    ").concat(this.getWeatherCardEffectTooltip(cardType), "\n                ");
+            case 1:
+                return "\n                    <strong>".concat(_("Overheat"), "</strong>\n                    <br>\n                    ").concat(_("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one."), "\n                ");
+            case 2:
+                return this.game.getGarageModuleIconTooltip('adjust', -1);
+            case 3:
+                return this.game.getGarageModuleIconTooltip('adjust', 1);
+            case 4:
+                return "\n                    <strong>".concat(_("Heat control"), "</strong>\n                    <br>\n                    ").concat(_("Do not pay Heat to boost in this sector (still max one boost per turn). Your car must be in the sector when you boost."), "\n                ");
+            case 5:
+                return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream."), "\n                ");
+        }
     };
     Circuit.prototype.getCellPosition = function (carCell) {
         var cell = structuredClone(carCell < 0 ? this.circuitDatas.podium : this.circuitDatas.cells[carCell]);

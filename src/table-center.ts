@@ -12,7 +12,7 @@ const LEADERBOARD_POSITIONS = {
     '-8': { x: 0, y: 336, a: 0 },
 };
 
-const WEATHER_TOKENS_ON_SECTOR_TENT = [1, 5, 6];
+const WEATHER_TOKENS_ON_SECTOR_TENT = [0, 4, 5];
 
 // Wrapper for the animation that use requestAnimationFrame
 class CarAnimation {
@@ -152,34 +152,117 @@ class Circuit {
     private createWeather(weather: Weather, circuitDatas: CircuitDatas): void {
         if (weather?.tokens) {
             this.createWeatherCard(weather.card, circuitDatas.weatherCardPos);
-            this.createWeatherTokens(weather.tokens, circuitDatas.corners);
+            this.createWeatherTokens(weather.tokens, circuitDatas.corners, weather.card);
         }
     }
     
     private createWeatherCard(type: number, wheatherCardPos: Cell): void {
         const weatherCardDiv = document.createElement('div');
+        weatherCardDiv.id = 'weather-card';
         weatherCardDiv.classList.add('weather-card');
         weatherCardDiv.dataset.cardType = `${type}`;
         weatherCardDiv.style.setProperty('--x', `${wheatherCardPos.x}px`);
         weatherCardDiv.style.setProperty('--y', `${wheatherCardPos.y}px`);
         this.mapDiv.insertAdjacentElement('beforeend', weatherCardDiv);
+        this.game.setTooltip(weatherCardDiv.id, `${this.getWeatherCardSetupTooltip(type)}<br><br>${this.getWeatherCardEffectTooltip(type)}`);
+    }
+
+    private getWeatherCardSetupTooltip(type: number): string {
+        switch (type) {
+            case 0:
+                return _("Remove 1 Stress card from your deck.");
+            case 1:
+                return _("Place 1 extra Heat card in your Engine.");
+            case 2:
+                return _("Shuffle 1 extra Stress card into your deck.");
+            case 3:
+                return _("Remove 1 Heat card from your Engine.");
+            case 4:
+                return _("Shuffle 3 of your Heat cards into your draw deck.");
+            case 5:
+                return _("Place 3 of your Heat cards into your discard pile.");
+        }
+    }
+
+    private getWeatherCardEffectTooltip(type: number): string {
+        switch (type) {
+            case 0:
+                return `
+                    <strong>${_("No cooling")}</strong>
+                    <br>
+                    ${ _("No Cooldown allowed in this sector during the React step.") }
+                `;
+            case 1:
+                return `
+                    <strong>${_("No slipstream")}</strong>
+                    <br>
+                    ${ _("You cannot start slipstreaming from this sector (you may slipstream into it).") }
+                    `;
+            case 2: case 5:
+                return `<strong>${_("Slipstream boost")}</strong>
+                <br>
+                ${ _("If you choose to Slipstream, you may add 2 extra Spaces to the usual 2 Spaces. Your car must be located in this sector before you slipstream.") }
+                `;
+            case 3: case 4:
+                return `<strong>${_("Cooling Bonus")}</strong>
+                <br>
+                ${ _("+1 Cooldown in this sector during the React step.") }
+                `;
+        }
     }
     
-    private createWeatherTokens(tokens:  { [id: number]: number }, corners: { [id: number]: Corner }): void {
+    private createWeatherTokens(tokens: { [id: number]: number }, corners: { [id: number]: Corner }, cardType: number): void {
         Object.entries(tokens).forEach(([cornerId, type]) => {
             const field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             const corner = corners[cornerId];
-            this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`]);
+            this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`], cardType);
         });
     }
     
-    private createWeatherToken(type: number, x: number, y: number): void {
+    private createWeatherToken(type: number, x: number, y: number, cardType: number): void {
         const weatherTokenDiv = document.createElement('div');
+        weatherTokenDiv.id = `weather-token-${type}-${document.querySelectorAll(`.weather-token[id^="weather-token-"]`).length}`;
         weatherTokenDiv.classList.add('weather-token');
         weatherTokenDiv.dataset.tokenType = `${type}`;
         weatherTokenDiv.style.setProperty('--x', `${x}px`);
         weatherTokenDiv.style.setProperty('--y', `${y}px`);
         this.mapDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
+        this.game.setTooltip(weatherTokenDiv.id, this.getWeatherTokenTooltip(type, cardType));
+    }
+
+    private getWeatherTokenTooltip(type: number, cardType: number): string {
+        switch (type) {
+            case 0:
+                return `
+                    <strong>${_("Weather")}</strong>
+                    <br>
+                    ${ _("Weather effect applies to this sector:") }
+                    <br>
+                    ${this.getWeatherCardEffectTooltip(cardType)}
+                `;
+            case 1:
+                return `
+                    <strong>${_("Overheat")}</strong>
+                    <br>
+                    ${ _("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one.") }
+                `;
+            case 2:
+                return this.game.getGarageModuleIconTooltip('adjust', -1);
+            case 3:
+                return this.game.getGarageModuleIconTooltip('adjust', 1);
+            case 4:
+                return `
+                    <strong>${_("Heat control")}</strong>
+                    <br>
+                    ${ _("Do not pay Heat to boost in this sector (still max one boost per turn). Your car must be in the sector when you boost.") }
+                `;
+            case 5:
+                return `
+                    <strong>${_("Slipstream boost")}</strong>
+                    <br>
+                    ${ _("If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream.") }
+                `;
+        }
     }
 
     private getCellPosition(carCell: number) {
