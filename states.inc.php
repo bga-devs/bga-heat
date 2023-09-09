@@ -116,21 +116,6 @@ $machinestates = [
     'possibleactions' => ['actPlan', 'actCancelPlan'],
   ],
 
-  // ST_REVEAL => [
-  //   'name' => 'reveal',
-  //   'description' => '',
-  //   'type' => 'game',
-  //   'action' => 'stReveal',
-  // ],
-
-  // ST_END_ROUND => [
-  //   'name' => 'endRound',
-  //   'description' => '',
-  //   'type' => 'game',
-  //   'action' => 'stEndRound',
-  //   'updateGameProgression' => true,
-  // ],
-
   ST_CHOOSE_SPEED => [
     'name' => 'chooseSpeed',
     'description' => clienttranslate('${actplayer} must choose their speed'),
@@ -150,6 +135,15 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsReact',
     'possibleactions' => ['actReact', 'actPassReact'],
+  ],
+
+  ST_SALVAGE => [
+    'name' => 'salvage',
+    'description' => clienttranslate('${actplayer} may choose up to ${n} card(s) in your discard to put back in your deck'),
+    'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} card(s) in your discard to put back in your deck'),
+    'type' => 'activeplayer',
+    'args' => 'argsSalvage',
+    'possibleactions' => ['actSalvage', 'actPassReact'],
   ],
 
   ST_SLIPSTREAM => [

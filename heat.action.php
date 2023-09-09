@@ -62,7 +62,7 @@ class action_heat extends APP_GameAction
   public function actChooseSpeed()
   {
     self::setAjaxMode();
-    $speed = self::getArg('speed', AT_posint, false);
+    $speed = self::getArg('speed', AT_posint, true);
     $this->game->actChooseSpeed($speed);
     self::ajaxResponse();
   }
@@ -77,8 +77,18 @@ class action_heat extends APP_GameAction
   public function actReact()
   {
     self::setAjaxMode();
-    $symbol = self::getArg('symbol', AT_alphanum_dash, false);
-    $this->game->actReact($symbol);
+    $symbol = self::getArg('symbol', AT_alphanum_dash, true);
+    $arg = self::getArg('arg', AT_alphanum_dash, false, '');
+    $this->game->actReact($symbol, $arg);
+    self::ajaxResponse();
+  }
+
+  public function actSalvage()
+  {
+    self::setAjaxMode();
+    $cardIds = self::getArg('cardIds', AT_json, true);
+    $this->validateJSonAlphaNum($cardIds, 'cardIds');
+    $this->game->actSalvage($cardIds);
     self::ajaxResponse();
   }
 

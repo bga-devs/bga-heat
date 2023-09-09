@@ -291,6 +291,31 @@ class Notifications
     ]);
   }
 
+  public function salvageCards($constructor, $cards)
+  {
+    self::notifyAll('salvageCards', clienttranslate('${constructor_name} salvages ${cards_images}'), [
+      'constructor' => $constructor,
+      'cards' => $cards,
+    ]);
+  }
+
+  public function directPlay($constructor, $card, $speed)
+  {
+    self::notifyAll('directPlay', clienttranslate('${constructor_name} plays ${card_name} from their hand'), [
+      'constructor' => $constructor,
+      'card' => $card,
+      'speed' => $speed,
+    ]);
+  }
+
+  public function refresh($constructor, $card)
+  {
+    self::notifyAll('refresh', clienttranslate('${constructor_name} puts back ${card_name} on the top of their deck'), [
+      'constructor' => $constructor,
+      'card' => $card,
+    ]);
+  }
+
   public static function newLegendCard($card)
   {
     self::notifyAll('newLegendCard', clienttranslate('A new legend card is revealed'), [

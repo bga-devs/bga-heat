@@ -236,7 +236,11 @@ trait RoundTrait
     $symbols = [];
     foreach ($cards as $card) {
       foreach ($card['symbols'] as $symbol => $n) {
-        $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
+        if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
+          $symbols[$symbol][] = $card['id'];
+        } else {
+          $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
+        }
       }
     }
 
@@ -246,6 +250,7 @@ trait RoundTrait
       list($cards, $card) = $constructor->resolveBoost();
       Notifications::resolveBoost($constructor, $cards, $card, $i + 1, $n);
     }
+    Globals::setFlippedCards($n);
 
     unset($symbols[BOOST]);
     Globals::setSymbols($symbols);
@@ -421,10 +426,11 @@ trait RoundTrait
       'doable' => $doableSymbols,
       'canPass' => $canPass,
       'descSuffix' => $canPass ? '' : 'Must',
+      'flippedCards' => Globals::getFlippedCards(),
     ];
   }
 
-  public function actReact($symbol)
+  public function actReact($symbol, $arg)
   {
     self::checkAction('actReact');
     $constructor = Constructors::getActive();
@@ -435,7 +441,11 @@ trait RoundTrait
     }
 
     // Update remaining symbols
-    unset($symbols[$symbol]);
+    if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
+      $symbols[$symbol] = array_diff($symbols[$symbol], [$arg]);
+    } else {
+      unset($symbols[$symbol]);
+    }
     Globals::setSymbols($symbols);
     /////// Resolve effect ///////
     // COOLDOWN
@@ -456,6 +466,7 @@ trait RoundTrait
     elseif ($symbol == HEATED_BOOST) {
       $heats = $constructor->payHeats(1);
       list($cards, $card) = $constructor->resolveBoost();
+      Globals::incFlippedCards();
       Notifications::heatedBoost($constructor, $heats, $cards, $card);
       // Increase speed and move the card
       $speed = $card['speed'];
@@ -478,6 +489,49 @@ trait RoundTrait
       $cards = $constructor->scrapCards($n);
       Notifications::scrapCards($constructor, $cards);
     }
+    // REFRESH
+    elseif ($symbol == REFRESH) {
+      $cardId = $arg;
+      $card = Cards::getSingle($cardId);
+      Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
+      Notifications::refresh($constructor, $card);
+    }
+    // ACCELERATE
+    elseif ($symbol == ACCELERATE) {
+      $n = Globals::setFlippedCards();
+      $constructor->incSpeed($n);
+      Notifications::accelerate($constructor, $n);
+      // Move car
+      $this->moveCar($constructor, $n);
+    }
+    // SALVAGE
+    elseif ($symbol == SALVAGE) {
+      $this->gamestate->jumpToState(ST_SALVAGE);
+      return;
+    }
+    // DIRECT
+    elseif ($symbol == DIRECT) {
+      $cardId = $arg;
+      $card = Cards::getSingle($cardId);
+      Cards::move($cardId, ['inplay', $constructor->getId()]);
+      $speed = $card['speed'];
+      $constructor->incSpeed($speed);
+      Notifications::directPlay($constructor, $card, $speed);
+
+      if ($speed > 0) {
+        $this->moveCar($constructor, $n);
+      }
+
+      $symbols = Globals::getSymbols();
+      foreach ($card['symbols'] as $symbol => $n) {
+        if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
+          $symbols[$symbol][] = $card['id'];
+        } else {
+          $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
+        }
+      }
+      Globals::setSymbols($symbols);
+    }
 
     // Loop on same state to resolve other pending symbols
     $this->gamestate->jumpToState(ST_REACT);
@@ -496,6 +550,38 @@ trait RoundTrait
   public function stReactDone()
   {
     $this->gamestate->jumpToState(ST_SLIPSTREAM);
+  }
+
+  ///////////////////////////////
+  /// SALVAGE
+  ///////////////////////////////
+  public function argsSalvage()
+  {
+    $constructor = Constructors::getActive();
+    return [
+      'cardIds' => $constructor->getDiscard()->getIds(),
+    ];
+  }
+
+  public function actSalvage($cardIds)
+  {
+    self::checkAction('actSalvage');
+    $args = $this->argsSalvage();
+    foreach ($cardIds as $cardId) {
+      if (!in_array($cardId, $args['cardIds'])) {
+        throw new \BgaVisibleSystemException('Cant salvage this card. Should not happen');
+      }
+    }
+
+    $constructor = Constructors::getActive();
+    $cId = $constructor->getId();
+    if (!empty($cardIds)) {
+      Cards::move($cardIds, "deck-$cId");
+      Cards::shuffle("deck-$cId");
+      $cards = Cards::getMany($cardIds);
+      Notifications::salvageCards($constructor, $cards);
+    }
+    $this->gamestate->jumpToState(ST_REACT);
   }
 
   //////////////////////////////////////////////////////////////////
@@ -600,11 +686,16 @@ trait RoundTrait
     $turn = $constructor->getTurn();
     $corners = $this->getCircuit()->getCornersInBetween($prevTurn, $prevPosition, $turn, $position);
 
+    // Max speed modificator
+    $symbols = Globals::getSymbols();
+    $speedLimitModifier = $symbols[ADJUST] ?? 0;
+
     // For each corner, check speed against max speed of corner
     if (!empty($corners)) {
       $speed = $constructor->getSpeed();
       foreach ($corners as $cornerPos) {
         $limit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
+        $limit += $speedLimitModifier;
         $delta = $speed - $limit;
         // Have we overspeed ?
         if ($delta > 0) {
