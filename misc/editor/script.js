@@ -24,11 +24,11 @@ function updateFilesListCreate() {
     names.push(fileList[i].name);
   }
 
-  $('circuit-files-label').innerHTML = names.length ? names.join(', ') : 'Click here to load JPEG + SVG images';
+  $('circuit-files-label').innerHTML = names.length ? names.join(', ') : 'Click here to load SVG';
 }
 updateFilesListCreate();
 
-$('btn-create').addEventListener('click', () => {
+$('btn-create').addEventListener('click', async () => {
   if ($('circuit-id').value == '') {
     alert('Please fill a circuit id');
     return;
@@ -38,17 +38,32 @@ $('btn-create').addEventListener('click', () => {
     return;
   }
 
+  // Checking SVG file
   let svgFile = null;
-  let jpgFile = null;
   let fileList = $('circuit-files').files;
   for (let i = 0; i < fileList.length; i++) {
     let name = fileList[i].name;
     let ext = name.split('.').pop();
-    if (ext == 'jpg') jpgFile = URL.createObjectURL(fileList[i]);
     if (ext == 'svg') svgFile = URL.createObjectURL(fileList[i]);
   }
-  if (svgFile == null || jpgFile == null) {
-    alert('Please select a jpg and a svg file of a circuit');
+  if (svgFile == null) {
+    alert('Please select a svg file of a circuit');
+    return;
+  }
+
+  // Checking JPG file
+  let jpgFile = null;
+  let url = $('circuit-jpg').value;
+  if (url == null) {
+    alert('You must give an URL for the jpg file');
+    return;
+  }
+
+  let validURL = await testURL(url);
+  if (validURL) {
+    jpgFile = url;
+  } else {
+    alert('Invalid jpg file');
     return;
   }
 
@@ -56,14 +71,59 @@ $('btn-create').addEventListener('click', () => {
   let datas = {
     id: $('circuit-id').value,
     name: $('circuit-name').value,
-    assets: 'local',
+    jpgUrl: jpgFile,
     cells: {},
     computed: {},
   };
-  loadCircuit(datas, jpgFile, svgFile);
-  saveCircuit();
-  $('splashscreen').classList.add('hidden');
+
+  initCircuit(datas, jpgFile, svgFile).then(() => {
+    loadCircuit(datas);
+    saveCircuit();
+    $('splashscreen').classList.add('hidden');
+  });
 });
+
+function testURL(url) {
+  return new Promise((resolve, reject) => {
+    let tester = new Image();
+    tester.addEventListener('load', () => resolve(true));
+    tester.addEventListener('error', () => resolve(false));
+    tester.src = url;
+  });
+}
+
+function initCircuit(datas, jpgUrl, svgUrl) {
+  return new Promise((resolve, reject) => {
+    // Create obj loading external svg
+    let obj = document.createElement('object');
+    obj.data = svgUrl;
+    obj.type = 'image/svg+xml';
+    obj.id = 'board';
+    $('main-frame').appendChild(obj);
+
+    // Load svg
+    obj.onload = () => {
+      // Gather general datas
+      let root = obj.contentDocument.documentElement;
+      datas.width = root.viewBox.baseVal.width;
+      datas.height = root.viewBox.baseVal.height;
+
+      // Find the cells
+      let svg = obj.contentDocument.querySelector('svg');
+      let paths = [...svg.querySelectorAll('path')];
+      paths.forEach((cell) => {
+        // Remove the "path" prefix auto-added by Inkscape
+        let id = parseInt(cell.id.substring(4));
+        datas.cells[id] = {
+          d: roundPath(cell.getAttribute('d'), 0),
+        };
+      });
+
+      obj.remove();
+      resolve();
+    };
+  });
+}
 
 ///////////////////////////////////////////////////////////////
 //  _                    _    ____ _                _ _
@@ -90,33 +150,60 @@ Object.keys(circuits).forEach((circuitId) => {
   $('select-circuit').appendChild(option);
 });
 
-$('form-load-storage').addEventListener('submit', (evt) => {
-  evt.preventDefault();
-
+// Load when an option is selected
+$('select-circuit').addEventListener('change', () => {
   let circuitId = $('select-circuit').value;
-  if (circuitId == '') {
-    alert('Please select a circuit in the list');
-    return;
+  if (circuitId != '') {
+    loadCircuitFromStorage(circuitId);
   }
-
-  loadCircuitFromStorage(circuitId);
 });
 
 function loadCircuitFromStorage(circuitId) {
   let datas = circuits[circuitId];
-  let jpgFile = null;
-  let svgFile = null;
-  if (datas.assets == 'local') {
-    alert('TODO');
-    return;
-  } else {
-    jpgFile = datas.assets.jpg;
-    svgFile = datas.assets.svg;
-  }
-
-  loadCircuit(datas, jpgFile, svgFile);
+  loadCircuit(datas);
   $('splashscreen').classList.add('hidden');
 }
+
+$('form-load-storage').addEventListener('submit', async (evt) => {
+  evt.preventDefault();
+
+  let circuitId = $('select-circuit').value;
+  if (circuitId != '') {
+    loadCircuitFromStorage(circuitId);
+    return;
+  }
+
+  // Checking Heat file
+  let heatFile = null;
+  let fileList = $('load-file').files;
+  for (let i = 0; i < fileList.length; i++) {
+    let name = fileList[i].name;
+    let ext = name.split('.').pop();
+    if (ext == 'heat') heatFile = fileList[i];
+  }
+  if (heatFile == null) {
+    alert('Please either select a file on browser storage or select a heat file on your computer');
+    return;
+  }
+
+  let datas = await parseJsonFile(heatFile);
+  loadCircuit(datas);
+  $('splashscreen').classList.add('hidden');
+});
+
+const loadCircuitInput = $('load-file');
+loadCircuitInput.addEventListener('change', updateLoadFile, false);
+
+function updateLoadFile() {
+  const fileList = loadCircuitInput.files;
+  let names = [];
+  for (let i = 0; i < fileList.length; i++) {
+    names.push(fileList[i].name);
+  }
+
+  $('load-file-label').innerHTML = names.length ? names.join(', ') : 'Click here to load .heat file';
+}
+updateLoadFile();
 
 //////////////////////////////////
 //  _____    _ _ _
@@ -126,49 +213,43 @@ function loadCircuitFromStorage(circuitId) {
 // |_____\__,_|_|\__\___/|_|
 //////////////////////////////////
 
-function loadCircuit(datas, jpgUrl, svgUrl) {
+function loadCircuit(datas) {
   DATAS = datas;
 
   $('display-circuit-id').innerHTML = 'ID: ' + DATAS.id;
   $('display-circuit-name').innerHTML = 'Name: ' + DATAS.name;
 
   // Create obj loading external svg
-  let obj = document.createElement('object');
-  obj.data = svgUrl;
-  obj.type = 'image/svg+xml';
-  obj.id = 'board';
-  obj.style.backgroundImage = `url(${jpgUrl})`;
-  $('main-frame').appendChild(obj);
+  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.id = 'board';
+  svg.style.backgroundImage = `url(${datas.jpgUrl})`;
+  svg.setAttribute('viewBox', `0 0 ${datas.width} ${datas.height}`);
+  svg.setAttribute('width', datas.width);
+  svg.setAttribute('height', datas.height);
+  $('main-frame').appendChild(svg);
 
-  // Load svg
-  obj.onload = () => {
-    // Find the cells
-    let svg = obj.contentDocument.querySelector('svg');
-    let paths = [...svg.querySelectorAll('path')];
-    console.log(paths);
-    paths.forEach((cell) => {
-      // Remove the "path" prefix auto-added by Inkscape
-      let id = parseInt(cell.id.substring(4));
-      CELLS[id] = cell;
-      if (!DATAS.cells[id]) {
-        DATAS.cells[id] = {};
-      }
+  // Recreate the cells
+  Object.keys(DATAS.cells).forEach((cellId) => {
+    let cell = document.createElementNS(svg.namespaceURI, 'path');
+    cell.setAttribute('id', 'path' + cellId);
+    cell.setAttribute('d', DATAS.cells[cellId].d);
+    svg.appendChild(cell);
 
-      cell.addEventListener('mouseenter', () => onMouseEnterCell(id, cell));
-      cell.addEventListener('mouseleave', () => onMouseLeaveCell(id, cell));
-      cell.addEventListener('click', (evt) => onMouseClickCell(id, cell, evt));
+    CELLS[cellId] = cell;
+    cell.addEventListener('mouseenter', () => onMouseEnterCell(cellId, cell));
+    cell.addEventListener('mouseleave', () => onMouseLeaveCell(cellId, cell));
+    cell.addEventListener('click', (evt) => onMouseClickCell(cellId, cell, evt));
 
-      cell.style.fill = 'transparent';
-      cell.style.stroke = 'black';
-      cell.style.strokeWidth = '1';
-    });
+    cell.style.fill = 'transparent';
+    cell.style.stroke = 'black';
+    cell.style.strokeWidth = '1';
+  });
 
-    $('display-circuit-lap').innerHTML = 'Lap: ' + paths.length / 2 + ' cells';
-    if (DATAS.computed.centers || false) updateCenters();
-    if (DATAS.computed.directions || false) updateDirections();
-    if (DATAS.computed.laneEnds || false) updateLaneEnds();
-    if (DATAS.computed.positions || false) updatePositions();
-  };
+  $('display-circuit-lap').innerHTML = 'Lap: ' + Object.keys(CELLS).length / 2 + ' cells';
+  if (DATAS.computed.centers || false) updateCenters();
+  if (DATAS.computed.directions || false) updateDirections();
+  if (DATAS.computed.laneEnds || false) updateLaneEnds();
+  if (DATAS.computed.positions || false) updatePositions();
 
   updateStatus();
 }
@@ -176,6 +257,29 @@ function loadCircuit(datas, jpgUrl, svgUrl) {
 function forEachCell(callback) {
   Object.keys(CELLS).forEach((cellId) => callback(cellId, CELLS[cellId]));
 }
+
+//////////////////
+//////////////////
+///  CHANGE JPG
+//////////////////
+//////////////////
+$('circuit-change-jpg').addEventListener('click', async () => {
+  let jpgFile = null;
+  while (jpgFile == null) {
+    let url = window.prompt('URL of the jpg file');
+    if (url == null) return;
+    let validURL = await testURL(url);
+    if (validURL) {
+      jpgFile = url;
+    } else {
+      alert('Invalid jpg file');
+    }
+  }
+
+  DATAS.jpgUrl = jpgFile;
+  $('board').style.backgroundImage = `url(${jpgFile})`;
+  saveCircuit();
+});
 
 //////////////////
 //////////////////
@@ -217,7 +321,7 @@ function exportJSON() {
   let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(DATAS));
   let dlAnchorElem = document.getElementById('download-anchor');
   dlAnchorElem.setAttribute('href', dataStr);
-  dlAnchorElem.setAttribute('download', DATAS.id + '.json');
+  dlAnchorElem.setAttribute('download', DATAS.id + '.heat');
   dlAnchorElem.click();
 }
 $('save-btn').addEventListener('click', () => exportJSON());
@@ -250,55 +354,10 @@ function exportCompressedJSON() {
   let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(d));
   let dlAnchorElem2 = document.getElementById('download-anchor2');
   dlAnchorElem2.setAttribute('href', dataStr);
-  dlAnchorElem2.setAttribute('download', DATAS.id + '-min.json');
+  dlAnchorElem2.setAttribute('download', DATAS.id + '-min.heat');
   dlAnchorElem2.click();
 }
 $('save-compressed-btn').addEventListener('click', () => exportCompressedJSON());
-/////////////////
-/////////////////
-///  ADD URLS
-/////////////////
-////////////////
-function testURL(url) {
-  return new Promise((resolve, reject) => {
-    let tester = new Image();
-    tester.addEventListener('load', () => resolve(true));
-    tester.addEventListener('error', () => resolve(false));
-    tester.src = url;
-  });
-}
-
-$('add-urls').addEventListener('click', async () => {
-  let jpgFile = null;
-  while (jpgFile == null) {
-    let url = window.prompt('URL of the jpg file');
-    if (url == null) return;
-    let validURL = await testURL(url);
-    if (validURL) {
-      jpgFile = url;
-    } else {
-      alert('Invalid jpg file');
-    }
-  }
-
-  let svgFile = null;
-  while (svgFile == null) {
-    let url = window.prompt('URL of the svg file');
-    if (url == null) return;
-    let validURL = await testURL(url);
-    if (validURL) {
-      svgFile = url;
-    } else {
-      alert('Invalid svg file');
-    }
-  }
-
-  DATAS.assets = {
-    jpg: jpgFile,
-    svg: svgFile,
-  };
-  saveCircuit();
-});
 
 ////////////////////////////////
 //  ___        __
@@ -341,9 +400,6 @@ $('stress-cards').addEventListener('click', () => {
 ///////////////////////////////////////////////
 
 function updateStatus() {
-  let isLocal = DATAS.assets == 'local';
-  $('circuit-files-status').innerHTML = isLocal ? 'Local' : 'Online';
-  $('circuit-files-status').classList.toggle('local', isLocal);
   $('stress-cards-value').innerHTML = DATAS.stressCards || 0;
   $('heat-cards-value').innerHTML = DATAS.heatCards || 0;
   $('number-laps-value').innerHTML = DATAS.nbrLaps || 0;
@@ -472,8 +528,8 @@ function onMouseClickCell(id, cell, evt) {
   }
 
   if (modes.centers.edit) {
-    let x = evt.clientX - 1,
-      y = evt.clientY - 3;
+    let x = evt.clientX - $('main-frame').offsetLeft - 1,
+      y = evt.clientY - $('main-frame').offsetTop - 3;
     DATAS.cells[id].x = x;
     DATAS.cells[id].y = y;
     updateCenters();
@@ -493,6 +549,7 @@ function onMouseClickCell(id, cell, evt) {
       cell.style.fill = 'green';
     } else {
       changeDirection(selectedCell, evt);
+      CELLS[selectedCell].style.fill = 'transparent';
       selectedCell = null;
       saveCircuit();
       clearHighlights();
@@ -622,9 +679,10 @@ function swapDirection(cellId) {
 }
 
 function changeDirection(id, evt) {
-  let x = evt.clientX - 1,
-    y = evt.clientY - 3;
+  let x = evt.clientX - $('main-frame').offsetLeft - 1,
+    y = evt.clientY - $('main-frame').offsetTop - 3;
   let center = getCenter(id);
+  console.log(center, x, y);
   DATAS.cells[id].a = (Math.atan2(y - center.y, x - center.x) * 180) / Math.PI;
   updateDirection(id);
 }
@@ -750,8 +808,10 @@ function toggleNeighbour(selectedCell, id, cell) {
 function updateLaneEnd(lane, cellId) {
   if (!DATAS.computed.laneEnds) DATAS.computed.laneEnds = {};
   DATAS.computed.laneEnds[`end${lane}`] = cellId;
+  modes.lanes[`end${lane}`] = false;
   saveCircuit();
   updateLaneEnds();
+  $(`end${lane}-lanes`).classList.remove('active');
 }
 
 function updateLaneEnds() {
@@ -910,4 +970,35 @@ function merge(a, b) {
   // add all items from B to copy C if they're not already present
   b.forEach((bItem) => (c.some((cItem) => bItem == cItem) ? null : c.push(bItem)));
   return c;
+}
+
+function round(value, decimals) {
+  let val = eval(value);
+  return Number(`${Math.round(`${val}e${decimals}`)}e-${decimals}`);
+}
+
+function roundPath(path, decimals = 3) {
+  function roundPathPoint(pathPoint) {
+    function roundPathPointElement(pathPointElement) {
+      if (pathPointElement.match(/^[A-Za-z]/)) {
+        return `${pathPointElement[0]}${pathPointElement.slice(1) && round(pathPointElement.slice(1), decimals)}`;
+      }
+      return round(pathPointElement, decimals);
+    }
+
+    const pathPointElements = pathPoint.split(',');
+    return pathPointElements.map(roundPathPointElement);
+  }
+
+  const pathPoints = path.split(' ');
+  return pathPoints.map(roundPathPoint).join(' ');
+}
+
+async function parseJsonFile(file) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = (event) => resolve(JSON.parse(event.target.result));
+    fileReader.onerror = (error) => reject(error);
+    fileReader.readAsText(file);
+  });
 }

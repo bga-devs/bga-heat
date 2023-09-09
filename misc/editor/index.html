@@ -21,19 +21,28 @@
                 <input type="text" id="circuit-name" />
               </div>
               <div class="form-group">
-                <label id="circuit-files-label" for="circuit-files"> Click here to load JPEG + SVG images </label>
-                <input type="file" id="circuit-files" multiple accept=".jpg,.svg" />
+                <label for="circuit-jpg">URL for JPG:</label>
+                <input type="text" id="circuit-jpg" />
               </div>
-
+              <div class="form-group">
+                <label id="circuit-files-label" for="circuit-files"> Click here to load SVG</label>
+                <input type="file" id="circuit-files" accept=".svg" />
+              </div>
               <button id="btn-create" type="button">Create new</button>
             </form>
           </div>
           <div id="col-load">
-            <h3>Load from browser storage</h3>
             <form id="form-load-storage">
+              <h3>Load from browser storage</h3>
               <select id="select-circuit">
                 <option value="">--Choose your circuit--</option>
               </select>
+              <h4>-------------------- OR ------------------</h4>
+              <h3>Load from a file</h3>
+              <div class="form-group">
+                <label id="load-file-label" for="load-file"> Click here to load .heat file</label>
+                <input type="file" id="load-file" accept=".heat" />
+              </div>
               <button type="submit">Load</button>
             </form>
           </div>
@@ -51,7 +60,7 @@
           ⛓
           <a id="download-anchor2" style="display: none"></a>
         </div>
-        <div id="circuit-files-status">Local</div>
+        <div id="circuit-change-jpg">JPG</div>
         <div id="add-urls">🔗</div>
         <div id="display-circuit-id"></div>
         <div id="display-circuit-name"></div>
@@ -110,8 +119,8 @@
         </div>
 
         <div id="filler"></div>
-        <button id="force-refresh">Force refresh</button>
-        <textarea id="data"></textarea>
+        <button style="display: none" id="force-refresh">Force refresh</button>
+        <textarea style="display: none" id="data"></textarea>
       </div>
       <div id="main-frame">
         <div id="centers"></div>
