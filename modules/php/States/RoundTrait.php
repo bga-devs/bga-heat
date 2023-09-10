@@ -251,8 +251,16 @@ trait RoundTrait
       Notifications::resolveBoost($constructor, $cards, $card, $i + 1, $n);
     }
     Globals::setFlippedCards($n);
-
     unset($symbols[BOOST]);
+
+    // Direct play
+    unset($symbols[DIRECT]);
+    foreach ($constructor->getHand() as $cardId => $card) {
+      if (isset($card['symbols'][DIRECT])) {
+        $symbols[DIRECT][] = $cardId;
+      }
+    }
+
     Globals::setSymbols($symbols);
 
     $this->gamestate->jumpToState(ST_CHOOSE_SPEED);
