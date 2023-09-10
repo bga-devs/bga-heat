@@ -2523,6 +2523,9 @@ var Circuit = /** @class */ (function () {
         var car = document.createElement('div');
         car.id = "car-".concat(constructor.id),
             car.classList.add('car');
+        if (constructor.pId === this.game.getPlayerId()) {
+            car.classList.add('current');
+        }
         var cell = this.getCellPosition(constructor.carCell);
         car.style.setProperty('--x', "".concat(cell.x, "px"));
         car.style.setProperty('--y', "".concat(cell.y, "px"));
@@ -2861,10 +2864,14 @@ var LegendTable = /** @class */ (function () {
     return LegendTable;
 }());
 var ANIMATION_MS = 500;
+var MIN_NOTIFICATION_MS = 1200;
 var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
+function sleep(ms) {
+    return new Promise(function (r) { return setTimeout(r, ms); });
+}
 var Heat = /** @class */ (function () {
     function Heat() {
         this.playersTables = [];
@@ -3414,7 +3421,7 @@ var Heat = /** @class */ (function () {
             button.classList.toggle('disabled', !allowed);
             this.circuit.removeMapIndicators();
             var privateArgs_1 = this.gamedatas.gamestate.args._private;
-            if (privateArgs_1) {
+            if (selection.length && privateArgs_1) {
                 var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
                 totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed]); });
             }
@@ -3551,13 +3558,16 @@ var Heat = /** @class */ (function () {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
                 log("notif_".concat(notif[0]), notifDetails.args);
                 var promise = _this["notif_".concat(notif[0])](notifDetails.args);
-                // tell the UI notification ends, if the function returned a promise
-                promise === null || promise === void 0 ? void 0 : promise.then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
+                var promises = promise ? [promise] : [];
                 var msg = /*this.formatString(*/ _this.format_string_recursive(notifDetails.log, notifDetails.args) /*)*/;
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
+                    // If there is some text, we let the message some time, to be read 
+                    promises.push(sleep(MIN_NOTIFICATION_MS));
                 }
+                // tell the UI notification ends, if the function returned a promise. 
+                Promise.all(promises).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
             });
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
