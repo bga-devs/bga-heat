@@ -642,12 +642,15 @@ height: 241px; */
   height: 34px;
   background: url("img/cars.png");
   background-position-y: calc(var(--constructor-id) * 20%);
-  background-size: 100% 600%;
+  background-size: 200% 600%;
   transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 }
 .car.with-transition {
   transition: transform var(--transition-time);
+}
+.car.current {
+  background-position-x: 100%;
 }
 
 .map-indicator {

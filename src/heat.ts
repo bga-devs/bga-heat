@@ -7,12 +7,17 @@ declare const g_gamethemeurl;
 declare const g_img_preload;
 
 const ANIMATION_MS = 500;
+const MIN_NOTIFICATION_MS = 1200;
 const ACTION_TIMER_DURATION = 5;
 
 const LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
 const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
+
+function sleep(ms: number){
+    return new Promise((r) => setTimeout(r, ms));
+}
 
 class Heat implements HeatGame {
     public animationManager: AnimationManager;
@@ -771,7 +776,7 @@ class Heat implements HeatGame {
 
             this.circuit.removeMapIndicators();
             const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
-            if (privateArgs) {
+            if (selection.length && privateArgs) {
                 const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
                 totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]));
             }
@@ -934,15 +939,18 @@ class Heat implements HeatGame {
                 log(`notif_${notif[0]}`, notifDetails.args);
 
                 const promise = this[`notif_${notif[0]}`](notifDetails.args);
-
-                // tell the UI notification ends, if the function returned a promise
-                promise?.then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
-
+                const promises = promise ? [promise] : [];
                 let msg = /*this.formatString(*/this.format_string_recursive(notifDetails.log, notifDetails.args)/*)*/;
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
+
+                    // If there is some text, we let the message some time, to be read 
+                    promises.push(sleep(MIN_NOTIFICATION_MS));
                 }
+
+                // tell the UI notification ends, if the function returned a promise. 
+                Promise.all(promises).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
             });
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });

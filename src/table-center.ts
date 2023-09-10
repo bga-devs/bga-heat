@@ -280,6 +280,9 @@ class Circuit {
         const car = document.createElement('div');
         car.id = `car-${constructor.id}`,
         car.classList.add('car');
+        if (constructor.pId === this.game.getPlayerId()) {
+            car.classList.add('current');
+        }
         const cell = this.getCellPosition(constructor.carCell);
         car.style.setProperty('--x', `${cell.x}px`);
         car.style.setProperty('--y', `${cell.y}px`);

@@ -11,8 +11,6 @@ Backend :
 Frontend :
   - test the end of the draft phase (hand cleaned & refilled ?)
   - salvage state
-
-  - notifications are too fast
   
   - make speed counter work => updates when notif reveal, with sum of cards.speed. I need to check what can change this counter, probably reacts ? Maybe clean it at notif clearPlayedCards ?
 
