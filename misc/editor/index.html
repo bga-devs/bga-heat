@@ -1,12 +1,39 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8" />
     <link rel="stylesheet" href="style.css" />
     <title>HEAT Circuit Editor</title>
   </head>
   <body>
+    <div id="help-container" class="open">
+      <div id="help-wrapper">
+        <i class="fa-icon fa-close"></i>
+        <h4>What is this about?</h4>
+        <p>
+          This allows Heat fans to make their fanmade circuit playable online on BGA. This is not a tool to help make a custom
+          circuit, but instead to more easily track relevant information that BGA needs to be able to play on an unofficial board.
+        </p>
+
+        <h4>Prerequisites</h4>
+        <p>
+          Obviously the first thing you will need is in asset of the custom circuit you want to work with. In the following, we
+          will illustrate the process with the USA map.
+        </p>
+        <img src="img/tuto_usa.jpg" class="middle" />
+
+        <h4>1] Extracting the track from the board</h4>
+        <p>
+          The first step consist of processing the jpg file to generate a png file that contains exactly 1 black zone for each
+          cell:
+        </p>
+        <img src="img/tuto_cells.png" class="middle" />
+      </div>
+    </div>
+
     <div id="splashscreen">
       <div id="splashbox">
+        <div id="open-help"><i class="fa-icon fa-help"></i></div>
         <h1 id="title"></h1>
         <h2 id="subtitle">Circuit editor</h2>
         <div id="split-hor">
@@ -53,68 +80,59 @@
     <div id="editor">
       <div id="top-bar">
         <div id="save-btn">
-          &#128190;
+          <i class="fa-icon fa-save"></i>
           <a id="download-anchor" style="display: none"></a>
         </div>
         <div id="save-compressed-btn">
-          ⛓
+          <i class="fa-icon fa-compressed"></i>
           <a id="download-anchor2" style="display: none"></a>
         </div>
-        <div id="circuit-change-jpg">JPG</div>
-        <div id="add-urls">🔗</div>
+        <div id="circuit-change-jpg"><i class="fa-icon fa-change-image"></i></div>
         <div id="display-circuit-id"></div>
         <div id="display-circuit-name"></div>
         <div id="display-circuit-lap"></div>
-        <div id="number-laps">
-          Number of laps:
-          <span id="number-laps-value"></span>
-        </div>
-        <div id="heat-cards">
-          Heat cards:
-          <span id="heat-cards-value"></span>
-        </div>
-        <div id="stress-cards">
-          Stress cards:
-          <span id="stress-cards-value"></span>
-        </div>
+        <div id="number-laps"><i class="fa-icon fa-lap"></i>&nbsp;:&nbsp;<span id="number-laps-value"></span></div>
+        <div id="heat-cards"><i class="icon heat"></i>&nbsp;:&nbsp;<span id="heat-cards-value"></span></div>
+        <div id="stress-cards"><i class="icon reduce-stress"></i>&nbsp;:&nbsp;<span id="stress-cards-value"></span></div>
+        <div id="number-corners"><i class="fa-icon fa-corner"></i>&nbsp;:&nbsp;<span id="number-corners-value"></span></div>
       </div>
       <div id="left-bar">
         <div id="cell-indicator">Cell: <span id="cell-indicator-counter">----</span></div>
         <div class="section" id="section-centers">
           <h2>Centers</h2>
           <div class="toolbar">
-            <button id="show-centers">👁</button>
-            <button id="edit-centers">✏</button>
-            <button id="generate-centers">↺</button>
+            <button id="show-centers"><i class="fa-icon fa-eye"></i></button>
+            <button id="edit-centers"><i class="fa-icon fa-pencil"></i></button>
+            <button id="generate-centers"><i class="fa-icon fa-compute"></i></button>
           </div>
         </div>
         <div class="section" id="section-directions">
           <h2>Directions</h2>
           <div class="toolbar">
-            <button id="show-directions">👁</button>
-            <button id="edit-directions">✏</button>
-            <button id="swap-directions">⇌</button>
-            <button id="generate-directions">↺</button>
+            <button id="show-directions"><i class="fa-icon fa-eye"></i></button>
+            <button id="edit-directions"><i class="fa-icon fa-pencil"></i></button>
+            <button id="swap-directions"><i class="fa-icon fa-swap"></i></button>
+            <button id="generate-directions"><i class="fa-icon fa-compute"></i></button>
           </div>
         </div>
         <div class="section" id="section-neighbours">
           <h2>Neighbours</h2>
           <div class="toolbar">
-            <button id="show-neighbours">👁</button>
-            <button id="edit-neighbours">✏</button>
-            <button id="generate-neighbours">↺</button>
+            <button id="show-neighbours"><i class="fa-icon fa-eye"></i></button>
+            <button id="edit-neighbours"><i class="fa-icon fa-pencil"></i></button>
+            <button id="generate-neighbours"><i class="fa-icon fa-compute"></i></button>
           </div>
         </div>
         <div class="section" id="section-lanes">
           <h2>Lanes</h2>
           <div class="toolbar">
-            <button id="end1-lanes">1🏁</button>
-            <button id="end2-lanes">2🏁</button>
+            <button id="end1-lanes"><b>1</b> <i class="fa-icon fa-flag"></i></button>
+            <button id="end2-lanes"><b>2</b> <i class="fa-icon fa-flag"></i></button>
           </div>
           <div class="toolbar">
-            <button id="show-lanes">👁</button>
-            <button id="edit-lanes" disabled="disabled" style="pointer-events: none">✏</button>
-            <button id="generate-lanes">↺</button>
+            <button id="show-lanes"><i class="fa-icon fa-eye"></i></button>
+            <button id="edit-lanes" disabled="disabled" style="pointer-events: none"><i class="fa-icon fa-pencil"></i></button>
+            <button id="generate-lanes"><i class="fa-icon fa-compute"></i></button>
           </div>
         </div>
 

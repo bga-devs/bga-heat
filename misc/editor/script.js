@@ -5,6 +5,25 @@ let CELLS = [];
 // Sections
 const SECTIONS = ['centers', 'directions', 'neighbours', 'lanes'];
 
+////// HELP //////
+
+$('open-help').addEventListener('click', () => {
+  $('help-container').classList.add('open');
+});
+
+$('help-container')
+  .querySelector('.fa-close')
+  .addEventListener('click', () => {
+    $('help-container').classList.remove('open');
+  });
+
+$('help-container').addEventListener('click', () => {
+  $('help-container').classList.remove('open');
+});
+$('help-wrapper').addEventListener('click', (evt) => {
+  evt.stopPropagation();
+});
+
 ///////////////////////////////////////////////////////////
 //  _   _                  ____ _                _ _
 // | \ | | _____      __  / ___(_)_ __ ___ _   _(_) |_
@@ -442,6 +461,15 @@ SECTIONS.forEach((section) => {
       modes[section][action] = !modes[section][action];
       $('main-frame').classList.toggle(`edit-${section}`, modes[section][action]);
       $(`${action}-${section}`).classList.toggle('active', modes[section][action]);
+
+      if (action == 'edit' && modes[section][action]) {
+        SECTIONS.forEach((section2) => {
+          if (section == section2) return;
+          modes[section2][action] = false;
+          $('main-frame').classList.remove(`edit-${section2}`);
+          $(`${action}-${section2}`).classList.remove('active');
+        });
+      }
     });
   });
 
@@ -454,7 +482,9 @@ SECTIONS.forEach((section) => {
 let highlightedCells = {};
 function highlightCells(cellIds = null, className = null) {
   if (cellIds != null) {
-    cellIds.forEach((cellId) => (highlightedCells[cellId] = className[cellId] ?? className));
+    cellIds.forEach(
+      (cellId) => (highlightedCells[cellId] = Array.isArray(className) && className[cellId] ? className[cellId] : className)
+    );
   }
 
   Object.keys(highlightedCells).forEach((cellId) => {
@@ -462,6 +492,7 @@ function highlightCells(cellIds = null, className = null) {
     if (c == 'white') c = '#ffffffaa';
     if (c == 'green') c = '#00ff00aa';
 
+    console.log(highlightedCells, cellId, c);
     CELLS[cellId].style.fill = c;
   });
 }
@@ -510,7 +541,7 @@ function onMouseLeaveCell(id, cell) {
 
 let selectedCell = null;
 function onMouseClickCell(id, cell, evt) {
-  if (modes.positions.edit) {
+  if (modes.lanes.edit) {
     let newPos = prompt('New position ?');
     DATAS.cells[id].position = parseInt(newPos);
     updatePositions();
@@ -820,7 +851,10 @@ function updateLaneEnds() {
     let cellId = DATAS.computed.laneEnds[end] ?? null;
     if (cellId) {
       if (!$(`lane-${end}`)) {
-        $(`center-${cellId}`).insertAdjacentHTML('beforeend', `<div id='lane-${end}' class='lane-end-indicator'>${i}🏁</div>`);
+        $(`center-${cellId}`).insertAdjacentHTML(
+          'beforeend',
+          `<div id='lane-${end}' class='lane-end-indicator'>${i}<i class='fa-icon fa-flag'></i></div>`
+        );
       }
 
       $(`center-${cellId}`).insertAdjacentElement('beforeend', $(`lane-${end}`));
