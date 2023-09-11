@@ -162,11 +162,15 @@ class Circuit
     return 0;
   }
 
-  public function getFreeCell($position)
+  public function getFreeCell($position, $exclude = null, $error = true)
   {
-    $lane = $this->getFreeLane($position);
+    $lane = $this->getFreeLane($position, $exclude);
     if ($lane == 0) {
-      die('Trying to get free cell on a busy position');
+      if ($error) {
+        die('Trying to get free cell on a busy position');
+      } else {
+        $lane = 1;
+      }
     }
     return $this->getCell($position, $lane);
   }

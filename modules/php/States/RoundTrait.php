@@ -108,6 +108,9 @@ trait RoundTrait
 
       // Compute corresponding speeds
       $speeds = $hand->map(function ($card) {
+        if ($card['effect'] == STRESS) {
+          return 4;
+        }
         return $card['speed'];
       });
       // Compute max speed
@@ -117,9 +120,9 @@ trait RoundTrait
       }
       // Compute corresponding cells
       $cells = [];
+      $pos = $constructor->getPosition();
       for ($i = 0; $i <= $maxSpeed; $i++) {
-        list($newCell, $nSpacesForward, $extraTurns, $path) = $this->getCircuit()->getReachedCell($constructor, $i);
-        $cells[$i] = $newCell;
+        $cells[$i] = $this->getCircuit()->getFreeCell($pos + $i, $constructor->getId(), false);
       }
 
       $args['_private'][$pId] = [
