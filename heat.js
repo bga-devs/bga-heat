@@ -3476,24 +3476,8 @@ var Heat = /** @class */ (function () {
             var privateArgs_1 = this.gamedatas.gamestate.args._private;
             if (selection.length && privateArgs_1) {
                 var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
-                var stressCards = selection.filter(function (card) { return card.effect == 'stress'; }).length;
-                if (stressCards) {
-                    var placedIndicators_1 = [];
-                    var addForStressMin_1 = stressCards * 1;
-                    var addForStressMax_1 = stressCards * 4;
-                    totalSpeeds.forEach(function (totalSpeed) {
-                        for (var i = addForStressMin_1; i <= addForStressMax_1; i++) {
-                            var stressTotalSpeed = totalSpeed + i;
-                            if (!placedIndicators_1.includes(stressTotalSpeed) && privateArgs_1.cells[stressTotalSpeed]) {
-                                _this.circuit.addMapIndicator(privateArgs_1.cells[stressTotalSpeed], undefined, true);
-                                placedIndicators_1.push(stressTotalSpeed);
-                            }
-                        }
-                    });
-                }
-                else {
-                    totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed]); });
-                }
+                var stressCardsSelected_1 = selection.filter(function (card) { return card.effect == 'stress'; }).length > 0;
+                totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed], undefined, stressCardsSelected_1); });
             }
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
@@ -3611,28 +3595,28 @@ var Heat = /** @class */ (function () {
             _this.addLogClass();
         });
         var notifs = [
-            ['chooseUpgrade', ANIMATION_MS],
-            ['endDraftRound', ANIMATION_MS],
-            ['reformingDeckWithUpgrades', ANIMATION_MS],
-            ['updatePlanification', ANIMATION_MS],
+            ['chooseUpgrade', undefined],
+            ['endDraftRound', undefined],
+            ['reformingDeckWithUpgrades', undefined],
+            ['updatePlanification', undefined],
             ['reveal', undefined],
             ['moveCar', undefined],
-            ['updateTurnOrder', 1],
+            ['updateTurnOrder', undefined],
             ['payHeats', undefined],
-            ['adrenaline', ANIMATION_MS],
+            ['adrenaline', undefined],
             ['spinOut', undefined],
-            ['discard', ANIMATION_MS],
-            ['pDiscard', ANIMATION_MS],
-            ['draw', ANIMATION_MS],
-            ['pDraw', ANIMATION_MS],
+            ['discard', undefined],
+            ['pDiscard', undefined],
+            ['draw', undefined],
+            ['pDraw', undefined],
             ['clearPlayedCards', undefined],
-            ['cooldown', ANIMATION_MS],
-            ['finishRace', ANIMATION_MS],
-            ['endOfRace', 1],
+            ['cooldown', undefined],
+            ['finishRace', undefined],
+            ['endOfRace', undefined],
             ['newLegendCard', undefined],
             ['scrapCards', undefined],
             ['resolveBoost', undefined],
-            ['accelerate', ANIMATION_MS],
+            ['accelerate', undefined],
             ['salvageCards', undefined],
         ];
         notifs.forEach(function (notif) {
@@ -3650,7 +3634,7 @@ var Heat = /** @class */ (function () {
                 // tell the UI notification ends, if the function returned a promise. 
                 Promise.all(promises).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
             });
-            _this.notifqueue.setSynchronous(notif[0], notif[1]);
+            _this.notifqueue.setSynchronous(notif[0], undefined);
         });
         if (isDebug) {
             notifs.forEach(function (notif) {

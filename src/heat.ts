@@ -814,23 +814,8 @@ class Heat implements HeatGame {
             const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
             if (selection.length && privateArgs) {
                 const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
-                const stressCards = selection.filter(card => card.effect == 'stress').length;
-                if (stressCards) {
-                    const placedIndicators = [];
-                    const addForStressMin = stressCards * 1;
-                    const addForStressMax = stressCards * 4;
-                    totalSpeeds.forEach(totalSpeed => {
-                        for (let i = addForStressMin; i <= addForStressMax; i++) {
-                            const stressTotalSpeed = totalSpeed + i;
-                            if (!placedIndicators.includes(stressTotalSpeed) && privateArgs.cells[stressTotalSpeed]) {
-                                this.circuit.addMapIndicator(privateArgs.cells[stressTotalSpeed], undefined, true);
-                                placedIndicators.push(stressTotalSpeed);
-                            }
-                        }
-                    });
-                } else {
-                    totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]));
-                }
+                const stressCardsSelected = selection.filter(card => card.effect == 'stress').length > 0;
+                totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed], undefined, stressCardsSelected));
             }
 
         } else if (this.gamedatas.gamestate.name == 'discard') {
@@ -974,28 +959,28 @@ class Heat implements HeatGame {
         });
 
         const notifs = [
-            ['chooseUpgrade', ANIMATION_MS],
-            ['endDraftRound', ANIMATION_MS],
-            ['reformingDeckWithUpgrades', ANIMATION_MS],
-            ['updatePlanification', ANIMATION_MS],
+            ['chooseUpgrade', undefined],
+            ['endDraftRound', undefined],
+            ['reformingDeckWithUpgrades', undefined],
+            ['updatePlanification', undefined],
             ['reveal', undefined],
             ['moveCar', undefined],
-            ['updateTurnOrder', 1],
+            ['updateTurnOrder', undefined],
             ['payHeats', undefined],
-            ['adrenaline', ANIMATION_MS],
+            ['adrenaline', undefined],
             ['spinOut', undefined],
-            ['discard', ANIMATION_MS],
-            ['pDiscard', ANIMATION_MS],
-            ['draw', ANIMATION_MS],
-            ['pDraw', ANIMATION_MS],
+            ['discard', undefined],
+            ['pDiscard', undefined],
+            ['draw', undefined],
+            ['pDraw', undefined],
             ['clearPlayedCards', undefined],
-            ['cooldown', ANIMATION_MS],
-            ['finishRace', ANIMATION_MS],
-            ['endOfRace', 1],
+            ['cooldown', undefined],
+            ['finishRace', undefined],
+            ['endOfRace', undefined],
             ['newLegendCard', undefined],
             ['scrapCards', undefined],
             ['resolveBoost', undefined],
-            ['accelerate', ANIMATION_MS],
+            ['accelerate', undefined],
             ['salvageCards', undefined],
         ];
         
@@ -1018,7 +1003,7 @@ class Heat implements HeatGame {
                 // tell the UI notification ends, if the function returned a promise. 
                 Promise.all(promises).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
             });
-            (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
+            (this as any).notifqueue.setSynchronous(notif[0], undefined);
         });
 
         if (isDebug) {
