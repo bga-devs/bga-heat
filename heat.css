@@ -674,6 +674,16 @@ height: 241px; */
   background: yellow;
   box-shadow: 0 0 5px 5px yellow;
 }
+.map-indicator.stress {
+  left: -10px;
+  top: -10px;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  font-size: 20px;
+  line-height: 20px;
+  font-weight: bold;
+}
 
 .corner {
   --color: transparent;

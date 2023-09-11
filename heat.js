@@ -2584,7 +2584,8 @@ var Circuit = /** @class */ (function () {
             }, time + 200);
         });
     };
-    Circuit.prototype.addMapIndicator = function (cellId, clickCallback) {
+    Circuit.prototype.addMapIndicator = function (cellId, clickCallback, stress) {
+        if (stress === void 0) { stress = false; }
         var mapIndicator = document.createElement('div');
         mapIndicator.id = "map-indicator-".concat(cellId),
             mapIndicator.classList.add('map-indicator');
@@ -2594,6 +2595,10 @@ var Circuit = /** @class */ (function () {
         this.circuitDiv.insertAdjacentElement('beforeend', mapIndicator);
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);
+        }
+        if (stress) {
+            mapIndicator.classList.add('stress');
+            mapIndicator.innerHTML = "?";
         }
     };
     Circuit.prototype.removeMapIndicators = function () {
@@ -3420,7 +3425,24 @@ var Heat = /** @class */ (function () {
             var privateArgs_1 = this.gamedatas.gamestate.args._private;
             if (selection.length && privateArgs_1) {
                 var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
-                totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed]); });
+                var stressCards = selection.filter(function (card) { return card.effect == 'stress'; }).length;
+                if (stressCards) {
+                    var placedIndicators_1 = [];
+                    var addForStressMin_1 = stressCards * 1;
+                    var addForStressMax_1 = stressCards * 4;
+                    totalSpeeds.forEach(function (totalSpeed) {
+                        for (var i = addForStressMin_1; i <= addForStressMax_1; i++) {
+                            var stressTotalSpeed = totalSpeed + i;
+                            if (!placedIndicators_1.includes(stressTotalSpeed) && privateArgs_1.cells[stressTotalSpeed]) {
+                                _this.circuit.addMapIndicator(privateArgs_1.cells[stressTotalSpeed], undefined, true);
+                                placedIndicators_1.push(stressTotalSpeed);
+                            }
+                        }
+                    });
+                }
+                else {
+                    totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed]); });
+                }
             }
         }
         else if (this.gamedatas.gamestate.name == 'discard') {

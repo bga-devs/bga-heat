@@ -776,7 +776,24 @@ class Heat implements HeatGame {
             const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
             if (selection.length && privateArgs) {
                 const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
-                totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]));
+                const stressCards = selection.filter(card => card.effect == 'stress').length;
+                if (stressCards) {
+                    const placedIndicators = [];
+                    const addForStressMin = stressCards * 1;
+                    const addForStressMax = stressCards * 4;
+                    totalSpeeds.forEach(totalSpeed => {
+                        for (let i = addForStressMin; i <= addForStressMax; i++) {
+                            const stressTotalSpeed = totalSpeed + i;
+                            if (!placedIndicators.includes(stressTotalSpeed) && privateArgs.cells[stressTotalSpeed]) {
+                                this.circuit.addMapIndicator(privateArgs.cells[stressTotalSpeed], undefined, true);
+                                placedIndicators.push(stressTotalSpeed);
+                            }
+                        }
+                    });
+                } else {
+                    totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]));
+
+                }
             }
 
         } else if (this.gamedatas.gamestate.name == 'discard') {

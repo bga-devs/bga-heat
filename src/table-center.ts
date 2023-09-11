@@ -344,7 +344,7 @@ class Circuit {
         });
     }
     
-    public addMapIndicator(cellId: number, clickCallback?: () => void): void {
+    public addMapIndicator(cellId: number, clickCallback?: () => void, stress: boolean = false): void {
         const mapIndicator = document.createElement('div');
         mapIndicator.id = `map-indicator-${cellId}`,
         mapIndicator.classList.add('map-indicator');
@@ -355,6 +355,11 @@ class Circuit {
 
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);
+        }
+
+        if (stress) {
+            mapIndicator.classList.add('stress');
+            mapIndicator.innerHTML = `?`;
         }
     }
     
