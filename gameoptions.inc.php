@@ -46,10 +46,10 @@ $game_options = [
         'name' => clienttranslate('Standard'),
         'description' => clienttranslate('Customize the race by choosing the circuit and additional modules'),
       ],
-      OPTION_SETUP_CHAMPIONSHIP => [
-        'name' => clienttranslate('Championship'),
-        'tmdisplay' => clienttranslate('[Championship]'),
-      ],
+      // OPTION_SETUP_CHAMPIONSHIP => [
+      //   'name' => clienttranslate('Championship'),
+      //   'tmdisplay' => clienttranslate('[Championship]'),
+      // ],
     ],
   ],
 
@@ -283,7 +283,7 @@ $game_options = [
     ],
     'displaycondition' => [
       [
-        'type' => 'otheroptionis',
+        'type' => 'otheroption',
         'id' => OPTION_SETUP,
         'value' => OPTION_SETUP_CHAMPIONSHIP,
       ],

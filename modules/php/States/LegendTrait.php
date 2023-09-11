@@ -43,15 +43,15 @@ trait LegendTrait
     // B => approaching the corner
     else {
       // Try to move ahead at speed = number on the Helmet
-      list($newCell, $nSpacesForward, $extraTurns, $path) = $this->getCircuit()->getReachedCell($constructor, $number);
+      $length = $this->getCircuit()->getLength();
+      $cornerPos = $this->getCircuit()->getNextCorner($pos);
+      $delta = ($cornerPos - $pos + $length) % $length;
       // Check if that makes the car cross the corner
-      $cornersCrossed = $this->getCircuit()->getCornersInBetween($turn, $pos, $turn + $extraTurns, $pos + $nSpacesForward);
-      if (empty($cornersCrossed)) {
+      if ($number < $delta) {
         $this->moveCar($constructor, $number);
       }
       // If yes, then go to the "slot cell" instead
       else {
-        $length = $this->getCircuit()->getLength();
         $speed = ($cornerPos - 1 - $slot - $pos + $length) % $length;
         $this->moveCar($constructor, $speed);
       }

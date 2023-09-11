@@ -425,9 +425,7 @@ trait RoundTrait
       }
     }
 
-    // Mandatory symbols
-    $mandatorySymbols = [HEAT, SCRAP];
-    $canPass = empty(array_intersect($mandatorySymbols, array_keys($symbols)));
+    $canPass = $this->canPassReact($symbols);
 
     return [
       'symbols' => $symbols,
@@ -436,6 +434,14 @@ trait RoundTrait
       'descSuffix' => $canPass ? '' : 'Must',
       'flippedCards' => Globals::getFlippedCards(),
     ];
+  }
+
+  public function canPassReact($symbols)
+  {
+    // Mandatory symbols
+    $mandatorySymbols = [HEAT, SCRAP];
+    $canPass = empty(array_intersect($mandatorySymbols, array_keys($symbols)));
+    return $canPass;
   }
 
   public function actReact($symbol, $arg)
@@ -499,10 +505,19 @@ trait RoundTrait
     }
     // REFRESH
     elseif ($symbol == REFRESH) {
+      if (!$this->canPassReact($symbols)) {
+        throw new \BgaVisibleSystemException('You cant use refresh with pending mandatory reactions. Should not happen');
+      }
       $cardId = $arg;
       $card = Cards::getSingle($cardId);
       Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
       Notifications::refresh($constructor, $card);
+
+      // Remove any other symbols
+      $symbols = [
+        REFRESH => $symbols[REFRESH],
+      ];
+      Globals::setSymbols($symbols);
     }
     // ACCELERATE
     elseif ($symbol == ACCELERATE) {
@@ -545,6 +560,24 @@ trait RoundTrait
 
     // Loop on same state to resolve other pending symbols
     $this->gamestate->jumpToState(ST_REACT);
+  }
+
+  public function stReact()
+  {
+    $symbols = Globals::getSymbols();
+    foreach ($symbols as $symbol => $n) {
+      if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
+        if (!empty($n)) {
+          return;
+        }
+      } else {
+        if ($n > 0) {
+          return;
+        }
+      }
+    }
+
+    $this->stReactDone();
   }
 
   public function actPassReact()
