@@ -2,11 +2,14 @@
   //max-width: 1650px;
   display: flex;
   justify-content: center;
+  transform-origin: top center;
 
   #circuit {
     position: relative;
     width: 1650px;
     height: 1100px;
+    min-width: 1650px;
+    min-height: 1100px;
     background-size: cover;
     transform-origin: top center;
   }
@@ -44,11 +47,27 @@
   box-shadow: 0 0 5px 5px white;
   transform: translateX(var(--x)) translateY(var(--y));
   transform-origin: top left;
-  cursor: pointer;
 
-  &.hover, &:hover {
-    background: yellow;
-    box-shadow: 0 0 5px 5px yellow;
+  &.clickable {
+    cursor: pointer;
+
+    &.hover, &:hover {
+      background: yellow;
+      box-shadow: 0 0 5px 5px yellow;
+    }
+  }
+
+  &.stress {
+    left: -10px;
+    top: -10px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: bold;
+    color: #6766a7;
+    user-select: none;
   }
 }
 

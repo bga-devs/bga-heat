@@ -94,16 +94,18 @@ class CarAnimation {
 }
 
 class Circuit {
-    private mapDiv: HTMLDivElement;
+    private tableCenterDiv: HTMLDivElement;
+    private circuitDiv: HTMLDivElement;
     private scale: number = 1;
 
     private circuitDatas: CircuitDatas;
         
     constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
         this.circuitDatas = gamedatas.circuitDatas;
-        this.mapDiv = document.getElementById('circuit') as HTMLDivElement;
+        this.tableCenterDiv = document.getElementById('table-center') as HTMLDivElement;
+        this.circuitDiv = document.getElementById('circuit') as HTMLDivElement;
 
-        this.mapDiv.style.backgroundImage = `url('${g_gamethemeurl}img/${this.circuitDatas.assets.jpg}')`;
+        this.circuitDiv.style.backgroundImage = `url('${g_gamethemeurl}img/${this.circuitDatas.assets.jpg}')`;
 
         Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
 
@@ -117,22 +119,19 @@ class Circuit {
      */ 
     public setAutoZoom() {
 
-        if (!this.mapDiv.clientWidth) {
+        if (!this.tableCenterDiv.clientWidth) {
             setTimeout(() => this.setAutoZoom(), 200);
             return;
         }
 
-        const gameWidth = MAP_WIDTH;
-        const gameHeight = MAP_HEIGHT;
-
-        const horizontalScale = document.getElementById('game_play_area').clientWidth / gameWidth;
-        const verticalScale = (window.innerHeight - 80) / gameHeight;
+        const horizontalScale = document.getElementById('game_play_area').clientWidth / MAP_WIDTH;
+        const verticalScale = (window.innerHeight - 80) / MAP_HEIGHT;
         this.scale = Math.min(1, horizontalScale, verticalScale);
 
-        this.mapDiv.style.transform = this.scale === 1 ? '' : `scale(${this.scale})`;
+        this.tableCenterDiv.style.transform = this.scale === 1 ? '' : `scale(${this.scale})`;
         const maxHeight = this.scale === 1 ? '' : `${MAP_HEIGHT * this.scale}px`;
         //this.mapDiv.style.maxHeight = maxHeight;
-        document.getElementById('table-center').style.maxHeight = maxHeight;
+        this.tableCenterDiv.style.maxHeight = maxHeight;
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     }
     
@@ -146,7 +145,7 @@ class Circuit {
         cornerDiv.classList.add('corner');
         cornerDiv.style.setProperty('--x', `${corner.x}px`);
         cornerDiv.style.setProperty('--y', `${corner.y}px`);
-        this.mapDiv.insertAdjacentElement('beforeend', cornerDiv);
+        this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
     }
     
     private createWeather(weather: Weather, circuitDatas: CircuitDatas): void {
@@ -163,7 +162,7 @@ class Circuit {
         weatherCardDiv.dataset.cardType = `${type}`;
         weatherCardDiv.style.setProperty('--x', `${wheatherCardPos.x}px`);
         weatherCardDiv.style.setProperty('--y', `${wheatherCardPos.y}px`);
-        this.mapDiv.insertAdjacentElement('beforeend', weatherCardDiv);
+        this.circuitDiv.insertAdjacentElement('beforeend', weatherCardDiv);
         this.game.setTooltip(weatherCardDiv.id, `${this.getWeatherCardSetupTooltip(type)}<br><br>${this.getWeatherCardEffectTooltip(type)}`);
     }
 
@@ -226,7 +225,7 @@ class Circuit {
         weatherTokenDiv.dataset.tokenType = `${type}`;
         weatherTokenDiv.style.setProperty('--x', `${x}px`);
         weatherTokenDiv.style.setProperty('--y', `${y}px`);
-        this.mapDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
+        this.circuitDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
         this.game.setTooltip(weatherTokenDiv.id, this.getWeatherTokenTooltip(type, cardType));
     }
 
@@ -288,7 +287,7 @@ class Circuit {
         car.style.setProperty('--y', `${cell.y}px`);
         car.style.setProperty('--r', `${cell.a}deg`);
         car.style.setProperty('--constructor-id', `${constructor.id}`);
-        this.mapDiv.insertAdjacentElement('beforeend', car);
+        this.circuitDiv.insertAdjacentElement('beforeend', car);
     }
 
     public moveCar(constructorId: number, carCell: number, path?: number[]): Promise<any> {
@@ -345,22 +344,28 @@ class Circuit {
         });
     }
     
-    public addMapIndicator(cellId: number, clickCallback?: () => void): void {
+    public addMapIndicator(cellId: number, clickCallback?: () => void, stress: boolean = false): void {
         const mapIndicator = document.createElement('div');
         mapIndicator.id = `map-indicator-${cellId}`,
         mapIndicator.classList.add('map-indicator');
         let cell = this.circuitDatas.cells[cellId];
         mapIndicator.style.setProperty('--x', `${cell.x}px`);
         mapIndicator.style.setProperty('--y', `${cell.y}px`);
-        this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
+        this.circuitDiv.insertAdjacentElement('beforeend', mapIndicator);
 
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);
+            mapIndicator.classList.add('clickable');
+        }
+
+        if (stress) {
+            mapIndicator.classList.add('stress');
+            mapIndicator.innerHTML = `?`;
         }
     }
     
     public removeMapIndicators(): void {
-        this.mapDiv.querySelectorAll('.map-indicator').forEach(elem => elem.remove());
+        this.circuitDiv.querySelectorAll('.map-indicator').forEach(elem => elem.remove());
     }
 
     private getCellInfos(cellId: number | number[]) {

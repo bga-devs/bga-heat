@@ -1,6 +1,5 @@
 {OVERALL_GAME_HEADER}
 
-<div id="market"></div>
 <div id="table-center">
     <div id="circuit"></div>
 </div>

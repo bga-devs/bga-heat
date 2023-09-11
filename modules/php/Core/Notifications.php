@@ -252,7 +252,7 @@ class Notifications
 
   public function adrenaline($constructor)
   {
-    self::notifyAll('adrenaline', clienttranslate('${constructor_name} uses adrelanine\'s effect to increase their speed by 1'), [
+    self::notifyAll('adrenaline', clienttranslate('${constructor_name} uses adrenaline\'s effect to increase their speed by 1'), [
       'constructor' => $constructor,
     ]);
   }

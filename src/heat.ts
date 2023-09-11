@@ -246,8 +246,13 @@ class Heat implements HeatGame {
 
     private onEnteringChooseUpgrade(args: EnteringChooseUpgradeArgs) {
         if (!this.market) {
+            document.getElementById('table-center').insertAdjacentHTML('beforebegin', `
+                <div id="market"></div>
+            `);
             this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
-            this.market.onCardClick = card => this.actChooseUpgrade(card.id);
+            this.market.onSelectionChange = selection => {
+                document.getElementById(`actChooseUpgrade_button`).classList.toggle('disabled', selection.length != 1);
+            }
         }
         this.market.addCards(Object.values(args.market));
 
@@ -325,6 +330,11 @@ class Heat implements HeatGame {
 
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'chooseUpgrade':
+                    (this as any).addActionButton(`actChooseUpgrade_button`, _('Take selected card'), () => this.actChooseUpgrade());
+                    document.getElementById(`actChooseUpgrade_button`).classList.add('disabled');
+                    break;
+
                 case 'planification':
                     (this as any).addActionButton(`actPlanification_button`, '', () => this.actPlanification());
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
@@ -776,7 +786,23 @@ class Heat implements HeatGame {
             const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
             if (selection.length && privateArgs) {
                 const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
-                totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]));
+                const stressCards = selection.filter(card => card.effect == 'stress').length;
+                if (stressCards) {
+                    const placedIndicators = [];
+                    const addForStressMin = stressCards * 1;
+                    const addForStressMax = stressCards * 4;
+                    totalSpeeds.forEach(totalSpeed => {
+                        for (let i = addForStressMin; i <= addForStressMax; i++) {
+                            const stressTotalSpeed = totalSpeed + i;
+                            if (!placedIndicators.includes(stressTotalSpeed) && privateArgs.cells[stressTotalSpeed]) {
+                                this.circuit.addMapIndicator(privateArgs.cells[stressTotalSpeed], undefined, true);
+                                placedIndicators.push(stressTotalSpeed);
+                            }
+                        }
+                    });
+                } else {
+                    totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]));
+                }
             }
 
         } else if (this.gamedatas.gamestate.name == 'discard') {
@@ -789,13 +815,13 @@ class Heat implements HeatGame {
         }
     }
 
-    private actChooseUpgrade(cardId: number) {
+    private actChooseUpgrade() {
         if(!(this as any).checkAction('actChooseUpgrade')) {
             return;
         }
 
         this.takeAction('actChooseUpgrade', {
-            cardId
+            cardId: this.market.getSelection()[0].id,
         });
     }
   	
@@ -916,6 +942,7 @@ class Heat implements HeatGame {
             ['moveCar', undefined],
             ['updateTurnOrder', 1],
             ['payHeats', undefined],
+            ['adrenaline', ANIMATION_MS],
             ['spinOut', undefined],
             ['discard', ANIMATION_MS],
             ['pDiscard', ANIMATION_MS],
@@ -1018,10 +1045,7 @@ class Heat implements HeatGame {
         this.handCounters[constructor_id]?.incValue(-cards.length);
         const promises = [playerTable.setInplay(cards)];
         if (heat) {
-            if (playerTable.hand) {
-                promises.push(playerTable.hand?.addCard(heat));
-            }
-            this.handCounters[constructor_id]?.incValue(1);
+            promises.push(playerTable.discard?.addCard(heat));
         }
         this.speedCounters[constructor_id].setValue(cards.map(card => card.speed ?? 0).reduce((a, b) => a + b, 0));
         return Promise.all(promises);
@@ -1052,6 +1076,11 @@ class Heat implements HeatGame {
         this.circuit.showCorner(corner);
 
         return true;
+    }
+
+    notif_adrenaline(args: NotifSpinOutArgs) {
+        const { constructor_id } = args;
+        this.speedCounters[constructor_id].incValue(1);
     }
 
     async notif_spinOut(args: NotifSpinOutArgs) {
@@ -1166,6 +1195,7 @@ class Heat implements HeatGame {
     notif_resolveBoost(args: NotifResolveBoostArgs) {
         const { constructor_id, cards, card } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        this.speedCounters[constructor_id].incValue(card.speed ?? 0);
         return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
     }
 

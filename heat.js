@@ -2388,8 +2388,9 @@ var Circuit = /** @class */ (function () {
         this.game = game;
         this.scale = 1;
         this.circuitDatas = gamedatas.circuitDatas;
-        this.mapDiv = document.getElementById('circuit');
-        this.mapDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
+        this.tableCenterDiv = document.getElementById('table-center');
+        this.circuitDiv = document.getElementById('circuit');
+        this.circuitDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
         Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
         this.createCorners(this.circuitDatas.corners);
         this.createWeather(gamedatas.weather, this.circuitDatas);
@@ -2400,19 +2401,17 @@ var Circuit = /** @class */ (function () {
      */
     Circuit.prototype.setAutoZoom = function () {
         var _this = this;
-        if (!this.mapDiv.clientWidth) {
+        if (!this.tableCenterDiv.clientWidth) {
             setTimeout(function () { return _this.setAutoZoom(); }, 200);
             return;
         }
-        var gameWidth = MAP_WIDTH;
-        var gameHeight = MAP_HEIGHT;
-        var horizontalScale = document.getElementById('game_play_area').clientWidth / gameWidth;
-        var verticalScale = (window.innerHeight - 80) / gameHeight;
+        var horizontalScale = document.getElementById('game_play_area').clientWidth / MAP_WIDTH;
+        var verticalScale = (window.innerHeight - 80) / MAP_HEIGHT;
         this.scale = Math.min(1, horizontalScale, verticalScale);
-        this.mapDiv.style.transform = this.scale === 1 ? '' : "scale(".concat(this.scale, ")");
+        this.tableCenterDiv.style.transform = this.scale === 1 ? '' : "scale(".concat(this.scale, ")");
         var maxHeight = this.scale === 1 ? '' : "".concat(MAP_HEIGHT * this.scale, "px");
         //this.mapDiv.style.maxHeight = maxHeight;
-        document.getElementById('table-center').style.maxHeight = maxHeight;
+        this.tableCenterDiv.style.maxHeight = maxHeight;
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     };
     Circuit.prototype.createCorners = function (corners) {
@@ -2428,7 +2427,7 @@ var Circuit = /** @class */ (function () {
             cornerDiv.classList.add('corner');
         cornerDiv.style.setProperty('--x', "".concat(corner.x, "px"));
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
-        this.mapDiv.insertAdjacentElement('beforeend', cornerDiv);
+        this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
     };
     Circuit.prototype.createWeather = function (weather, circuitDatas) {
         if (weather === null || weather === void 0 ? void 0 : weather.tokens) {
@@ -2443,7 +2442,7 @@ var Circuit = /** @class */ (function () {
         weatherCardDiv.dataset.cardType = "".concat(type);
         weatherCardDiv.style.setProperty('--x', "".concat(wheatherCardPos.x, "px"));
         weatherCardDiv.style.setProperty('--y', "".concat(wheatherCardPos.y, "px"));
-        this.mapDiv.insertAdjacentElement('beforeend', weatherCardDiv);
+        this.circuitDiv.insertAdjacentElement('beforeend', weatherCardDiv);
         this.game.setTooltip(weatherCardDiv.id, "".concat(this.getWeatherCardSetupTooltip(type), "<br><br>").concat(this.getWeatherCardEffectTooltip(type)));
     };
     Circuit.prototype.getWeatherCardSetupTooltip = function (type) {
@@ -2492,7 +2491,7 @@ var Circuit = /** @class */ (function () {
         weatherTokenDiv.dataset.tokenType = "".concat(type);
         weatherTokenDiv.style.setProperty('--x', "".concat(x, "px"));
         weatherTokenDiv.style.setProperty('--y', "".concat(y, "px"));
-        this.mapDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
+        this.circuitDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
         this.game.setTooltip(weatherTokenDiv.id, this.getWeatherTokenTooltip(type, cardType));
     };
     Circuit.prototype.getWeatherTokenTooltip = function (type, cardType) {
@@ -2531,7 +2530,7 @@ var Circuit = /** @class */ (function () {
         car.style.setProperty('--y', "".concat(cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
         car.style.setProperty('--constructor-id', "".concat(constructor.id));
-        this.mapDiv.insertAdjacentElement('beforeend', car);
+        this.circuitDiv.insertAdjacentElement('beforeend', car);
     };
     Circuit.prototype.moveCar = function (constructorId, carCell, path) {
         var _this = this;
@@ -2585,20 +2584,26 @@ var Circuit = /** @class */ (function () {
             }, time + 200);
         });
     };
-    Circuit.prototype.addMapIndicator = function (cellId, clickCallback) {
+    Circuit.prototype.addMapIndicator = function (cellId, clickCallback, stress) {
+        if (stress === void 0) { stress = false; }
         var mapIndicator = document.createElement('div');
         mapIndicator.id = "map-indicator-".concat(cellId),
             mapIndicator.classList.add('map-indicator');
         var cell = this.circuitDatas.cells[cellId];
         mapIndicator.style.setProperty('--x', "".concat(cell.x, "px"));
         mapIndicator.style.setProperty('--y', "".concat(cell.y, "px"));
-        this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
+        this.circuitDiv.insertAdjacentElement('beforeend', mapIndicator);
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);
+            mapIndicator.classList.add('clickable');
+        }
+        if (stress) {
+            mapIndicator.classList.add('stress');
+            mapIndicator.innerHTML = "?";
         }
     };
     Circuit.prototype.removeMapIndicators = function () {
-        this.mapDiv.querySelectorAll('.map-indicator').forEach(function (elem) { return elem.remove(); });
+        this.circuitDiv.querySelectorAll('.map-indicator').forEach(function (elem) { return elem.remove(); });
     };
     Circuit.prototype.getCellInfos = function (cellId) {
         // This is just a wrapper to either return the datas about the cell (center x, center y, angle)
@@ -3053,10 +3058,12 @@ var Heat = /** @class */ (function () {
         this.updatePageTitle();
     };
     Heat.prototype.onEnteringChooseUpgrade = function (args) {
-        var _this = this;
         if (!this.market) {
+            document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\"></div>\n            ");
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
-            this.market.onCardClick = function (card) { return _this.actChooseUpgrade(card.id); };
+            this.market.onSelectionChange = function (selection) {
+                document.getElementById("actChooseUpgrade_button").classList.toggle('disabled', selection.length != 1);
+            };
         }
         this.market.addCards(Object.values(args.market));
         this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
@@ -3125,6 +3132,10 @@ var Heat = /** @class */ (function () {
         }
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'chooseUpgrade':
+                    this.addActionButton("actChooseUpgrade_button", _('Take selected card'), function () { return _this.actChooseUpgrade(); });
+                    document.getElementById("actChooseUpgrade_button").classList.add('disabled');
+                    break;
                 case 'planification':
                     this.addActionButton("actPlanification_button", '', function () { return _this.actPlanification(); });
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
@@ -3421,7 +3432,24 @@ var Heat = /** @class */ (function () {
             var privateArgs_1 = this.gamedatas.gamestate.args._private;
             if (selection.length && privateArgs_1) {
                 var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
-                totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed]); });
+                var stressCards = selection.filter(function (card) { return card.effect == 'stress'; }).length;
+                if (stressCards) {
+                    var placedIndicators_1 = [];
+                    var addForStressMin_1 = stressCards * 1;
+                    var addForStressMax_1 = stressCards * 4;
+                    totalSpeeds.forEach(function (totalSpeed) {
+                        for (var i = addForStressMin_1; i <= addForStressMax_1; i++) {
+                            var stressTotalSpeed = totalSpeed + i;
+                            if (!placedIndicators_1.includes(stressTotalSpeed) && privateArgs_1.cells[stressTotalSpeed]) {
+                                _this.circuit.addMapIndicator(privateArgs_1.cells[stressTotalSpeed], undefined, true);
+                                placedIndicators_1.push(stressTotalSpeed);
+                            }
+                        }
+                    });
+                }
+                else {
+                    totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed]); });
+                }
             }
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
@@ -3432,12 +3460,12 @@ var Heat = /** @class */ (function () {
             button.innerHTML = label;
         }
     };
-    Heat.prototype.actChooseUpgrade = function (cardId) {
+    Heat.prototype.actChooseUpgrade = function () {
         if (!this.checkAction('actChooseUpgrade')) {
             return;
         }
         this.takeAction('actChooseUpgrade', {
-            cardId: cardId
+            cardId: this.market.getSelection()[0].id,
         });
     };
     Heat.prototype.actPlanification = function () {
@@ -3538,6 +3566,7 @@ var Heat = /** @class */ (function () {
             ['moveCar', undefined],
             ['updateTurnOrder', 1],
             ['payHeats', undefined],
+            ['adrenaline', ANIMATION_MS],
             ['spinOut', undefined],
             ['discard', ANIMATION_MS],
             ['pDiscard', ANIMATION_MS],
@@ -3622,7 +3651,7 @@ var Heat = /** @class */ (function () {
         // TODO
     };
     Heat.prototype.notif_reveal = function (args) {
-        var _a, _b, _c;
+        var _a, _b;
         var constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
@@ -3631,10 +3660,7 @@ var Heat = /** @class */ (function () {
         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
         var promises = [playerTable.setInplay(cards)];
         if (heat) {
-            if (playerTable.hand) {
-                promises.push((_b = playerTable.hand) === null || _b === void 0 ? void 0 : _b.addCard(heat));
-            }
-            (_c = this.handCounters[constructor_id]) === null || _c === void 0 ? void 0 : _c.incValue(1);
+            promises.push((_b = playerTable.discard) === null || _b === void 0 ? void 0 : _b.addCard(heat));
         }
         this.speedCounters[constructor_id].setValue(cards.map(function (card) { var _a; return (_a = card.speed) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0));
         return Promise.all(promises);
@@ -3668,6 +3694,10 @@ var Heat = /** @class */ (function () {
                 }
             });
         });
+    };
+    Heat.prototype.notif_adrenaline = function (args) {
+        var constructor_id = args.constructor_id;
+        this.speedCounters[constructor_id].incValue(1);
     };
     Heat.prototype.notif_spinOut = function (args) {
         var _a;
@@ -3810,8 +3840,10 @@ var Heat = /** @class */ (function () {
         return this.getPlayerTable(playerId).scrapCards(Object.values(cards));
     };
     Heat.prototype.notif_resolveBoost = function (args) {
+        var _a;
         var constructor_id = args.constructor_id, cards = args.cards, card = args.card;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        this.speedCounters[constructor_id].incValue((_a = card.speed) !== null && _a !== void 0 ? _a : 0);
         return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
     };
     Heat.prototype.notif_accelerate = function (args) {

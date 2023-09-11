@@ -7,6 +7,7 @@ interface Card {
     speed?: number;
     text?: string;
     symbols?: { [type: string]: number};
+    isReshuffled?: boolean;
 }
 
 //console.log(Object.values(CARDS_DATA).map(card => card.startingSpace));
