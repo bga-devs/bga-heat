@@ -182,9 +182,14 @@ class Globals extends \HEAT\Helpers\DB_Manager
       \HEAT\OPTION_CIRCUIT_ITALIA => 'italia',
       \HEAT\OPTION_CIRCUIT_GB => 'gb',
       \HEAT\OPTION_CIRCUIT_FRANCE => 'france',
+
+      \HEAT\OPTION_CIRCUIT_CUSTOM => 'custom',
     ];
-    self::setCircuit($circuits[$options[\HEAT\OPTION_CIRCUIT]]);
-    self::loadCircuitDatas();
+    $circuit = $circuits[$options[\HEAT\OPTION_CIRCUIT]];
+    self::setCircuit($circuit);
+    if ($circuit != 'custom') {
+      self::loadCircuitDatas();
+    }
   }
 
   public static function getWeatherCard()

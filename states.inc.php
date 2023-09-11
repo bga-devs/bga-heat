@@ -43,7 +43,15 @@ $machinestates = [
     'description' => '',
     'type' => 'game',
     'action' => 'stSetupBranch',
-    'transitions' => ['done' => ST_SETUP_RACE],
+    'transitions' => ['done' => ST_SETUP_RACE, 'custom' => ST_UPLOAD_CIRCUIT],
+  ],
+
+  ST_UPLOAD_CIRCUIT => [
+    'name' => 'uploadCircuit',
+    'description' => clienttranslate('You must upload a heat circuit'),
+    'descriptionmyturn' => clienttranslate('${you} must upload a heat circuit'),
+    'type' => 'multipleactiveplayer',
+    'possibleactions' => ['actUploadCircuit'],
   ],
 
   //////////////////////////////

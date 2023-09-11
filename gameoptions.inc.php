@@ -153,6 +153,11 @@ $game_options = [
         'name' => clienttranslate('France'),
         'tmdisplay' => clienttranslate('[France]'),
       ],
+      OPTION_CIRCUIT_CUSTOM => [
+        'name' => clienttranslate('Custom'),
+        'tmdisplay' => clienttranslate('[Custom]'),
+        // 'description' => ('You need a .heat file to play with this option. You can create some by using the circuit editor available here : #URL#'),
+      ],
     ],
     'displaycondition' => [
       [

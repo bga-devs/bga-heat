@@ -37,6 +37,10 @@ trait SetupTrait
     }
     // Championship
     elseif ($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP) {
+      if ($this->getBgaEnvironment() != 'studio') {
+        throw new \BgaVisibleSystemException('WIP. Not available on prod');
+      }
+
       die('TODO: championship');
     }
 
@@ -85,12 +89,13 @@ trait SetupTrait
 
   public function stSetupBranch()
   {
-    $this->gamestate->nextState('done');
-    // if (Globals::isStartingHands()) {
-    // } else {
-    //   Cards::initialDraw();
-    //   $this->gamestate->setAllPlayersMultiactive();
-    //   $this->gamestate->nextState('selection');
-    // }
+    if (Globals::getCircuit() == 'custom') {
+      if ($this->getBgaEnvironment() != 'studio') {
+        throw new \BgaVisibleSystemException('WIP. Not available on prod');
+      }
+      $this->gamestate->nextState('custom');
+    } else {
+      $this->gamestate->nextState('done');
+    }
   }
 }

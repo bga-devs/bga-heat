@@ -6,6 +6,7 @@ require_once 'gameoptions.inc.php';
  */
 const ST_GAME_SETUP = 1;
 const ST_SETUP_BRANCH = 2;
+const ST_UPLOAD_CIRCUIT = 3;
 
 const ST_SETUP_RACE = 9;
 const ST_PREPARE_GARAGE_DRAFT = 40;

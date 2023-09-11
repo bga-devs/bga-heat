@@ -8,6 +8,8 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
+  - handle UI when circuitDatas are empty for custom championships and custom tracks
+  
   - refresh : display the name of the card (only if several refresh ?) => maybe with the same formatting as accelerate
   - for accelerate/refresh => make the card clickable ?
 

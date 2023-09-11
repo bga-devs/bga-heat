@@ -14,6 +14,10 @@ class Circuit
   protected $posToCells = [];
   public function __construct($datas)
   {
+    if (empty($datas)) {
+      return;
+    }
+
     $this->id = $datas['id'];
 
     $lane = null;
