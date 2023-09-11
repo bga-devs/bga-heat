@@ -6,7 +6,7 @@
     <title>HEAT Circuit Editor</title>
   </head>
   <body>
-    <div id="help-container" class="open">
+    <div id="help-container" class="">
       <div id="help-wrapper">
         <i class="fa-icon fa-close"></i>
         <h4>What is this about?</h4>
@@ -148,6 +148,22 @@
             <button id="edit-lanes" disabled="disabled" style="pointer-events: none"><i class="fa-icon fa-pencil"></i></button>
             <button id="generate-lanes"><i class="fa-icon fa-compute"></i></button>
           </div>
+        </div>
+        <div class="section" id="section-corners">
+          <h2>Corners</h2>
+          <table id="corners-table">
+            <thead>
+              <tr>
+                <th><i class="icon position"></i></th>
+                <th><i class="icon speed"></i></th>
+                <th><i class="icon lane"></i></th>
+                <th><i class="icon legend"></i></th>
+                <th><i class="icon tent"></i></th>
+                <th><i class="icon sector"></i></th>
+              </tr>
+            </thead>
+            <tbody id="corners-holder"></tbody>
+          </table>
         </div>
 
         <div id="filler"></div>

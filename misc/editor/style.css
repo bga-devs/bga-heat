@@ -373,6 +373,25 @@ div.section .toolbar button.active {
     background: rgb(196, 196, 196);
 }
 
+table#corners-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+table#corners-table th,
+table#corners-table td {
+    border: 1px solid black;
+}
+
+table#corners-table thead {
+    background: rgba(255, 255, 255, 0.801);
+}
+
+table#corners-table tbody td {
+    text-align: center;
+    padding: 4px;
+    cursor: pointer;
+}
+
 #filler {
     flex-grow: 1;
 }
@@ -570,21 +589,21 @@ object {
 .icon.reduce-stress {
     background-position-x: 57.1428571429%;
 }
-.icon.scrap {
+.icon.lane {
     background-position-x: 64.2857142857%;
 }
-.icon.direct {
+.icon.position {
     background-position-x: 71.4285714286%;
 }
-.icon.adjust {
+.icon.speed {
     background-position-x: 78.5714285714%;
 }
-.icon.forced-heat {
+.icon.legend {
     background-position-x: 85.7142857143%;
 }
-.icon.refresh {
+.icon.tent {
     background-position-x: 92.8571428571%;
 }
-.icon.salvage {
+.icon.sector {
     background-position-x: 100%;
 }

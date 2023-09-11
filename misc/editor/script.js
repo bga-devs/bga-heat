@@ -183,6 +183,8 @@ function loadCircuitFromStorage(circuitId) {
   $('splashscreen').classList.add('hidden');
 }
 
+loadCircuitFromStorage('Test');
+
 $('form-load-storage').addEventListener('submit', async (evt) => {
   evt.preventDefault();
 
@@ -269,7 +271,7 @@ function loadCircuit(datas) {
   if (DATAS.computed.directions || false) updateDirections();
   if (DATAS.computed.laneEnds || false) updateLaneEnds();
   if (DATAS.computed.positions || false) updatePositions();
-
+  if (DATAS.corners || false) createCornerEntries();
   updateStatus();
 }
 
@@ -406,6 +408,29 @@ $('stress-cards').addEventListener('click', () => {
   saveCircuit();
 });
 
+$('number-corners').addEventListener('click', () => {
+  let nCorners = prompt('How many corners?');
+  DATAS.corners = [];
+  $('corners-holder').innerHTML = '';
+  for (let i = 0; i < nCorners; i++) {
+    DATAS.corners.push({
+      position: 0,
+      speed: 0,
+      x: 0,
+      y: 0,
+      lane: 0,
+      legend: 0,
+      tentX: 0,
+      tentY: 0,
+      sectorTentX: 0,
+      sectorTentY: 0,
+    });
+  }
+  createCornerEntries();
+  updateStatus();
+  saveCircuit();
+});
+
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
@@ -422,10 +447,13 @@ function updateStatus() {
   $('stress-cards-value').innerHTML = DATAS.stressCards || 0;
   $('heat-cards-value').innerHTML = DATAS.heatCards || 0;
   $('number-laps-value').innerHTML = DATAS.nbrLaps || 0;
+  $('number-corners-value').innerHTML = Object.keys(DATAS.corners || {}).length;
 
   SECTIONS.forEach((section) => {
     $(`section-${section}`).classList.toggle('computed', DATAS.computed[section] || false);
   });
+
+  updateCorners();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -922,6 +950,70 @@ function generateLanes() {
   toggleShow('lanes', true);
   updateCenters();
   console.log('Lanes computed');
+}
+
+////////////////////////////////////////////
+//    ____
+//   / ___|___  _ __ _ __   ___ _ __ ___
+//  | |   / _ \| '__| '_ \ / _ \ '__/ __|
+//  | |__| (_) | |  | | | |  __/ |  \__ \
+//   \____\___/|_|  |_| |_|\___|_|  |___/
+////////////////////////////////////////////
+
+function createCornerEntries() {
+  DATAS.corners.forEach((corner, j) => {
+    $('corners-holder').insertAdjacentHTML(
+      'beforeend',
+      `<tr class='corner-entry'>
+      <td class='corner-pos' id='corner-pos-${j}'></td>
+      <td class='corner-speed' id='corner-speed-${j}'></td>
+      <td class='corner-lane' id='corner-lane-${j}'></td>
+      <td class='corner-legend' id='corner-legend-${j}'></td>
+      <td class='corner-tent' id='corner-tent-${j}'></td>
+      <td class='corner-sector' id='corner-sector-${j}'></td>
+    </tr>`
+    );
+
+    // Add event listeners
+    $(`corner-pos-${j}`).addEventListener('click', () => {
+      let pos = prompt('What is the number on the cell right before the corner?');
+      DATAS.corners[j].position = pos;
+      updateCorners();
+      saveCircuit();
+    });
+
+    $(`corner-speed-${j}`).addEventListener('click', () => {
+      let speed = prompt('What is the max speed?');
+      DATAS.corners[j].speed = speed;
+      updateCorners();
+      saveCircuit();
+    });
+
+    $(`corner-lane-${j}`).addEventListener('click', () => {
+      let lane = prompt('What is the main lane after the corner? (orange = 1, purple = 2)');
+      DATAS.corners[j].lane = lane;
+      updateCorners();
+      saveCircuit();
+    });
+
+    $(`corner-legend-${j}`).addEventListener('click', () => {
+      let legend = prompt('What is number on the cell right before the legend line?');
+      DATAS.corners[j].legend = legend;
+      updateCorners();
+      saveCircuit();
+    });
+  });
+}
+
+function updateCorners() {
+  DATAS.corners.forEach((corner, j) => {
+    $(`corner-pos-${j}`).innerHTML = corner.position;
+    $(`corner-speed-${j}`).innerHTML = corner.speed;
+    $(`corner-lane-${j}`).innerHTML = corner.lane;
+    $(`corner-legend-${j}`).innerHTML = corner.legend;
+    $(`corner-tent-${j}`).innerHTML = '';
+    $(`corner-sector-${j}`).innerHTML = '';
+  });
 }
 
 ////////////////////////
