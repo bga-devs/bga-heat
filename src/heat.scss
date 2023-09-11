@@ -42,7 +42,7 @@ html, .mode_3d #game_play_area_background {
   text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
   text-align: center;
   
-  &.turn {
+  &.flag {
     background-position-x: #{0 * 100% / 14};
   }
   &.engine {
