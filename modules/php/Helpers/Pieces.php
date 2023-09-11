@@ -256,7 +256,13 @@ class Pieces extends DB_Manager
       throw new \feException('Class Pieces: getMany, some pieces have not been found !' . json_encode($ids));
     }
 
-    return $result;
+    // Preserve ids order!
+    $t = new Collection();
+    foreach ($ids as $id) {
+      $t[$id] = $result[$id];
+    }
+
+    return $t;
   }
 
   public static function getSingle($id, $raiseExceptionIfNotEnough = true)
@@ -444,7 +450,10 @@ class Pieces extends DB_Manager
     ) {
       $missing = $nbr - count($pieces);
       self::reformDeckFromDiscard($fromLocation);
-      $pieces = $pieces->merge(self::pickForLocation($missing, $fromLocation, $toLocation, $state, false)); // Note: block another deck reform
+      $morePieces = self::pickForLocation($missing, $fromLocation, $toLocation, $state, false); // Note: block another deck reform
+      $id = $morePieces->first()['id'];
+      $morePieces[$id]['isReshuffled'] = true;
+      $pieces = $pieces->merge($morePieces);
     }
 
     return $pieces;

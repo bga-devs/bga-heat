@@ -2,6 +2,7 @@
 namespace HEAT;
 use HEAT\Managers\Players;
 use HEAT\Managers\Constructors;
+use HEAT\Managers\Cards;
 use HEAT\Core\Globals;
 use HEAT\Core\Game;
 use HEAT\Core\Notifications;
@@ -13,7 +14,11 @@ trait DebugTrait
 {
   function tp()
   {
-    $this->actChooseUpgrade(13);
+    $cards = Cards::draw(0, 8);
+    var_dump($cards);
+    die('test');
+
+    //    $this->actChooseUpgrade(13);
     //    var_dump($this->getCircuit()->isFree(7, 1));
   }
 
