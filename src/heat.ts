@@ -32,7 +32,7 @@ class Heat implements HeatGame {
     private handCounters: Counter[] = [];
     private engineCounters: Counter[] = [];
     private speedCounters: Counter[] = [];
-    private turnCounters: Counter[] = [];
+    private lapCounters: Counter[] = [];
     private market?: LineStock<Card>;
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
@@ -645,9 +645,9 @@ class Heat implements HeatGame {
                     <div class="speed icon"></div>
                     <span id="speed-counter-${constructor.id}">-</span>
                 </div>
-                <div id="turn-counter-wrapper-${constructor.id}" class="turn-counter">
-                    <div class="turn icon"></div>
-                    <span id="turn-counter-${constructor.id}">-</span> / ${gamedatas.nbrLaps}
+                <div id="lap-counter-wrapper-${constructor.id}" class="lap-counter">
+                    <div class="flag icon"></div>
+                    <span id="lap-counter-${constructor.id}">-</span> / ${gamedatas.nbrLaps}
                 </div>
             </div>
             <div class="counters">
@@ -680,11 +680,9 @@ class Heat implements HeatGame {
                 this.speedCounters[constructor.id].setValue(constructor.speed);
             }
 
-            this.turnCounters[constructor.id] = new ebg.counter();
-            this.turnCounters[constructor.id].create(`turn-counter-${constructor.id}`);
-            if (constructor.turn >= 0) {
-                this.turnCounters[constructor.id].setValue(Math.min(gamedatas.nbrLaps, constructor.turn + 1));
-            }
+            this.lapCounters[constructor.id] = new ebg.counter();
+            this.lapCounters[constructor.id].create(`lap-counter-${constructor.id}`);
+            this.lapCounters[constructor.id].setValue(Math.max(1, Math.min(gamedatas.nbrLaps, constructor.turn + 1)));
 
             if (constructor.carCell < 0) {
                 this.setRank(constructor.id, -constructor.carCell);
@@ -694,7 +692,7 @@ class Heat implements HeatGame {
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
         this.setTooltipToClass('speed-counter', _('Speed'));
-        this.setTooltipToClass('turn-counter', _('Turns'));
+        this.setTooltipToClass('lap-counter', _('Laps'));
         this.setTooltipToClass('order-counter', _('Player order'));
         this.setTooltipToClass('podium-counter', _('Rank'));
     }
@@ -1031,6 +1029,7 @@ class Heat implements HeatGame {
 
     notif_moveCar(args: NotifMoveCarArgs) {
         const { constructor_id, cell, path } = args;
+
         return this.circuit.moveCar(constructor_id, cell, path);
     } 
 
