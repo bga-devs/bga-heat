@@ -79,9 +79,9 @@ class Circuit
 
     // Weather
     $weatherCard = Globals::getWeatherCard();
-    if ($weatherCard == WEATHER_CLOUD) {
+    if ($weatherCard === WEATHER_CLOUD) {
       $value--;
-    } elseif ($weatherCard == WEATHER_STORM) {
+    } elseif ($weatherCard === WEATHER_STORM) {
       $value++;
     }
 
@@ -95,9 +95,9 @@ class Circuit
 
     // Weather
     $weatherCard = Globals::getWeatherCard();
-    if ($weatherCard == WEATHER_FOG) {
+    if ($weatherCard === WEATHER_FOG) {
       $value++;
-    } elseif ($weatherCard == WEATHER_SNOW) {
+    } elseif ($weatherCard === WEATHER_SNOW) {
       $value--;
     }
 
