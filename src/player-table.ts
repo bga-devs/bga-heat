@@ -193,13 +193,29 @@ class PlayerTable {
         return promise ?? Promise.resolve(true);
     }
     
-    public drawCards(cards: Card[]): Promise<any> {
-        return this.hand.addCards(cards, { fromStock: this.deck });
+    public async drawCardsPublic(n: number): Promise<any> {
+        const isReshuffled = this.deck.getCardNumber() < n;
+        if (!isReshuffled) {
+            const count = this.deck.getCardNumber() - n;
+            this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
+            return Promise.resolve(true);
+        } else {
+            const before = this.deck.getCardNumber();
+            const after = this.discard.getCardNumber() - (n - before);
+
+            this.deck.setCardNumber(this.discard.getCardNumber(), this.fakeDeckCard);
+            this.discard.setCardNumber(0);
+
+            await this.deck.shuffle(10, (card: Card, index: number) => card.id = -1000 - index);
+
+            this.deck.setCardNumber(after, this.fakeDeckCard);
+
+            return true;
+        }
     }
     
-    public incDeckCount(inc: number) {
-        const count = this.deck.getCardNumber() + inc;
-        this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
+    public drawCardsPrivate(cards: Card[]): Promise<any> {
+        return this.addCardsFromDeck(cards, this.hand);
     }
     
     public async scrapCards(cards: Card[]): Promise<any> {
@@ -237,6 +253,35 @@ class PlayerTable {
         await this.deck.addCards(cards, undefined, { visible: false, }, true);
 
         this.deck.setCardNumber(this.deck.getCardNumber(), this.fakeDeckCard);
+
+        return true;
+    }
+
+    public async addCardsFromDeck(cards: Card[], to: CardStock<Card>, addCardSettings: AddCardSettings = undefined, shift: number | boolean = 250): Promise<any> {
+        const shuffleIndex = cards.findIndex(card => card.isReshuffled)
+        if (shuffleIndex === -1) {
+            await to.addCards(cards, { fromStock: this.deck, }, addCardSettings, shift);
+        } else {
+            const cardsBefore = cards.slice(0, shuffleIndex);
+            const cardsAfter = cards.slice(shuffleIndex);
+            
+            await to.addCards(cardsBefore, { fromStock: this.deck, }, addCardSettings, shift);
+
+            this.deck.setCardNumber(0);
+
+            const cardNumber = this.discard.getCardNumber();
+            await this.deck.addCards(this.discard.getCards());
+
+            this.discard.setCardNumber(0);
+            this.deck.setCardNumber(cardNumber, this.fakeDeckCard);
+            await this.deck.shuffle(10, (card: Card, index: number) => card.id = -1000 - index);
+
+            this.deck.addCards(cardsAfter, undefined, <AddCardToDeckSettings>{
+                autoUpdateCardNumber: false,
+                autoRemovePreviousCards: false,
+            });
+            await to.addCards(cardsAfter, { fromStock: this.deck, }, addCardSettings, shift);
+        }
 
         return true;
     }
