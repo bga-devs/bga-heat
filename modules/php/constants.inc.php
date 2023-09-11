@@ -57,6 +57,7 @@ const SPEED = 'speed';
 const STARTING_UPGRADE = 'starting_upgrade';
 const BASIC_UPGRADE = 'basic_upgrade';
 const ADVANCED_UPGRADE = 'advanced_upgrade';
+const SPONSOR = 'sponsor';
 
 const HEAT = 'heat';
 const STRESS = 'stress';

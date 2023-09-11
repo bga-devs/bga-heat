@@ -8,6 +8,8 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
+  - react : heated boost with weather that makes it no longer heated !
+  
   - championship: new field received in getAllDatas
     'index' => represents which circuits we are playing in the list of circuit
     'event' => id of the event card (following sprite in img/) 

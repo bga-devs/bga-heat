@@ -259,10 +259,12 @@ class Notifications
 
   public function heatedBoost($constructor, $heats, $cards, $card)
   {
-    self::notifyAll('payHeats', clienttranslate('${constructor_name} discards 1 heat to get the boost effect'), [
-      'constructor' => $constructor,
-      'cards' => $heats->toArray(),
-    ]);
+    if (!is_null($heats)) {
+      self::notifyAll('payHeats', clienttranslate('${constructor_name} discards 1 heat to get the boost effect'), [
+        'constructor' => $constructor,
+        'cards' => $heats->toArray(),
+      ]);
+    }
     self::resolveBoost($constructor, $cards, $card, 1, 1);
   }
 

@@ -247,14 +247,23 @@ trait RaceTrait
     if ($round <= Globals::getNDraftRounds()) {
       $this->gamestate->nextState('draft');
     } else {
-      foreach (Constructors::getAll() as $cId => $constructor) {
-        if (!$constructor->isAI()) {
-          Cards::move($constructor->getHand()->getIds(), "deck-$cId");
-        }
+      if (Globals::isChampionship()) {
+        die('TODO: let last player choose if he wants to switch or not');
+      } else {
+        $this->stFinishDraft();
       }
-
-      Notifications::reformingDeckWithUpgrades();
-      $this->gamestate->nextState('start');
     }
+  }
+
+  function stFinishDraft()
+  {
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      if (!$constructor->isAI()) {
+        Cards::move($constructor->getHand()->getIds(), "deck-$cId");
+      }
+    }
+
+    Notifications::reformingDeckWithUpgrades();
+    $this->gamestate->nextState('start');
   }
 }

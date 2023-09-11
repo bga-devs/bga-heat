@@ -473,8 +473,12 @@ trait RoundTrait
       $this->moveCar($constructor, 1);
     }
     // HEATED BOOST
-    elseif ($symbol == HEATED_BOOST) {
-      $heats = $constructor->payHeats(1);
+    elseif ($symbol == HEATED_BOOST || $symbol == BOOST) {
+      if ($symbol == HEATED_BOOST) {
+        $heats = $constructor->payHeats(1);
+      } else {
+        $heats = null;
+      }
       list($cards, $card) = $constructor->resolveBoost();
       Globals::incFlippedCards();
       Notifications::heatedBoost($constructor, $heats, $cards, $card);
