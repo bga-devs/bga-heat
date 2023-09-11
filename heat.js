@@ -3566,6 +3566,7 @@ var Heat = /** @class */ (function () {
             ['moveCar', undefined],
             ['updateTurnOrder', 1],
             ['payHeats', undefined],
+            ['adrenaline', ANIMATION_MS],
             ['spinOut', undefined],
             ['discard', ANIMATION_MS],
             ['pDiscard', ANIMATION_MS],
@@ -3693,6 +3694,10 @@ var Heat = /** @class */ (function () {
                 }
             });
         });
+    };
+    Heat.prototype.notif_adrenaline = function (args) {
+        var constructor_id = args.constructor_id;
+        this.speedCounters[constructor_id].incValue(1);
     };
     Heat.prototype.notif_spinOut = function (args) {
         var _a;

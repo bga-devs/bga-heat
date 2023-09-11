@@ -942,6 +942,7 @@ class Heat implements HeatGame {
             ['moveCar', undefined],
             ['updateTurnOrder', 1],
             ['payHeats', undefined],
+            ['adrenaline', ANIMATION_MS],
             ['spinOut', undefined],
             ['discard', ANIMATION_MS],
             ['pDiscard', ANIMATION_MS],
@@ -1075,6 +1076,11 @@ class Heat implements HeatGame {
         this.circuit.showCorner(corner);
 
         return true;
+    }
+
+    notif_adrenaline(args: NotifSpinOutArgs) {
+        const { constructor_id } = args;
+        this.speedCounters[constructor_id].incValue(1);
     }
 
     async notif_spinOut(args: NotifSpinOutArgs) {
