@@ -1102,6 +1102,10 @@ html, .mode_3d #game_play_area_background {
   background-position-x: 100%;
 }
 
+#market {
+  margin: 10px;
+}
+
 .action-button .icon, .action-button .color, .log .icon, .log .color {
   width: 24px;
   height: 24px;

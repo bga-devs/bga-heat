@@ -3058,10 +3058,12 @@ var Heat = /** @class */ (function () {
         this.updatePageTitle();
     };
     Heat.prototype.onEnteringChooseUpgrade = function (args) {
-        var _this = this;
         if (!this.market) {
+            document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\"></div>\n            ");
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
-            this.market.onCardClick = function (card) { return _this.actChooseUpgrade(card.id); };
+            this.market.onSelectionChange = function (selection) {
+                document.getElementById("actChooseUpgrade_button").classList.toggle('disabled', selection.length != 1);
+            };
         }
         this.market.addCards(Object.values(args.market));
         this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
@@ -3130,6 +3132,10 @@ var Heat = /** @class */ (function () {
         }
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'chooseUpgrade':
+                    this.addActionButton("actChooseUpgrade_button", _('Take selected card'), function () { return _this.actChooseUpgrade(); });
+                    document.getElementById("actChooseUpgrade_button").classList.add('disabled');
+                    break;
                 case 'planification':
                     this.addActionButton("actPlanification_button", '', function () { return _this.actPlanification(); });
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
@@ -3454,12 +3460,12 @@ var Heat = /** @class */ (function () {
             button.innerHTML = label;
         }
     };
-    Heat.prototype.actChooseUpgrade = function (cardId) {
+    Heat.prototype.actChooseUpgrade = function () {
         if (!this.checkAction('actChooseUpgrade')) {
             return;
         }
         this.takeAction('actChooseUpgrade', {
-            cardId: cardId
+            cardId: this.market.getSelection()[0].id,
         });
     };
     Heat.prototype.actPlanification = function () {

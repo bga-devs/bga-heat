@@ -246,8 +246,13 @@ class Heat implements HeatGame {
 
     private onEnteringChooseUpgrade(args: EnteringChooseUpgradeArgs) {
         if (!this.market) {
+            document.getElementById('table-center').insertAdjacentHTML('beforebegin', `
+                <div id="market"></div>
+            `);
             this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
-            this.market.onCardClick = card => this.actChooseUpgrade(card.id);
+            this.market.onSelectionChange = selection => {
+                document.getElementById(`actChooseUpgrade_button`).classList.toggle('disabled', selection.length != 1);
+            }
         }
         this.market.addCards(Object.values(args.market));
 
@@ -325,6 +330,11 @@ class Heat implements HeatGame {
 
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'chooseUpgrade':
+                    (this as any).addActionButton(`actChooseUpgrade_button`, _('Take selected card'), () => this.actChooseUpgrade());
+                    document.getElementById(`actChooseUpgrade_button`).classList.add('disabled');
+                    break;
+
                 case 'planification':
                     (this as any).addActionButton(`actPlanification_button`, '', () => this.actPlanification());
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
@@ -805,13 +815,13 @@ class Heat implements HeatGame {
         }
     }
 
-    private actChooseUpgrade(cardId: number) {
+    private actChooseUpgrade() {
         if(!(this as any).checkAction('actChooseUpgrade')) {
             return;
         }
 
         this.takeAction('actChooseUpgrade', {
-            cardId
+            cardId: this.market.getSelection()[0].id,
         });
     }
   	
