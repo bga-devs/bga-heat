@@ -1021,7 +1021,7 @@ class Heat implements HeatGame {
         }
 
         (this as any).notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) => 
-            this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && !notif.args.cards
+            this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
         );
         (this as any).notifqueue.setIgnoreNotificationCheck('draw', (notif: Notif<any>) => 
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
@@ -1140,7 +1140,7 @@ class Heat implements HeatGame {
         this.handCounters[constructor_id]?.incValue(n);
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
-        playerTable.incDeckCount(-n);
+        playerTable.drawCardsPublic(n);
     }
 
     notif_discard(args: NotifDiscardCardsArgs) {
@@ -1156,8 +1156,7 @@ class Heat implements HeatGame {
         const cards = Object.values(args.cards);
         this.handCounters[constructor_id]?.incValue(cards.length);
         const playerTable = this.getCurrentPlayerTable();
-        playerTable.drawCards(cards);
-        //playerTable.incDeckCount(-cards.length);
+        playerTable.drawCardsPrivate(cards);
     }
 
     notif_pDiscard(args: NotifPCardsArgs) {

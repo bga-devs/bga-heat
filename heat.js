@@ -2784,12 +2784,33 @@ var PlayerTable = /** @class */ (function () {
         this.setCurrentGear(1);
         return promise !== null && promise !== void 0 ? promise : Promise.resolve(true);
     };
-    PlayerTable.prototype.drawCards = function (cards) {
-        return this.hand.addCards(cards, { fromStock: this.deck });
+    PlayerTable.prototype.drawCardsPublic = function (n) {
+        return __awaiter(this, void 0, void 0, function () {
+            var isReshuffled, count, before, after;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        isReshuffled = this.deck.getCardNumber() < n;
+                        if (!!isReshuffled) return [3 /*break*/, 1];
+                        count = this.deck.getCardNumber() - n;
+                        this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
+                        return [2 /*return*/, Promise.resolve(true)];
+                    case 1:
+                        before = this.deck.getCardNumber();
+                        after = this.discard.getCardNumber() - (n - before);
+                        this.deck.setCardNumber(this.discard.getCardNumber(), this.fakeDeckCard);
+                        this.discard.setCardNumber(0);
+                        return [4 /*yield*/, this.deck.shuffle(10, function (card, index) { return card.id = -1000 - index; })];
+                    case 2:
+                        _a.sent();
+                        this.deck.setCardNumber(after, this.fakeDeckCard);
+                        return [2 /*return*/, true];
+                }
+            });
+        });
     };
-    PlayerTable.prototype.incDeckCount = function (inc) {
-        var count = this.deck.getCardNumber() + inc;
-        this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
+    PlayerTable.prototype.drawCardsPrivate = function (cards) {
+        return this.addCardsFromDeck(cards, this.hand);
     };
     PlayerTable.prototype.scrapCards = function (cards) {
         return __awaiter(this, void 0, void 0, function () {
@@ -2853,6 +2874,49 @@ var PlayerTable = /** @class */ (function () {
                         _a.sent();
                         this.deck.setCardNumber(this.deck.getCardNumber(), this.fakeDeckCard);
                         return [2 /*return*/, true];
+                }
+            });
+        });
+    };
+    PlayerTable.prototype.addCardsFromDeck = function (cards, to, addCardSettings, shift) {
+        if (addCardSettings === void 0) { addCardSettings = undefined; }
+        if (shift === void 0) { shift = 250; }
+        return __awaiter(this, void 0, void 0, function () {
+            var shuffleIndex, cardsBefore, cardsAfter, cardNumber;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        shuffleIndex = cards.findIndex(function (card) { return card.isReshuffled; });
+                        if (!(shuffleIndex === -1)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, to.addCards(cards, { fromStock: this.deck, }, addCardSettings, shift)];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 7];
+                    case 2:
+                        cardsBefore = cards.slice(0, shuffleIndex);
+                        cardsAfter = cards.slice(shuffleIndex);
+                        return [4 /*yield*/, to.addCards(cardsBefore, { fromStock: this.deck, }, addCardSettings, shift)];
+                    case 3:
+                        _a.sent();
+                        this.deck.setCardNumber(0);
+                        cardNumber = this.discard.getCardNumber();
+                        return [4 /*yield*/, this.deck.addCards(this.discard.getCards())];
+                    case 4:
+                        _a.sent();
+                        this.discard.setCardNumber(0);
+                        this.deck.setCardNumber(cardNumber, this.fakeDeckCard);
+                        return [4 /*yield*/, this.deck.shuffle(10, function (card, index) { return card.id = -1000 - index; })];
+                    case 5:
+                        _a.sent();
+                        this.deck.addCards(cardsAfter, undefined, {
+                            autoUpdateCardNumber: false,
+                            autoRemovePreviousCards: false,
+                        });
+                        return [4 /*yield*/, to.addCards(cardsAfter, { fromStock: this.deck, }, addCardSettings, shift)];
+                    case 6:
+                        _a.sent();
+                        _a.label = 7;
+                    case 7: return [2 /*return*/, true];
                 }
             });
         });
@@ -3649,7 +3713,7 @@ var Heat = /** @class */ (function () {
             });
         }
         this.notifqueue.setIgnoreNotificationCheck('discard', function (notif) {
-            return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId() && !notif.args.cards;
+            return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId() && notif.args.n;
         });
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
             return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
@@ -3779,7 +3843,7 @@ var Heat = /** @class */ (function () {
         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(n);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
-        playerTable.incDeckCount(-n);
+        playerTable.drawCardsPublic(n);
     };
     Heat.prototype.notif_discard = function (args) {
         var _a;
@@ -3795,8 +3859,7 @@ var Heat = /** @class */ (function () {
         var cards = Object.values(args.cards);
         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(cards.length);
         var playerTable = this.getCurrentPlayerTable();
-        playerTable.drawCards(cards);
-        //playerTable.incDeckCount(-cards.length);
+        playerTable.drawCardsPrivate(cards);
     };
     Heat.prototype.notif_pDiscard = function (args) {
         var _a;

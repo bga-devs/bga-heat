@@ -135,6 +135,7 @@ class Notifications
     self::notifyAll('discard', clienttranslate('${constructor_name} discards ${n} card(s)'), [
       'constructor' => $constructor,
       'n' => count($cards),
+      'cards' => $cards,
     ]);
 
     self::notify($constructor, 'pDiscard', clienttranslate('You discards ${cards_images}'), [
