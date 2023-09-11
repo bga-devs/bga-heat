@@ -43,6 +43,21 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actSwapUpgrade()
+  {
+    self::setAjaxMode();
+    $cardId = self::getArg('cardId', AT_int, true);
+    $this->game->actSwapUpgrade($cardId);
+    self::ajaxResponse();
+  }
+
+  public function actPassSwapUpgrade()
+  {
+    self::setAjaxMode();
+    $this->game->actPassSwapUpgrade();
+    self::ajaxResponse();
+  }
+
   public function actPlan()
   {
     self::setAjaxMode();

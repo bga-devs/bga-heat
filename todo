@@ -8,6 +8,11 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
+  - championship : swapUpgrade state
+    => either you can select a card left on market (actSwapUpgrade(cardId)), on just click the pass btn (actPassSwapUpgrade)
+    => notif swapUpgrade($constructor, $card2, $card)
+      -> contains ${card_name2}
+    
   - round order : dont display it if car is finished
 
   - react : heated boost with weather that makes it no longer heated !

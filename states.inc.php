@@ -86,7 +86,26 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsChooseUpgrade',
     'possibleactions' => ['actChooseUpgrade'],
-    'transitions' => ['start' => ST_START_RACE, 'draft' => ST_PREPARE_GARAGE_DRAFT],
+    'transitions' => ['start' => ST_START_RACE, 'draft' => ST_PREPARE_GARAGE_DRAFT, 'swap' => ST_DRAFT_GARAGE_SWAP],
+  ],
+
+  // Championship only
+  ST_DRAFT_GARAGE_SWAP => [
+    'name' => 'swapUpgrade',
+    'description' => clienttranslate('${actplayer} may swap the upgrade they picked with another one left in the market'),
+    'descriptionmyturn' => clienttranslate('${you} may swap the upgrade they picked with another one left in the market'),
+    'type' => 'activeplayer',
+    'args' => 'argsSwapUpgrade',
+    'possibleactions' => ['actSwapUpgrade', 'actPassSwapUpgrade'],
+    'transitions' => ['start' => ST_DRAW_SPONSORS],
+  ],
+
+  ST_DRAW_SPONSORS => [
+    'name' => 'drawSponsors',
+    'description' => '',
+    'type' => 'game',
+    'action' => 'stDrawSponsors',
+    'transitions' => ['start' => ST_START_RACE],
   ],
 
   ST_START_RACE => [

@@ -236,6 +236,14 @@ trait RaceTrait
 
   function stEndDraftRound()
   {
+    if (Globals::isChampionship()) {
+      $turnOrder = Globals::getCustomTurnOrders()['draft'];
+      $this->gamestate->jumpToState(ST_GENERIC_NEXT_PLAYER);
+      Constructors::changeActive($turnOrder['order'][0]);
+      $this->gamestate->jumpToState(ST_DRAFT_GARAGE_SWAP);
+      return;
+    }
+
     $round = Globals::getDraftRound();
     $cardIds = Cards::getInLocation('market')->getIds();
     Cards::move($cardIds, 'box');
@@ -247,11 +255,7 @@ trait RaceTrait
     if ($round <= Globals::getNDraftRounds()) {
       $this->gamestate->nextState('draft');
     } else {
-      if (Globals::isChampionship()) {
-        die('TODO: let last player choose if he wants to switch or not');
-      } else {
-        $this->stFinishDraft();
-      }
+      $this->stFinishDraft();
     }
   }
 
@@ -264,6 +268,45 @@ trait RaceTrait
     }
 
     Notifications::reformingDeckWithUpgrades();
+    $this->gamestate->nextState('start');
+  }
+
+  // CHAMPIONSHIP : swap
+  function argsSwapUpgrade()
+  {
+    return [
+      'market' => Cards::getInLocation('market'),
+    ];
+  }
+
+  function actSwapUpgrade($cardId)
+  {
+    self::checkAction('actSwapUpgrade');
+    $args = $this->argsSwapUpgrade();
+    if (!array_key_exists($cardId, $args['market'])) {
+      throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
+    }
+    $card = $args['market'][$cardId];
+    $constructor = Constructors::getActive();
+    $card2 = $constructor->getHand()->first();
+    $cId = $constructor->getId();
+    Cards::move($cardId, "hand-${cId}");
+    Cards::move($card2['id'], 'market');
+    Notifications::swapUpgrade($constructor, $card2, $card);
+
+    $this->stFinishDraft();
+  }
+
+  function actPassSwapUpgrade()
+  {
+    self::checkAction('actPassSwapUpgrade');
+    $this->stFinishDraft();
+  }
+
+  // CHAMPIONSHIP : draw sponsors
+  function stDrawSponsors()
+  {
+    // TODO
     $this->gamestate->nextState('start');
   }
 }

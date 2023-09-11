@@ -372,6 +372,19 @@ class Notifications
     self::notifyAll('reformingDeckWithUpgrades', clienttranslate('End of draft phase, reforming deck with upgrade cards'), []);
   }
 
+  public static function swapUpgrade($constructor, $card2, $card)
+  {
+    self::notifyAll(
+      'swapUpgrade',
+      clienttranslate('${constructor_name} puts back ${card_name} and takes ${card_name2} instead'),
+      [
+        'constructor' => $constructor,
+        'card' => $card,
+        'card2' => $card2,
+      ]
+    );
+  }
+
   public static function weatherHeats($constructor, $heats, $location)
   {
     self::notifyAll(
@@ -464,6 +477,10 @@ class Notifications
     if (isset($data['card'])) {
       $data['card_image'] = '';
       $data['preserve'][] = 'card';
+    }
+    if (isset($data['card2'])) {
+      $data['card_image2'] = '';
+      $data['preserve'][] = 'card2';
     }
 
     if (isset($data['cards'])) {
