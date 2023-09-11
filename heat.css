@@ -625,11 +625,14 @@ height: 241px; */
 #table-center {
   display: flex;
   justify-content: center;
+  transform-origin: top center;
 }
 #table-center #circuit {
   position: relative;
   width: 1650px;
   height: 1100px;
+  min-width: 1650px;
+  min-height: 1100px;
   background-size: cover;
   transform-origin: top center;
 }

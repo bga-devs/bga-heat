@@ -2388,8 +2388,9 @@ var Circuit = /** @class */ (function () {
         this.game = game;
         this.scale = 1;
         this.circuitDatas = gamedatas.circuitDatas;
-        this.mapDiv = document.getElementById('circuit');
-        this.mapDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
+        this.tableCenterDiv = document.getElementById('table-center');
+        this.circuitDiv = document.getElementById('circuit');
+        this.circuitDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
         Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
         this.createCorners(this.circuitDatas.corners);
         this.createWeather(gamedatas.weather, this.circuitDatas);
@@ -2400,19 +2401,17 @@ var Circuit = /** @class */ (function () {
      */
     Circuit.prototype.setAutoZoom = function () {
         var _this = this;
-        if (!this.mapDiv.clientWidth) {
+        if (!this.tableCenterDiv.clientWidth) {
             setTimeout(function () { return _this.setAutoZoom(); }, 200);
             return;
         }
-        var gameWidth = MAP_WIDTH;
-        var gameHeight = MAP_HEIGHT;
-        var horizontalScale = document.getElementById('game_play_area').clientWidth / gameWidth;
-        var verticalScale = (window.innerHeight - 80) / gameHeight;
+        var horizontalScale = document.getElementById('game_play_area').clientWidth / MAP_WIDTH;
+        var verticalScale = (window.innerHeight - 80) / MAP_HEIGHT;
         this.scale = Math.min(1, horizontalScale, verticalScale);
-        this.mapDiv.style.transform = this.scale === 1 ? '' : "scale(".concat(this.scale, ")");
+        this.tableCenterDiv.style.transform = this.scale === 1 ? '' : "scale(".concat(this.scale, ")");
         var maxHeight = this.scale === 1 ? '' : "".concat(MAP_HEIGHT * this.scale, "px");
         //this.mapDiv.style.maxHeight = maxHeight;
-        document.getElementById('table-center').style.maxHeight = maxHeight;
+        this.tableCenterDiv.style.maxHeight = maxHeight;
         //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     };
     Circuit.prototype.createCorners = function (corners) {
@@ -2428,7 +2427,7 @@ var Circuit = /** @class */ (function () {
             cornerDiv.classList.add('corner');
         cornerDiv.style.setProperty('--x', "".concat(corner.x, "px"));
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
-        this.mapDiv.insertAdjacentElement('beforeend', cornerDiv);
+        this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
     };
     Circuit.prototype.createWeather = function (weather, circuitDatas) {
         if (weather === null || weather === void 0 ? void 0 : weather.tokens) {
@@ -2443,7 +2442,7 @@ var Circuit = /** @class */ (function () {
         weatherCardDiv.dataset.cardType = "".concat(type);
         weatherCardDiv.style.setProperty('--x', "".concat(wheatherCardPos.x, "px"));
         weatherCardDiv.style.setProperty('--y', "".concat(wheatherCardPos.y, "px"));
-        this.mapDiv.insertAdjacentElement('beforeend', weatherCardDiv);
+        this.circuitDiv.insertAdjacentElement('beforeend', weatherCardDiv);
         this.game.setTooltip(weatherCardDiv.id, "".concat(this.getWeatherCardSetupTooltip(type), "<br><br>").concat(this.getWeatherCardEffectTooltip(type)));
     };
     Circuit.prototype.getWeatherCardSetupTooltip = function (type) {
@@ -2492,7 +2491,7 @@ var Circuit = /** @class */ (function () {
         weatherTokenDiv.dataset.tokenType = "".concat(type);
         weatherTokenDiv.style.setProperty('--x', "".concat(x, "px"));
         weatherTokenDiv.style.setProperty('--y', "".concat(y, "px"));
-        this.mapDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
+        this.circuitDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
         this.game.setTooltip(weatherTokenDiv.id, this.getWeatherTokenTooltip(type, cardType));
     };
     Circuit.prototype.getWeatherTokenTooltip = function (type, cardType) {
@@ -2531,7 +2530,7 @@ var Circuit = /** @class */ (function () {
         car.style.setProperty('--y', "".concat(cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
         car.style.setProperty('--constructor-id', "".concat(constructor.id));
-        this.mapDiv.insertAdjacentElement('beforeend', car);
+        this.circuitDiv.insertAdjacentElement('beforeend', car);
     };
     Circuit.prototype.moveCar = function (constructorId, carCell, path) {
         var _this = this;
@@ -2592,13 +2591,13 @@ var Circuit = /** @class */ (function () {
         var cell = this.circuitDatas.cells[cellId];
         mapIndicator.style.setProperty('--x', "".concat(cell.x, "px"));
         mapIndicator.style.setProperty('--y', "".concat(cell.y, "px"));
-        this.mapDiv.insertAdjacentElement('beforeend', mapIndicator);
+        this.circuitDiv.insertAdjacentElement('beforeend', mapIndicator);
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);
         }
     };
     Circuit.prototype.removeMapIndicators = function () {
-        this.mapDiv.querySelectorAll('.map-indicator').forEach(function (elem) { return elem.remove(); });
+        this.circuitDiv.querySelectorAll('.map-indicator').forEach(function (elem) { return elem.remove(); });
     };
     Circuit.prototype.getCellInfos = function (cellId) {
         // This is just a wrapper to either return the datas about the cell (center x, center y, angle)
