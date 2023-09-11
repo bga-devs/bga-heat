@@ -355,6 +355,7 @@ class Circuit {
 
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);
+            mapIndicator.classList.add('clickable');
         }
 
         if (stress) {

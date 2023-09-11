@@ -792,7 +792,6 @@ class Heat implements HeatGame {
                     });
                 } else {
                     totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed]));
-
                 }
             }
 
@@ -1035,10 +1034,7 @@ class Heat implements HeatGame {
         this.handCounters[constructor_id]?.incValue(-cards.length);
         const promises = [playerTable.setInplay(cards)];
         if (heat) {
-            if (playerTable.hand) {
-                promises.push(playerTable.hand?.addCard(heat));
-            }
-            this.handCounters[constructor_id]?.incValue(1);
+            promises.push(playerTable.discard?.addCard(heat));
         }
         this.speedCounters[constructor_id].setValue(cards.map(card => card.speed ?? 0).reduce((a, b) => a + b, 0));
         return Promise.all(promises);
@@ -1183,6 +1179,7 @@ class Heat implements HeatGame {
     notif_resolveBoost(args: NotifResolveBoostArgs) {
         const { constructor_id, cards, card } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        this.speedCounters[constructor_id].incValue(card.speed ?? 0);
         return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
     }
 

@@ -2595,6 +2595,7 @@ var Circuit = /** @class */ (function () {
         this.circuitDiv.insertAdjacentElement('beforeend', mapIndicator);
         if (clickCallback) {
             mapIndicator.addEventListener('click', clickCallback);
+            mapIndicator.classList.add('clickable');
         }
         if (stress) {
             mapIndicator.classList.add('stress');
@@ -3643,7 +3644,7 @@ var Heat = /** @class */ (function () {
         // TODO
     };
     Heat.prototype.notif_reveal = function (args) {
-        var _a, _b, _c;
+        var _a, _b;
         var constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
@@ -3652,10 +3653,7 @@ var Heat = /** @class */ (function () {
         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
         var promises = [playerTable.setInplay(cards)];
         if (heat) {
-            if (playerTable.hand) {
-                promises.push((_b = playerTable.hand) === null || _b === void 0 ? void 0 : _b.addCard(heat));
-            }
-            (_c = this.handCounters[constructor_id]) === null || _c === void 0 ? void 0 : _c.incValue(1);
+            promises.push((_b = playerTable.discard) === null || _b === void 0 ? void 0 : _b.addCard(heat));
         }
         this.speedCounters[constructor_id].setValue(cards.map(function (card) { var _a; return (_a = card.speed) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0));
         return Promise.all(promises);
@@ -3831,8 +3829,10 @@ var Heat = /** @class */ (function () {
         return this.getPlayerTable(playerId).scrapCards(Object.values(cards));
     };
     Heat.prototype.notif_resolveBoost = function (args) {
+        var _a;
         var constructor_id = args.constructor_id, cards = args.cards, card = args.card;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        this.speedCounters[constructor_id].incValue((_a = card.speed) !== null && _a !== void 0 ? _a : 0);
         return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
     };
     Heat.prototype.notif_accelerate = function (args) {
