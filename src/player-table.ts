@@ -226,4 +226,18 @@ class PlayerTable {
 
         return true;
     }
+    
+    public async salvageCards(cards: Card[], discardCards: Card[]): Promise<any> {
+        this.discard.setCardNumber(discardCards.length + cards.length, discardCards[0]);
+        cards.forEach(salvagedCard => this.discard.addCard(salvagedCard, undefined, <AddCardToDeckSettings>{
+            autoUpdateCardNumber: false,
+            autoRemovePreviousCards: false,
+        }));
+
+        await this.deck.addCards(cards, undefined, { visible: false, }, true);
+
+        this.deck.setCardNumber(this.deck.getCardNumber(), this.fakeDeckCard);
+
+        return true;
+    }
 }

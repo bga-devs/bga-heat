@@ -281,6 +281,22 @@ class Heat implements HeatGame {
         this.getCurrentPlayerTable().setHandSelectable('multiple', args._private.cardIds);
     }
 
+    private onEnteringSalvage(args: EnteringSalvageArgs) {
+        if (!this.market) {
+            document.getElementById('table-center').insertAdjacentHTML('beforebegin', `
+                <div id="market"></div>
+            `);
+            this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
+            this.market.onSelectionChange = selection => {
+                document.getElementById(`actSalvage_button`).classList.toggle('disabled', selection.length > args.n);
+            }
+        }
+        // negative ids to not mess with deck pile
+        this.market.addCards(Object.values(args._private.cards).map(card => ({...card, id: -card.id })));
+
+        this.market.setSelectionMode((this as any).isCurrentPlayerActive() ? 'multiple' : 'none');
+    }
+
     public onLeavingState(stateName: string) {
         log( 'Leaving state: '+stateName );
 
@@ -299,7 +315,14 @@ class Heat implements HeatGame {
             case 'discard':
                 this.onLeavingHandSelection();
                 break;
+            case 'salvage':
+                this.onLeavingSalvage();
+                break;
         }
+    }
+
+    private onLeavingChooseSpeed() {
+        this.circuit.removeMapIndicators();
     }
 
     private onLeavingPlanification() {
@@ -311,8 +334,9 @@ class Heat implements HeatGame {
         this.getCurrentPlayerTable()?.setHandSelectable('none');
     }
 
-    private onLeavingChooseSpeed() {
-        this.circuit.removeMapIndicators();
+    private onLeavingSalvage() {
+        document.getElementById('market')?.remove();
+        this.market = null;
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -459,6 +483,10 @@ class Heat implements HeatGame {
                     (this as any).addActionButton(`actDiscard_button`, '', () => this.actDiscard());
                     this.onHandCardSelectionChange([]);
                     break;
+                case 'salvage':
+                    this.onEnteringSalvage(args);
+                    (this as any).addActionButton(`actSalvage_button`, _('Salvage selected cards'), () => this.actSalvage());
+                    document.getElementById(`actSalvage_button`).classList.add('disabled');
             }
         } else {
             switch (stateName) {
@@ -892,6 +920,18 @@ class Heat implements HeatGame {
         });
     }
   	
+    public actSalvage() {
+        if(!(this as any).checkAction('actSalvage')) {
+            return;
+        }
+
+        const selectedCards = this.market.getSelection();
+
+        this.takeAction('actSalvage', {
+            cardIds: JSON.stringify(selectedCards.map(card => -card.id)),
+        });
+    }
+  	
     /*public actConfirmPartialTurn() {
         if(!(this as any).checkAction('actConfirmPartialTurn')) {
             return;
@@ -956,6 +996,7 @@ class Heat implements HeatGame {
             ['scrapCards', undefined],
             ['resolveBoost', undefined],
             ['accelerate', ANIMATION_MS],
+            ['salvageCards', undefined],
         ];
         
     
@@ -1203,6 +1244,13 @@ class Heat implements HeatGame {
         const { constructor_id, speed } = args;
         this.speedCounters[constructor_id].incValue(speed);
     }  
+
+    notif_salvageCards(args: NotifSalvageCardsArgs) {
+        const { constructor_id, cards, discard } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard));
+    }
+    
 
     private setRank(constructorId: number, pos: number) {
         const playerId = this.getPlayerIdFromConstructorId(constructorId);

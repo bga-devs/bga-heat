@@ -298,6 +298,7 @@ class Notifications
     self::notifyAll('salvageCards', clienttranslate('${constructor_name} salvages ${cards_images}'), [
       'constructor' => $constructor,
       'cards' => $cards,
+      'discard' => $constructor->getDiscard(),
     ]);
   }
 

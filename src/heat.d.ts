@@ -134,6 +134,13 @@ interface EnteringDiscardArgs {
     }
 }
 
+interface EnteringSalvageArgs {    
+    _private?: {
+        cards: { [id: number]: Card};
+    }
+    n: number;
+}
+
 // chooseUpgrade
 interface NotifChooseUpgradeArgs {
     constructor_id: number;
@@ -247,4 +254,10 @@ interface NotifAccelerateArgs {
     speed: number;
 }
 
+// salvageCards
+interface NotifSalvageCardsArgs {
+    constructor_id: number;
+    cards: { [id: number]: Card}; // cards to salvage (from discard to deck)
+    discard: { [id: number]: Card}; // for remaining discard pile
+}
 
