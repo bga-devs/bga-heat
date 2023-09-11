@@ -2837,6 +2837,26 @@ var PlayerTable = /** @class */ (function () {
             });
         });
     };
+    PlayerTable.prototype.salvageCards = function (cards, discardCards) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.discard.setCardNumber(discardCards.length + cards.length, discardCards[0]);
+                        cards.forEach(function (salvagedCard) { return _this.discard.addCard(salvagedCard, undefined, {
+                            autoUpdateCardNumber: false,
+                            autoRemovePreviousCards: false,
+                        }); });
+                        return [4 /*yield*/, this.deck.addCards(cards, undefined, { visible: false, }, true)];
+                    case 1:
+                        _a.sent();
+                        this.deck.setCardNumber(this.deck.getCardNumber(), this.fakeDeckCard);
+                        return [2 /*return*/, true];
+                }
+            });
+        });
+    };
     return PlayerTable;
 }());
 var LegendTable = /** @class */ (function () {
@@ -3088,6 +3108,18 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onEnteringDiscard = function (args) {
         this.getCurrentPlayerTable().setHandSelectable('multiple', args._private.cardIds);
     };
+    Heat.prototype.onEnteringSalvage = function (args) {
+        if (!this.market) {
+            document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\"></div>\n            ");
+            this.market = new LineStock(this.cardsManager, document.getElementById("market"));
+            this.market.onSelectionChange = function (selection) {
+                document.getElementById("actSalvage_button").classList.toggle('disabled', selection.length > args.n);
+            };
+        }
+        // negative ids to not mess with deck pile
+        this.market.addCards(Object.values(args._private.cards).map(function (card) { return (__assign(__assign({}, card), { id: -card.id })); }));
+        this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'multiple' : 'none');
+    };
     Heat.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
         this.removeActionButtons();
@@ -3104,7 +3136,13 @@ var Heat = /** @class */ (function () {
             case 'discard':
                 this.onLeavingHandSelection();
                 break;
+            case 'salvage':
+                this.onLeavingSalvage();
+                break;
         }
+    };
+    Heat.prototype.onLeavingChooseSpeed = function () {
+        this.circuit.removeMapIndicators();
     };
     Heat.prototype.onLeavingPlanification = function () {
         this.onLeavingHandSelection();
@@ -3114,8 +3152,10 @@ var Heat = /** @class */ (function () {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setHandSelectable('none');
     };
-    Heat.prototype.onLeavingChooseSpeed = function () {
-        this.circuit.removeMapIndicators();
+    Heat.prototype.onLeavingSalvage = function () {
+        var _a;
+        (_a = document.getElementById('market')) === null || _a === void 0 ? void 0 : _a.remove();
+        this.market = null;
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -3239,6 +3279,10 @@ var Heat = /** @class */ (function () {
                     this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(); });
                     this.onHandCardSelectionChange([]);
                     break;
+                case 'salvage':
+                    this.onEnteringSalvage(args);
+                    this.addActionButton("actSalvage_button", _('Salvage selected cards'), function () { return _this.actSalvage(); });
+                    document.getElementById("actSalvage_button").classList.add('disabled');
             }
         }
         else {
@@ -3520,6 +3564,15 @@ var Heat = /** @class */ (function () {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
     };
+    Heat.prototype.actSalvage = function () {
+        if (!this.checkAction('actSalvage')) {
+            return;
+        }
+        var selectedCards = this.market.getSelection();
+        this.takeAction('actSalvage', {
+            cardIds: JSON.stringify(selectedCards.map(function (card) { return -card.id; })),
+        });
+    };
     /*public actConfirmPartialTurn() {
         if(!(this as any).checkAction('actConfirmPartialTurn')) {
             return;
@@ -3580,6 +3633,7 @@ var Heat = /** @class */ (function () {
             ['scrapCards', undefined],
             ['resolveBoost', undefined],
             ['accelerate', ANIMATION_MS],
+            ['salvageCards', undefined],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
@@ -3849,6 +3903,11 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_accelerate = function (args) {
         var constructor_id = args.constructor_id, speed = args.speed;
         this.speedCounters[constructor_id].incValue(speed);
+    };
+    Heat.prototype.notif_salvageCards = function (args) {
+        var constructor_id = args.constructor_id, cards = args.cards, discard = args.discard;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard));
     };
     Heat.prototype.setRank = function (constructorId, pos) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);

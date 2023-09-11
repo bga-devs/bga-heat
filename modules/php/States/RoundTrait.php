@@ -610,6 +610,11 @@ trait RoundTrait
     return [
       'n' => $n,
       'cardIds' => $constructor->getDiscard()->getIds(),
+      '_private' => [
+        $constructor->getPId() => [
+          'cards' => $constructor->getDiscard(),
+        ],
+      ],      
     ];
   }
 
