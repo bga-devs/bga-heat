@@ -394,6 +394,7 @@ class Notifications
         'i18n' => ['loc'],
         'constructor' => $constructor,
         'cards' => $heats,
+        'loc' => $location,
         'location' => $location,
       ]
     );
