@@ -109,7 +109,7 @@ trait RoundTrait
       // Compute corresponding speeds
       $speeds = $hand->map(function ($card) {
         if ($card['effect'] == STRESS) {
-          return 4;
+          return [1, 2, 3, 4];
         }
         return $card['speed'];
       });
@@ -363,7 +363,8 @@ trait RoundTrait
     // Adrenaline
     $no = $constructor->getNo();
     $nbr = Constructors::count();
-    if ($no == $nbr - 1 || ($no == $nbr - 2 && $nbr >= 5)) {
+    $maxNo = count(Constructor::getTurnOrder());
+    if ($no == $maxNo - 1 || ($no == $maxNo - 2 && $nbr >= 5)) {
       $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
       $symbols[ADRENALINE] = 1;
       Notifications::gainAdrenaline($constructor, $no == $nbr - 1);
