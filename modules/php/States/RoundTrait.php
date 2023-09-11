@@ -531,6 +531,7 @@ trait RoundTrait
     }
     // SALVAGE
     elseif ($symbol == SALVAGE) {
+      Globals::setSalvage($n);
       $this->gamestate->jumpToState(ST_SALVAGE);
       return;
     }
@@ -600,8 +601,11 @@ trait RoundTrait
   ///////////////////////////////
   public function argsSalvage()
   {
+    // TODO : remove max
+    $n = max(2, Globals::getSalvage());
     $constructor = Constructors::getActive();
     return [
+      'n' => $n,
       'cardIds' => $constructor->getDiscard()->getIds(),
     ];
   }
@@ -610,6 +614,9 @@ trait RoundTrait
   {
     self::checkAction('actSalvage');
     $args = $this->argsSalvage();
+    if (count($cardIds) > $args['n']) {
+      throw new \BgaVisibleSystemException('Too much cards. Should not happen');
+    }
     foreach ($cardIds as $cardId) {
       if (!in_array($cardId, $args['cardIds'])) {
         throw new \BgaVisibleSystemException('Cant salvage this card. Should not happen');
