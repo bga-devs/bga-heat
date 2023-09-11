@@ -6,6 +6,7 @@ use HEAT\Core\Globals;
 class Circuit
 {
   protected $id = null;
+  protected $name = null;
   protected $corners = [];
   protected $legendLanes = [];
   protected $raceLanes = [];
@@ -19,6 +20,7 @@ class Circuit
     }
 
     $this->id = $datas['id'];
+    $this->name = $datas['name'];
 
     $lane = null;
     foreach ($datas['corners'] as $pos => $info) {
@@ -47,6 +49,10 @@ class Circuit
   public function getId()
   {
     return $this->id;
+  }
+  public function getName()
+  {
+    return $this->name;
   }
   public function getCorners()
   {

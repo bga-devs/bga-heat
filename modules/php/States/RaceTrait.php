@@ -13,6 +13,31 @@ trait RaceTrait
 {
   function stSetupRace()
   {
+    // Championship
+    if (Globals::isChampionship()) {
+      $datas = Globals::getChampionshipDatas();
+      $race = $datas['circuits'][$datas['index']];
+
+      Globals::setCircuit($race['circuit']);
+      // Custom circuit
+      if (isset($race['circuitDatas'])) {
+        Globals::setCircuitDatas($race['circuitDatas']);
+      }
+      // Standard one
+      else {
+        Globals::loadCircuitDatas();
+      }
+      $this->circuit = null; // Prevent caching
+
+      // Turn order
+      if ($datas['index'] > 0) {
+        // TODO
+        die('TODO: turn order for championship not first race');
+      }
+
+      Notifications::newChampionshipRace($datas, $this->getCircuit()->getName());
+    }
+
     // Place cars on starting positions
     $circuit = $this->getCircuit();
     $cells = $circuit->getStartingCells();
@@ -188,6 +213,7 @@ trait RaceTrait
     return [
       'market' => Cards::getInLocation('market'),
       'round' => Globals::getDraftRound(),
+      'nRounds' => Globals::getNDraftRounds(),
     ];
   }
 
@@ -218,7 +244,7 @@ trait RaceTrait
     // Another round ??
     $round += 1;
     Globals::setDraftRound($round);
-    if ($round <= 3) {
+    if ($round <= Globals::getNDraftRounds()) {
       $this->gamestate->nextState('draft');
     } else {
       foreach (Constructors::getAll() as $cId => $constructor) {

@@ -23,14 +23,12 @@ trait SetupTrait
     // First game : USA with 1 lap
     if ($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_FIRST_GAME) {
       $options[\HEAT\OPTION_CIRCUIT] = \HEAT\OPTION_CIRCUIT_USA;
-      //$options[\HEAT\OPTION_LEGEND] = 0;
       $options[\HEAT\OPTION_NBR_LAPS] = 1;
       $options[\HEAT\OPTION_GARAGE_MODULE] = \HEAT\OPTION_DISABLED;
       $options[\HEAT\OPTION_WEATHER_MODULE] = \HEAT\OPTION_DISABLED;
     }
     // Beginner: default number of laps + no garage + no weather
     elseif ($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_BEGINNER) {
-      //$options[\HEAT\OPTION_LEGEND] = 0;
       $options[\HEAT\OPTION_NBR_LAPS] = 0;
       $options[\HEAT\OPTION_GARAGE_MODULE] = \HEAT\OPTION_DISABLED;
       $options[\HEAT\OPTION_WEATHER_MODULE] = \HEAT\OPTION_DISABLED;
@@ -41,7 +39,12 @@ trait SetupTrait
         throw new \BgaVisibleSystemException('WIP. Not available on prod');
       }
 
-      die('TODO: championship');
+      $options[\HEAT\OPTION_NBR_LAPS] = 0;
+      if (($options[\HEAT\OPTION_GARAGE_MODULE] ?? \HEAT\OPTION_DISABLED) == \HEAT\OPTION_DISABLED) {
+        $options[\HEAT\OPTION_GARAGE_MODULE] = \HEAT\OPTION_GARAGE_MIXED;
+      }
+      $options[\HEAT\OPTION_GARAGE_CHOICE] = \HEAT\OPTION_GARAGE_DRAFT;
+      $options[\HEAT\OPTION_WEATHER_MODULE] = \HEAT\OPTION_WEATHER_ENABLED;
     }
 
     Globals::setupNewGame($players, $options);

@@ -46,10 +46,10 @@ $game_options = [
         'name' => clienttranslate('Standard'),
         'description' => clienttranslate('Customize the race by choosing the circuit and additional modules'),
       ],
-      // OPTION_SETUP_CHAMPIONSHIP => [
-      //   'name' => clienttranslate('Championship'),
-      //   'tmdisplay' => clienttranslate('[Championship]'),
-      // ],
+      OPTION_SETUP_CHAMPIONSHIP => [
+        'name' => clienttranslate('Championship'),
+        'tmdisplay' => clienttranslate('[Championship]'),
+      ],
     ],
   ],
 
@@ -223,7 +223,7 @@ $game_options = [
       [
         'type' => 'otheroptionisnot',
         'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_CHAMPIONSHIP],
+        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER],
       ],
     ],
   ],
@@ -246,6 +246,11 @@ $game_options = [
         'type' => 'otheroptionisnot',
         'id' => OPTION_GARAGE_MODULE,
         'value' => [OPTION_DISABLED],
+      ],
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_CHAMPIONSHIP],
       ],
     ],
   ],
@@ -275,15 +280,24 @@ $game_options = [
     'values' => [
       OPTION_CHAMPIONSHIP_SEASON_61 => [
         'name' => clienttranslate('Season 1961 (3 races)'),
+        'tmdisplay' => clienttranslate('[1961]'),
       ],
       OPTION_CHAMPIONSHIP_SEASON_62 => [
         'name' => clienttranslate('Season 1962 (3 races)'),
+        'tmdisplay' => clienttranslate('[1962]'),
       ],
       OPTION_CHAMPIONSHIP_SEASON_63 => [
         'name' => clienttranslate('Season 1963 (4 races)'),
+        'tmdisplay' => clienttranslate('[1963]'),
+      ],
+      OPTION_CHAMPIONSHIP_RANDOM => [
+        'name' => clienttranslate('Random championship'),
+        'tmdisplay' => clienttranslate('[Random championship]'),
+        'description' => clienttranslate('Play the 4 circuits in a random order with random events'),
       ],
       OPTION_CHAMPIONSHIP_CUSTOM => [
         'name' => clienttranslate('Custom championship'),
+        'tmdisplay' => clienttranslate('[Custom championship]'),
       ],
     ],
     'displaycondition' => [

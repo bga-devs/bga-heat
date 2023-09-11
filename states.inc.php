@@ -81,8 +81,8 @@ $machinestates = [
 
   ST_DRAFT_GARAGE => [
     'name' => 'chooseUpgrade',
-    'description' => clienttranslate('${actplayer} must choose an Upgrade card (draft round n°${round}/3)'),
-    'descriptionmyturn' => clienttranslate('${you} must choose an Upgrade card (draft round n°${round}/3)'),
+    'description' => clienttranslate('${actplayer} must choose an Upgrade card (draft round n°${round}/${nRounds})'),
+    'descriptionmyturn' => clienttranslate('${you} must choose an Upgrade card (draft round n°${round}/${nRounds})'),
     'type' => 'activeplayer',
     'args' => 'argsChooseUpgrade',
     'possibleactions' => ['actChooseUpgrade'],

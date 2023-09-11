@@ -42,6 +42,9 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'draftRound' => 'int',
     'weatherModule' => 'bool',
     'weather' => 'obj',
+
+    'championship' => 'bool',
+    'championshipDatas' => 'obj',
   ];
 
   protected static $table = 'global_variables';
@@ -177,18 +180,46 @@ class Globals extends \HEAT\Helpers\DB_Manager
     self::setGarageModuleMode($options[\HEAT\OPTION_GARAGE_CHOICE] ?? \HEAT\OPTION_GARAGE_RANDOM);
     self::setWeatherModule(($options[\HEAT\OPTION_WEATHER_MODULE] ?? \HEAT\OPTION_DISABLED) == \HEAT\OPTION_WEATHER_ENABLED);
 
-    $circuits = [
-      \HEAT\OPTION_CIRCUIT_USA => 'usa',
-      \HEAT\OPTION_CIRCUIT_ITALIA => 'italia',
-      \HEAT\OPTION_CIRCUIT_GB => 'gb',
-      \HEAT\OPTION_CIRCUIT_FRANCE => 'france',
+    self::setChampionship($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP);
+    if (self::isChampionship()) {
+      $championship = $options[\HEAT\OPTION_CHAMPIONSHIP];
+      // Pre set seasons
+      if ($championship != \HEAT\OPTION_CHAMPIONSHIP_CUSTOM) {
+        $datas = CHAMPIONSHIP_SEASONS[$championship];
+        $datas['index'] = 0;
+        self::setChampionshipDatas($datas);
+      }
+      // Random championship
+      else {
+        $datas = ['name' => 'custom', 'circuits' => [], 'index' => 0];
+        $circuits = ['usa', 'italia', 'gb', 'france'];
+        $events = array_keys(EVENTS);
+        shuffle($circuits);
+        shuffle($events);
+        foreach ($circuits as $i => $circuit) {
+          $datas['circuits'][] = [
+            'circuit' => $circuit,
+            'event' => $events[$i],
+          ];
+        }
+        self::setChampionshipDatas($datas);
+      }
+    }
+    // Single circuit
+    else {
+      $circuits = [
+        \HEAT\OPTION_CIRCUIT_USA => 'usa',
+        \HEAT\OPTION_CIRCUIT_ITALIA => 'italia',
+        \HEAT\OPTION_CIRCUIT_GB => 'gb',
+        \HEAT\OPTION_CIRCUIT_FRANCE => 'france',
 
-      \HEAT\OPTION_CIRCUIT_CUSTOM => 'custom',
-    ];
-    $circuit = $circuits[$options[\HEAT\OPTION_CIRCUIT]];
-    self::setCircuit($circuit);
-    if ($circuit != 'custom') {
-      self::loadCircuitDatas();
+        \HEAT\OPTION_CIRCUIT_CUSTOM => 'custom',
+      ];
+      $circuit = $circuits[$options[\HEAT\OPTION_CIRCUIT]];
+      self::setCircuit($circuit);
+      if ($circuit != 'custom') {
+        self::loadCircuitDatas();
+      }
     }
   }
 
@@ -213,5 +244,10 @@ class Globals extends \HEAT\Helpers\DB_Manager
     $fileName = __DIR__ . '/../Circuits/' . $names[Globals::getCircuit()] . '.php';
     include_once $fileName;
     Globals::setCircuitDatas($circuitDatas);
+  }
+
+  public static function getNDraftRounds()
+  {
+    return self::isChampionship() ? 1 : 3;
   }
 }

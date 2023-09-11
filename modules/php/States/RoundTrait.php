@@ -22,10 +22,6 @@ trait RoundTrait
       })
       ->toArray();
 
-    if (empty($pIds)) {
-      die('Every human as finished the game');
-    }
-
     Globals::setLegendCardDrawn(false);
     if (empty($pIds)) {
       $this->gamestate->nextState('planification');

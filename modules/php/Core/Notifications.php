@@ -332,8 +332,9 @@ class Notifications
 
   public static function newMarket($round, $cards)
   {
-    self::notifyAll('newMarket', clienttranslate('Starting round n°${round}/3 of Upgrade card drafting'), [
+    self::notifyAll('newMarket', clienttranslate('Starting round n°${round}/${nRounds} of Upgrade card drafting'), [
       'round' => $round,
+      'nRounds' => Globals::getNDraftRounds(),
       'cards' => $cards,
     ]);
   }
@@ -378,6 +379,38 @@ class Notifications
         'constructor' => $constructor,
         'cards' => $heats,
         'location' => $location,
+      ]
+    );
+  }
+
+  /////////////////////////////////
+  //// CHAMPIONSHIP
+  public static function newChampionshipRace($datas, $name)
+  {
+    $map = [
+      EVENT_INAUGURATION => clienttranslate('New grandstand inauguration'),
+      EVENT_NEW_RECORD => clienttranslate('New speed record!'),
+      EVENT_STRIKE => clienttranslate('Drivers\' strike'),
+      EVENT_RESTRICTIONS_LIFTED => clienttranslate('Engine restrictions lifted'),
+      EVENT_RECORD_CROWDS => clienttranslate('Record crowds'),
+      EVENT_CORRUPTION => clienttranslate('Corruption in rules committee'),
+      EVENT_NEW_TITLE_SPONSOR => clienttranslate('New title sponsor'),
+      EVENT_FIRST_LIVE_TV => clienttranslate('First live television race'),
+      EVENT_SAFETY_REGULATIONS => clienttranslate('New safety regulations'),
+      EVENT_FUTURE_UNKNOWN => clienttranslate('Title sponsor withdraws future unknown'),
+    ];
+
+    $i = $datas['index'];
+    self::notifyAll(
+      'newChampionshipRace',
+      clienttranslate('Race ${n}/${m} of championship will take place on board ${board} with following event: ${event}'),
+      [
+        'i18n' => ['board', 'event'],
+        'n' => $i + 1,
+        'm' => count($datas['circuits']),
+        'board' => $name,
+        'event' => $map[$datas['circuits'][$i]['event']],
+        'index' => $i,
       ]
     );
   }

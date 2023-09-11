@@ -101,6 +101,60 @@ const ROAD_CONDITION_NO_SLIPSTREAM = 101;
 const ROAD_CONDITION_SLIPSTREAM_BOOST = 102;
 const ROAD_CONDITION_COOLING_BONUS = 103;
 
+/*
+ * CHAMPIONSHIP
+ */
+const EVENT_INAUGURATION = 1;
+const EVENT_NEW_RECORD = 2;
+const EVENT_STRIKE = 3;
+const EVENT_RESTRICTIONS_LIFTED = 4;
+const EVENT_RECORD_CROWDS = 5;
+const EVENT_CORRUPTION = 6;
+const EVENT_NEW_TITLE_SPONSOR = 7;
+const EVENT_FIRST_LIVE_TV = 8;
+const EVENT_SAFETY_REGULATIONS = 9;
+const EVENT_FUTURE_UNKNOWN = 10;
+const EVENTS = [
+  EVENT_INAUGURATION => ['sponsors' => 2, 'press' => [0]],
+  EVENT_NEW_RECORD => ['sponsors' => 1, 'press' => [1]],
+  EVENT_STRIKE => ['sponsors' => 1, 'press' => [2]],
+  EVENT_RESTRICTIONS_LIFTED => ['sponsors' => 2, 'press' => [4]],
+  EVENT_RECORD_CROWDS => ['sponsors' => 1, 'press' => [2, 4]],
+  EVENT_CORRUPTION => ['sponsors' => 1, 'press' => [2]],
+  EVENT_NEW_TITLE_SPONSOR => ['sponsors' => 3, 'press' => [0]],
+  EVENT_FIRST_LIVE_TV => ['sponsors' => 1, 'press' => [1, 4]],
+  EVENT_SAFETY_REGULATIONS => ['sponsors' => 1, 'press' => [4]],
+  EVENT_FUTURE_UNKNOWN => ['sponsors' => 1, 'press' => [4]],
+];
+
+const CHAMPIONSHIP_SEASONS = [
+  \HEAT\OPTION_CHAMPIONSHIP_SEASON_61 => [
+    'name' => 1961,
+    'circuits' => [
+      ['circuit' => 'gb', 'event' => EVENT_INAUGURATION],
+      ['circuit' => 'usa', 'event' => EVENT_NEW_RECORD],
+      ['circuit' => 'italy', 'event' => EVENT_STRIKE],
+    ],
+  ],
+  \HEAT\OPTION_CHAMPIONSHIP_SEASON_62 => [
+    'name' => 1962,
+    'circuits' => [
+      ['circuit' => 'italy', 'event' => EVENT_RESTRICTIONS_LIFTED],
+      ['circuit' => 'gb', 'event' => EVENT_RECORD_CROWDS],
+      ['circuit' => 'france', 'event' => EVENT_CORRUPTION],
+    ],
+  ],
+  \HEAT\OPTION_CHAMPIONSHIP_SEASON_63 => [
+    'name' => 1963,
+    'circuits' => [
+      ['circuit' => 'usa', 'event' => EVENT_NEW_TITLE_SPONSOR],
+      ['circuit' => 'gb', 'event' => EVENT_FIRST_LIVE_TV],
+      ['circuit' => 'france', 'event' => EVENT_SAFETY_REGULATIONS],
+      ['circuit' => 'italy', 'event' => EVENT_FUTURE_UNKNOWN],
+    ],
+  ],
+];
+
 /******************
  ****** STATS ******
  ******************/
