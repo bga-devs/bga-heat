@@ -105,12 +105,14 @@ class Circuit {
         this.tableCenterDiv = document.getElementById('table-center') as HTMLDivElement;
         this.circuitDiv = document.getElementById('circuit') as HTMLDivElement;
 
-        this.circuitDiv.style.backgroundImage = `url('${g_gamethemeurl}img/${this.circuitDatas.assets.jpg}')`;
+        if (this.circuitDatas.id) {
+            this.circuitDiv.style.backgroundImage = `url('${g_gamethemeurl}img/${this.circuitDatas.assets.jpg}')`;
 
-        Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
+            Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
 
-        this.createCorners(this.circuitDatas.corners);
-        this.createWeather(gamedatas.weather, this.circuitDatas);
+            this.createCorners(this.circuitDatas.corners);
+            this.createWeather(gamedatas.weather, this.circuitDatas);
+        }
     }
 
     /** 

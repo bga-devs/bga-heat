@@ -1027,6 +1027,70 @@ height: 241px; */
   flex: 1;
 }
 
+#circuit-dropzone-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ddd;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#circuit-dropzone-container.active #circuit-dropzone {
+  border: dashed 3px dodgerblue;
+}
+#circuit-dropzone-container #circuit-dropzone {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+  border: dashed 3px black;
+  border-radius: 1rem;
+  padding: 2rem;
+}
+#circuit-dropzone-container #circuit-dropzone svg {
+  width: 100px;
+}
+#circuit-dropzone-container #circuit-dropzone [type=file] {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  white-space: nowrap;
+  width: 1px;
+}
+#circuit-dropzone-container #circuit-dropzone [type=file] + label {
+  margin-top: 1rem;
+  background-color: #0d6efd;
+  border-radius: 4rem;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  user-select: none;
+  font-family: "Gunplay";
+  font-size: 25px;
+}
+#circuit-dropzone-container #circuit-dropzone [type=file]:focus + label,
+#circuit-dropzone-container #circuit-dropzone [type=file] + label:hover {
+  background-color: #0a58ca;
+  color: #fff;
+}
+#circuit-dropzone-container #circuit-dropzone [type=file]:focus + label {
+  outline: 1px dotted #fff;
+}
+#circuit-dropzone-container #circuit-dropzone h5 {
+  font-family: "Gunplay";
+  font-size: 25px;
+  margin-top: 30px;
+}
+
 /* make space between buttons on touch devices */
 @media (hover: none) {
   #page-title .action-button.bgabutton, #page-title .bgabutton {

@@ -1,0 +1,71 @@
+#circuit-dropzone-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ddd;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &.active #circuit-dropzone {
+        border: dashed 3px dodgerblue;
+    }
+
+    #circuit-dropzone {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-flow: column;
+        border: dashed 3px black;
+        border-radius: 1rem;
+        padding: 2rem;
+
+        svg {
+            width: 100px;
+        }
+
+        [type="file"] {
+            border: 0;
+            clip: rect(0, 0, 0, 0);
+            height: 1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute !important;
+            white-space: nowrap;
+            width: 1px;
+        }
+
+        [type="file"] + label {
+            margin-top: 1rem;
+            background-color: #0d6efd;
+            border-radius: 4rem;
+            color: #fff;
+            cursor: pointer;
+            display: inline-block;
+            padding: 0.7rem 1rem;
+            text-align: center;
+            user-select: none;
+            font-family: "Gunplay";
+            font-size: 25px;
+        }
+
+        [type="file"]:focus + label,
+        [type="file"] + label:hover {
+            background-color: #0a58ca;
+            color: #fff;
+        }
+
+        [type="file"]:focus + label {
+            outline: 1px dotted #fff;
+        }
+
+        h5 {
+            font-family: "Gunplay";
+            font-size: 25px;
+            margin-top: 30px;
+        }
+    }
+}

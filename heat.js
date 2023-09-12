@@ -2390,10 +2390,12 @@ var Circuit = /** @class */ (function () {
         this.circuitDatas = gamedatas.circuitDatas;
         this.tableCenterDiv = document.getElementById('table-center');
         this.circuitDiv = document.getElementById('circuit');
-        this.circuitDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
-        Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
-        this.createCorners(this.circuitDatas.corners);
-        this.createWeather(gamedatas.weather, this.circuitDatas);
+        if (this.circuitDatas.id) {
+            this.circuitDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
+            Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
+            this.createCorners(this.circuitDatas.corners);
+            this.createWeather(gamedatas.weather, this.circuitDatas);
+        }
     }
     /**
      * Set map size, depending on available screen size.
@@ -2990,6 +2992,7 @@ var Heat = /** @class */ (function () {
     */
     Heat.prototype.setup = function (gamedatas) {
         var _this = this;
+        var _a, _b;
         log("Starting game setup");
         this.gamedatas = gamedatas;
         // TODO TEMP
@@ -3000,9 +3003,10 @@ var Heat = /** @class */ (function () {
             //}
             //player.handCount = gamedatas.cards.filter(card => card.location == 'hand' && card.pId == playerId).length;
         });
-        g_img_preload.push.apply(g_img_preload, __spreadArray(__spreadArray([], [
-            gamedatas.circuitDatas.assets.jpg,
-        ], false), Object.values(gamedatas.players).map(function (player) { return "mats/player-board-".concat(player.color, ".jpg"); }), false));
+        if ((_b = (_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.assets) === null || _b === void 0 ? void 0 : _b.jpg) {
+            g_img_preload.push(gamedatas.circuitDatas.assets.jpg);
+        }
+        g_img_preload.push.apply(g_img_preload, Object.values(gamedatas.players).map(function (player) { return "mats/player-board-".concat(player.color, ".jpg"); }));
         // Create a new div for buttons to avoid BGA auto clearing it
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
         dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
@@ -3104,10 +3108,11 @@ var Heat = /** @class */ (function () {
                 );
             });
         }*/
-        /*switch (stateName) {
-            case 'INMULTIdiscard':
+        switch (stateName) {
+            case 'uploadCircuit':
+                this.onEnteringStateUploadCircuit(args.args);
                 break;
-        }*/
+        }
     };
     /*
      * Add a blue/grey button if it doesn't already exists
@@ -3144,6 +3149,36 @@ var Heat = /** @class */ (function () {
         if (this.gamedatas.gamestate['description' + suffix])
             this.gamedatas.gamestate.description = this.gamedatas.gamestate['description' + suffix];
         this.updatePageTitle();
+    };
+    Heat.prototype.onEnteringStateUploadCircuit = function (args) {
+        var _this = this;
+        // this.clearInterface();
+        document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n        <div id=\"circuit-dropzone-container\">\n            <div id=\"circuit-dropzone\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><path d=\"M384 0v128h128L384 0zM352 128L352 0H176C149.5 0 128 21.49 128 48V288h174.1l-39.03-39.03c-9.375-9.375-9.375-24.56 0-33.94s24.56-9.375 33.94 0l80 80c9.375 9.375 9.375 24.56 0 33.94l-80 80c-9.375 9.375-24.56 9.375-33.94 0C258.3 404.3 256 398.2 256 392s2.344-12.28 7.031-16.97L302.1 336H128v128C128 490.5 149.5 512 176 512h288c26.51 0 48-21.49 48-48V160h-127.1C366.3 160 352 145.7 352 128zM24 288C10.75 288 0 298.7 0 312c0 13.25 10.75 24 24 24H128V288H24z\"/></svg>\n\n            <input type=\"file\" id=\"circuit-input\" />\n            <label for=\"circuit-input\">".concat(_('Choose circuit'), "</label>\n            <h5>").concat(_('or drag & drop your .heat file here'), "</h5>\n            </div>\n        </div>\n        "));
+        $('circuit-input').addEventListener('change', function (e) { return _this.uploadCircuit(e.target.files[0]); });
+        var dropzone = $('circuit-dropzone-container');
+        var toggleActive = function (b) {
+            return function (e) {
+                e.preventDefault();
+                dropzone.classList.toggle('active', b);
+            };
+        };
+        dropzone.addEventListener('dragenter', toggleActive(true));
+        dropzone.addEventListener('dragover', toggleActive(true));
+        dropzone.addEventListener('dragleave', toggleActive(false));
+        dropzone.addEventListener('drop', function (e) {
+            toggleActive(false)(e);
+            _this.uploadCircuit(e.dataTransfer.files[0]);
+        });
+    };
+    Heat.prototype.uploadCircuit = function (file) {
+        var _this = this;
+        var reader = new FileReader();
+        reader.readAsText(file);
+        reader.addEventListener('load', function (e) {
+            var content = e.target.result;
+            var circuit = JSON.parse(content);
+            _this.takeAction('actUploadCircuit', { circuit: JSON.stringify(circuit), method: 'post' });
+        });
     };
     Heat.prototype.onEnteringChooseUpgrade = function (args) {
         if (!this.market) {
@@ -3643,7 +3678,8 @@ var Heat = /** @class */ (function () {
     Heat.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
-        this.ajaxcall("/heat/heat/".concat(action, ".html"), data, this, function () { });
+        var method = data.method === undefined ? 'get' : data.method;
+        this.ajaxcall("/heat/heat/".concat(action, ".html"), data, this, function () { }, undefined, method);
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
