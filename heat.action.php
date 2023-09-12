@@ -35,6 +35,14 @@ class action_heat extends APP_GameAction
     }
   }
 
+  public function actUploadCircuit()
+  {
+    self::setAjaxMode();
+    $circuit = self::getArg('circuit', AT_json, true);
+    $this->game->actUploadCircuit($circuit);
+    self::ajaxResponse();
+  }
+
   public function actChooseUpgrade()
   {
     self::setAjaxMode();

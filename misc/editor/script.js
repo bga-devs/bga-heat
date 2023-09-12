@@ -631,6 +631,35 @@ function onMouseClickCell(id, cell, evt) {
   }
 }
 
+let clickCallback = null;
+$('main-frame').addEventListener('mousemove', (evt) => {
+  let wrapper = $('main-frame-wrapper');
+  let x = evt.x - wrapper.offsetLeft + wrapper.scrollLeft;
+  let y = evt.y - wrapper.offsetTop + wrapper.scrollTop;
+  $('hover-indicator').style.left = x + 'px';
+  $('hover-indicator').style.top = y + 'px';
+});
+
+$('main-frame').addEventListener('click', (evt) => {
+  if (clickCallback == null) return;
+
+  let wrapper = $('main-frame-wrapper');
+  let x = evt.x - wrapper.offsetLeft + wrapper.scrollLeft;
+  let y = evt.y - wrapper.offsetTop + wrapper.scrollTop;
+  $('main-frame').classList.remove('hover');
+  clickCallback({ x, y });
+  clickCallback = null;
+});
+
+async function promptPosition(className) {
+  $('main-frame').classList.add('hover');
+  $('hover-indicator').className = className;
+
+  return new Promise((resolve, reject) => {
+    clickCallback = resolve;
+  });
+}
+
 //////////////////////////////////////
 //   ____           _
 //  / ___|___ _ __ | |_ ___ _ __ ___
@@ -965,18 +994,26 @@ function createCornerEntries() {
     $('corners-holder').insertAdjacentHTML(
       'beforeend',
       `<tr class='corner-entry'>
-      <td class='corner-pos' id='corner-pos-${j}'></td>
-      <td class='corner-speed' id='corner-speed-${j}'></td>
-      <td class='corner-lane' id='corner-lane-${j}'></td>
-      <td class='corner-legend' id='corner-legend-${j}'></td>
-      <td class='corner-tent' id='corner-tent-${j}'></td>
-      <td class='corner-sector' id='corner-sector-${j}'></td>
+      <td id='corner-pos-${j}'></td>
+      <td id='corner-speed-${j}'></td>
+      <td id='corner-lane-${j}'></td>
+      <td id='corner-legend-${j}'></td>
+      <td id='corner-coordinates-${j}'></td>
+      <td id='corner-tent-${j}'></td>
+      <td id='corner-sector-${j}'></td>
     </tr>`
+    );
+    $('main-frame').insertAdjacentHTML(
+      'beforeend',
+      `<div class='corner-indicator' id='corner-indicator-${j}'></div>
+     <div class='corner-tent' id='corner-tent-indicator-${j}'></div>
+     <div class='corner-tent' id='corner-sector-indicator-${j}'></div>`
     );
 
     // Add event listeners
     $(`corner-pos-${j}`).addEventListener('click', () => {
       let pos = prompt('What is the number on the cell right before the corner?');
+      if (pos == null) return;
       DATAS.corners[j].position = pos;
       updateCorners();
       saveCircuit();
@@ -984,6 +1021,7 @@ function createCornerEntries() {
 
     $(`corner-speed-${j}`).addEventListener('click', () => {
       let speed = prompt('What is the max speed?');
+      if (speed == null) return;
       DATAS.corners[j].speed = speed;
       updateCorners();
       saveCircuit();
@@ -991,6 +1029,7 @@ function createCornerEntries() {
 
     $(`corner-lane-${j}`).addEventListener('click', () => {
       let lane = prompt('What is the main lane after the corner? (orange = 1, purple = 2)');
+      if (lane == null) return;
       DATAS.corners[j].lane = lane;
       updateCorners();
       saveCircuit();
@@ -998,7 +1037,32 @@ function createCornerEntries() {
 
     $(`corner-legend-${j}`).addEventListener('click', () => {
       let legend = prompt('What is number on the cell right before the legend line?');
+      if (legend == null) return;
       DATAS.corners[j].legend = legend;
+      updateCorners();
+      saveCircuit();
+    });
+
+    $(`corner-coordinates-${j}`).addEventListener('click', async () => {
+      let pos = await promptPosition('corner');
+      DATAS.corners[j].x = pos.x;
+      DATAS.corners[j].y = pos.y;
+      updateCorners();
+      saveCircuit();
+    });
+
+    $(`corner-tent-${j}`).addEventListener('click', async () => {
+      let pos = await promptPosition('tent');
+      DATAS.corners[j].tentX = pos.x;
+      DATAS.corners[j].tentY = pos.y;
+      updateCorners();
+      saveCircuit();
+    });
+
+    $(`corner-sector-${j}`).addEventListener('click', async () => {
+      let pos = await promptPosition('tent');
+      DATAS.corners[j].sectorTentX = pos.x;
+      DATAS.corners[j].sectorTentY = pos.y;
       updateCorners();
       saveCircuit();
     });
@@ -1008,12 +1072,35 @@ function createCornerEntries() {
 function updateCorners() {
   DATAS.corners.forEach((corner, j) => {
     $(`corner-pos-${j}`).innerHTML = corner.position;
+    $(`corner-pos-${j}`).classList.toggle('ok', corner.position != 0);
+
     $(`corner-speed-${j}`).innerHTML = corner.speed;
+    $(`corner-speed-${j}`).classList.toggle('ok', corner.speed != 0);
+
     $(`corner-lane-${j}`).innerHTML = corner.lane;
+    $(`corner-lane-${j}`).classList.toggle('ok', corner.lane != 0);
+
     $(`corner-legend-${j}`).innerHTML = corner.legend;
-    $(`corner-tent-${j}`).innerHTML = '';
-    $(`corner-sector-${j}`).innerHTML = '';
+    $(`corner-legend-${j}`).classList.toggle('ok', corner.legend != 0);
+
+    $(`corner-coordinates-${j}`).classList.toggle('ok', corner.x != 0 && corner.y != 0);
+    $(`corner-indicator-${j}`).classList.toggle('ok', corner.x != 0 && corner.y != 0);
+    $(`corner-indicator-${j}`).style.setProperty('--x', corner.x + 'px');
+    $(`corner-indicator-${j}`).style.setProperty('--y', corner.y + 'px');
+
+    $(`corner-tent-${j}`).classList.toggle('ok', corner.tentX != 0 && corner.tentY != 0);
+    $(`corner-tent-indicator-${j}`).classList.toggle('ok', corner.tentX != 0 && corner.tentY != 0);
+    $(`corner-tent-indicator-${j}`).style.setProperty('--x', corner.tentX + 'px');
+    $(`corner-tent-indicator-${j}`).style.setProperty('--y', corner.tentY + 'px');
+
+    $(`corner-sector-${j}`).classList.toggle('ok', corner.sectorTentX != 0 && corner.sectorTentY != 0);
+    $(`corner-sector-indicator-${j}`).classList.toggle('ok', corner.sectorTentX != 0 && corner.sectorTentY != 0);
+    $(`corner-sector-indicator-${j}`).style.setProperty('--x', corner.sectorTentX + 'px');
+    $(`corner-sector-indicator-${j}`).style.setProperty('--y', corner.sectorTentY + 'px');
   });
+
+  let cellLeft = $('corners-table').querySelector('td:not(.ok)');
+  $(`section-corners`).classList.toggle('computed', cellLeft === null);
 }
 
 ////////////////////////

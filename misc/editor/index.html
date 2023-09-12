@@ -110,68 +110,74 @@
         <div id="stress-cards"><i class="icon reduce-stress"></i>&nbsp;:&nbsp;<span id="stress-cards-value"></span></div>
         <div id="number-corners"><i class="fa-icon fa-corner"></i>&nbsp;:&nbsp;<span id="number-corners-value"></span></div>
       </div>
-      <div id="left-bar">
-        <div id="cell-indicator">Cell: <span id="cell-indicator-counter">----</span></div>
-        <div class="section" id="section-centers">
-          <h2>Centers</h2>
-          <div class="toolbar">
-            <button id="show-centers"><i class="fa-icon fa-eye"></i></button>
-            <button id="edit-centers"><i class="fa-icon fa-pencil"></i></button>
-            <button id="generate-centers"><i class="fa-icon fa-compute"></i></button>
+      <div id="editor-main-part">
+        <div id="left-bar">
+          <div id="cell-indicator">Cell: <span id="cell-indicator-counter">----</span></div>
+          <div class="section" id="section-centers">
+            <h2>Centers</h2>
+            <div class="toolbar">
+              <button id="show-centers"><i class="fa-icon fa-eye"></i></button>
+              <button id="edit-centers"><i class="fa-icon fa-pencil"></i></button>
+              <button id="generate-centers"><i class="fa-icon fa-compute"></i></button>
+            </div>
           </div>
-        </div>
-        <div class="section" id="section-directions">
-          <h2>Directions</h2>
-          <div class="toolbar">
-            <button id="show-directions"><i class="fa-icon fa-eye"></i></button>
-            <button id="edit-directions"><i class="fa-icon fa-pencil"></i></button>
-            <button id="swap-directions"><i class="fa-icon fa-swap"></i></button>
-            <button id="generate-directions"><i class="fa-icon fa-compute"></i></button>
+          <div class="section" id="section-directions">
+            <h2>Directions</h2>
+            <div class="toolbar">
+              <button id="show-directions"><i class="fa-icon fa-eye"></i></button>
+              <button id="edit-directions"><i class="fa-icon fa-pencil"></i></button>
+              <button id="swap-directions"><i class="fa-icon fa-swap"></i></button>
+              <button id="generate-directions"><i class="fa-icon fa-compute"></i></button>
+            </div>
           </div>
-        </div>
-        <div class="section" id="section-neighbours">
-          <h2>Neighbours</h2>
-          <div class="toolbar">
-            <button id="show-neighbours"><i class="fa-icon fa-eye"></i></button>
-            <button id="edit-neighbours"><i class="fa-icon fa-pencil"></i></button>
-            <button id="generate-neighbours"><i class="fa-icon fa-compute"></i></button>
+          <div class="section" id="section-neighbours">
+            <h2>Neighbours</h2>
+            <div class="toolbar">
+              <button id="show-neighbours"><i class="fa-icon fa-eye"></i></button>
+              <button id="edit-neighbours"><i class="fa-icon fa-pencil"></i></button>
+              <button id="generate-neighbours"><i class="fa-icon fa-compute"></i></button>
+            </div>
           </div>
-        </div>
-        <div class="section" id="section-lanes">
-          <h2>Lanes</h2>
-          <div class="toolbar">
-            <button id="end1-lanes"><b>1</b> <i class="fa-icon fa-flag"></i></button>
-            <button id="end2-lanes"><b>2</b> <i class="fa-icon fa-flag"></i></button>
+          <div class="section" id="section-lanes">
+            <h2>Lanes</h2>
+            <div class="toolbar">
+              <button id="end1-lanes"><b>1</b> <i class="fa-icon fa-flag"></i></button>
+              <button id="end2-lanes"><b>2</b> <i class="fa-icon fa-flag"></i></button>
+            </div>
+            <div class="toolbar">
+              <button id="show-lanes"><i class="fa-icon fa-eye"></i></button>
+              <button id="edit-lanes" disabled="disabled" style="pointer-events: none"><i class="fa-icon fa-pencil"></i></button>
+              <button id="generate-lanes"><i class="fa-icon fa-compute"></i></button>
+            </div>
           </div>
-          <div class="toolbar">
-            <button id="show-lanes"><i class="fa-icon fa-eye"></i></button>
-            <button id="edit-lanes" disabled="disabled" style="pointer-events: none"><i class="fa-icon fa-pencil"></i></button>
-            <button id="generate-lanes"><i class="fa-icon fa-compute"></i></button>
+          <div class="section" id="section-corners">
+            <h2>Corners</h2>
+            <table id="corners-table">
+              <thead>
+                <tr>
+                  <th><i class="icon position"></i></th>
+                  <th><i class="icon speed"></i></th>
+                  <th><i class="icon lane"></i></th>
+                  <th><i class="icon legend"></i></th>
+                  <th><i class="icon corner"></i></th>
+                  <th><i class="icon tent"></i></th>
+                  <th><i class="icon sector"></i></th>
+                </tr>
+              </thead>
+              <tbody id="corners-holder"></tbody>
+            </table>
           </div>
-        </div>
-        <div class="section" id="section-corners">
-          <h2>Corners</h2>
-          <table id="corners-table">
-            <thead>
-              <tr>
-                <th><i class="icon position"></i></th>
-                <th><i class="icon speed"></i></th>
-                <th><i class="icon lane"></i></th>
-                <th><i class="icon legend"></i></th>
-                <th><i class="icon tent"></i></th>
-                <th><i class="icon sector"></i></th>
-              </tr>
-            </thead>
-            <tbody id="corners-holder"></tbody>
-          </table>
-        </div>
 
-        <div id="filler"></div>
-        <button style="display: none" id="force-refresh">Force refresh</button>
-        <textarea style="display: none" id="data"></textarea>
-      </div>
-      <div id="main-frame">
-        <div id="centers"></div>
+          <div id="filler"></div>
+          <button style="display: none" id="force-refresh">Force refresh</button>
+          <textarea style="display: none" id="data"></textarea>
+        </div>
+        <div id="main-frame-wrapper">
+          <div id="main-frame">
+            <div id="hover-indicator"></div>
+            <div id="centers"></div>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -96,9 +96,16 @@ trait SetupTrait
       if ($this->getBgaEnvironment() != 'studio') {
         throw new \BgaVisibleSystemException('WIP. Not available on prod');
       }
+      $this->gamestate->setAllPlayersMultiactive();
       $this->gamestate->nextState('custom');
     } else {
       $this->gamestate->nextState('done');
     }
+  }
+
+  public function actUploadCircuit($circuit)
+  {
+    var_dump($circuit);
+    die('WELL RECEIVED, THANK YOU!');
   }
 }
