@@ -334,12 +334,13 @@ class Notifications
     ]);
   }
 
-  public static function newMarket($round, $cards)
+  public static function newMarket($round, $cards, $upgrades)
   {
     self::notifyAll('newMarket', clienttranslate('Starting round n°${round}/${nRounds} of Upgrade card drafting'), [
       'round' => $round,
       'nRounds' => Globals::getNDraftRounds(),
       'cards' => $cards,
+      'upgrades' => $upgrades,
     ]);
   }
 
@@ -373,14 +374,14 @@ class Notifications
     self::notifyAll('reformingDeckWithUpgrades', clienttranslate('End of draft phase, reforming deck with upgrade cards'), []);
   }
 
-  public static function swapUpgrade($constructor, $card2, $card)
+  public static function swapUpgrade($constructor, $card1, $card2)
   {
     self::notifyAll(
       'swapUpgrade',
-      clienttranslate('${constructor_name} puts back ${card_name} and takes ${card_name2} instead'),
+      clienttranslate('${constructor_name} puts back ${card_name2} and takes ${card_name} instead'),
       [
         'constructor' => $constructor,
-        'card' => $card,
+        'card' => $card1,
         'card2' => $card2,
       ]
     );

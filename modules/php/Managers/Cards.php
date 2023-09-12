@@ -25,6 +25,9 @@ class Cards extends \HEAT\Helpers\Pieces
     $datas = array_merge($card, self::getDatas()[$card['type']]);
     $datas['id'] = (int) $datas['id'];
     $datas['type'] = (int) $datas['type'];
+    if ($datas['type'] <= 48) {
+      $datas['isUpgrade'] = true;
+    }
     return $datas;
   }
 

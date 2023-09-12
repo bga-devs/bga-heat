@@ -194,7 +194,19 @@ trait RaceTrait
   {
     $round = Globals::getDraftRound();
     $cards = Cards::drawMarket();
-    Notifications::newMarket($round, $cards);
+    $upgrades = null;
+    if (Globals::isChampionship()) {
+      $upgrades = [];
+      foreach (Constructors::getAll() as $cId => $constructor) {
+        foreach ($constructor->getDeck() as $cardId => $card) {
+          if ($card['isUpgrade'] ?? false) {
+            $upgrades[] = $card;
+            Cards::move($cardId, ['inplay', $constructor->getId()]);
+          }
+        }
+      }
+    }
+    Notifications::newMarket($round, $cards, $upgrades);
 
     $turnOrder = Constructors::getTurnOrder();
     Utils::filter($turnOrder, function ($cId) {
@@ -228,7 +240,7 @@ trait RaceTrait
 
     $constructor = Constructors::getActive();
     $cId = $constructor->getId();
-    Cards::move($cardId, "hand-${cId}");
+    Cards::move($cardId, "inplay-${cId}");
     Notifications::chooseUpgrade($constructor, $card);
 
     $this->nextPlayerCustomOrder('draft');
@@ -263,7 +275,7 @@ trait RaceTrait
   {
     foreach (Constructors::getAll() as $cId => $constructor) {
       if (!$constructor->isAI()) {
-        Cards::move($constructor->getHand()->getIds(), "deck-$cId");
+        Cards::move($constructor->getPlayedCards()->getIds(), "deck-$cId");
       }
     }
 
@@ -274,25 +286,30 @@ trait RaceTrait
   // CHAMPIONSHIP : swap
   function argsSwapUpgrade()
   {
+    $constructor = Constructors::getActive();
     return [
       'market' => Cards::getInLocation('market'),
+      'owned' => $constructor->getPlayedCards()->getIds(),
     ];
   }
 
-  function actSwapUpgrade($cardId)
+  function actSwapUpgrade($cardId1, $cardId2)
   {
     self::checkAction('actSwapUpgrade');
     $args = $this->argsSwapUpgrade();
-    if (!array_key_exists($cardId, $args['market'])) {
+    if (!array_key_exists($cardId1, $args['market'])) {
       throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
     }
-    $card = $args['market'][$cardId];
+    if (!in_array($cardId2, $args['owned'])) {
+      throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
+    }
     $constructor = Constructors::getActive();
-    $card2 = $constructor->getHand()->first();
     $cId = $constructor->getId();
-    Cards::move($cardId, "hand-${cId}");
-    Cards::move($card2['id'], 'market');
-    Notifications::swapUpgrade($constructor, $card2, $card);
+    Cards::move($cardId1, "inPlay-${cId}");
+    Cards::move($cardId2, 'market');
+    $card1 = Cards::get($cardId1);
+    $card2 = Cards::get($cardId2);
+    Notifications::swapUpgrade($constructor, $card1, $card2);
 
     $this->stFinishDraft();
   }
