@@ -273,12 +273,26 @@ img.middle {
     cursor: pointer;
 }
 
+#circuit-change-jpg {
+    cursor: pointer;
+}
+
 #number-laps,
 #stress-cards,
 #heat-cards,
-#circuit-change-jpg,
-#number-corners {
+#number-corners,
+#weather-card,
+#podium {
     cursor: pointer;
+    background: rgb(245, 142, 142);
+}
+#number-laps.ok,
+#stress-cards.ok,
+#heat-cards.ok,
+#number-corners.ok,
+#weather-card.ok,
+#podium.ok {
+    background: rgb(175, 245, 142);
 }
 
 #circuit-files-status {
@@ -452,6 +466,26 @@ textarea {
     margin-left: -34px;
 }
 
+#hover-indicator.weather-card {
+    margin-top: -4px;
+    margin-left: -4px;
+    width: 167px;
+    height: 127.5px;
+    box-shadow: 0 0 5px 5px white;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+#hover-indicator.podium {
+    margin-top: -27px;
+    margin-left: -39px;
+    width: 70px;
+    height: 44px;
+    box-shadow: 0 0 5px 5px white;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
 .corner-indicator {
     display: none;
     position: absolute;
@@ -476,6 +510,76 @@ textarea {
     box-shadow: 0 0 5px 5px white;
     background: rgba(175, 245, 142, 0.5);
     border-radius: 8px;
+}
+
+#weather-card-indicator {
+    display: none;
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 167px;
+    height: 127.5px;
+    box-shadow: 0 0 5px 5px white;
+    border-radius: 8px;
+    background: rgba(175, 245, 142, 0.5);
+}
+#weather-card-indicator.ok {
+    display: block;
+}
+
+#podium-indicator {
+    display: none;
+    left: var(--x);
+    top: var(--y);
+    position: absolute;
+}
+#podium-indicator.ok {
+    display: block;
+}
+
+#podium-indicator .podium-cell {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(175, 245, 142, 0.5);
+    border-radius: 50%;
+    border: 4px solid black;
+    margin-top: -9px;
+    margin-left: -9px;
+    pointer-events: none;
+}
+
+#podium-indicator .podium-cell:nth-child(1) {
+    left: 0px;
+    top: 0px;
+}
+#podium-indicator .podium-cell:nth-child(2) {
+    left: -77px;
+    top: 52px;
+}
+#podium-indicator .podium-cell:nth-child(3) {
+    left: 77px;
+    top: 52px;
+}
+#podium-indicator .podium-cell:nth-child(4) {
+    left: 0px;
+    top: 128px;
+}
+#podium-indicator .podium-cell:nth-child(5) {
+    left: 0px;
+    top: 180px;
+}
+#podium-indicator .podium-cell:nth-child(6) {
+    left: 0px;
+    top: 232px;
+}
+#podium-indicator .podium-cell:nth-child(7) {
+    left: 0px;
+    top: 284px;
+}
+#podium-indicator .podium-cell:nth-child(8) {
+    left: 0px;
+    top: 336px;
 }
 
 object {
@@ -607,6 +711,12 @@ object {
 }
 .fa-close {
     background-image: url("img/close.svg");
+}
+.fa-weather {
+    background-image: url("img/weather.svg");
+}
+.fa-podium {
+    background-image: url("img/podium.svg");
 }
 #top-bar .fa-change-image {
     width: 2.2em;

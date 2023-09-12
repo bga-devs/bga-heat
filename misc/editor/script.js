@@ -183,7 +183,7 @@ function loadCircuitFromStorage(circuitId) {
   $('splashscreen').classList.add('hidden');
 }
 
-loadCircuitFromStorage('Test');
+//loadCircuitFromStorage('Test');
 
 $('form-load-storage').addEventListener('submit', async (evt) => {
   evt.preventDefault();
@@ -434,6 +434,21 @@ $('number-corners').addEventListener('click', () => {
   saveCircuit();
 });
 
+$('weather-card').addEventListener('click', async () => {
+  let pos = await promptPosition('weather-card');
+  DATAS.weatherCardPos = pos;
+  updateStatus();
+  saveCircuit();
+});
+
+$('podium').addEventListener('click', async () => {
+  let pos = await promptPosition('podium');
+  console.log(pos);
+  DATAS.podium = pos;
+  updateStatus();
+  saveCircuit();
+});
+
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
@@ -447,10 +462,37 @@ $('number-corners').addEventListener('click', () => {
 ///////////////////////////////////////////////
 
 function updateStatus() {
-  $('stress-cards-value').innerHTML = DATAS.stressCards || 0;
-  $('heat-cards-value').innerHTML = DATAS.heatCards || 0;
-  $('number-laps-value').innerHTML = DATAS.nbrLaps || 0;
-  $('number-corners-value').innerHTML = Object.keys(DATAS.corners || {}).length;
+  let n = DATAS.stressCards || 0;
+  $('stress-cards-value').innerHTML = n;
+  $('stress-cards').classList.toggle('ok', n > 0);
+
+  n = DATAS.heatCards || 0;
+  $('heat-cards-value').innerHTML = n;
+  $('heat-cards').classList.toggle('ok', n > 0);
+
+  n = DATAS.nbrLaps || 0;
+  $('number-laps-value').innerHTML = n;
+  $('number-laps').classList.toggle('ok', n > 0);
+
+  n = Object.keys(DATAS.corners || {}).length;
+  $('number-corners-value').innerHTML = n;
+  $('number-corners').classList.toggle('ok', n > 0);
+
+  let ok = DATAS.weatherCardPos !== undefined && DATAS.weatherCardPos.x != 0;
+  $('weather-card').classList.toggle('ok', ok);
+  $('weather-card-indicator').classList.toggle('ok', ok);
+  if (ok) {
+    $('weather-card-indicator').style.setProperty('--x', DATAS.weatherCardPos.x + 'px');
+    $('weather-card-indicator').style.setProperty('--y', DATAS.weatherCardPos.y + 'px');
+  }
+
+  ok = DATAS.podium !== undefined && DATAS.podium.x != 0;
+  $('podium').classList.toggle('ok', ok);
+  $('podium-indicator').classList.toggle('ok', ok);
+  if (ok) {
+    $('podium-indicator').style.setProperty('--x', DATAS.podium.x + 'px');
+    $('podium-indicator').style.setProperty('--y', DATAS.podium.y + 'px');
+  }
 
   SECTIONS.forEach((section) => {
     $(`section-${section}`).classList.toggle('computed', DATAS.computed[section] || false);
