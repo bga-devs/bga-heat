@@ -397,5 +397,9 @@ class Circuit {
     
     public showCorner(id: number, color?: string) {
         document.getElementById(`corner-${id}`)?.style.setProperty('--color', color ?? 'transparent');
+
+        if (color) {
+            setTimeout(() => this.showCorner(id), this.game.animationManager.animationsActive() ? 2000 : 1);
+        }
     }
 }

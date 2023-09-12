@@ -1008,14 +1008,14 @@ class Heat implements HeatGame {
         });
 
         if (isDebug) {
-            notifs.forEach((notif) => {
-                if (!this[`notif_${notif[0]}`]) {
-                    console.warn(`notif_${notif[0]} function is not declared, but listed in setupNotifications`);
+            notifs.forEach(notifName => {
+                if (!this[`notif_${notifName}`]) {
+                    console.warn(`notif_${notifName} function is not declared, but listed in setupNotifications`);
                 }
             });
 
             Object.getOwnPropertyNames(Heat.prototype).filter(item => item.startsWith('notif_')).map(item => item.slice(6)).forEach(item => {
-                if (!notifs.some(notif => notif[0] == item)) {
+                if (!notifs.some(notifName => notifName == item)) {
                     console.warn(`notif_${item} function is declared, but not listed in setupNotifications`);
                 }
             });
@@ -1027,17 +1027,7 @@ class Heat implements HeatGame {
         (this as any).notifqueue.setIgnoreNotificationCheck('draw', (notif: Notif<any>) => 
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
         );
-    }
-    
-    notif_newMarket(args: NotifChooseUpgradeArgs) {
-        const { constructor_id, card } = args;
-        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        if (playerId == this.getPlayerId()) {
-            this.getCurrentPlayerTable().hand.addCard(card);
-        } else {
-            this.market.removeCard(card);
-        }
-    }  
+    } 
     
     notif_chooseUpgrade(args: NotifChooseUpgradeArgs) {
         const { constructor_id, card } = args;
@@ -1072,7 +1062,7 @@ class Heat implements HeatGame {
         this.handCounters[constructor_id]?.incValue(-cards.length);
         const promises = [playerTable.setInplay(cards)];
         if (heat) {
-            promises.push(playerTable.discard?.addCard(heat));
+            promises.push(playerTable.discard.addCard(heat));
         }
         this.speedCounters[constructor_id].setValue(cards.map(card => card.speed ?? 0).reduce((a, b) => a + b, 0));
         return Promise.all(promises);
@@ -1089,18 +1079,20 @@ class Heat implements HeatGame {
         constructor_ids.forEach((constructorId: number, index: number) => document.getElementById(`order-${constructorId}`).innerHTML = `${index + 1}`);
     }
 
-    async notif_payHeats(args: NotifPayHeatsArgs, color = 'orange') {
-        const { constructor_id, cards, corner } = args;
-        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+    private async payHeats(constructorId: number, cards: Card[]) {
+        const playerId = this.getPlayerIdFromConstructorId(constructorId);
         const playerTable = this.getPlayerTable(playerId);
 
-        this.engineCounters[constructor_id]?.incValue(-cards.length);
-
-        this.circuit.showCorner(corner, color);
+        this.engineCounters[constructorId]?.incValue(-cards.length);
 
         await playerTable.payHeats(cards);
+    }
 
-        this.circuit.showCorner(corner);
+    async notif_payHeats(args: NotifPayHeatsArgs) {
+        const { constructor_id, cards, corner } = args;
+
+        this.circuit.showCorner(corner, 'darkorange');
+        await this.payHeats(constructor_id, Object.values(cards));
 
         return true;
     }
@@ -1111,9 +1103,10 @@ class Heat implements HeatGame {
     }
 
     async notif_spinOut(args: NotifSpinOutArgs) {
-        const { constructor_id, cell, stresses, nCellsBack } = args;
+        const { constructor_id, cards, corner, cell, stresses, nCellsBack } = args;
 
-        await this.notif_payHeats(args, 'red');
+        this.circuit.showCorner(corner, 'red');
+        await this.payHeats(constructor_id, Object.values(cards));
 
         if (this.animationManager.animationsActive()) {
             await this.circuit.spinOutWithAnimation(constructor_id, cell, nCellsBack);

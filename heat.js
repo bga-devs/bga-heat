@@ -2631,8 +2631,12 @@ var Circuit = /** @class */ (function () {
         return animation.start();
     };
     Circuit.prototype.showCorner = function (id, color) {
+        var _this = this;
         var _a;
         (_a = document.getElementById("corner-".concat(id))) === null || _a === void 0 ? void 0 : _a.style.setProperty('--color', color !== null && color !== void 0 ? color : 'transparent');
+        if (color) {
+            setTimeout(function () { return _this.showCorner(id); }, this.game.animationManager.animationsActive() ? 2000 : 1);
+        }
     };
     return Circuit;
 }());
@@ -3702,13 +3706,13 @@ var Heat = /** @class */ (function () {
             _this.notifqueue.setSynchronous(notifName, undefined);
         });
         if (isDebug) {
-            notifs.forEach(function (notif) {
-                if (!_this["notif_".concat(notif[0])]) {
-                    console.warn("notif_".concat(notif[0], " function is not declared, but listed in setupNotifications"));
+            notifs.forEach(function (notifName) {
+                if (!_this["notif_".concat(notifName)]) {
+                    console.warn("notif_".concat(notifName, " function is not declared, but listed in setupNotifications"));
                 }
             });
             Object.getOwnPropertyNames(Heat.prototype).filter(function (item) { return item.startsWith('notif_'); }).map(function (item) { return item.slice(6); }).forEach(function (item) {
-                if (!notifs.some(function (notif) { return notif[0] == item; })) {
+                if (!notifs.some(function (notifName) { return notifName == item; })) {
                     console.warn("notif_".concat(item, " function is declared, but not listed in setupNotifications"));
                 }
             });
@@ -3719,16 +3723,6 @@ var Heat = /** @class */ (function () {
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
             return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
         });
-    };
-    Heat.prototype.notif_newMarket = function (args) {
-        var constructor_id = args.constructor_id, card = args.card;
-        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        if (playerId == this.getPlayerId()) {
-            this.getCurrentPlayerTable().hand.addCard(card);
-        }
-        else {
-            this.market.removeCard(card);
-        }
     };
     Heat.prototype.notif_chooseUpgrade = function (args) {
         var constructor_id = args.constructor_id, card = args.card;
@@ -3754,7 +3748,7 @@ var Heat = /** @class */ (function () {
         // TODO
     };
     Heat.prototype.notif_reveal = function (args) {
-        var _a, _b;
+        var _a;
         var constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
@@ -3763,7 +3757,7 @@ var Heat = /** @class */ (function () {
         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
         var promises = [playerTable.setInplay(cards)];
         if (heat) {
-            promises.push((_b = playerTable.discard) === null || _b === void 0 ? void 0 : _b.addCard(heat));
+            promises.push(playerTable.discard.addCard(heat));
         }
         this.speedCounters[constructor_id].setValue(cards.map(function (card) { var _a; return (_a = card.speed) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0));
         return Promise.all(promises);
@@ -3776,23 +3770,35 @@ var Heat = /** @class */ (function () {
         var constructor_ids = args.constructor_ids;
         constructor_ids.forEach(function (constructorId, index) { return document.getElementById("order-".concat(constructorId)).innerHTML = "".concat(index + 1); });
     };
-    Heat.prototype.notif_payHeats = function (args, color) {
+    Heat.prototype.payHeats = function (constructorId, cards) {
         var _a;
-        if (color === void 0) { color = 'orange'; }
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, cards, corner, playerId, playerTable;
+            var playerId, playerTable;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        constructor_id = args.constructor_id, cards = args.cards, corner = args.corner;
-                        playerId = this.getPlayerIdFromConstructorId(constructor_id);
+                        playerId = this.getPlayerIdFromConstructorId(constructorId);
                         playerTable = this.getPlayerTable(playerId);
-                        (_a = this.engineCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
-                        this.circuit.showCorner(corner, color);
+                        (_a = this.engineCounters[constructorId]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
                         return [4 /*yield*/, playerTable.payHeats(cards)];
                     case 1:
                         _b.sent();
-                        this.circuit.showCorner(corner);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Heat.prototype.notif_payHeats = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, cards, corner;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, cards = args.cards, corner = args.corner;
+                        this.circuit.showCorner(corner, 'darkorange');
+                        return [4 /*yield*/, this.payHeats(constructor_id, Object.values(cards))];
+                    case 1:
+                        _a.sent();
                         return [2 /*return*/, true];
                 }
             });
@@ -3805,12 +3811,13 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_spinOut = function (args) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, cell, stresses, nCellsBack, playerId, playerTable;
+            var constructor_id, cards, corner, cell, stresses, nCellsBack, playerId, playerTable;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        constructor_id = args.constructor_id, cell = args.cell, stresses = args.stresses, nCellsBack = args.nCellsBack;
-                        return [4 /*yield*/, this.notif_payHeats(args, 'red')];
+                        constructor_id = args.constructor_id, cards = args.cards, corner = args.corner, cell = args.cell, stresses = args.stresses, nCellsBack = args.nCellsBack;
+                        this.circuit.showCorner(corner, 'red');
+                        return [4 /*yield*/, this.payHeats(constructor_id, Object.values(cards))];
                     case 1:
                         _b.sent();
                         if (!this.animationManager.animationsActive()) return [3 /*break*/, 3];
