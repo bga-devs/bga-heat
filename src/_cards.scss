@@ -6,7 +6,10 @@
     height: 241px; */
     /*width: 112px;
     height: 181px;*/
-    border-radius: 8px;    
+    border-radius: 8px;
+    font-family: "calgary-script-ot", sans-serif;
+    font-weight: 400;
+    font-style: normal;   
 
     .card-sides {
         .card-side {
@@ -52,6 +55,8 @@
                         text-align: center;
                         color: #231f20;
                         font-size: 32px;
+                        word-break: break-word;
+                        text-transform: uppercase;
                     }
                 }
             }
