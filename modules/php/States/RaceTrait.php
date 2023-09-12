@@ -289,7 +289,7 @@ trait RaceTrait
     $constructor = Constructors::getActive();
     return [
       'market' => Cards::getInLocation('market'),
-      'owned' => $constructor->getPlayedCards()->getIds(),
+      'owned' => $constructor->getPlayedCards(),
     ];
   }
 
@@ -300,7 +300,7 @@ trait RaceTrait
     if (!array_key_exists($cardId1, $args['market'])) {
       throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
     }
-    if (!in_array($cardId2, $args['owned'])) {
+    if (!in_array($cardId2, $args['owned']->getIds())) {
       throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
     }
     $constructor = Constructors::getActive();

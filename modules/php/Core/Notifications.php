@@ -305,7 +305,7 @@ class Notifications
 
   public function directPlay($constructor, $card, $speed)
   {
-    self::notifyAll('directPlay', clienttranslate('${constructor_name} plays ${card_name} from their hand'), [
+    self::notifyAll('directPlay', clienttranslate('${constructor_name} plays ${card_image} from their hand'), [
       'constructor' => $constructor,
       'card' => $card,
       'speed' => $speed,
@@ -378,7 +378,7 @@ class Notifications
   {
     self::notifyAll(
       'swapUpgrade',
-      clienttranslate('${constructor_name} puts back ${card_name2} and takes ${card_name} instead'),
+      clienttranslate('${constructor_name} puts back ${card_image2} and takes ${card_image} instead'),
       [
         'constructor' => $constructor,
         'card' => $card1,

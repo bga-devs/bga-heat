@@ -3112,6 +3112,12 @@ var Heat = /** @class */ (function () {
             case 'uploadCircuit':
                 this.onEnteringStateUploadCircuit(args.args);
                 break;
+            case 'chooseUpgrade':
+                this.onEnteringChooseUpgrade(args.args);
+                break;
+            case 'swapUpgrade':
+                this.onEnteringSwapUpgrade(args.args);
+                break;
         }
     };
     /*
@@ -3180,16 +3186,29 @@ var Heat = /** @class */ (function () {
             _this.takeAction('actUploadCircuit', { circuit: JSON.stringify(circuit), method: 'post' });
         });
     };
-    Heat.prototype.onEnteringChooseUpgrade = function (args) {
+    Heat.prototype.initMarketStock = function () {
+        var _this = this;
         if (!this.market) {
             document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\"></div>\n            ");
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
-            this.market.onSelectionChange = function (selection) {
-                document.getElementById("actChooseUpgrade_button").classList.toggle('disabled', selection.length != 1);
-            };
+            this.market.onSelectionChange = function (selection) { return _this.onMarketSelectionChange(selection); };
         }
+    };
+    Heat.prototype.onEnteringChooseUpgrade = function (args) {
+        this.initMarketStock();
         this.market.addCards(Object.values(args.market));
         this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
+    };
+    Heat.prototype.onEnteringSwapUpgrade = function (args) {
+        this.initMarketStock();
+        this.market.addCards(Object.values(args.market));
+        this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
+        if (this.isCurrentPlayerActive()) {
+            var hand = this.getCurrentPlayerTable().hand;
+            hand.removeAll();
+            hand.addCards(Object.values(args.owned));
+            hand.setSelectionMode('single');
+        }
     };
     Heat.prototype.onEnteringPlanification = function (args) {
         if (args._private) {
@@ -3269,15 +3288,17 @@ var Heat = /** @class */ (function () {
             case 'planification':
                 this.onEnteringPlanification(args);
                 break;
-            case 'chooseUpgrade':
-                this.onEnteringChooseUpgrade(args);
-                break;
         }
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'chooseUpgrade':
                     this.addActionButton("actChooseUpgrade_button", _('Take selected card'), function () { return _this.actChooseUpgrade(); });
                     document.getElementById("actChooseUpgrade_button").classList.add('disabled');
+                    break;
+                case 'swapUpgrade':
+                    this.addActionButton("actSwapUpgrade_button", _('Swap selected cards'), function () { return _this.actSwapUpgrade(); });
+                    document.getElementById("actSwapUpgrade_button").classList.add('disabled');
+                    this.addActionButton("actPassSwapUpgrade_button", _('Pass'), function () { return _this.actPassSwapUpgrade(); }, null, null, 'red');
                     break;
                 case 'planification':
                     this.addActionButton("actPlanification_button", '', function () { return _this.actPlanification(); });
@@ -3590,6 +3611,23 @@ var Heat = /** @class */ (function () {
             var button = document.getElementById('actDiscard_button');
             button.innerHTML = label;
         }
+        else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
+            this.checkSwapUpgradeSelectionState();
+        }
+    };
+    Heat.prototype.onMarketSelectionChange = function (selection) {
+        if (this.gamedatas.gamestate.name == 'chooseUpgrade') {
+            document.getElementById("actChooseUpgrade_button").classList.toggle('disabled', selection.length != 1);
+        }
+        else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
+            this.checkSwapUpgradeSelectionState();
+        }
+    };
+    Heat.prototype.checkSwapUpgradeSelectionState = function () {
+        var _a, _b, _c, _d, _e;
+        var marketSelection = (_b = (_a = this.market) === null || _a === void 0 ? void 0 : _a.getSelection()) !== null && _b !== void 0 ? _b : [];
+        var handSelection = (_e = (_d = (_c = this.getCurrentPlayerTable()) === null || _c === void 0 ? void 0 : _c.hand) === null || _d === void 0 ? void 0 : _d.getSelection()) !== null && _e !== void 0 ? _e : [];
+        document.getElementById("actSwapUpgrade_button").classList.toggle('disabled', marketSelection.length != 1 || handSelection.length != 1);
     };
     Heat.prototype.actChooseUpgrade = function () {
         if (!this.checkAction('actChooseUpgrade')) {
@@ -3598,6 +3636,21 @@ var Heat = /** @class */ (function () {
         this.takeAction('actChooseUpgrade', {
             cardId: this.market.getSelection()[0].id,
         });
+    };
+    Heat.prototype.actSwapUpgrade = function () {
+        if (!this.checkAction('actSwapUpgrade')) {
+            return;
+        }
+        this.takeAction('actSwapUpgrade', {
+            marketCardId: this.market.getSelection()[0].id,
+            ownedCardId: this.getCurrentPlayerTable().hand.getSelection()[0].id,
+        });
+    };
+    Heat.prototype.actPassSwapUpgrade = function () {
+        if (!this.checkAction('actPassSwapUpgrade')) {
+            return;
+        }
+        this.takeAction('actPassSwapUpgrade');
     };
     Heat.prototype.actPlanification = function () {
         if (!this.checkAction('actPlan')) {
@@ -3700,6 +3753,7 @@ var Heat = /** @class */ (function () {
         });
         var notifs = [
             'chooseUpgrade',
+            'swapUpgrade',
             'endDraftRound',
             'reformingDeckWithUpgrades',
             'updatePlanification',
@@ -3768,6 +3822,17 @@ var Heat = /** @class */ (function () {
         }
         else {
             this.market.removeCard(card);
+        }
+    };
+    Heat.prototype.notif_swapUpgrade = function (args) {
+        var _a, _b;
+        var constructor_id = args.constructor_id, card = args.card, card2 = args.card2;
+        (_a = this.market) === null || _a === void 0 ? void 0 : _a.addCard(card2);
+        if (constructor_id == this.getConstructorId()) {
+            this.getCurrentPlayerTable().hand.addCard(card);
+        }
+        else {
+            (_b = this.market) === null || _b === void 0 ? void 0 : _b.addCard(card);
         }
     };
     Heat.prototype.notif_endDraftRound = function () {
@@ -4111,6 +4176,9 @@ var Heat = /** @class */ (function () {
                 }
                 if (args.card_image === '' && args.card) {
                     args.card_image = "<div class=\"log-card-set\">".concat(this.cardImageHtml(args.card, args), "</div>");
+                }
+                if (args.card_image2 === '' && args.card2) {
+                    args.card_image2 = "<div class=\"log-card-set\">".concat(this.cardImageHtml(args.card2, args), "</div>");
                 }
                 if (args.finishIcon === '') {
                     args.finishIcon = "<div class=\"turn icon\"></div>";

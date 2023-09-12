@@ -772,6 +772,9 @@ height: 241px; */
 .player-board.finished {
   background-color: lightgray;
 }
+.player-board.finished .order-counter {
+  display: none;
+}
 .player-board .icon {
   margin-right: 5px;
 }
