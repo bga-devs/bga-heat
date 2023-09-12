@@ -4,42 +4,43 @@ namespace HEAT\Circuits;
 $circuitDatas = [
   'id' => 'Italia',
   'name' => clienttranslate('Italia'),
-  'assets' => [
-    'jpg' => 'circuits/italia.jpg',
-  ],
+  'jpgUrl' => 'circuits/italia.jpg',
   'nbrLaps' => 3,
   'stressCards' => 3,
   'heatCards' => 6,
   'startingCells' => [983, 981, 971, 969, 963, 961, 955, 951],
   'podium' => ['x' => 1488, 'y' => 108, 'a' => 0],
   'corners' => [
-    10 => [
-      'speed' => 5, 
+    [
+      'position' => 10,
+      'speed' => 5,
       'lane' => 1,
-      'legend' => 2, 
-      'x' => 972, 
+      'legend' => 2,
+      'x' => 972,
       'y' => 1060,
       'tentX' => 1041,
       'tentY' => 1049,
       'sectorTentX' => 884,
       'sectorTentY' => 661,
     ],
-    19 => [
-      'speed' => 2, 
+    [
+      'position' => 19,
+      'speed' => 2,
       'lane' => 2,
-      'legend' => 14, 
-      'x' => 745, 
+      'legend' => 14,
+      'x' => 745,
       'y' => 377,
       'tentX' => 677,
       'tentY' => 350,
       'sectorTentX' => 545,
       'sectorTentY' => 653,
     ],
-    26 => [
-      'speed' => 3, 
+    [
+      'position' => 26,
+      'speed' => 3,
       'lane' => 1,
-      'legend' => 20, 
-      'x' => 718, 
+      'legend' => 20,
+      'x' => 718,
       'y' => 995,
       'tentX' => 660,
       'tentY' => 1039,
@@ -47,7 +48,7 @@ $circuitDatas = [
       'sectorTentY' => 259,
     ],
   ],
-  'weatherCardPos' => [ 'x' => 110, 'y' => 288],
+  'weatherCardPos' => ['x' => 110, 'y' => 288],
   'cells' => [
     '905' => [
       'lane' => 2,

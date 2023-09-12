@@ -4,16 +4,15 @@ namespace HEAT\Circuits;
 $circuitDatas = [
   'id' => 'France',
   'name' => clienttranslate('France'),
-  'assets' => [
-    'jpg' => 'circuits/france.jpg',
-  ],
+  'jpgUrl' => 'circuits/france.jpg',
   'nbrLaps' => 2,
   'stressCards' => 3,
   'heatCards' => 6,
   'startingCells' => [1729, 1745, 1727, 1743, 1723, 1739, 1707, 1731],
   'podium' => ['x' => 160, 'y' => 722, 'a' => 0],
   'corners' => [
-    12 => [
+    [
+      'position' => 12,
       'speed' => 5,
       'lane' => 1,
       'legend' => 4,
@@ -24,7 +23,8 @@ $circuitDatas = [
       'sectorTentX' => 454,
       'sectorTentY' => 390,
     ],
-    20 => [
+    [
+      'position' => 20,
       'speed' => 2,
       'lane' => 1,
       'legend' => 15,
@@ -35,7 +35,8 @@ $circuitDatas = [
       'sectorTentX' => 702,
       'sectorTentY' => 451,
     ],
-    27 => [
+    [
+      'position' => 27,
       'speed' => 4,
       'lane' => 2,
       'legend' => 20,
@@ -46,7 +47,8 @@ $circuitDatas = [
       'sectorTentX' => 1035,
       'sectorTentY' => 508,
     ],
-    39 => [
+    [
+      'position' => 39,
       'speed' => 3,
       'lane' => 1,
       'legend' => 33,

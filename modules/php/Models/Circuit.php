@@ -7,23 +7,62 @@ class Circuit
 {
   protected $id = null;
   protected $name = null;
+  protected $datas = null;
   protected $corners = [];
   protected $legendLanes = [];
   protected $raceLanes = [];
   protected $startingCells = [];
   protected $cells = [];
   protected $posToCells = [];
+  public function getUiData()
+  {
+    if (is_null($this->datas)) {
+      return null;
+    }
+
+    $cornersDatas = [];
+    foreach ($this->datas['corners'] as $i => $infos) {
+      $pos = $infos['position'] ?? $i;
+      $cornersDatas[$pos] = [
+        'x' => $infos['x'],
+        'y' => $infos['y'],
+        'tentX' => $infos['tentX'],
+        'tentY' => $infos['tentY'],
+        'sectorTentX' => $infos['sectorTentX'],
+        'sectorTentY' => $infos['sectorTentY'],
+      ];
+    }
+
+    return [
+      'id' => $this->id,
+      'name' => $this->name,
+      'jpgUrl' => $this->datas['jpgUrl'] ?? $this->datas['assets']['jpg'],
+      'stressCards' => $this->stressCards,
+      'heatCards' => $this->heatCards,
+      'nbrLaps' => $this->nbrLaps,
+      'corners' => $cornersDatas,
+      'weatherCardPos' => $this->datas['weatherCardPos'],
+      'podium' => $this->datas['podium'],
+      'startingCells' => $this->startingCells,
+      'cells' => $this->cells,
+    ];
+  }
+
   public function __construct($datas)
   {
     if (empty($datas)) {
       return;
     }
-
+    $this->datas = $datas;
     $this->id = $datas['id'];
     $this->name = $datas['name'];
 
     $lane = null;
     foreach ($datas['corners'] as $pos => $info) {
+      if (isset($info['position'])) {
+        $pos = $info['position'];
+      }
+
       $this->corners[$pos] = $info['speed'];
       $this->legendLanes[$pos] = $info['legend'];
       $lane = $info['lane'];
@@ -69,7 +108,7 @@ class Circuit
     if ($optionNbrLaps != 0) {
       $n = $optionNbrLaps;
     }
-    // TODO : weather + event ??
+    // TODO : event
     return $n;
   }
 

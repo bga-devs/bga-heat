@@ -4,15 +4,13 @@ namespace HEAT\Circuits;
 $circuitDatas = [
   'id' => 'USA',
   'name' => clienttranslate('USA'),
-  'assets' => [
-    'jpg' => 'circuits/usa.jpg',
-    'svg' => 'circuits/usa.svg',
-  ],
+  'jpgUrl' => 'circuits/usa.jpg',
   'stressCards' => 3,
   'heatCards' => 6,
   'nbrLaps' => 2,
   'corners' => [
-    12 => [
+    [
+      'position' => 12,
       'speed' => 7,
       'x' => 1604,
       'y' => 948,
@@ -23,7 +21,8 @@ $circuitDatas = [
       'sectorTentX' => 866,
       'sectorTentY' => 894,
     ],
-    33 => [
+    [
+      'position' => 33,
       'speed' => 3,
       'x' => 87,
       'y' => 1019,
@@ -34,7 +33,8 @@ $circuitDatas = [
       'sectorTentX' => 395,
       'sectorTentY' => 990,
     ],
-    49 => [
+    [
+      'position' => 49,
       'speed' => 3,
       'x' => 786,
       'y' => 35,
@@ -45,7 +45,8 @@ $circuitDatas = [
       'sectorTentX' => 924,
       'sectorTentY' => 219,
     ],
-    57 => [
+    [
+      'position' => 57,
       'speed' => 2,
       'x' => 527,
       'y' => 649,
@@ -57,7 +58,7 @@ $circuitDatas = [
       'sectorTentY' => 272,
     ],
   ],
-  'weatherCardPos' => [ 'x' => 119, 'y' => 288],
+  'weatherCardPos' => ['x' => 119, 'y' => 288],
   'podium' => ['x' => 376, 'y' => 82, 'a' => 0],
 
   'startingCells' => [831, 839, 833, 843, 847, 855, 861, 869],
@@ -1029,15 +1030,5 @@ $circuitDatas = [
       'y' => 1036,
       'a' => 170,
     ],
-  ],
-  'computed' => [
-    'centers' => true,
-    'directions' => true,
-    'neighbours' => true,
-    'laneEnds' => [
-      'end1' => 831,
-      'end2' => 839,
-    ],
-    'lanes' => true,
   ],
 ];

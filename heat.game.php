@@ -82,7 +82,7 @@ class Heat extends Table
       'constructors' => Constructors::getUiData($pId),
       // 'cards' => Cards::getUiData(),
       'circuit' => Globals::getCircuit(),
-      'circuitDatas' => Globals::getCircuitDatas(),
+      'circuitDatas' => $this->getCircuit()->getUiData(),
       'nbrLaps' => $this->getNbrLaps(),
       'weather' => Globals::getWeather(),
 
