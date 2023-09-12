@@ -261,6 +261,7 @@ trait RoundTrait
     }
     Globals::setFlippedCards($n);
     unset($symbols[BOOST]);
+    unset($symbols[ADJUST]);
 
     // Direct play
     unset($symbols[DIRECT]);
@@ -756,8 +757,10 @@ trait RoundTrait
     $corners = $this->getCircuit()->getCornersInBetween($prevTurn, $prevPosition, $turn, $position);
 
     // Max speed modificator
-    $symbols = Globals::getSymbols();
-    $speedLimitModifier = $symbols[ADJUST] ?? 0;
+    $speedLimitModifier = 0;
+    foreach ($constructor->getPlayedCards() as $card) {
+      $speedLimitModifier += $card['symbols'][ADJUST] ?? 0;
+    }
 
     // For each corner, check speed against max speed of corner
     if (!empty($corners)) {
