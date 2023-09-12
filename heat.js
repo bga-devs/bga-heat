@@ -2095,7 +2095,8 @@ var CardsManager = /** @class */ (function (_super) {
         if (ignoreTooltip === void 0) { ignoreTooltip = false; }
         var type = card.type;
         div.dataset.type = '' + type; // for debug purpose only
-        div.classList.toggle('upgrade-card', type < 100);
+        div.classList.toggle('upgrade-card', type < 80);
+        div.classList.toggle('sponsor-card', type >= 80 && type < 100);
         if (type >= 100) {
             switch (type) {
                 case 110:
@@ -2110,12 +2111,19 @@ var CardsManager = /** @class */ (function (_super) {
             }
         }
         else {
-            var imagePosition = type - 1;
-            var image_items_per_row = 10;
-            var row = Math.floor(imagePosition / image_items_per_row);
-            var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
-            var yBackgroundPercent = row * 100;
-            div.style.backgroundPosition = "-".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%");
+            if (type < 80) { // upgrade
+                var imagePosition = type - 1;
+                var image_items_per_row = 10;
+                var row = Math.floor(imagePosition / image_items_per_row);
+                var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+                var yBackgroundPercent = row * 100;
+                div.style.backgroundPosition = "-".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%");
+            }
+            else { // sponsor
+                var imagePosition = type - 80;
+                var xBackgroundPercent = imagePosition * 100;
+                div.style.backgroundPositionX = "-".concat(xBackgroundPercent, "%");
+            }
             div.innerHTML = "<div class=\"text\">".concat(_(card.text), "</div>");
         }
         if (!ignoreTooltip) {
@@ -3203,7 +3211,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onEnteringStateUploadCircuit = function (args) {
         var _this = this;
         // this.clearInterface();
-        document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n        <div id=\"circuit-dropzone-container\">\n            <div id=\"circuit-dropzone\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><path d=\"M384 0v128h128L384 0zM352 128L352 0H176C149.5 0 128 21.49 128 48V288h174.1l-39.03-39.03c-9.375-9.375-9.375-24.56 0-33.94s24.56-9.375 33.94 0l80 80c9.375 9.375 9.375 24.56 0 33.94l-80 80c-9.375 9.375-24.56 9.375-33.94 0C258.3 404.3 256 398.2 256 392s2.344-12.28 7.031-16.97L302.1 336H128v128C128 490.5 149.5 512 176 512h288c26.51 0 48-21.49 48-48V160h-127.1C366.3 160 352 145.7 352 128zM24 288C10.75 288 0 298.7 0 312c0 13.25 10.75 24 24 24H128V288H24z\"/></svg>\n\n            <input type=\"file\" id=\"circuit-input\" />\n            <label for=\"circuit-input\">".concat(_('Choose circuit'), "</label>\n            <h5>").concat(_('or drag & drop your .heat file here'), "</h5>\n            </div>\n        </div>\n        "));
+        document.getElementById('circuit').insertAdjacentHTML('beforeend', "\n        <div id=\"circuit-dropzone-container\">\n            <div id=\"circuit-dropzone\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><path d=\"M384 0v128h128L384 0zM352 128L352 0H176C149.5 0 128 21.49 128 48V288h174.1l-39.03-39.03c-9.375-9.375-9.375-24.56 0-33.94s24.56-9.375 33.94 0l80 80c9.375 9.375 9.375 24.56 0 33.94l-80 80c-9.375 9.375-24.56 9.375-33.94 0C258.3 404.3 256 398.2 256 392s2.344-12.28 7.031-16.97L302.1 336H128v128C128 490.5 149.5 512 176 512h288c26.51 0 48-21.49 48-48V160h-127.1C366.3 160 352 145.7 352 128zM24 288C10.75 288 0 298.7 0 312c0 13.25 10.75 24 24 24H128V288H24z\"/></svg>\n\n            <input type=\"file\" id=\"circuit-input\" />\n            <label for=\"circuit-input\">".concat(_('Choose circuit'), "</label>\n            <h5>").concat(_('or drag & drop your .heat file here'), "</h5>\n            </div>\n        </div>\n        "));
         $('circuit-input').addEventListener('change', function (e) { return _this.uploadCircuit(e.target.files[0]); });
         var dropzone = $('circuit-dropzone-container');
         var toggleActive = function (b) {

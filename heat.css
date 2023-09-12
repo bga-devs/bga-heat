@@ -555,7 +555,11 @@ height: 241px; */
   background-image: url("img/upgrade-cards.jpg");
   background-size: auto 500%;
 }
-.personal-card .card-sides .card-side.front.upgrade-card .text {
+.personal-card .card-sides .card-side.front.sponsor-card {
+  background-image: url("img/sponsor-cards.jpg");
+  background-size: auto 100%;
+}
+.personal-card .card-sides .card-side.front .text {
   position: absolute;
   left: 48px;
   right: 48px;
@@ -957,7 +961,7 @@ height: 241px; */
   background-position-x: 100%;
 }
 .player-table .player-board .gear[data-color="12151a"] {
-  box-shadow: 0px 0px 8px 5px white;
+  box-shadow: 0px 0px 8px 10px white;
 }
 .player-table .inplay-wrapper {
   position: absolute;
