@@ -33,6 +33,15 @@ class Circuit
       ];
     }
 
+    $cellsDatas = [];
+    foreach ($this->datas['cells'] as $cellId => $infos) {
+      $cellsDatas[$cellId] = [
+        'x' => $infos['x'],
+        'y' => $infos['y'],
+        'a' => $infos['a'],
+      ];
+    }
+
     return [
       'id' => $this->id,
       'name' => $this->name,
@@ -44,7 +53,7 @@ class Circuit
       'weatherCardPos' => $this->datas['weatherCardPos'],
       'podium' => $this->datas['podium'],
       'startingCells' => $this->startingCells,
-      'cells' => $this->cells,
+      'cells' => $cellsDatas,
     ];
   }
 
