@@ -28,6 +28,9 @@ class Cards extends \HEAT\Helpers\Pieces
     if ($datas['type'] <= 48) {
       $datas['isUpgrade'] = true;
     }
+    if ($datas['type'] >= 80 && $datas['type'] < 85) {
+      $datas['isSponsor'] = true;
+    }
     return $datas;
   }
 

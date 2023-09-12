@@ -251,4 +251,23 @@ class Globals extends \HEAT\Helpers\DB_Manager
   {
     return self::isChampionship() ? 1 : 3;
   }
+
+  public static function getCurrentRace()
+  {
+    if (!Globals::isChampionship()) {
+      return null;
+    }
+    $datas = Globals::getChampionshipDatas();
+    $race = $datas['circuits'][$datas['index']];
+    return $race;
+  }
+
+  public static function getCurrentEvent()
+  {
+    if (!Globals::isChampionship()) {
+      return null;
+    }
+    $race = Globals::getCurrentRace();
+    return $race['event'];
+  }
 }

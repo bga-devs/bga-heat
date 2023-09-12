@@ -876,11 +876,20 @@ trait RoundTrait
       return;
     }
 
-    // Discard played cards
+    // Discard played cards (or put them away if sponsors)
     $constructor = Constructors::getActive();
-    $cardIds = $constructor->getPlayedCards()->getIds();
+    $cardIds = [];
+    $sponsorIds = [];
+    foreach ($constructor->getPlayedCards() as $cId => $card) {
+      if ($card['isSponsor'] ?? false) {
+        $sponsorIds[] = $cId;
+      } else {
+        $cardIds[] = $cId;
+      }
+    }
     Cards::move($cardIds, ['discard', $constructor->getId()]);
-    Notifications::clearPlayedCards($constructor, $cardIds);
+    Cards::move($sponsorIds, ['discard-sponsors']);
+    Notifications::clearPlayedCards($constructor, $cardIds, $sponsorIds);
 
     // Replenish
     Cards::fillHand($constructor);

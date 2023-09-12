@@ -8,6 +8,9 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
+  -   public function clearPlayedCards($constructor, $cardIds, $sponsorIds) => new field 'sponsorIds', cards should be destroyed or something
+  => maybe we need to display a sponsor deck/discard somewhere 
+
   - loadCircuit notif : circuit field should replace gamedatas.circuit
   - jpgUrl : dont add gamethemeurl prefix if it's a custom circuit
   - upload form: only allow .heat files

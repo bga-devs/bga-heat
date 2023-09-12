@@ -327,7 +327,18 @@ trait RaceTrait
   // CHAMPIONSHIP : draw sponsors
   function stDrawSponsors()
   {
-    // TODO
+    Cards::shuffle('sponsors');
+    $event = Globals::getCurrentEvent();
+    $n = EVENTS[$event]['sponsors'];
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      if ($constructor->isAI()) {
+        continue;
+      }
+
+      $cards = Cards::pickForLocation($n, 'sponsors', "hand-$cId");
+      Notifications::draw($constructor, $cards, true);
+    }
+
     $this->gamestate->nextState('start');
   }
 }

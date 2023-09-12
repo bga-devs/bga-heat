@@ -153,25 +153,41 @@ class Notifications
     ]);
   }
 
-  public function clearPlayedCards($constructor, $cardIds)
+  public function clearPlayedCards($constructor, $cardIds, $sponsorIds)
   {
-    self::notifyAll('clearPlayedCards', clienttranslate('${constructor_name} discards played card(s)'), [
+    $msg = clienttranslate('${constructor_name} discards played card(s)');
+    if (!empty($sponsorIds)) {
+      $msg = clienttranslate('${constructor_name} discards played card(s) and remove sponsor(s)');
+    }
+    self::notifyAll('clearPlayedCards', $msg, [
       'constructor' => $constructor,
       'cardIds' => $cardIds,
+      'sponsorIds' => $sponsorIds,
     ]);
   }
 
-  public function draw($constructor, $cards)
+  public function draw($constructor, $cards, $areSponsors = false)
   {
-    self::notifyAll('draw', clienttranslate('${constructor_name} draws ${n} card(s)'), [
-      'constructor' => $constructor,
-      'n' => count($cards),
-    ]);
+    self::notifyAll(
+      'draw',
+      $areSponsors
+        ? clienttranslate('${constructor_name} draws ${n} sponsor card(s)')
+        : clienttranslate('${constructor_name} draws ${n} card(s)'),
+      [
+        'constructor' => $constructor,
+        'n' => count($cards),
+      ]
+    );
 
-    self::notify($constructor, 'pDraw', clienttranslate('You draw ${cards_images}'), [
-      'constructor' => $constructor,
-      'cards' => $cards->toArray(),
-    ]);
+    self::notify(
+      $constructor,
+      'pDraw',
+      $areSponsors ? clienttranslate('You draw sponsors ${cards_images}') : clienttranslate('You draw ${cards_images}'),
+      [
+        'constructor' => $constructor,
+        'cards' => $cards->toArray(),
+      ]
+    );
   }
 
   public function resolveBoost($constructor, $cards, $card, $i, $n)
