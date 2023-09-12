@@ -112,8 +112,15 @@ class Cards extends \HEAT\Helpers\Pieces
       for ($i = 1; $i <= 48; $i++) {
         $advanced = $i >= 18;
         if ((!$advanced && $withBasic) || ($advanced && $withAdvanced)) {
-          $cards[] = ['type' => $i, 'nbr' => 1, 'location' => 'upgrades'];
+          $cards[] = ['type' => $i, 'nbr' => 2, 'location' => 'upgrades'];
         }
+      }
+    }
+
+    // Create deck of sponsors
+    if (Globals::isChampionship()) {
+      for ($i = 80; $i <= 84; $i++) {
+        $cards[] = ['type' => $i, 'nbr' => 7, 'location' => 'sponsors'];
       }
     }
 
