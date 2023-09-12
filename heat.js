@@ -2385,18 +2385,24 @@ var CarAnimation = /** @class */ (function () {
 var Circuit = /** @class */ (function () {
     function Circuit(game, gamedatas) {
         var _this = this;
+        var _a;
         this.game = game;
+        this.gamedatas = gamedatas;
         this.scale = 1;
-        this.circuitDatas = gamedatas.circuitDatas;
         this.tableCenterDiv = document.getElementById('table-center');
         this.circuitDiv = document.getElementById('circuit');
-        if (this.circuitDatas.id) {
-            this.circuitDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl, "')");
-            Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
-            this.createCorners(this.circuitDatas.corners);
-            this.createWeather(gamedatas.weather, this.circuitDatas);
+        if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
+            this.loadCircuit(gamedatas.circuitDatas);
+            Object.values(this.gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
         }
     }
+    Circuit.prototype.loadCircuit = function (circuitDatas) {
+        this.circuitDatas = circuitDatas;
+        this.circuitDiv.style.backgroundImage = "url('".concat(this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : "".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl), "')");
+        this.createCorners(this.circuitDatas.corners);
+        this.createWeather(this.gamedatas.weather, this.circuitDatas);
+        //this.createPressToken(this.circuitDatas);
+    };
     /**
      * Set map size, depending on available screen size.
      * Player table will be placed left or bottom, depending on window ratio.
@@ -2430,6 +2436,14 @@ var Circuit = /** @class */ (function () {
         cornerDiv.style.setProperty('--x', "".concat(corner.x, "px"));
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
+    };
+    Circuit.prototype.createPressToken = function (circuitDatas) {
+        var corner = circuitDatas.corners[12];
+        var pressTokenDiv = document.createElement('div');
+        pressTokenDiv.id = "press-token",
+            pressTokenDiv.style.setProperty('--x', "".concat(corner.tentX, "px"));
+        pressTokenDiv.style.setProperty('--y', "".concat(corner.tentY, "px"));
+        this.circuitDiv.insertAdjacentElement('beforeend', pressTokenDiv);
     };
     Circuit.prototype.createWeather = function (weather, circuitDatas) {
         if (weather === null || weather === void 0 ? void 0 : weather.tokens) {
@@ -2521,18 +2535,21 @@ var Circuit = /** @class */ (function () {
         return cell;
     };
     Circuit.prototype.createCar = function (constructor) {
-        var car = document.createElement('div');
-        car.id = "car-".concat(constructor.id),
-            car.classList.add('car');
-        if (constructor.pId === this.game.getPlayerId()) {
-            car.classList.add('current');
+        var car = document.getElementById("car-".concat(constructor.id));
+        if (!car) {
+            car = document.createElement('div');
+            car.id = "car-".concat(constructor.id),
+                car.classList.add('car');
+            if (constructor.pId === this.game.getPlayerId()) {
+                car.classList.add('current');
+            }
+            car.style.setProperty('--constructor-id', "".concat(constructor.id));
+            this.circuitDiv.insertAdjacentElement('beforeend', car);
         }
         var cell = this.getCellPosition(constructor.carCell);
         car.style.setProperty('--x', "".concat(cell.x, "px"));
         car.style.setProperty('--y', "".concat(cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
-        car.style.setProperty('--constructor-id', "".concat(constructor.id));
-        this.circuitDiv.insertAdjacentElement('beforeend', car);
     };
     Circuit.prototype.moveCar = function (constructorId, carCell, path) {
         var _this = this;
@@ -2820,27 +2837,33 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.scrapCards = function (cards) {
         return __awaiter(this, void 0, void 0, function () {
-            var i, discardedCard;
+            var i, card;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         i = 0;
                         _a.label = 1;
                     case 1:
-                        if (!(i < cards.length)) return [3 /*break*/, 4];
-                        discardedCard = cards[i];
-                        this.deck.addCard(discardedCard, undefined, {
-                            autoUpdateCardNumber: false,
-                            autoRemovePreviousCards: false,
-                        });
-                        return [4 /*yield*/, this.discard.addCard(discardedCard)];
+                        if (!(i < cards.length)) return [3 /*break*/, 6];
+                        card = cards[i];
+                        if (!card.isReshuffled) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.moveDiscardToDeckAndShuffle()];
                     case 2:
                         _a.sent();
                         _a.label = 3;
                     case 3:
+                        this.deck.addCard(card, undefined, {
+                            autoUpdateCardNumber: false,
+                            autoRemovePreviousCards: false,
+                        });
+                        return [4 /*yield*/, this.discard.addCard(card)];
+                    case 4:
+                        _a.sent();
+                        _a.label = 5;
+                    case 5:
                         i++;
                         return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/, true];
+                    case 6: return [2 /*return*/, true];
                 }
             });
         });
@@ -2852,12 +2875,18 @@ var PlayerTable = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.scrapCards(cards)];
                     case 1:
                         _a.sent();
+                        if (!card.isReshuffled) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.moveDiscardToDeckAndShuffle()];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3:
                         this.deck.addCard(card, undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
                         });
                         return [4 /*yield*/, this.inplay.addCard(card)];
-                    case 2:
+                    case 4:
                         _a.sent();
                         return [2 /*return*/, true];
                 }
@@ -2879,7 +2908,31 @@ var PlayerTable = /** @class */ (function () {
                     case 1:
                         _a.sent();
                         this.deck.setCardNumber(this.deck.getCardNumber(), this.fakeDeckCard);
+                        return [4 /*yield*/, this.deck.shuffle(10, function (card, index) { return card.id = -1000 - index; })];
+                    case 2:
+                        _a.sent();
                         return [2 /*return*/, true];
+                }
+            });
+        });
+    };
+    PlayerTable.prototype.moveDiscardToDeckAndShuffle = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var cardNumber;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.deck.setCardNumber(0);
+                        cardNumber = this.discard.getCardNumber();
+                        return [4 /*yield*/, this.deck.addCards(this.discard.getCards())];
+                    case 1:
+                        _a.sent();
+                        this.discard.setCardNumber(0);
+                        this.deck.setCardNumber(cardNumber, this.fakeDeckCard);
+                        return [4 /*yield*/, this.deck.shuffle(10, function (card, index) { return card.id = -1000 - index; })];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/];
                 }
             });
         });
@@ -2888,7 +2941,7 @@ var PlayerTable = /** @class */ (function () {
         if (addCardSettings === void 0) { addCardSettings = undefined; }
         if (shift === void 0) { shift = 250; }
         return __awaiter(this, void 0, void 0, function () {
-            var shuffleIndex, cardsBefore, cardsAfter, cardNumber;
+            var shuffleIndex, cardsBefore, cardsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -2897,32 +2950,23 @@ var PlayerTable = /** @class */ (function () {
                         return [4 /*yield*/, to.addCards(cards, { fromStock: this.deck, }, addCardSettings, shift)];
                     case 1:
                         _a.sent();
-                        return [3 /*break*/, 7];
+                        return [3 /*break*/, 5];
                     case 2:
                         cardsBefore = cards.slice(0, shuffleIndex);
                         cardsAfter = cards.slice(shuffleIndex);
                         return [4 /*yield*/, to.addCards(cardsBefore, { fromStock: this.deck, }, addCardSettings, shift)];
                     case 3:
                         _a.sent();
-                        this.deck.setCardNumber(0);
-                        cardNumber = this.discard.getCardNumber();
-                        return [4 /*yield*/, this.deck.addCards(this.discard.getCards())];
-                    case 4:
-                        _a.sent();
-                        this.discard.setCardNumber(0);
-                        this.deck.setCardNumber(cardNumber, this.fakeDeckCard);
-                        return [4 /*yield*/, this.deck.shuffle(10, function (card, index) { return card.id = -1000 - index; })];
-                    case 5:
-                        _a.sent();
+                        this.moveDiscardToDeckAndShuffle();
                         this.deck.addCards(cardsAfter, undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
                         });
                         return [4 /*yield*/, to.addCards(cardsAfter, { fromStock: this.deck, }, addCardSettings, shift)];
-                    case 6:
+                    case 4:
                         _a.sent();
-                        _a.label = 7;
-                    case 7: return [2 /*return*/, true];
+                        _a.label = 5;
+                    case 5: return [2 /*return*/, true];
                 }
             });
         });
@@ -3003,7 +3047,7 @@ var Heat = /** @class */ (function () {
             //}
             //player.handCount = gamedatas.cards.filter(card => card.location == 'hand' && card.pId == playerId).length;
         });
-        if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
+        if (((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
             g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
         g_img_preload.push.apply(g_img_preload, Object.values(gamedatas.players).map(function (player) { return "mats/player-board-".concat(player.color, ".jpg"); }));
@@ -3509,7 +3553,7 @@ var Heat = /** @class */ (function () {
         });
         constructors.forEach(function (constructor) {
             var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
-            html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / ").concat(gamedatas.nbrLaps, "\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
+            html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(constructor.pId));
             if (!constructor.ai) {
                 _this.handCounters[constructor.id] = new ebg.counter();
@@ -3752,6 +3796,7 @@ var Heat = /** @class */ (function () {
             _this.addLogClass();
         });
         var notifs = [
+            'loadCircuit',
             'chooseUpgrade',
             'swapUpgrade',
             'endDraftRound',
@@ -3813,6 +3858,13 @@ var Heat = /** @class */ (function () {
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
             return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
         });
+    };
+    Heat.prototype.notif_loadCircuit = function (args) {
+        var _a;
+        var circuit = args.circuit;
+        (_a = document.getElementById("circuit-dropzone-container")) === null || _a === void 0 ? void 0 : _a.remove();
+        //document.querySelectorAll('.nbr-laps').forEach(elem => elem.innerHTML == `${circuit.}`)
+        this.circuit.loadCircuit(circuit);
     };
     Heat.prototype.notif_chooseUpgrade = function (args) {
         var constructor_id = args.constructor_id, card = args.card;

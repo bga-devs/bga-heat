@@ -72,7 +72,7 @@ class Heat implements HeatGame {
         });
         
 
-        if (gamedatas.circuitDatas?.jpgUrl) {
+        if (gamedatas.circuitDatas?.jpgUrl && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
             g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
         g_img_preload.push(...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
@@ -604,7 +604,7 @@ class Heat implements HeatGame {
 
     public getGameStateName(): string {
         return this.gamedatas.gamestate.name;
-    }    
+    }
 
     public getGarageModuleIconTooltip(symbol: string, number: number): string {
         switch (symbol) {
@@ -751,7 +751,7 @@ class Heat implements HeatGame {
                 </div>
                 <div id="lap-counter-wrapper-${constructor.id}" class="lap-counter">
                     <div class="flag icon"></div>
-                    <span id="lap-counter-${constructor.id}">-</span> / ${gamedatas.nbrLaps}
+                    <span id="lap-counter-${constructor.id}">-</span> / <span class="nbr-laps">${gamedatas.nbrLaps || '?'}</span>
                 </div>
             </div>
             <div class="counters">
@@ -1061,6 +1061,7 @@ class Heat implements HeatGame {
         });
 
         const notifs = [
+            'loadCircuit',
             'chooseUpgrade',
             'swapUpgrade',
             'endDraftRound',
@@ -1131,6 +1132,13 @@ class Heat implements HeatGame {
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
         );
     } 
+
+    notif_loadCircuit(args: NotifLoadCircuitArgs) {
+        const { circuit } = args;
+        document.getElementById(`circuit-dropzone-container`)?.remove();
+        //document.querySelectorAll('.nbr-laps').forEach(elem => elem.innerHTML == `${circuit.}`)
+        this.circuit.loadCircuit(circuit);
+    }
     
     notif_chooseUpgrade(args: NotifChooseUpgradeArgs) {
         const { constructor_id, card } = args;
