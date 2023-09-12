@@ -3415,8 +3415,12 @@ var Heat = /** @class */ (function () {
                                     label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
                                     tooltip = _this.getGarageModuleIconTooltip('heat', number);
                                     break;
+                                case 'boost':
                                 case 'heated-boost':
-                                    label = "[Boost] > [Speed] (1[Heat])";
+                                    label = "[Boost] > [Speed]";
+                                    if (type == 'heated-boost') {
+                                        label += " (1[Heat])";
+                                    }
                                     tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>");
                                     break;
                                 case 'reduce':

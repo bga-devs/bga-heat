@@ -500,8 +500,12 @@ class Heat implements HeatGame {
                                     label = `<div class="icon forced-heat">${number}</div>`;
                                     tooltip = this.getGarageModuleIconTooltip('heat', number);
                                     break;
+                                case 'boost':
                                 case 'heated-boost':
-                                    label = `[Boost] > [Speed] (1[Heat])`;
+                                    label = `[Boost] > [Speed]`;
+                                    if (type == 'heated-boost') {
+                                        label += ` (1[Heat])`;
+                                    }
                                     tooltip = `
                                     <strong>${_("Boost")}</strong>
                                     <br><br>
