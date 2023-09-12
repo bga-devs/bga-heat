@@ -190,6 +190,29 @@ class Notifications
     );
   }
 
+  public function drawSponsor($constructor, $card, $reason)
+  {
+    if (is_null($card)) {
+      $msg = clienttranslate('${constructor_name} cannot draw a sponsor card because none are left');
+      self::message($msg, ['constructor' => $constructor]);
+    } else {
+      $msg = '';
+      $pmsg = '';
+      if ($reason == 'slipstream') {
+        $msg = clienttranslate('${constructor_name} slipstreamed through a press corner and gain 1 sponsor card');
+        $pmsg = clienttranslate('You slipstreamed through a press corner and gain sponsor ${card_images}');
+      } elseif ($reason == 'exceed') {
+        $msg = clienttranslate('${constructor_name} exceeded speed limit a press corner by 2 or more and gain 1 sponsor card');
+        $pmsg = clienttranslate(
+          'You slipstreamed exceeded speed limit a press corner by 2 or more and gain sponsor ${card_images}'
+        );
+      }
+
+      self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1]);
+      self::notify($constructor, 'pDraw', $pmsg, ['constructor' => $constructor, 'cards' => [$card]]);
+    }
+  }
+
   public function resolveBoost($constructor, $cards, $card, $i, $n)
   {
     $msg =

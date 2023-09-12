@@ -18,7 +18,7 @@ class Cards extends \HEAT\Helpers\Pieces
   protected static $prefix = 'card_';
   protected static $customFields = ['type'];
   protected static $autoreshuffle = true;
-  protected static $autoreshuffleCustom = [];
+  protected static $autoreshuffleCustom = ['sponsors' => 'discard-sponsors'];
 
   protected static function cast($card)
   {

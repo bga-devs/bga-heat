@@ -23,6 +23,8 @@ class Globals extends \HEAT\Helpers\DB_Manager
 
     'planification' => 'obj',
     'previousPosition' => 'int',
+    'positionBeforeSlipstream' => 'int',
+    'turnBeforeSlipstream' => 'int',
     'previousTurn' => 'int',
     'symbols' => 'obj',
     'scores' => 'obj',

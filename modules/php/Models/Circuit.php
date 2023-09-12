@@ -417,4 +417,14 @@ class Circuit
   {
     return $this->legendLanes[$cornerPos];
   }
+
+  public function isPressCorner($cornerPos)
+  {
+    if (!Globals::isChampionship()) {
+      return false;
+    }
+    $i = array_search($cornerPos, array_keys($this->corners));
+    $event = Globals::getCurrentEvent();
+    return in_array($i, $event['press']);
+  }
 }

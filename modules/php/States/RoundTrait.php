@@ -568,7 +568,8 @@ trait RoundTrait
       $symbols = Globals::getSymbols();
       foreach ($card['symbols'] as $symbol => $n) {
         if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
-          if ($symbol !== DIRECT) { // no DIRECT here, to not add played DIRECT back on the list
+          if ($symbol !== DIRECT) {
+            // no DIRECT here, to not add played DIRECT back on the list
             $symbols[$symbol][] = $card['id'];
           }
         } else {
@@ -729,13 +730,16 @@ trait RoundTrait
   public function actSlipstream($n)
   {
     self::checkAction('actSlipstream');
+
+    $constructor = Constructors::getActive();
+    Globals::setPositionBeforeSlipstream($constructor->getPosition());
+
     if ($n > 0) {
       if (!array_key_exists($n, $this->argsSlipstream()['cells'])) {
         throw new \BgaVisibleSystemException('Invalid slipstream. Should not happen');
       }
 
       // Compute the new cell
-      $constructor = Constructors::getActive();
       $this->moveCar($constructor, $n, true);
     }
 
@@ -766,7 +770,24 @@ trait RoundTrait
       $speedLimitModifier += $card['symbols'][ADJUST] ?? 0;
     }
 
+    // Sponsor cards gained
+    $sponsorsGained = [];
+
+    // Check if player slipstreamed through a press corner
+    $slipstreamedCorners = $this->getCircuit()->getCornersInBetween(
+      Globals::getTurnBeforeSlipstream(),
+      Globals::getPositionBeforeSlipstream(),
+      $turn,
+      $position
+    );
+    foreach ($slipstreamedCorners as $cornerPos) {
+      if ($this->getCircuit()->isPressCorner($cornerPos)) {
+        $sponsorsGained[] = 'slipstream';
+      }
+    }
+
     // For each corner, check speed against max speed of corner
+    $spinOut = false;
     if (!empty($corners)) {
       $speed = $constructor->getSpeed();
       foreach ($corners as $cornerPos) {
@@ -795,11 +816,31 @@ trait RoundTrait
             $length = $this->getCircuit()->getLength();
             $nBack = ($position - $newPosition + $length) % $length;
             Notifications::spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack);
+            $spinOut = true;
             break;
           } else {
             $cards = $constructor->payHeats($delta);
             Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos);
+            if ($delta >= 2 && $this->getCircuit()->isPressCorner($cornerPos)) {
+              $sponsorsGained[] = 'exceed';
+            }
           }
+        }
+      }
+    }
+
+    // Draw sponsors into hand
+    if (!empty($sponsorsGained)) {
+      if ($spinOut) {
+        Notifications::message(
+          clienttranslate('${constructor_name} cannot draw sponsor card(s) because they spinned out during their turn'),
+          ['constructor' => $constructor]
+        );
+      } else {
+        foreach ($sponsorsGained as $reason) {
+          $cId = $constructor->getId();
+          $card = Cards::pickOneForLocation('sponsors', "hand-$cId");
+          Notifications::drawSponsor($constructor, $card, $reason);
         }
       }
     }
