@@ -2095,7 +2095,8 @@ var CardsManager = /** @class */ (function (_super) {
         if (ignoreTooltip === void 0) { ignoreTooltip = false; }
         var type = card.type;
         div.dataset.type = '' + type; // for debug purpose only
-        div.classList.toggle('upgrade-card', type < 100);
+        div.classList.toggle('upgrade-card', type < 80);
+        div.classList.toggle('sponsor-card', type >= 80 && type < 100);
         if (type >= 100) {
             switch (type) {
                 case 110:
@@ -2110,12 +2111,19 @@ var CardsManager = /** @class */ (function (_super) {
             }
         }
         else {
-            var imagePosition = type - 1;
-            var image_items_per_row = 10;
-            var row = Math.floor(imagePosition / image_items_per_row);
-            var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
-            var yBackgroundPercent = row * 100;
-            div.style.backgroundPosition = "-".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%");
+            if (type < 80) { // upgrade
+                var imagePosition = type - 1;
+                var image_items_per_row = 10;
+                var row = Math.floor(imagePosition / image_items_per_row);
+                var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+                var yBackgroundPercent = row * 100;
+                div.style.backgroundPosition = "-".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%");
+            }
+            else { // sponsor
+                var imagePosition = type - 80;
+                var xBackgroundPercent = imagePosition * 100;
+                div.style.backgroundPositionX = "-".concat(xBackgroundPercent, "%");
+            }
             div.innerHTML = "<div class=\"text\">".concat(_(card.text), "</div>");
         }
         if (!ignoreTooltip) {
@@ -2385,18 +2393,24 @@ var CarAnimation = /** @class */ (function () {
 var Circuit = /** @class */ (function () {
     function Circuit(game, gamedatas) {
         var _this = this;
+        var _a;
         this.game = game;
+        this.gamedatas = gamedatas;
         this.scale = 1;
-        this.circuitDatas = gamedatas.circuitDatas;
         this.tableCenterDiv = document.getElementById('table-center');
         this.circuitDiv = document.getElementById('circuit');
-        if (this.circuitDatas.id) {
-            this.circuitDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl, "')");
-            Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
-            this.createCorners(this.circuitDatas.corners);
-            this.createWeather(gamedatas.weather, this.circuitDatas);
+        if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
+            this.loadCircuit(gamedatas.circuitDatas);
+            Object.values(this.gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
         }
     }
+    Circuit.prototype.loadCircuit = function (circuitDatas) {
+        this.circuitDatas = circuitDatas;
+        this.circuitDiv.style.backgroundImage = "url('".concat(this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : "".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl), "')");
+        this.createCorners(this.circuitDatas.corners);
+        this.createWeather(this.gamedatas.weather, this.circuitDatas);
+        //this.createPressToken(this.circuitDatas);
+    };
     /**
      * Set map size, depending on available screen size.
      * Player table will be placed left or bottom, depending on window ratio.
@@ -2430,6 +2444,14 @@ var Circuit = /** @class */ (function () {
         cornerDiv.style.setProperty('--x', "".concat(corner.x, "px"));
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
+    };
+    Circuit.prototype.createPressToken = function (circuitDatas) {
+        var corner = circuitDatas.corners[12];
+        var pressTokenDiv = document.createElement('div');
+        pressTokenDiv.id = "press-token",
+            pressTokenDiv.style.setProperty('--x', "".concat(corner.tentX, "px"));
+        pressTokenDiv.style.setProperty('--y', "".concat(corner.tentY, "px"));
+        this.circuitDiv.insertAdjacentElement('beforeend', pressTokenDiv);
     };
     Circuit.prototype.createWeather = function (weather, circuitDatas) {
         if (weather === null || weather === void 0 ? void 0 : weather.tokens) {
@@ -2521,18 +2543,21 @@ var Circuit = /** @class */ (function () {
         return cell;
     };
     Circuit.prototype.createCar = function (constructor) {
-        var car = document.createElement('div');
-        car.id = "car-".concat(constructor.id),
-            car.classList.add('car');
-        if (constructor.pId === this.game.getPlayerId()) {
-            car.classList.add('current');
+        var car = document.getElementById("car-".concat(constructor.id));
+        if (!car) {
+            car = document.createElement('div');
+            car.id = "car-".concat(constructor.id),
+                car.classList.add('car');
+            if (constructor.pId === this.game.getPlayerId()) {
+                car.classList.add('current');
+            }
+            car.style.setProperty('--constructor-id', "".concat(constructor.id));
+            this.circuitDiv.insertAdjacentElement('beforeend', car);
         }
         var cell = this.getCellPosition(constructor.carCell);
         car.style.setProperty('--x', "".concat(cell.x, "px"));
         car.style.setProperty('--y', "".concat(cell.y, "px"));
         car.style.setProperty('--r', "".concat(cell.a, "deg"));
-        car.style.setProperty('--constructor-id', "".concat(constructor.id));
-        this.circuitDiv.insertAdjacentElement('beforeend', car);
     };
     Circuit.prototype.moveCar = function (constructorId, carCell, path) {
         var _this = this;
@@ -2820,27 +2845,33 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.scrapCards = function (cards) {
         return __awaiter(this, void 0, void 0, function () {
-            var i, discardedCard;
+            var i, card;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         i = 0;
                         _a.label = 1;
                     case 1:
-                        if (!(i < cards.length)) return [3 /*break*/, 4];
-                        discardedCard = cards[i];
-                        this.deck.addCard(discardedCard, undefined, {
-                            autoUpdateCardNumber: false,
-                            autoRemovePreviousCards: false,
-                        });
-                        return [4 /*yield*/, this.discard.addCard(discardedCard)];
+                        if (!(i < cards.length)) return [3 /*break*/, 6];
+                        card = cards[i];
+                        if (!card.isReshuffled) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.moveDiscardToDeckAndShuffle()];
                     case 2:
                         _a.sent();
                         _a.label = 3;
                     case 3:
+                        this.deck.addCard(card, undefined, {
+                            autoUpdateCardNumber: false,
+                            autoRemovePreviousCards: false,
+                        });
+                        return [4 /*yield*/, this.discard.addCard(card)];
+                    case 4:
+                        _a.sent();
+                        _a.label = 5;
+                    case 5:
                         i++;
                         return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/, true];
+                    case 6: return [2 /*return*/, true];
                 }
             });
         });
@@ -2852,12 +2883,18 @@ var PlayerTable = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.scrapCards(cards)];
                     case 1:
                         _a.sent();
+                        if (!card.isReshuffled) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.moveDiscardToDeckAndShuffle()];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3:
                         this.deck.addCard(card, undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
                         });
                         return [4 /*yield*/, this.inplay.addCard(card)];
-                    case 2:
+                    case 4:
                         _a.sent();
                         return [2 /*return*/, true];
                 }
@@ -2879,7 +2916,31 @@ var PlayerTable = /** @class */ (function () {
                     case 1:
                         _a.sent();
                         this.deck.setCardNumber(this.deck.getCardNumber(), this.fakeDeckCard);
+                        return [4 /*yield*/, this.deck.shuffle(10, function (card, index) { return card.id = -1000 - index; })];
+                    case 2:
+                        _a.sent();
                         return [2 /*return*/, true];
+                }
+            });
+        });
+    };
+    PlayerTable.prototype.moveDiscardToDeckAndShuffle = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var cardNumber;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.deck.setCardNumber(0);
+                        cardNumber = this.discard.getCardNumber();
+                        return [4 /*yield*/, this.deck.addCards(this.discard.getCards())];
+                    case 1:
+                        _a.sent();
+                        this.discard.setCardNumber(0);
+                        this.deck.setCardNumber(cardNumber, this.fakeDeckCard);
+                        return [4 /*yield*/, this.deck.shuffle(10, function (card, index) { return card.id = -1000 - index; })];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/];
                 }
             });
         });
@@ -2888,7 +2949,7 @@ var PlayerTable = /** @class */ (function () {
         if (addCardSettings === void 0) { addCardSettings = undefined; }
         if (shift === void 0) { shift = 250; }
         return __awaiter(this, void 0, void 0, function () {
-            var shuffleIndex, cardsBefore, cardsAfter, cardNumber;
+            var shuffleIndex, cardsBefore, cardsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -2897,32 +2958,23 @@ var PlayerTable = /** @class */ (function () {
                         return [4 /*yield*/, to.addCards(cards, { fromStock: this.deck, }, addCardSettings, shift)];
                     case 1:
                         _a.sent();
-                        return [3 /*break*/, 7];
+                        return [3 /*break*/, 5];
                     case 2:
                         cardsBefore = cards.slice(0, shuffleIndex);
                         cardsAfter = cards.slice(shuffleIndex);
                         return [4 /*yield*/, to.addCards(cardsBefore, { fromStock: this.deck, }, addCardSettings, shift)];
                     case 3:
                         _a.sent();
-                        this.deck.setCardNumber(0);
-                        cardNumber = this.discard.getCardNumber();
-                        return [4 /*yield*/, this.deck.addCards(this.discard.getCards())];
-                    case 4:
-                        _a.sent();
-                        this.discard.setCardNumber(0);
-                        this.deck.setCardNumber(cardNumber, this.fakeDeckCard);
-                        return [4 /*yield*/, this.deck.shuffle(10, function (card, index) { return card.id = -1000 - index; })];
-                    case 5:
-                        _a.sent();
+                        this.moveDiscardToDeckAndShuffle();
                         this.deck.addCards(cardsAfter, undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
                         });
                         return [4 /*yield*/, to.addCards(cardsAfter, { fromStock: this.deck, }, addCardSettings, shift)];
-                    case 6:
+                    case 4:
                         _a.sent();
-                        _a.label = 7;
-                    case 7: return [2 /*return*/, true];
+                        _a.label = 5;
+                    case 5: return [2 /*return*/, true];
                 }
             });
         });
@@ -3003,7 +3055,7 @@ var Heat = /** @class */ (function () {
             //}
             //player.handCount = gamedatas.cards.filter(card => card.location == 'hand' && card.pId == playerId).length;
         });
-        if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
+        if (((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
             g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
         g_img_preload.push.apply(g_img_preload, Object.values(gamedatas.players).map(function (player) { return "mats/player-board-".concat(player.color, ".jpg"); }));
@@ -3159,7 +3211,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onEnteringStateUploadCircuit = function (args) {
         var _this = this;
         // this.clearInterface();
-        document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n        <div id=\"circuit-dropzone-container\">\n            <div id=\"circuit-dropzone\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><path d=\"M384 0v128h128L384 0zM352 128L352 0H176C149.5 0 128 21.49 128 48V288h174.1l-39.03-39.03c-9.375-9.375-9.375-24.56 0-33.94s24.56-9.375 33.94 0l80 80c9.375 9.375 9.375 24.56 0 33.94l-80 80c-9.375 9.375-24.56 9.375-33.94 0C258.3 404.3 256 398.2 256 392s2.344-12.28 7.031-16.97L302.1 336H128v128C128 490.5 149.5 512 176 512h288c26.51 0 48-21.49 48-48V160h-127.1C366.3 160 352 145.7 352 128zM24 288C10.75 288 0 298.7 0 312c0 13.25 10.75 24 24 24H128V288H24z\"/></svg>\n\n            <input type=\"file\" id=\"circuit-input\" />\n            <label for=\"circuit-input\">".concat(_('Choose circuit'), "</label>\n            <h5>").concat(_('or drag & drop your .heat file here'), "</h5>\n            </div>\n        </div>\n        "));
+        document.getElementById('circuit').insertAdjacentHTML('beforeend', "\n        <div id=\"circuit-dropzone-container\">\n            <div id=\"circuit-dropzone\">\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><path d=\"M384 0v128h128L384 0zM352 128L352 0H176C149.5 0 128 21.49 128 48V288h174.1l-39.03-39.03c-9.375-9.375-9.375-24.56 0-33.94s24.56-9.375 33.94 0l80 80c9.375 9.375 9.375 24.56 0 33.94l-80 80c-9.375 9.375-24.56 9.375-33.94 0C258.3 404.3 256 398.2 256 392s2.344-12.28 7.031-16.97L302.1 336H128v128C128 490.5 149.5 512 176 512h288c26.51 0 48-21.49 48-48V160h-127.1C366.3 160 352 145.7 352 128zM24 288C10.75 288 0 298.7 0 312c0 13.25 10.75 24 24 24H128V288H24z\"/></svg>\n\n            <input type=\"file\" id=\"circuit-input\" />\n            <label for=\"circuit-input\">".concat(_('Choose circuit'), "</label>\n            <h5>").concat(_('or drag & drop your .heat file here'), "</h5>\n            </div>\n        </div>\n        "));
         $('circuit-input').addEventListener('change', function (e) { return _this.uploadCircuit(e.target.files[0]); });
         var dropzone = $('circuit-dropzone-container');
         var toggleActive = function (b) {
@@ -3363,8 +3415,12 @@ var Heat = /** @class */ (function () {
                                     label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
                                     tooltip = _this.getGarageModuleIconTooltip('heat', number);
                                     break;
+                                case 'boost':
                                 case 'heated-boost':
-                                    label = "[Boost] > [Speed] (1[Heat])";
+                                    label = "[Boost] > [Speed]";
+                                    if (type == 'heated-boost') {
+                                        label += " (1[Heat])";
+                                    }
                                     tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>");
                                     break;
                                 case 'reduce':
@@ -3509,7 +3565,7 @@ var Heat = /** @class */ (function () {
         });
         constructors.forEach(function (constructor) {
             var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
-            html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / ").concat(gamedatas.nbrLaps, "\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
+            html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(constructor.pId));
             if (!constructor.ai) {
                 _this.handCounters[constructor.id] = new ebg.counter();
@@ -3752,6 +3808,7 @@ var Heat = /** @class */ (function () {
             _this.addLogClass();
         });
         var notifs = [
+            'loadCircuit',
             'chooseUpgrade',
             'swapUpgrade',
             'endDraftRound',
@@ -3813,6 +3870,13 @@ var Heat = /** @class */ (function () {
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
             return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
         });
+    };
+    Heat.prototype.notif_loadCircuit = function (args) {
+        var _a;
+        var circuit = args.circuit;
+        (_a = document.getElementById("circuit-dropzone-container")) === null || _a === void 0 ? void 0 : _a.remove();
+        //document.querySelectorAll('.nbr-laps').forEach(elem => elem.innerHTML == `${circuit.}`)
+        this.circuit.loadCircuit(circuit);
     };
     Heat.prototype.notif_chooseUpgrade = function (args) {
         var constructor_id = args.constructor_id, card = args.card;

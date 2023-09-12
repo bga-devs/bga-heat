@@ -143,6 +143,11 @@ interface EnteringSalvageArgs {
     n: number;
 }
 
+// loadCircuit
+interface NotifLoadCircuitArgs {
+    circuit: CircuitDatas;
+}
+
 // chooseUpgrade
 interface NotifChooseUpgradeArgs {
     constructor_id: number;

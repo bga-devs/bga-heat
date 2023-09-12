@@ -47,17 +47,22 @@
                 &.upgrade-card {        
                     background-image: url('img/upgrade-cards.jpg');  
                     background-size: auto 500%; 
+                }
 
-                    .text {
-                        position: absolute;
-                        left: 48px;
-                        right: 48px;
-                        text-align: center;
-                        color: #231f20;
-                        font-size: 32px;
-                        word-break: break-word;
-                        text-transform: uppercase;
-                    }
+                &.sponsor-card {        
+                    background-image: url('img/sponsor-cards.jpg');  
+                    background-size: auto 100%; 
+                }
+
+                .text {
+                    position: absolute;
+                    left: 48px;
+                    right: 48px;
+                    text-align: center;
+                    color: #231f20;
+                    font-size: 32px;
+                    word-break: break-word;
+                    text-transform: uppercase;
                 }
             }
         }

@@ -72,7 +72,7 @@ class Heat implements HeatGame {
         });
         
 
-        if (gamedatas.circuitDatas?.jpgUrl) {
+        if (gamedatas.circuitDatas?.jpgUrl && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
             g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
         g_img_preload.push(...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
@@ -254,7 +254,7 @@ class Heat implements HeatGame {
 
     private onEnteringStateUploadCircuit(args) {
         // this.clearInterface();
-        document.getElementById('table-center').insertAdjacentHTML('beforebegin', `
+        document.getElementById('circuit').insertAdjacentHTML('beforeend', `
         <div id="circuit-dropzone-container">
             <div id="circuit-dropzone">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M384 0v128h128L384 0zM352 128L352 0H176C149.5 0 128 21.49 128 48V288h174.1l-39.03-39.03c-9.375-9.375-9.375-24.56 0-33.94s24.56-9.375 33.94 0l80 80c9.375 9.375 9.375 24.56 0 33.94l-80 80c-9.375 9.375-24.56 9.375-33.94 0C258.3 404.3 256 398.2 256 392s2.344-12.28 7.031-16.97L302.1 336H128v128C128 490.5 149.5 512 176 512h288c26.51 0 48-21.49 48-48V160h-127.1C366.3 160 352 145.7 352 128zM24 288C10.75 288 0 298.7 0 312c0 13.25 10.75 24 24 24H128V288H24z"/></svg>
@@ -500,8 +500,12 @@ class Heat implements HeatGame {
                                     label = `<div class="icon forced-heat">${number}</div>`;
                                     tooltip = this.getGarageModuleIconTooltip('heat', number);
                                     break;
+                                case 'boost':
                                 case 'heated-boost':
-                                    label = `[Boost] > [Speed] (1[Heat])`;
+                                    label = `[Boost] > [Speed]`;
+                                    if (type == 'heated-boost') {
+                                        label += ` (1[Heat])`;
+                                    }
                                     tooltip = `
                                     <strong>${_("Boost")}</strong>
                                     <br><br>
@@ -604,7 +608,7 @@ class Heat implements HeatGame {
 
     public getGameStateName(): string {
         return this.gamedatas.gamestate.name;
-    }    
+    }
 
     public getGarageModuleIconTooltip(symbol: string, number: number): string {
         switch (symbol) {
@@ -751,7 +755,7 @@ class Heat implements HeatGame {
                 </div>
                 <div id="lap-counter-wrapper-${constructor.id}" class="lap-counter">
                     <div class="flag icon"></div>
-                    <span id="lap-counter-${constructor.id}">-</span> / ${gamedatas.nbrLaps}
+                    <span id="lap-counter-${constructor.id}">-</span> / <span class="nbr-laps">${gamedatas.nbrLaps || '?'}</span>
                 </div>
             </div>
             <div class="counters">
@@ -1061,6 +1065,7 @@ class Heat implements HeatGame {
         });
 
         const notifs = [
+            'loadCircuit',
             'chooseUpgrade',
             'swapUpgrade',
             'endDraftRound',
@@ -1131,6 +1136,13 @@ class Heat implements HeatGame {
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
         );
     } 
+
+    notif_loadCircuit(args: NotifLoadCircuitArgs) {
+        const { circuit } = args;
+        document.getElementById(`circuit-dropzone-container`)?.remove();
+        //document.querySelectorAll('.nbr-laps').forEach(elem => elem.innerHTML == `${circuit.}`)
+        this.circuit.loadCircuit(circuit);
+    }
     
     notif_chooseUpgrade(args: NotifChooseUpgradeArgs) {
         const { constructor_id, card } = args;

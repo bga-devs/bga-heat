@@ -100,19 +100,24 @@ class Circuit {
 
     private circuitDatas: CircuitDatas;
         
-    constructor(private game: HeatGame, gamedatas: HeatGamedatas) {
-        this.circuitDatas = gamedatas.circuitDatas;
+    constructor(private game: HeatGame, private gamedatas: HeatGamedatas) {
         this.tableCenterDiv = document.getElementById('table-center') as HTMLDivElement;
         this.circuitDiv = document.getElementById('circuit') as HTMLDivElement;
 
-        if (this.circuitDatas.id) {
-            this.circuitDiv.style.backgroundImage = `url('${g_gamethemeurl}img/${this.circuitDatas.jpgUrl}')`;
+        if (gamedatas.circuitDatas?.jpgUrl) {
+            this.loadCircuit(gamedatas.circuitDatas);
 
-            Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
-
-            this.createCorners(this.circuitDatas.corners);
-            this.createWeather(gamedatas.weather, this.circuitDatas);
+            Object.values(this.gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
         }
+    }
+    
+    public loadCircuit(circuitDatas: CircuitDatas) {
+        this.circuitDatas = circuitDatas;
+        this.circuitDiv.style.backgroundImage = `url('${this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : `${g_gamethemeurl}img/${this.circuitDatas.jpgUrl}`}')`;
+
+        this.createCorners(this.circuitDatas.corners);
+        this.createWeather(this.gamedatas.weather, this.circuitDatas);
+        //this.createPressToken(this.circuitDatas);
     }
 
     /** 
@@ -148,6 +153,15 @@ class Circuit {
         cornerDiv.style.setProperty('--x', `${corner.x}px`);
         cornerDiv.style.setProperty('--y', `${corner.y}px`);
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
+    }
+    
+    private createPressToken(circuitDatas: CircuitDatas): void {
+        const corner = circuitDatas.corners[12];        
+        const pressTokenDiv = document.createElement('div');
+        pressTokenDiv.id = `press-token`,
+        pressTokenDiv.style.setProperty('--x', `${corner.tentX}px`);
+        pressTokenDiv.style.setProperty('--y', `${corner.tentY}px`);
+        this.circuitDiv.insertAdjacentElement('beforeend', pressTokenDiv);
     }
     
     private createWeather(weather: Weather, circuitDatas: CircuitDatas): void {
@@ -278,18 +292,21 @@ class Circuit {
     }
 
     private createCar(constructor: Constructor) {
-        const car = document.createElement('div');
-        car.id = `car-${constructor.id}`,
-        car.classList.add('car');
-        if (constructor.pId === this.game.getPlayerId()) {
-            car.classList.add('current');
+        let car = document.getElementById(`car-${constructor.id}`);
+        if (!car) {
+            car = document.createElement('div');
+            car.id = `car-${constructor.id}`,
+            car.classList.add('car');
+            if (constructor.pId === this.game.getPlayerId()) {
+                car.classList.add('current');
+            }
+            car.style.setProperty('--constructor-id', `${constructor.id}`);
+            this.circuitDiv.insertAdjacentElement('beforeend', car);
         }
         const cell = this.getCellPosition(constructor.carCell);
         car.style.setProperty('--x', `${cell.x}px`);
         car.style.setProperty('--y', `${cell.y}px`);
         car.style.setProperty('--r', `${cell.a}deg`);
-        car.style.setProperty('--constructor-id', `${constructor.id}`);
-        this.circuitDiv.insertAdjacentElement('beforeend', car);
     }
 
     public moveCar(constructorId: number, carCell: number, path?: number[]): Promise<any> {

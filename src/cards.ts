@@ -31,7 +31,8 @@ class CardsManager extends CardManager<Card> {
     private setupFrontDiv(card: Card, div: HTMLElement, ignoreTooltip: boolean = false) { 
         const type = card.type;
         div.dataset.type = ''+type; // for debug purpose only
-        div.classList.toggle('upgrade-card', type < 100);
+        div.classList.toggle('upgrade-card', type < 80);
+        div.classList.toggle('sponsor-card', type >= 80 && type < 100);
         if (type >= 100) {
             switch (type) {
                 case 110:
@@ -45,12 +46,18 @@ class CardsManager extends CardManager<Card> {
                     break;
             }
         } else {
-            const imagePosition = type - 1;
-            const image_items_per_row = 10;
-            var row = Math.floor(imagePosition / image_items_per_row);
-            const xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
-            const yBackgroundPercent = row * 100;
-            div.style.backgroundPosition = `-${xBackgroundPercent}% -${yBackgroundPercent}%`;
+            if (type < 80) { // upgrade
+                const imagePosition = type - 1;
+                const image_items_per_row = 10;
+                var row = Math.floor(imagePosition / image_items_per_row);
+                const xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+                const yBackgroundPercent = row * 100;
+                div.style.backgroundPosition = `-${xBackgroundPercent}% -${yBackgroundPercent}%`;
+            } else { // sponsor
+                const imagePosition = type - 80;
+                const xBackgroundPercent = imagePosition * 100;
+                div.style.backgroundPositionX = `-${xBackgroundPercent}%`;
+            }
 
             div.innerHTML = `<div class="text">${_(card.text)}</div>`
         }

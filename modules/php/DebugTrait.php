@@ -41,9 +41,14 @@ trait DebugTrait
     $this->actDiscard([]);
   }
 
+  function discardDeck()
+  {
+    $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'deck', 'discard')");
+  }
+
   function endGame()
   {
-    $this->DbQuery('UPDATE constructors SET `turn` = 2');
+    $this->DbQuery("UPDATE constructors SET `turn` = 2");
   }
 
   /*
