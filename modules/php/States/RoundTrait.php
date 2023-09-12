@@ -4,6 +4,7 @@ use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
 use HEAT\Core\Stats;
 use HEAT\Helpers\Log;
+use HEAT\Helpers\UserException;
 use HEAT\Managers\Constructors;
 use HEAT\Managers\Players;
 use HEAT\Managers\Cards;
@@ -140,6 +141,15 @@ trait RoundTrait
   {
     self::checkAction('actPlan');
     $player = Players::getCurrent();
+    $constructor = Constructors::getOfPlayer($player->getId());
+    $newGear = count($cardIds);
+    if (abs($newGear - $constructor->getGear()) > 1) {
+      $heat = $constructor->getEngine()->first();
+      if (is_null($heat)) {
+        throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 2.'));
+      }
+    }
+
     $planification = Globals::getPlanification();
     $planification[$player->getId()] = $cardIds;
     Globals::setPlanification($planification);
