@@ -273,6 +273,7 @@ function loadCircuit(datas) {
   if (DATAS.computed.positions || false) updatePositions();
   if (DATAS.corners || false) createCornerEntries();
   updateStatus();
+  saveCircuit();
 }
 
 function forEachCell(callback) {
@@ -1115,6 +1116,8 @@ function createCornerEntries() {
 }
 
 function updateCorners() {
+  if (DATAS.corners === undefined) return;
+
   DATAS.corners.forEach((corner, j) => {
     $(`corner-pos-${j}`).innerHTML = corner.position;
     $(`corner-pos-${j}`).classList.toggle('ok', corner.position != 0);
