@@ -144,8 +144,7 @@ trait RoundTrait
     $constructor = Constructors::getOfPlayer($player->getId());
     $newGear = count($cardIds);
     if (abs($newGear - $constructor->getGear()) > 1) {
-      $heat = $constructor->getEngine()->first();
-      if (is_null($heat)) {
+      if ($constructor->hasNoHeat()) {
         throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 2.'));
       }
     }
@@ -490,6 +489,9 @@ trait RoundTrait
     // HEATED BOOST
     elseif ($symbol == HEATED_BOOST || $symbol == BOOST) {
       if ($symbol == HEATED_BOOST) {
+        if ($constructor->hasNoHeat()) {
+          throw new UserException(clienttranslate('You dont have enough heat to pay for the boost.'));
+        }
         $heats = $constructor->payHeats(1);
       } else {
         $heats = null;

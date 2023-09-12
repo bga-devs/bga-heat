@@ -107,6 +107,11 @@ class Constructor extends \HEAT\Helpers\DB_Model
     return Cards::getEngine($this->id);
   }
 
+  public function hasNoHeat()
+  {
+    return is_null($this->getEngine()->first());
+  }
+
   public function getDiscard()
   {
     return Cards::getDiscard($this->id);
