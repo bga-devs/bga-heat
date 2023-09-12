@@ -17,7 +17,7 @@ class Circuit
   public function getUiData()
   {
     if (is_null($this->datas)) {
-      return null;
+      return [];
     }
 
     $cornersDatas = [];

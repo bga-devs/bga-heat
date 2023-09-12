@@ -351,13 +351,16 @@ function exportCompressedJSON() {
   let d = {
     id: DATAS.id,
     name: DATAS.name,
-    assets: { jpg: DATAS.assets.jpg },
+    jpgUrl: DATAS.jpgUrl,
     nbrLaps: DATAS.nbrLaps || 0,
     stressCards: DATAS.stressCards || 0,
     heatCards: DATAS.heatCards || 0,
-    startingCells: [],
+    startingCells: DATAS.startingCells || [],
     podium: { x: 0, y: 0, a: 0 },
-    corners: {},
+    weatherCardPos: DATAS.weatherCardPos
+      ? { x: parseInt(DATAS.weatherCardPos.x), y: parseInt(DATAS.weatherCardPos.y) }
+      : { x: 0, y: 0 },
+    corners: DATAS.corners || [],
     cells: {},
   };
 

@@ -127,12 +127,18 @@ trait SetupTrait
       'weatherCardPos' => 'Weather card position',
       'podium' => 'Podium position',
       'startingCells' => 'Starting cells',
+      'corners' => 'Corners',
+      'cells' => 'Cells',
     ];
     foreach ($fields as $field => $name) {
       if (!isset($circuit[$field])) {
         throw new \BgaVisibleSystemException("No $name field. Invalid circuit file.");
       }
       $f[$field] = $circuit[$field];
+
+      if (in_array($field, ['heatCards', 'stressCards', 'nbrLaps'])) {
+        $f[$field] = (int) $f[$field];
+      }
     }
 
     // Weather card pos
@@ -140,8 +146,8 @@ trait SetupTrait
       throw new \BgaVisibleSystemException('Wrong Weather Card position format. Invalid circuit file.');
     }
     $f['weatherCardPos'] = [
-      'x' => $f['weatherCardPos']['x'],
-      'y' => $f['weatherCardPos']['y'],
+      'x' => (int) $f['weatherCardPos']['x'],
+      'y' => (int) $f['weatherCardPos']['y'],
     ];
 
     // Podium
@@ -149,17 +155,17 @@ trait SetupTrait
       throw new \BgaVisibleSystemException('Wrong Podium position format. Invalid circuit file.');
     }
     $f['podium'] = [
-      'x' => $f['podium']['x'],
-      'y' => $f['podium']['y'],
+      'x' => (int) $f['podium']['x'],
+      'y' => (int) $f['podium']['y'],
     ];
 
     // Starting cells
-    if (!is_array($f['startingCells']) || count($f['startingCells']) == 8) {
+    if (!is_array($f['startingCells']) || count($f['startingCells']) != 8) {
       throw new \BgaVisibleSystemException('Wrong Starting cells format. Invalid circuit file.');
     }
-    $f['startingCells'] = array_map(function ($c) {
-      return (int) $c;
-    }, $f['startingCells']);
+    foreach ($f['startingCells'] as $i => $c) {
+      $f['startingCells'][$i] = (int) $c;
+    }
 
     // Corners
     foreach ($f['corners'] as $i => $corner) {
@@ -190,6 +196,7 @@ trait SetupTrait
 
     Globals::setCircuitDatas($f);
     Notifications::loadCircuit($f);
+    $this->circuit = null;
     $this->gamestate->nextState('done');
   }
 }
