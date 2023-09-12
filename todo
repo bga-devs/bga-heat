@@ -8,6 +8,8 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
+  - loadCircuit notif : circuit field should replace gamedatas.circuit
+
   - react : heated boost with weather that makes it no longer heated !
 
   - championship: new field received in getAllDatas

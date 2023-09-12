@@ -402,6 +402,13 @@ class Notifications
     );
   }
 
+  public static function loadCircuit($circuit)
+  {
+    self::notifyAll('loadCircuit', '', [
+      'circuit' => $circuit,
+    ]);
+  }
+
   /////////////////////////////////
   //// CHAMPIONSHIP
   public static function newChampionshipRace($datas, $name)

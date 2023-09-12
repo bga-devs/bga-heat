@@ -52,6 +52,7 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} must upload a heat circuit'),
     'type' => 'multipleactiveplayer',
     'possibleactions' => ['actUploadCircuit'],
+    'transitions' => ['done' => ST_SETUP_RACE],
   ],
 
   //////////////////////////////

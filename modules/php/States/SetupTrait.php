@@ -103,9 +103,93 @@ trait SetupTrait
     }
   }
 
+  //////////////////////////////////////////
+  //  _   _       _                 _
+  // | | | |_ __ | | ___   __ _  __| |
+  // | | | | '_ \| |/ _ \ / _` |/ _` |
+  // | |_| | |_) | | (_) | (_| | (_| |
+  //  \___/| .__/|_|\___/ \__,_|\__,_|
+  //       |_|
+  //////////////////////////////////////////
+
   public function actUploadCircuit($circuit)
   {
-    var_dump($circuit);
-    die('WELL RECEIVED, THANK YOU!');
+    // Filter datas
+    $f = [];
+
+    $fields = [
+      'id' => 'ID',
+      'name' => 'Name',
+      'jpgUrl' => 'JPG',
+      'heatCards' => 'Heat Cards',
+      'stressCards' => 'Stress Cards',
+      'nbrLaps' => 'Number of laps',
+      'weatherCardPos' => 'Weather card position',
+      'podium' => 'Podium position',
+      'startingCells' => 'Starting cells',
+    ];
+    foreach ($fields as $field => $name) {
+      if (!isset($circuit[$field])) {
+        throw new \BgaVisibleSystemException("No $name field. Invalid circuit file.");
+      }
+      $f[$field] = $circuit[$field];
+    }
+
+    // Weather card pos
+    if (!isset($f['weatherCardPos']['x']) || !isset($f['weatherCardPos']['x'])) {
+      throw new \BgaVisibleSystemException('Wrong Weather Card position format. Invalid circuit file.');
+    }
+    $f['weatherCardPos'] = [
+      'x' => $f['weatherCardPos']['x'],
+      'y' => $f['weatherCardPos']['y'],
+    ];
+
+    // Podium
+    if (!isset($f['podium']['x']) || !isset($f['podium']['x'])) {
+      throw new \BgaVisibleSystemException('Wrong Podium position format. Invalid circuit file.');
+    }
+    $f['podium'] = [
+      'x' => $f['podium']['x'],
+      'y' => $f['podium']['y'],
+    ];
+
+    // Starting cells
+    if (!is_array($f['startingCells']) || count($f['startingCells']) == 8) {
+      throw new \BgaVisibleSystemException('Wrong Starting cells format. Invalid circuit file.');
+    }
+    $f['startingCells'] = array_map(function ($c) {
+      return (int) $c;
+    }, $f['startingCells']);
+
+    // Corners
+    foreach ($f['corners'] as $i => $corner) {
+      $g = [];
+      foreach (['position', 'speed', 'x', 'y', 'lane', 'legend', 'tentX', 'tentY', 'sectorTentX', 'sectorTentY'] as $field) {
+        if (!isset($corner[$field])) {
+          throw new \BgaVisibleSystemException("Missing $field in some corner. Invalid circuit file.");
+        }
+        $g[$field] = (int) $corner[$field];
+      }
+      $f['corners'][$i] = $g;
+    }
+
+    // Cells
+    $cells = [];
+    foreach ($f['cells'] as $cellId => $cell) {
+      $cellId = (int) $cellId;
+      $g = [];
+      foreach (['position', 'lane', 'x', 'y', 'a'] as $field) {
+        if (!isset($cell[$field])) {
+          throw new \BgaVisibleSystemException("Missing $field in some corner. Invalid circuit file.");
+        }
+        $g[$field] = (int) $cell[$field];
+      }
+      $cells[$cellId] = $g;
+    }
+    $f['cells'] = $cells;
+
+    Globals::setCircuitDatas($f);
+    Notifications::loadCircuit($f);
+    $this->gamestate->nextState('done');
   }
 }
