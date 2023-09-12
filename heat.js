@@ -3864,9 +3864,9 @@ var Heat = /** @class */ (function () {
                 }
             });
         }
-        this.notifqueue.setIgnoreNotificationCheck('discard', function (notif) {
-            return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId() && notif.args.n;
-        });
+        /*(this as any).notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) =>
+            this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
+        );*/
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
             return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
         });

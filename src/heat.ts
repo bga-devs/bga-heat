@@ -1129,9 +1129,9 @@ class Heat implements HeatGame {
             });
         }
 
-        (this as any).notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) => 
+        /*(this as any).notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) => 
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
-        );
+        );*/
         (this as any).notifqueue.setIgnoreNotificationCheck('draw', (notif: Notif<any>) => 
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
         );
