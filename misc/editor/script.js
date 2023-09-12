@@ -10,6 +10,9 @@ const SECTIONS = ['centers', 'directions', 'neighbours', 'lanes'];
 $('open-help').addEventListener('click', () => {
   $('help-container').classList.add('open');
 });
+$('open-help2').addEventListener('click', () => {
+  $('help-container').classList.add('open');
+});
 
 $('help-container')
   .querySelector('.fa-close')
@@ -633,8 +636,9 @@ function onMouseClickCell(id, cell, evt) {
   }
 
   if (modes.centers.edit) {
-    let x = evt.clientX - $('main-frame').offsetLeft - 1,
-      y = evt.clientY - $('main-frame').offsetTop - 3;
+    let wrapper = $('main-frame-wrapper');
+    let x = evt.x - wrapper.offsetLeft + wrapper.scrollLeft - 1,
+      y = evt.y - wrapper.offsetTop + wrapper.scrollTop - 3;
     DATAS.cells[id].x = x;
     DATAS.cells[id].y = y;
     updateCenters();
@@ -813,8 +817,9 @@ function swapDirection(cellId) {
 }
 
 function changeDirection(id, evt) {
-  let x = evt.clientX - $('main-frame').offsetLeft - 1,
-    y = evt.clientY - $('main-frame').offsetTop - 3;
+  let wrapper = $('main-frame-wrapper');
+  let x = evt.clientX - wrapper.offsetLeft + wrapper.scrollLeft - 1,
+    y = evt.clientY - wrapper.offsetTop + wrapper.scrollTop - 3;
   let center = getCenter(id);
   console.log(center, x, y);
   DATAS.cells[id].a = (Math.atan2(y - center.y, x - center.x) * 180) / Math.PI;

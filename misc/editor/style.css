@@ -57,17 +57,19 @@ body {
 #help-container h4 {
     font-family: "Sriracha";
     font-size: 23px;
-    margin-top: 5px;
+    margin-top: 15px;
     margin-bottom: 0px;
+    border-top: 1px solid black;
 }
 
 #help-container p {
     margin-top: 2px;
+    text-align: justify;
 }
 
 img.middle {
     display: block;
-    margin: auto;
+    margin: 5px auto;
 }
 
 /*
@@ -295,22 +297,9 @@ img.middle {
     background: rgb(175, 245, 142);
 }
 
-#circuit-files-status {
-    background-color: green;
-}
-
-#circuit-files-status.local {
-    background: rgb(244, 188, 188);
-}
-
-#add-urls {
-    display: none;
-    background: rgb(244, 188, 188);
+#open-help2 {
+    background: white;
     cursor: pointer;
-}
-
-#circuit-files-status.local ~ #add-urls {
-    display: block;
 }
 
 #left-bar {
@@ -502,6 +491,7 @@ textarea {
 }
 
 .corner-tent {
+    display: none;
     position: absolute;
     left: calc(var(--x) - 30px);
     top: calc(var(--y) - 30px);
@@ -510,6 +500,9 @@ textarea {
     box-shadow: 0 0 5px 5px white;
     background: rgba(175, 245, 142, 0.5);
     border-radius: 8px;
+}
+.corner-tent.ok {
+    display: block;
 }
 
 #weather-card-indicator {
@@ -613,6 +606,9 @@ object {
     left: -10px;
     line-height: 18px;
     z-index: 10;
+}
+#main-frame.show-lanes .center-indicator[data-position="0"]::before {
+    display: none;
 }
 
 .direction-indicator {
@@ -718,6 +714,7 @@ object {
 .fa-podium {
     background-image: url("img/podium.svg");
 }
+.fa-change-image,
 #top-bar .fa-change-image {
     width: 2.2em;
     background-image: url("img/change-image.svg");

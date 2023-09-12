@@ -6,7 +6,7 @@
     <title>HEAT Circuit Editor</title>
   </head>
   <body>
-    <div id="help-container" class="">
+    <div id="help-container">
       <div id="help-wrapper">
         <i class="fa-icon fa-close"></i>
         <h4>What is this about?</h4>
@@ -20,8 +20,8 @@
           Obviously the first thing you will need is in asset of the custom circuit you want to work with. In the following, we
           will illustrate the process with the USA map displayed below. Make sure your jpg file has a
           <b>width of 1650px</b> before moving to the next step.
+          <img src="img/tuto_usa.jpg" class="middle" />
         </p>
-        <img src="img/tuto_usa.jpg" class="middle" />
 
         <h4>1] Extracting the track from the board</h4>
         <p>
@@ -29,19 +29,188 @@
           cell:
         </p>
         <img src="img/tuto_cells.png" class="middle" />
-        <p>Make sure to have your png file that perfectly overlays your jpg file.</p>
+        <p>
+          As showed in the image, you need to separate the two cells that share a same position on the circuit. This is probably
+          the step that takes the most time in the whole process.
+          <b>Make sure to have your png file that perfectly overlays your jpg file.</b>
+        </p>
 
         <h4>2] Converting to an SVG</h4>
         <p>
           Using this cells-only asset, we will rely on inkscape to vectorize our track into an svg file where each cell
           corresponds to a path, which is what the editor will use to automatically compute the center and direction of the cells.
-          Just open your png image with inkscape Vectorize matricial object
+          Just open your png image with inkscape Path > Trace Bitmap (shortcut Maj + Alt + B):
+          <img src="img/tuto_inkscape.jpg" class="middle" />
+          <i>
+            (you can play around with options for better results, for instance 'speckles' allows to remove unwanted black zones)
+          </i>
+          <br />
+          Once you have the vectorized version, make sure to remove the image <b>without moving anything around</b>, using the XML
+          editor for instance (just click on the 'svg:image' line and hit 'suppr').
+          <img src="img/tuto_inkscape2.jpg" class="middle" />
+          Now we just need to break apart that big path into individual paths: click on the path and hit Shift+Ctrl+K (Path >
+          Break apart). Check that you have the expected number of cells by checking the bottom bar:
+          <img src="img/tuto_inkscape3.jpg" class="middle" />
         </p>
 
-        <h4>3] Creating the circuit in the editor</h4>
+        <h4>3] Uploading the jpg online</h4>
         <p>
-          You have done the hardest part, now you can just open this editor and create a new circuit by filling Upload on imgur
+          You have done the hardest part, now the last step before using the editor is to make the jpg asset available online. You
+          can use any platform as long as you have a direct access on the original asset, which
+          <a href="https://imgur.com/">imgur</a> does for instance. Description of the process for uploading on imgur:
         </p>
+        <ul>
+          <li>Upload the image</li>
+          <li>Copy the link (button appears when hovering on image)</li>
+          <li>Open a new tab and paste the link</li>
+          <li>Click on the image to zoom in</li>
+          <li>Right-click > Copy link to image</li>
+          <li>
+            Check that link is working by opening a new tab and pasting the URL: you should access your image directly without any
+            imgur interface
+          </li>
+        </ul>
+
+        <h4>4] Creating the circuit in the editor</h4>
+        <p>
+          You can new create a new project in the editor by filling up the left form. Make sure to use a relevant ID for your
+          circuit to make it easier to know what the file circuit is about later.
+          <img src="img/tuto_create.jpg" class="middle" />
+          You can now check that steps 1] and 2] were correctly done by just hovering on the board: you should see cells being
+          highlighted as you move through them, hopefully perfectly aligned with background image.
+          <img src="img/tuto_cells.jpg" class="middle" />
+
+          Before we explain how the editor is working, let's talk about saving/resuming progress. You will notice a "download"
+          icon on the very top left of the interface. Clicking on this will generate a .heat file that you (or anyone else) can
+          open later to resume work on it. Additionally, if you stay on the same computer (and not clearing all the cache of your
+          browser), you can directly load your ongoig work from browser storage.
+
+          <img src="img/tuto_load.jpg" class="middle" />
+        </p>
+
+        <h4>5] The top bar: basic informations about the circuit</h4>
+        <p>On the top bar you can find:</p>
+        <ul>
+          <li>
+            <i class="fa-icon fa-save"></i>: as explained before, this allows you to download the circuit as a .heat file that you
+            can reopen later. This file can also be used to play on bga but please see next item instead.
+          </li>
+          <li>
+            <i class="fa-icon fa-compressed"></i>: this will give a .heat file much smaller, with only the relevant informations
+            needed to play on BGA. This file cannot be loaded in the editor later, it's only for BGA.
+          </li>
+          <li><i class="fa-icon fa-change-image"></i>: click on this to change the URL of the jpg asset</li>
+          <li>ID, Name, Lap length: these cannot be changed</li>
+          <li><i class="fa-icon fa-lap"></i>&nbsp;:&nbsp; number of laps, click on it to edit</li>
+          <li><i class="icon heat"></i>&nbsp;:&nbsp; number of heat cards, click on it to edit</li>
+          <li><i class="icon reduce-stress"></i>&nbsp;:&nbsp; number of stress cards, click on it to edit</li>
+          <li><i class="fa-icon fa-corner"></i>&nbsp;:&nbsp; number of corners, click on it to edit</li>
+          <li>
+            <i class="fa-icon fa-weather"></i>&nbsp;:&nbsp; position of the weather card, click on it
+            <b>and then on the board</b> to edit
+          </li>
+          <li>
+            <i class="fa-icon fa-podium"></i>&nbsp;:&nbsp; position of the podium, click on it <b>and then on the board</b> to
+            edit
+          </li>
+          <li><i class="fa-icon fa-help"></i>: open me again if needed</li>
+        </ul>
+        <p>Make sure you fill out all these basic informations before moving on to next step (they should go green once done).</p>
+
+        <h4>6] Computing the centers</h4>
+        <p>
+          The first thing we are going to do is to compute the center of each individual cell to be able to place the car on it on
+          BGA. Thanks to the svg we made, it's actually the computer that is going to do that for us: just click on
+          <i class="fa-icon fa-compute"></i> in the left bar in the "Corners" section and you are done!
+          <img src="img/tuto_centers.jpg" class="middle" />
+          If some centers are not perfect, you can always edit them by clicking on the <i class="fa-icon fa-pencil"></i> and
+          clicking inside the cell at the desired location. Once you are done,
+          <b>make sure to hit <i class="fa-icon fa-pencil"></i> again to get out of edit mode</b>.
+        </p>
+
+        <h4>7] Computing the directions</h4>
+        <p>
+          Now we are going to compute the direction/angle of each cell to rotate the car accordingly. Once again, the computer is
+          going to do that for us when we hit <i class="fa-icon fa-compute"></i>.
+          <img src="img/tuto_directions.jpg" class="middle" />
+          But wait, some arrows are going into the <b>wrong direction here!</b> This is expected as the computer can't guess what
+          should be the correct direction of race, so it will always makes them point "to the right". Hopefully, this is easy
+          enough to fix: just enter into swap mode by clicking on <i class="fa-icon fa-swap"></i> and click on a cell to swap the
+          direction. As with edit mode, <b>make sure you click <i class="fa-icon fa-swap"></i> again once you are done</b>
+          <img src="img/tuto_directions2.jpg" class="middle" />
+          As we the centers, if you want to edit an arrow (can be sometimes off in hard corners), just click on
+          <i class="fa-icon fa-pencil"></i>, click on the cell, then click toward the direction you want to have (you must click
+          inside the cell).
+          <b>Again, make sure to toggle off edit mode once you are done with it.</b>
+        </p>
+
+        <h4>8] Computing the neighbours</h4>
+        <p>
+          Using centers and directions, the computer is now going to find the two cells in front of each cell of the circuit when
+          we hit <i class="fa-icon fa-compute"></i>. You can check them by hovering on a cell, neighbours will be highlighted in
+          lighter gray.
+          <img src="img/tuto_neighbours.jpg" class="middle" />
+          If you notice at this point that computation is wrong because some arrows are pointing in the wrong direction, you can
+          edit/swap the arrows and hit <i class="fa-icon fa-compute"></i> to overwrite previous computation of neighbours. However
+          if some neighbours are still wrong eventhough all the directions are correct (this can happen for hard corners), you can
+          change them by turning on the edit mode hitting <i class="fa-icon fa-pencil"></i>: click on a cell with invalid
+          neighbours, click on adjacent cells to remove/add them, then click on the initial cell again to finish editing this
+          cell.
+        </p>
+
+        <h4>9] Computing the lanes</h4>
+        <p>
+          Using neighbours, the computer will now automatically compute the two lanes of the circuit. You just need to first enter
+          the starting position of first car and of second car by clicking on <i class="fa-icon fa-flag"></i> on the left and then
+          on the corresponding cell on the board.
+          <img src="img/tuto_endings.jpg" class="middle" />
+          Now you can hit <i class="fa-icon fa-compute"></i> and admire the result. If you have a warning about "Invalid number of
+          neighbours", don't panic. Just look at where the computation stopped and solve the issue before hitting
+          <i class="fa-icon fa-compute"></i> again.
+          <img src="img/tuto_lane_error.jpg" class="middle" />
+          If you get no error, you should see a completely labeled circuit:
+          <img src="img/tuto_lanes.jpg" class="middle" />
+        </p>
+
+        <h4>10] Filling out informations about the corners</h4>
+        <p>
+          The last step is to enter information about each corner on the left bar. You should already have as many lines as the
+          number of corners, filled with default values.
+          <img src="img/tuto_corners.jpg" class="middle" />
+          For each individual line, click on the corresponding cell to insert informations:
+        </p>
+        <ul>
+          <li>
+            <i class="icon position"></i>: position at whice the corner starts. You must indicated the label on the cells
+            <b>just before corner line</b> (12 for first USA corner for instance)
+          </li>
+          <li><i class="icon speed"></i>: maximum speed allowed for this corner.</li>
+          <li><i class="icon lane"></i>: what is the racing line <b>after that corner</b>?</li>
+          <li>
+            <i class="icon legend"></i>: position of the legend lane. Same as for position of the corner (eg first corner of USA
+            is 2).
+          </li>
+          <li>
+            <i class="icon corner"></i>: click on the board to position the corner circle. Useful for highlighting the corner on
+            BGA and to place press corner
+          </li>
+          <li>
+            <i class="icon tent"></i>: click on the board to position where the road condition token will be displayed for that
+            corner
+          </li>
+          <li>
+            <i class="icon sector"></i>: click on the board to position where the road condition <b>sector</b> token will be
+            displayed for <b>the sector starting after that corner</b>
+          </li>
+        </ul>
+        <img src="img/tuto_corner_ex.jpg" class="middle" />
+
+        <h4>Play it on BGA! Share it with others</h4>
+        <p>
+          Download the file and use it on BGA by selecting "Circuit: custom" when creating a new table. Have fun playing your
+          custom circuits!
+        </p>
+        <br />
       </div>
     </div>
 
@@ -111,6 +280,7 @@
         <div id="number-corners"><i class="fa-icon fa-corner"></i>&nbsp;:&nbsp;<span id="number-corners-value"></span></div>
         <div id="weather-card"><i class="fa-icon fa-weather"></i></div>
         <div id="podium"><i class="fa-icon fa-podium"></i></div>
+        <div id="open-help2"><i class="fa-icon fa-help"></i></div>
       </div>
       <div id="editor-main-part">
         <div id="left-bar">
