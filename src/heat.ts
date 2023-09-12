@@ -493,7 +493,7 @@ class Heat implements HeatGame {
                                     tooltip = this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                     break;
                                 case 'direct':
-                                    label = `<div class="icon direct"></div><br>(${_(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number).text) })`;
+                                    label = `<div class="icon direct"></div><br>(${_(this.getCurrentPlayerTable().hand.getCards().find(card => card.id == number)?.text) })`;
                                     tooltip = this.getGarageModuleIconTooltip('direct', 1);
                                     break;
                                 case 'heat':
@@ -1090,6 +1090,7 @@ class Heat implements HeatGame {
             'resolveBoost',
             'accelerate',
             'salvageCards',
+            'directPlay',
         ];
         
     
@@ -1354,6 +1355,14 @@ class Heat implements HeatGame {
         const { constructor_id, cards, discard } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard));
+    } 
+
+    notif_directPlay(args: NotifDirectPlayArgs) {
+        const { constructor_id, card } = args;
+        this.speedCounters[constructor_id].incValue(card.speed ?? 0);        
+        this.handCounters[constructor_id].incValue(-1);
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).inplay.addCard(card);
     }
     
 

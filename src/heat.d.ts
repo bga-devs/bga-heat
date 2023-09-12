@@ -273,3 +273,11 @@ interface NotifSalvageCardsArgs {
     discard: { [id: number]: Card}; // for remaining discard pile
 }
 
+// directPlay
+interface NotifDirectPlayArgs {
+    constructor_id: number;
+    card: Card;
+}
+
+
+

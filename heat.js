@@ -3383,6 +3383,7 @@ var Heat = /** @class */ (function () {
                         var type = entry[0];
                         var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
                         numbers.forEach(function (number) {
+                            var _a;
                             var label = "";
                             var tooltip = "";
                             switch (type) {
@@ -3408,7 +3409,7 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                     break;
                                 case 'direct':
-                                    label = "<div class=\"icon direct\"></div><br>(".concat(_(_this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; }).text), ")");
+                                    label = "<div class=\"icon direct\"></div><br>(".concat(_((_a = _this.getCurrentPlayerTable().hand.getCards().find(function (card) { return card.id == number; })) === null || _a === void 0 ? void 0 : _a.text), ")");
                                     tooltip = _this.getGarageModuleIconTooltip('direct', 1);
                                     break;
                                 case 'heat':
@@ -3833,6 +3834,7 @@ var Heat = /** @class */ (function () {
             'resolveBoost',
             'accelerate',
             'salvageCards',
+            'directPlay',
         ];
         notifs.forEach(function (notifName) {
             dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -4128,6 +4130,14 @@ var Heat = /** @class */ (function () {
         var constructor_id = args.constructor_id, cards = args.cards, discard = args.discard;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard));
+    };
+    Heat.prototype.notif_directPlay = function (args) {
+        var _a;
+        var constructor_id = args.constructor_id, card = args.card;
+        this.speedCounters[constructor_id].incValue((_a = card.speed) !== null && _a !== void 0 ? _a : 0);
+        this.handCounters[constructor_id].incValue(-1);
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).inplay.addCard(card);
     };
     Heat.prototype.setRank = function (constructorId, pos) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);

@@ -562,13 +562,15 @@ trait RoundTrait
       Notifications::directPlay($constructor, $card, $speed);
 
       if ($speed > 0) {
-        $this->moveCar($constructor, $n);
+        $this->moveCar($constructor, $speed);
       }
 
       $symbols = Globals::getSymbols();
       foreach ($card['symbols'] as $symbol => $n) {
         if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
-          $symbols[$symbol][] = $card['id'];
+          if ($symbol !== DIRECT) { // no DIRECT here, to not add played DIRECT back on the list
+            $symbols[$symbol][] = $card['id'];
+          }
         } else {
           $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
         }
