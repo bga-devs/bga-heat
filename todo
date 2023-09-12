@@ -8,13 +8,6 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
-  - championship : swapUpgrade state
-    => either you can select a card left on market (actSwapUpgrade(cardId)), on just click the pass btn (actPassSwapUpgrade)
-    => notif swapUpgrade($constructor, $card2, $card)
-      -> contains ${card_name2}
-    
-  - round order : dont display it if car is finished
-
   - react : heated boost with weather that makes it no longer heated !
 
   - championship: new field received in getAllDatas
@@ -27,12 +20,7 @@ Frontend :
 
   - refresh : display the name of the card (only if several refresh ?) => maybe with the same formatting as accelerate
   - for accelerate/refresh => make the card clickable ?
-
-  - test the end of the draft phase (hand cleaned & refilled ?)
-  - salvage state
   
-  - make speed counter work => updates when notif reveal, with sum of cards.speed. I need to check what can change this counter, probably reacts ? Maybe clean it at notif clearPlayedCards ?
-
   - move car animation : => a reaaaaaally cool plus would be to have the log entries hoverable and you would get the path drawing display on hover (like the white path I had on my little animation test)
 
   - user pref : voir seulement le haut des cartes en main => garder environ 1/6 de la hauteur et mettre le plateau joueur par dessus, permet d'avoir une vue globale plus complète

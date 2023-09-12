@@ -103,6 +103,10 @@ interface EnteringChooseUpgradeArgs {
     market: { [cardId: number]: Card};
 }
 
+interface EnteringSwapUpgradeArgs extends EnteringChooseUpgradeArgs {
+    owned: { [cardId: number]: Card};
+}
+
 interface EnteringPlanificationPrivateArgs {
     cards: number[];
     selection: string[];
@@ -145,6 +149,11 @@ interface EnteringSalvageArgs {
 interface NotifChooseUpgradeArgs {
     constructor_id: number;
     card: Card;
+}
+
+// swapUpgrade
+interface NotifSwapUpgradeArgs extends NotifChooseUpgradeArgs {
+    card2: Card;
 }
 
 // updatePlanification

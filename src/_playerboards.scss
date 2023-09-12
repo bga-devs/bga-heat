@@ -10,6 +10,10 @@
 
   &.finished {
     background-color: lightgray;
+
+    .order-counter {
+      display: none;
+    }
   }
 
   .icon {

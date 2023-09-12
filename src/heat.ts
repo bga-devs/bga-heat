@@ -208,7 +208,13 @@ class Heat implements HeatGame {
             case 'uploadCircuit':
                 this.onEnteringStateUploadCircuit(args.args);
                 break;
-        }
+            case 'chooseUpgrade':
+                this.onEnteringChooseUpgrade(args.args);
+                break;
+            case 'swapUpgrade':
+                this.onEnteringSwapUpgrade(args.args);
+                break;
+            }
     }
 
     /*
@@ -287,19 +293,34 @@ class Heat implements HeatGame {
         });
     }
 
-    private onEnteringChooseUpgrade(args: EnteringChooseUpgradeArgs) {
+    private initMarketStock() {
         if (!this.market) {
             document.getElementById('table-center').insertAdjacentHTML('beforebegin', `
                 <div id="market"></div>
             `);
             this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
-            this.market.onSelectionChange = selection => {
-                document.getElementById(`actChooseUpgrade_button`).classList.toggle('disabled', selection.length != 1);
-            }
+            this.market.onSelectionChange = selection => this.onMarketSelectionChange(selection);
         }
+    }
+
+    private onEnteringChooseUpgrade(args: EnteringChooseUpgradeArgs) {
+        this.initMarketStock();
         this.market.addCards(Object.values(args.market));
 
         this.market.setSelectionMode((this as any).isCurrentPlayerActive() ? 'single' : 'none');
+    }
+
+    private onEnteringSwapUpgrade(args: EnteringSwapUpgradeArgs) {
+        this.initMarketStock();
+        this.market.addCards(Object.values(args.market));
+
+        this.market.setSelectionMode((this as any).isCurrentPlayerActive() ? 'single' : 'none');
+        if ((this as any).isCurrentPlayerActive()) {
+            const hand = this.getCurrentPlayerTable().hand;
+            hand.removeAll();
+            hand.addCards(Object.values(args.owned));
+            hand.setSelectionMode('single');
+        }
     }
 
     private onEnteringPlanification(args: EnteringPlanificationArgs) {
@@ -390,9 +411,6 @@ class Heat implements HeatGame {
             case 'planification':
                 this.onEnteringPlanification(args);
                 break;
-            case 'chooseUpgrade':
-                this.onEnteringChooseUpgrade(args);
-                break;
         }
 
         if ((this as any).isCurrentPlayerActive()) {
@@ -400,6 +418,11 @@ class Heat implements HeatGame {
                 case 'chooseUpgrade':
                     (this as any).addActionButton(`actChooseUpgrade_button`, _('Take selected card'), () => this.actChooseUpgrade());
                     document.getElementById(`actChooseUpgrade_button`).classList.add('disabled');
+                    break;
+                case 'swapUpgrade':
+                    (this as any).addActionButton(`actSwapUpgrade_button`, _('Swap selected cards'), () => this.actSwapUpgrade());
+                    document.getElementById(`actSwapUpgrade_button`).classList.add('disabled');
+                    (this as any).addActionButton(`actPassSwapUpgrade_button`, _('Pass'), () => this.actPassSwapUpgrade(), null, null, 'red');
                     break;
 
                 case 'planification':
@@ -868,7 +891,23 @@ class Heat implements HeatGame {
 
             const button = document.getElementById('actDiscard_button');
             button.innerHTML = label;
+        } else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
+            this.checkSwapUpgradeSelectionState();
         }
+    }
+    
+    public onMarketSelectionChange(selection: Card[]): void {
+        if (this.gamedatas.gamestate.name == 'chooseUpgrade') {
+            document.getElementById(`actChooseUpgrade_button`).classList.toggle('disabled', selection.length != 1);
+        } else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
+            this.checkSwapUpgradeSelectionState();
+        }
+    }
+
+    private checkSwapUpgradeSelectionState() {
+        const marketSelection = this.market?.getSelection() ?? [];
+        const handSelection = this.getCurrentPlayerTable()?.hand?.getSelection() ?? [];
+        document.getElementById(`actSwapUpgrade_button`).classList.toggle('disabled', marketSelection.length != 1 || handSelection.length != 1);
     }
 
     private actChooseUpgrade() {
@@ -879,6 +918,25 @@ class Heat implements HeatGame {
         this.takeAction('actChooseUpgrade', {
             cardId: this.market.getSelection()[0].id,
         });
+    }
+
+    private actSwapUpgrade() {
+        if(!(this as any).checkAction('actSwapUpgrade')) {
+            return;
+        }
+
+        this.takeAction('actSwapUpgrade', {
+            marketCardId: this.market.getSelection()[0].id,
+            ownedCardId: this.getCurrentPlayerTable().hand.getSelection()[0].id,
+        });
+    }
+
+    private actPassSwapUpgrade() {
+        if(!(this as any).checkAction('actPassSwapUpgrade')) {
+            return;
+        }
+
+        this.takeAction('actPassSwapUpgrade');
     }
   	
     public actPlanification() {
@@ -1004,6 +1062,7 @@ class Heat implements HeatGame {
 
         const notifs = [
             'chooseUpgrade',
+            'swapUpgrade',
             'endDraftRound',
             'reformingDeckWithUpgrades',
             'updatePlanification',
@@ -1082,6 +1141,18 @@ class Heat implements HeatGame {
             this.market.removeCard(card);
         }
     }  
+
+    notif_swapUpgrade(args: NotifSwapUpgradeArgs) {
+        const { constructor_id, card, card2 } = args;
+
+        this.market?.addCard(card2);
+        if (constructor_id == this.getConstructorId()) {
+            this.getCurrentPlayerTable().hand.addCard(card);
+        } else {
+            this.market?.addCard(card);
+        }
+    }
+    
     
     notif_endDraftRound() {
         this.market?.removeAll();
@@ -1394,6 +1465,10 @@ class Heat implements HeatGame {
 
                 if (args.card_image === '' && args.card) {
                     args.card_image = `<div class="log-card-set">${this.cardImageHtml(args.card, args)}</div>`;
+                }
+
+                if (args.card_image2 === '' && args.card2) {
+                    args.card_image2 = `<div class="log-card-set">${this.cardImageHtml(args.card2, args)}</div>`;
                 }
 
                 if (args.finishIcon === '') {
