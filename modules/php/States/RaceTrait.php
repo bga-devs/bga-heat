@@ -208,16 +208,20 @@ trait RaceTrait
     }
     Notifications::newMarket($round, $cards, $upgrades);
 
-    $turnOrder = Constructors::getTurnOrder();
-    Utils::filter($turnOrder, function ($cId) {
-      return !Constructors::get($cId)->isAI();
-    });
-
-    if ($round != 2) {
-      $turnOrder = array_reverse($turnOrder);
+    $order = [];
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      if (!Constructors::get($cId)->isAI()) {
+        $order[$constructor->getNo()] = $cId;
+      }
     }
 
-    $this->initCustomTurnOrder('draft', $turnOrder, ST_DRAFT_GARAGE, 'stEndDraftRound');
+    if ($round == 2) {
+      ksort($order);
+    } else {
+      krsort($order);
+    }
+
+    $this->initCustomTurnOrder('draft', array_values($order), ST_DRAFT_GARAGE, 'stEndDraftRound');
   }
 
   function argsChooseUpgrade()

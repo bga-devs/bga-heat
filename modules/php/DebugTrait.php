@@ -14,9 +14,17 @@ trait DebugTrait
 {
   function tp()
   {
-    $cards = Cards::draw(0, 8);
-    var_dump($cards);
-    die('test');
+    $round = Globals::getDraftRound();
+    $turnOrder = Constructors::getTurnOrder();
+    var_dump($turnOrder);
+    Utils::filter($turnOrder, function ($cId) {
+      return !Constructors::get($cId)->isAI();
+    });
+
+    if ($round != 2) {
+      $turnOrder = array_reverse($turnOrder);
+    }
+    var_dump($turnOrder);
 
     //    $this->actChooseUpgrade(13);
     //    var_dump($this->getCircuit()->isFree(7, 1));
