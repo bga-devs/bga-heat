@@ -3659,46 +3659,47 @@ var Heat = /** @class */ (function () {
             _this.addLogClass();
         });
         var notifs = [
-            ['chooseUpgrade', undefined],
-            ['endDraftRound', undefined],
-            ['reformingDeckWithUpgrades', undefined],
-            ['updatePlanification', undefined],
-            ['reveal', undefined],
-            ['moveCar', undefined],
-            ['updateTurnOrder', undefined],
-            ['payHeats', undefined],
-            ['adrenaline', undefined],
-            ['spinOut', undefined],
-            ['discard', undefined],
-            ['pDiscard', undefined],
-            ['draw', undefined],
-            ['pDraw', undefined],
-            ['clearPlayedCards', undefined],
-            ['cooldown', undefined],
-            ['finishRace', undefined],
-            ['endOfRace', undefined],
-            ['newLegendCard', undefined],
-            ['scrapCards', undefined],
-            ['resolveBoost', undefined],
-            ['accelerate', undefined],
-            ['salvageCards', undefined],
+            'chooseUpgrade',
+            'endDraftRound',
+            'reformingDeckWithUpgrades',
+            'updatePlanification',
+            'reveal',
+            'moveCar',
+            'updateTurnOrder',
+            'payHeats',
+            'adrenaline',
+            'spinOut',
+            'discard',
+            'pDiscard',
+            'draw',
+            'pDraw',
+            'clearPlayedCards',
+            'cooldown',
+            'finishRace',
+            'endOfRace',
+            'newLegendCard',
+            'scrapCards',
+            'resolveBoost',
+            'accelerate',
+            'salvageCards',
         ];
-        notifs.forEach(function (notif) {
-            dojo.subscribe(notif[0], _this, function (notifDetails) {
-                log("notif_".concat(notif[0]), notifDetails.args);
-                var promise = _this["notif_".concat(notif[0])](notifDetails.args);
+        notifs.forEach(function (notifName) {
+            dojo.subscribe(notifName, _this, function (notifDetails) {
+                log("notif_".concat(notifName), notifDetails.args);
+                var promise = _this["notif_".concat(notifName)](notifDetails.args);
                 var promises = promise ? [promise] : [];
+                var minDuration = 1;
                 var msg = /*this.formatString(*/ _this.format_string_recursive(notifDetails.log, notifDetails.args) /*)*/;
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
                     // If there is some text, we let the message some time, to be read 
-                    promises.push(sleep(MIN_NOTIFICATION_MS));
+                    minDuration = MIN_NOTIFICATION_MS;
                 }
                 // tell the UI notification ends, if the function returned a promise. 
-                Promise.all(promises).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
+                Promise.all(__spreadArray(__spreadArray([], promises, true), [sleep(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
             });
-            _this.notifqueue.setSynchronous(notif[0], undefined);
+            _this.notifqueue.setSynchronous(notifName, undefined);
         });
         if (isDebug) {
             notifs.forEach(function (notif) {
@@ -4066,13 +4067,13 @@ var Heat = /** @class */ (function () {
                     }*/
                 }
                 if (args.card_image === '' && args.card) {
-                    args.card_image = this.cardImageHtml(args.card, args);
+                    args.card_image = "<div class=\"log-card-set\">".concat(this.cardImageHtml(args.card, args), "</div>");
                 }
                 if (args.finishIcon === '') {
                     args.finishIcon = "<div class=\"turn icon\"></div>";
                 }
                 if (args.cards_images === '' && args.cards) {
-                    args.cards_images = Object.values(args.cards).map(function (card) { return _this.cardImageHtml(card, args); }).join('');
+                    args.cards_images = "<div class=\"log-card-set\">".concat(Object.values(args.cards).map(function (card) { return _this.cardImageHtml(card, args); }).join(''), "</div>");
                 }
                 var constructorKeys = Object.keys(args).filter(function (key) { return key.substring(0, 16) == 'constructor_name'; });
                 constructorKeys.filter(function (key) { return args[key][0] != '<'; }).forEach(function (key) {

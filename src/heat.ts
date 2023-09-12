@@ -959,51 +959,52 @@ class Heat implements HeatGame {
         });
 
         const notifs = [
-            ['chooseUpgrade', undefined],
-            ['endDraftRound', undefined],
-            ['reformingDeckWithUpgrades', undefined],
-            ['updatePlanification', undefined],
-            ['reveal', undefined],
-            ['moveCar', undefined],
-            ['updateTurnOrder', undefined],
-            ['payHeats', undefined],
-            ['adrenaline', undefined],
-            ['spinOut', undefined],
-            ['discard', undefined],
-            ['pDiscard', undefined],
-            ['draw', undefined],
-            ['pDraw', undefined],
-            ['clearPlayedCards', undefined],
-            ['cooldown', undefined],
-            ['finishRace', undefined],
-            ['endOfRace', undefined],
-            ['newLegendCard', undefined],
-            ['scrapCards', undefined],
-            ['resolveBoost', undefined],
-            ['accelerate', undefined],
-            ['salvageCards', undefined],
+            'chooseUpgrade',
+            'endDraftRound',
+            'reformingDeckWithUpgrades',
+            'updatePlanification',
+            'reveal',
+            'moveCar',
+            'updateTurnOrder',
+            'payHeats',
+            'adrenaline',
+            'spinOut',
+            'discard',
+            'pDiscard',
+            'draw',
+            'pDraw',
+            'clearPlayedCards',
+            'cooldown',
+            'finishRace',
+            'endOfRace',
+            'newLegendCard',
+            'scrapCards',
+            'resolveBoost',
+            'accelerate',
+            'salvageCards',
         ];
         
     
-        notifs.forEach((notif) => {
-            dojo.subscribe(notif[0], this, (notifDetails: Notif<any>) => {
-                log(`notif_${notif[0]}`, notifDetails.args);
+        notifs.forEach((notifName) => {
+            dojo.subscribe(notifName, this, (notifDetails: Notif<any>) => {
+                log(`notif_${notifName}`, notifDetails.args);
 
-                const promise = this[`notif_${notif[0]}`](notifDetails.args);
+                const promise = this[`notif_${notifName}`](notifDetails.args);
                 const promises = promise ? [promise] : [];
+                let minDuration = 1;
                 let msg = /*this.formatString(*/this.format_string_recursive(notifDetails.log, notifDetails.args)/*)*/;
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
 
                     // If there is some text, we let the message some time, to be read 
-                    promises.push(sleep(MIN_NOTIFICATION_MS));
+                    minDuration = MIN_NOTIFICATION_MS;
                 }
 
                 // tell the UI notification ends, if the function returned a promise. 
-                Promise.all(promises).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
+                Promise.all([...promises, sleep(minDuration)]).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
             });
-            (this as any).notifqueue.setSynchronous(notif[0], undefined);
+            (this as any).notifqueue.setSynchronous(notifName, undefined);
         });
 
         if (isDebug) {
@@ -1355,7 +1356,7 @@ class Heat implements HeatGame {
                 }
 
                 if (args.card_image === '' && args.card) {
-                    args.card_image = this.cardImageHtml(args.card, args);
+                    args.card_image = `<div class="log-card-set">${this.cardImageHtml(args.card, args)}</div>`;
                 }
 
                 if (args.finishIcon === '') {
@@ -1363,7 +1364,7 @@ class Heat implements HeatGame {
                 }
 
                 if (args.cards_images === '' && args.cards) {
-                    args.cards_images = Object.values(args.cards).map((card: Card) => this.cardImageHtml(card, args)).join('');
+                    args.cards_images = `<div class="log-card-set">${Object.values(args.cards).map((card: Card) => this.cardImageHtml(card, args)).join('')}</div>`;
                 }
                 
                 let constructorKeys = Object.keys(args).filter((key) => key.substring(0, 16) == 'constructor_name');

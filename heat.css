@@ -1194,4 +1194,15 @@ html, .mode_3d #game_play_area_background {
   justify-content: center;
   max-height: 54px;
   overflow: hidden;
+  vertical-align: middle;
+}
+
+#page-title .log-card-set {
+  display: inline-block;
+}
+#page-title .log-card-set .log-card-image {
+  display: inline-flex;
+}
+#page-title .log-card-set .log-card-image:not(:first-child) {
+  margin-left: -168px;
 }
