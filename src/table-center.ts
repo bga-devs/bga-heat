@@ -106,7 +106,7 @@ class Circuit {
         this.circuitDiv = document.getElementById('circuit') as HTMLDivElement;
 
         if (this.circuitDatas.id) {
-            this.circuitDiv.style.backgroundImage = `url('${g_gamethemeurl}img/${this.circuitDatas.assets.jpg}')`;
+            this.circuitDiv.style.backgroundImage = `url('${g_gamethemeurl}img/${this.circuitDatas.jpgUrl}')`;
 
             Object.values(gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
 

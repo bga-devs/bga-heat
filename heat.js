@@ -2391,7 +2391,7 @@ var Circuit = /** @class */ (function () {
         this.tableCenterDiv = document.getElementById('table-center');
         this.circuitDiv = document.getElementById('circuit');
         if (this.circuitDatas.id) {
-            this.circuitDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.assets.jpg, "')");
+            this.circuitDiv.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl, "')");
             Object.values(gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
             this.createCorners(this.circuitDatas.corners);
             this.createWeather(gamedatas.weather, this.circuitDatas);
@@ -2992,7 +2992,7 @@ var Heat = /** @class */ (function () {
     */
     Heat.prototype.setup = function (gamedatas) {
         var _this = this;
-        var _a, _b;
+        var _a;
         log("Starting game setup");
         this.gamedatas = gamedatas;
         // TODO TEMP
@@ -3003,8 +3003,8 @@ var Heat = /** @class */ (function () {
             //}
             //player.handCount = gamedatas.cards.filter(card => card.location == 'hand' && card.pId == playerId).length;
         });
-        if ((_b = (_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.assets) === null || _b === void 0 ? void 0 : _b.jpg) {
-            g_img_preload.push(gamedatas.circuitDatas.assets.jpg);
+        if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
+            g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
         g_img_preload.push.apply(g_img_preload, Object.values(gamedatas.players).map(function (player) { return "mats/player-board-".concat(player.color, ".jpg"); }));
         // Create a new div for buttons to avoid BGA auto clearing it

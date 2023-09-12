@@ -72,8 +72,8 @@ class Heat implements HeatGame {
         });
         
 
-        if (gamedatas.circuitDatas?.assets?.jpg) {
-            g_img_preload.push(gamedatas.circuitDatas.assets.jpg);
+        if (gamedatas.circuitDatas?.jpgUrl) {
+            g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
         g_img_preload.push(...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
 

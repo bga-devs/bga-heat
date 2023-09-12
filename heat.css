@@ -505,6 +505,9 @@ height: 241px; */
   /*width: 112px;
   height: 181px;*/
   border-radius: 8px;
+  font-family: "calgary-script-ot", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 .personal-card .card-sides .card-side {
   border-radius: 8px;
@@ -559,6 +562,8 @@ height: 241px; */
   text-align: center;
   color: #231f20;
   font-size: 32px;
+  word-break: break-word;
+  text-transform: uppercase;
 }
 .personal-card.bga-cards_selectable-card:not(.bga-cards_disabled-card):not(.bga-cards_selected-card) {
   animation: selectable-card-animation 1s alternate infinite ease-in-out;

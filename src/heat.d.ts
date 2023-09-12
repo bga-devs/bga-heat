@@ -52,9 +52,7 @@ interface Weather {
 interface CircuitDatas {
     id: string;
     name: string;
-    assets: {
-        jpg: string;
-    };
+    jpgUrl: string;
     cells: { [id: number]:  Cell };
     corners: { [id: number]: Corner };
     weatherCardPos: Cell;
