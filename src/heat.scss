@@ -95,14 +95,14 @@ html, .mode_3d #game_play_area_background {
 }
 
 .action-button, .log {
-  .icon, .color {
+  .icon {
     width: 24px;
     height: 24px;
   }
 }
 
 .dijitTooltipContents {
-  .icon, .color {
+  .icon {
     width: 20px;
     height: 20px;
   }
@@ -117,6 +117,23 @@ html, .mode_3d #game_play_area_background {
   gap: 20px;
   flex-direction: column;
   padding-top: 32px;
+}
+
+.constructor-avatar {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+
+  &.legend {  
+    background: url('img/legend-icons.png');
+    background-size: 100% auto;
+    background-position-y: calc(var(--constructor-id) * 20%);
+  }
+
+  &.player {
+    border-radius: 50%;
+  }
 }
 
 #logs .log.notif_newUndoableStep {

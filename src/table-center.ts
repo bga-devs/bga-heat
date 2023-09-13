@@ -302,6 +302,16 @@ class Circuit {
             }
             car.style.setProperty('--constructor-id', `${constructor.id}`);
             this.circuitDiv.insertAdjacentElement('beforeend', car);
+
+            let html = `<div class="constructor-avatar ${constructor.ai ? 'legend' : 'player'}" style="`;
+            if (constructor.ai) {
+                html += `--constructor-id: 0;`;
+            } else {
+                // ? Custom image : Bga Image
+                //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
+                html += `background-image: url('${(document.getElementById(`avatar_${constructor.pId}`) as HTMLImageElement).src}');`;
+            }
+            this.game.setTooltip(car.id, `${html}"></div> <strong style="color: #${CONSTRUCTORS_COLORS[constructor.id]};">${constructor.name}</strong>`);
         }
         const cell = this.getCellPosition(constructor.carCell);
         car.style.setProperty('--x', `${cell.x}px`);

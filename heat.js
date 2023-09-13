@@ -2553,6 +2553,16 @@ var Circuit = /** @class */ (function () {
             }
             car.style.setProperty('--constructor-id', "".concat(constructor.id));
             this.circuitDiv.insertAdjacentElement('beforeend', car);
+            var html = "<div class=\"constructor-avatar ".concat(constructor.ai ? 'legend' : 'player', "\" style=\"");
+            if (constructor.ai) {
+                html += "--constructor-id: 0;";
+            }
+            else {
+                // ? Custom image : Bga Image
+                //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
+                html += "background-image: url('".concat(document.getElementById("avatar_".concat(constructor.pId)).src, "');");
+            }
+            this.game.setTooltip(car.id, "".concat(html, "\"></div> <strong style=\"color: #").concat(CONSTRUCTORS_COLORS[constructor.id], ";\">").concat(constructor.name, "</strong>"));
         }
         var cell = this.getCellPosition(constructor.carCell);
         car.style.setProperty('--x', "".concat(cell.x, "px"));

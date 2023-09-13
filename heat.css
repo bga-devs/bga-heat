@@ -1192,12 +1192,12 @@ html, .mode_3d #game_play_area_background {
   margin: 10px;
 }
 
-.action-button .icon, .action-button .color, .log .icon, .log .color {
+.action-button .icon, .log .icon {
   width: 24px;
   height: 24px;
 }
 
-.dijitTooltipContents .icon, .dijitTooltipContents .color {
+.dijitTooltipContents .icon {
   width: 20px;
   height: 20px;
 }
@@ -1211,6 +1211,21 @@ html, .mode_3d #game_play_area_background {
   gap: 20px;
   flex-direction: column;
   padding-top: 32px;
+}
+
+.constructor-avatar {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+}
+.constructor-avatar.legend {
+  background: url("img/legend-icons.png");
+  background-size: 100% auto;
+  background-position-y: calc(var(--constructor-id) * 20%);
+}
+.constructor-avatar.player {
+  border-radius: 50%;
 }
 
 #logs .log.notif_newUndoableStep {
