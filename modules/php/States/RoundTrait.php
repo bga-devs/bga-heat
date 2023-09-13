@@ -792,7 +792,8 @@ trait RoundTrait
       $turn,
       $position
     );
-    foreach ($slipstreamedCorners as $cornerPos) {
+    foreach ($slipstreamedCorners as $infos) {
+      list($cornerPos, $cornerTurn) = $infos;
       if ($this->getCircuit()->isPressCorner($cornerPos)) {
         $sponsorsGained[] = 'slipstream';
       }
@@ -802,7 +803,8 @@ trait RoundTrait
     $spinOut = false;
     if (!empty($corners)) {
       $speed = $constructor->getSpeed();
-      foreach ($corners as $cornerPos) {
+      foreach ($corners as $infos) {
+        list($cornerPos, $cornerTurn) = $infos;
         $limit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
         $limit += $speedLimitModifier;
         $delta = $speed - $limit;
@@ -822,6 +824,7 @@ trait RoundTrait
             $stresses = Cards::addStress($constructor, $constructor->getGear() <= 2 ? 1 : 2);
             $constructor->setCarCell($cell);
             $constructor->setGear(1);
+            $constructor->setTurn($cornerTurn);
 
             // How many cells back ?
             $newPosition = $constructor->getPosition();

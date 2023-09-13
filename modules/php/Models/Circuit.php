@@ -343,7 +343,7 @@ class Circuit
     for ($pos = $uid1 + 1; $pos <= min($uid2, $length * $this->getNbrLaps()); $pos++) {
       $position = $pos % $length;
       if (array_key_exists($position, $this->corners)) {
-        $corners[] = $position;
+        $corners[] = [$position, intdiv($pos, $length)];
       }
     }
 
