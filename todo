@@ -8,6 +8,9 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
+  - planification : highlight already selected cards (also on refresh), you have a parameter in the args :       
+      'selection' => $planification[$pId] ?? null,
+
   -   public function clearPlayedCards($constructor, $cardIds, $sponsorIds) => new field 'sponsorIds', cards should be destroyed or something
   => maybe we need to display a sponsor deck/discard somewhere 
 

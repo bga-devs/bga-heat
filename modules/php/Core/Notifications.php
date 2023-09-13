@@ -138,7 +138,7 @@ class Notifications
       'cards' => $cards,
     ]);
 
-    /*self::notify($constructor, 'pDiscard', clienttranslate('You discards ${cards_images}'), [
+    /*self::notify($constructor, 'pDiscard', clienttranslate('You discard ${cards_images}'), [
       'constructor' => $constructor,
       'cards' => $cards,
     ]);*/

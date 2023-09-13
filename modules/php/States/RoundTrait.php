@@ -239,6 +239,7 @@ trait RoundTrait
     Notifications::reveal($constructor, $newGear, $cards, $heat);
 
     // Store previous position and store symbols
+    Globals::setRefreshedCards([]);
     Globals::setPreviousPosition($constructor->getPosition());
     Globals::setPreviousTurn($constructor->getTurn());
     $symbols = [];
@@ -535,6 +536,11 @@ trait RoundTrait
         REFRESH => $symbols[REFRESH],
       ];
       Globals::setSymbols($symbols);
+
+      // Keep in memory this card. Useful for slipstream
+      $refreshedCards = Globals::getRefreshedCards();
+      $refreshedCards[] = $card;
+      Globals::setRefreshedCards($refreshedCards);
     }
     // ACCELERATE
     elseif ($symbol == ACCELERATE) {
@@ -687,6 +693,12 @@ trait RoundTrait
       $cards[] = [
         'symbols' => [SLIPSTREAM => $slipstreamBonus],
       ];
+    }
+
+    // Any refreshed cards ?
+    $refreshedCards = Globals::getRefreshedCards();
+    if (!empty($refreshedCards)) {
+      $cards = array_merge($cards, $refreshedCards);
     }
 
     foreach ($cards as $card) {
