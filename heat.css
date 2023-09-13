@@ -1121,9 +1121,9 @@ height: 241px; */
   }
 }
 html, .mode_3d #game_play_area_background {
-  background: url("img/background.jpg") #b5b4b4;
+  background: url("img/rules-background.jpg");
   background-size: 100% auto;
-  background-repeat: no-repeat;
+  background-repeat: repeat;
   background-position: top;
 }
 

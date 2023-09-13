@@ -144,66 +144,6 @@ class Heat implements HeatGame {
           this.changePageTitle(base + 'skippable');
         }
 
-        if (/* TODO? this._activeStates.includes(stateName) ||*/ (this as any).isCurrentPlayerActive()) {  
-            if (args.args?.optionalAction && !args.args.automaticAction) {
-            this.addSecondaryActionButton(
-                'btnPassAction',
-                _('Pass'),
-                () => this.takeAction('actPassOptionalAction'),
-                'restartAction'
-            );
-            }
-
-            // Undo last steps
-            args.args?.previousSteps?.forEach((stepId: number) => {
-                let logEntry = $('logs').querySelector(`.log.notif_newUndoableStep[data-step="${stepId}"]`);
-                if (logEntry) {
-                    this.onClick(logEntry, () => this.undoToStep(stepId));
-                }
-
-                logEntry = document.querySelector(`.chatwindowlogs_zone .log.notif_newUndoableStep[data-step="${stepId}"]`);
-                if (logEntry) {
-                    this.onClick(logEntry, () => this.undoToStep(stepId));
-                }
-            });
-
-            // Restart turn button
-            if (args.args?.previousEngineChoices >= 1 && !args.args.automaticAction) {
-            if (args.args?.previousSteps) {
-                let lastStep = Math.max(...args.args.previousSteps);
-                if (lastStep > 0)
-                this.addDangerActionButton('btnUndoLastStep', _('Undo last step'), () => this.undoToStep(lastStep), 'restartAction');
-            }
-    
-            // Restart whole turn
-            this.addDangerActionButton(
-                'btnRestartTurn',
-                _('Restart turn'),
-                () => {
-                this.stopActionTimer();
-                this.takeAction('actRestart');
-                },
-                'restartAction'
-            );
-            }
-        }
-  
-        /* TODO? if (this.isCurrentPlayerActive() && args.args) {
-            // Anytime buttons
-            args.args.anytimeActions?.forEach((action, i) => {
-                let msg = action.desc;
-                msg = msg.log ? this.fsr(msg.log, msg.args) : _(msg);
-                msg = this.formatString(msg);
-
-                this.addPrimaryActionButton(
-                'btnAnytimeAction' + i,
-                msg,
-                () => this.takeAction('actAnytimeAction', { id: i }, false),
-                'anytimeActions'
-                );
-            });
-        }*/
-
         switch (stateName) {
             case 'uploadCircuit':
                 this.onEnteringStateUploadCircuit(args.args);
@@ -461,7 +401,14 @@ class Heat implements HeatGame {
 
                     Object.entries(reactArgs.symbols).forEach((entry, index) => {
                         const type = entry[0];
-                        const numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
+                        let numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
+                        if (type === 'reduce') {
+                            const max = Math.min(entry[1] as number, this.getCurrentPlayerTable().hand.getCards().filter(card => card.effect == 'stress').length);
+                            numbers = [];
+                            for (let i = 1; i <= max; i++) {
+                                numbers.push(i);
+                            }
+                        }
                         numbers.forEach(number => {
                             let label = ``;
                             let tooltip = ``;
@@ -531,14 +478,14 @@ class Heat implements HeatGame {
                                     break;
                             }
 
-                            let callback = () => this.actReact(type, Array.isArray(entry[1]) ? number : undefined);
+                            let callback = () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined);
                             if (type == 'refresh') {
                                 if (!reactArgs.canPass) {
                                     callback = () => (this as any).showMessage(_("You must resolve the mandatory reactions before Refresh !"), 'error');
                                 } else if (Object.keys(reactArgs.symbols).some(t => t != 'refresh')) {
                                     callback = () => (this as any).confirmationDialog(
                                         _("If you use Refresh now, it will skip the other optional reactions."),
-                                        () => this.actReact(type, Array.isArray(entry[1]) ? number : undefined)
+                                        () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined)
                                     );
                                 }
                             }

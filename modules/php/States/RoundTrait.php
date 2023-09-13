@@ -507,7 +507,7 @@ trait RoundTrait
     }
     // REDUCE STRESS
     elseif ($symbol == REDUCE) {
-      $cards = $constructor->getStressesInHand()->limit($n);
+      $cards = $constructor->getStressesInHand()->limit($arg);
       Cards::move($cards->getIds(), ['discard', $constructor->getId()]);
       Notifications::reduceStress($constructor, $cards);
     }

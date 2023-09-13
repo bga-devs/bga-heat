@@ -3116,8 +3116,7 @@ var Heat = /** @class */ (function () {
     //                  You can use this method to perform some user interface changes at this moment.
     //
     Heat.prototype.onEnteringState = function (stateName, args) {
-        var _this = this;
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b;
         log('Entering state: ' + stateName, args.args);
         if ((_a = args.args) === null || _a === void 0 ? void 0 : _a.descSuffix) {
             this.changePageTitle(args.args.descSuffix);
@@ -3126,50 +3125,6 @@ var Heat = /** @class */ (function () {
             var base = args.args.descSuffix ? args.args.descSuffix : '';
             this.changePageTitle(base + 'skippable');
         }
-        if ( /* TODO? this._activeStates.includes(stateName) ||*/this.isCurrentPlayerActive()) {
-            if (((_c = args.args) === null || _c === void 0 ? void 0 : _c.optionalAction) && !args.args.automaticAction) {
-                this.addSecondaryActionButton('btnPassAction', _('Pass'), function () { return _this.takeAction('actPassOptionalAction'); }, 'restartAction');
-            }
-            // Undo last steps
-            (_e = (_d = args.args) === null || _d === void 0 ? void 0 : _d.previousSteps) === null || _e === void 0 ? void 0 : _e.forEach(function (stepId) {
-                var logEntry = $('logs').querySelector(".log.notif_newUndoableStep[data-step=\"".concat(stepId, "\"]"));
-                if (logEntry) {
-                    _this.onClick(logEntry, function () { return _this.undoToStep(stepId); });
-                }
-                logEntry = document.querySelector(".chatwindowlogs_zone .log.notif_newUndoableStep[data-step=\"".concat(stepId, "\"]"));
-                if (logEntry) {
-                    _this.onClick(logEntry, function () { return _this.undoToStep(stepId); });
-                }
-            });
-            // Restart turn button
-            if (((_f = args.args) === null || _f === void 0 ? void 0 : _f.previousEngineChoices) >= 1 && !args.args.automaticAction) {
-                if ((_g = args.args) === null || _g === void 0 ? void 0 : _g.previousSteps) {
-                    var lastStep_1 = Math.max.apply(Math, args.args.previousSteps);
-                    if (lastStep_1 > 0)
-                        this.addDangerActionButton('btnUndoLastStep', _('Undo last step'), function () { return _this.undoToStep(lastStep_1); }, 'restartAction');
-                }
-                // Restart whole turn
-                this.addDangerActionButton('btnRestartTurn', _('Restart turn'), function () {
-                    _this.stopActionTimer();
-                    _this.takeAction('actRestart');
-                }, 'restartAction');
-            }
-        }
-        /* TODO? if (this.isCurrentPlayerActive() && args.args) {
-            // Anytime buttons
-            args.args.anytimeActions?.forEach((action, i) => {
-                let msg = action.desc;
-                msg = msg.log ? this.fsr(msg.log, msg.args) : _(msg);
-                msg = this.formatString(msg);
-
-                this.addPrimaryActionButton(
-                'btnAnytimeAction' + i,
-                msg,
-                () => this.takeAction('actAnytimeAction', { id: i }, false),
-                'anytimeActions'
-                );
-            });
-        }*/
         switch (stateName) {
             case 'uploadCircuit':
                 this.onEnteringStateUploadCircuit(args.args);
@@ -3392,6 +3347,13 @@ var Heat = /** @class */ (function () {
                     Object.entries(reactArgs_1.symbols).forEach(function (entry, index) {
                         var type = entry[0];
                         var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
+                        if (type === 'reduce') {
+                            var max = Math.min(entry[1], _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == 'stress'; }).length);
+                            numbers = [];
+                            for (var i = 1; i <= max; i++) {
+                                numbers.push(i);
+                            }
+                        }
                         numbers.forEach(function (number) {
                             var _a;
                             var label = "";
@@ -3451,13 +3413,13 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltip('scrap', number);
                                     break;
                             }
-                            var callback = function () { return _this.actReact(type, Array.isArray(entry[1]) ? number : undefined); };
+                            var callback = function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); };
                             if (type == 'refresh') {
                                 if (!reactArgs_1.canPass) {
                                     callback = function () { return _this.showMessage(_("You must resolve the mandatory reactions before Refresh !"), 'error'); };
                                 }
                                 else if (Object.keys(reactArgs_1.symbols).some(function (t) { return t != 'refresh'; })) {
-                                    callback = function () { return _this.confirmationDialog(_("If you use Refresh now, it will skip the other optional reactions."), function () { return _this.actReact(type, Array.isArray(entry[1]) ? number : undefined); }); };
+                                    callback = function () { return _this.confirmationDialog(_("If you use Refresh now, it will skip the other optional reactions."), function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); }); };
                                 }
                             }
                             _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);

@@ -18,15 +18,11 @@ Frontend :
   - jpgUrl : dont add gamethemeurl prefix if it's a custom circuit
   - upload form: only allow .heat files
 
-  - react : heated boost with weather that makes it no longer heated !
-
   - championship: new field received in getAllDatas
     'index' => represents which circuits we are playing in the list of circuit
     'event' => id of the event card (following sprite in img/) 
       => you have the names of events around line 400 in Notifications.php and also the relevant information about events in constants.inc.php
       => display a press icon on the correct corner
-
-  - handle UI when circuitDatas are empty for custom championships and custom tracks
 
   - refresh : display the name of the card (only if several refresh ?) => maybe with the same formatting as accelerate
   - for accelerate/refresh => make the card clickable ?
