@@ -172,15 +172,24 @@ class CardsManager extends CardManager<Card> {
                     break;
             }
         } else {
-            className = 'upgrade-card';
+            
+            if (type < 80) { // upgrade
+                className = 'upgrade-card';
 
-            const imagePosition = type - 1;
-            const image_items_per_row = 10;
-            var row = Math.floor(imagePosition / image_items_per_row);
-            const xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
-            const yBackgroundPercent = row * 100;
+                const imagePosition = type - 1;
+                const image_items_per_row = 10;
+                var row = Math.floor(imagePosition / image_items_per_row);
+                const xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+                const yBackgroundPercent = row * 100;
+    
+                style = `background-position: -${xBackgroundPercent}% -${yBackgroundPercent}%;`;
+            } else { // sponsor
+                className = 'sponsor-card';
 
-            style = `background-position: -${xBackgroundPercent}% -${yBackgroundPercent}%;`;
+                const imagePosition = type - 80;
+                const xBackgroundPercent = imagePosition * 100;
+                style = `background-position-x: -${xBackgroundPercent}%`;
+            }
         }
 
         let html = `<div class="card personal-card" data-side="front">
