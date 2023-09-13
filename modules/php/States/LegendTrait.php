@@ -34,7 +34,7 @@ trait LegendTrait
       }
       // Otherwise, stop before second corner
       else {
-        $cornerPos = $cornersCrossed[1];
+        $cornerPos = $cornersCrossed[1][0];
         $length = $this->getCircuit()->getLength();
         $speed = ($cornerPos - 1 - $pos + $length) % $length;
         $this->moveCar($constructor, $speed);
