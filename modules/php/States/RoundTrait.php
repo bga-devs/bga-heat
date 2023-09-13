@@ -844,6 +844,11 @@ trait RoundTrait
       }
     }
 
+    // Events
+    if (Globals::getCurrentEvent() == EVENT_NEW_RECORD && $speed >= 15) {
+      $sponsorsGained[] = 'record';
+    }
+
     // Draw sponsors into hand
     if (!empty($sponsorsGained)) {
       if ($spinOut) {

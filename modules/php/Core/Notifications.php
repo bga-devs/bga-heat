@@ -206,6 +206,9 @@ class Notifications
           '${constructor_name} exceeded the speed limit of a press corner by 2 or more and gain 1 sponsor card'
         );
         $pmsg = clienttranslate('You exceeded the speed limit of a press corner by 2 or more and gain sponsor ${cards_images}');
+      } elseif ($reason == 'record') {
+        $msg = clienttranslate('${constructor_name} reached a speed of 15 or more and gain 1 sponsor card (event\'s effect)');
+        $pmsg = clienttranslate('You reached a speed of 15 or more and gain sponsor ${cards_images} (event\'s effect)');
       }
 
       self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1]);

@@ -117,7 +117,14 @@ class Circuit
     if ($optionNbrLaps != 0) {
       $n = $optionNbrLaps;
     }
-    // TODO : event
+
+    $event = Globals::getCurrentEvent();
+    if ($event == EVENT_STRIKE) {
+      $n--;
+    } elseif ($event == EVENT_RECORD_CROWDS) {
+      $n++;
+    }
+
     return $n;
   }
 
@@ -133,7 +140,14 @@ class Circuit
       $value++;
     }
 
-    // TODO : event
+    // Event
+    $event = Globals::getCurrentEvent();
+    if ($event == EVENT_SAFETY_REGULATIONS) {
+      $value--;
+    } elseif ($value == EVENT_NEW_TITLE_SPONSOR) {
+      $value++;
+    }
+
     return $value;
   }
 
@@ -149,7 +163,14 @@ class Circuit
       $value--;
     }
 
-    // TODO : event
+    // Event
+    $event = Globals::getCurrentEvent();
+    if ($event == EVENT_RESTRICTIONS_LIFTED) {
+      $value++;
+    } elseif ($event == EVENT_SAFETY_REGULATIONS) {
+      $value -= 2;
+    }
+
     return $value;
   }
 

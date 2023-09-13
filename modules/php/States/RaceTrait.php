@@ -178,8 +178,14 @@ trait RaceTrait
 
   function getHandSizeLimit()
   {
-    // TODO : handle events
-    return 7;
+    $event = Globals::getCurrentEvent();
+    if ($event == EVENT_RECORD_CROWDS) {
+      return 8;
+    } elseif ($event == EVENT_SAFETY_REGULATIONS) {
+      return 6;
+    } else {
+      return 7;
+    }
   }
 
   ////////////////////////////////////////////////////////////////////
