@@ -3419,7 +3419,7 @@ var Heat = /** @class */ (function () {
                                     callback = function () { return _this.showMessage(_("You must resolve the mandatory reactions before Refresh !"), 'error'); };
                                 }
                                 else if (Object.keys(reactArgs_1.symbols).some(function (t) { return t != 'refresh'; })) {
-                                    callback = function () { return _this.confirmationDialog(_("If you use Refresh now, it will skip the other optional reactions."), function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); }); };
+                                    callback = function () { return _this.confirmationDialog(_("If you use Refresh now, it will skip the other optional reactions."), function () { return _this.actReact(type, Array.isArray(entry[1]) ? number : undefined); }); };
                                 }
                             }
                             _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
@@ -4220,40 +4220,52 @@ var Heat = /** @class */ (function () {
         var constructorId = (_a = args.constructor_id) !== null && _a !== void 0 ? _a : (_b = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); })) === null || _b === void 0 ? void 0 : _b.id;
         return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat(constructorId * 100 / 6, "%;\">").concat(this.cardsManager.getHtml(card), "</div>");
     };
+    Heat.prototype.cardsImagesHtml = function (cards, args) {
+        var _this = this;
+        return Object.values(cards).map(function (card) { return _this.cardImageHtml(card, args); }).join('');
+    };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     Heat.prototype.format_string_recursive = function (log, args) {
         var _this = this;
         try {
             if (log && args && !args.processed) {
-                for (var property in args) {
-                    /*if (['card_names'].includes(property) && args[property][0] != '<') {
-                        args[property] = `<strong>${_(args[property])}</strong>`;
-                    }*/
-                }
+                var reshuffle = "<div>".concat(_("(discard is reshuffled to the deck)"), "</div>");
                 if (args.card_image === '' && args.card) {
-                    args.card_image = "<div class=\"log-card-set\">".concat(this.cardImageHtml(args.card, args), "</div>");
+                    args.card_image = "".concat(args.card.isReshuffled ? reshuffle : '', "<div class=\"log-card-set\">").concat(this.cardImageHtml(args.card, args), "</div>");
                 }
                 if (args.card_image2 === '' && args.card2) {
-                    args.card_image2 = "<div class=\"log-card-set\">".concat(this.cardImageHtml(args.card2, args), "</div>");
+                    args.card_image2 = "".concat(args.card.isReshuffled ? reshuffle : '', "<div class=\"log-card-set\">").concat(this.cardImageHtml(args.card2, args), "</div>");
                 }
                 if (args.finishIcon === '') {
                     args.finishIcon = "<div class=\"flag icon\"></div>";
                 }
                 if (args.cards_images === '' && args.cards) {
-                    args.cards_images = "<div class=\"log-card-set\">".concat(Object.values(args.cards).map(function (card) { return _this.cardImageHtml(card, args); }).join(''), "</div>");
+                    var cards = Object.values(args.cards);
+                    var shuffleIndex = cards.findIndex(function (card) { return card.isReshuffled; });
+                    if (shuffleIndex === -1) {
+                        args.cards_images = "<div class=\"log-card-set\">".concat(this.cardsImagesHtml(Object.values(cards), args), "</div>");
+                    }
+                    else {
+                        var cardsBefore = cards.slice(0, shuffleIndex);
+                        var cardsAfter = cards.slice(shuffleIndex);
+                        args.cards_images = "\n                        <div class=\"log-card-set\">".concat(this.cardsImagesHtml(cardsBefore, args), "</div>\n                        ").concat(reshuffle, "\n                        <div class=\"log-card-set\">").concat(this.cardsImagesHtml(cardsAfter, args), "</div>\n                        ");
+                    }
+                    var constructorKeys = Object.keys(args).filter(function (key) { return key.substring(0, 16) == 'constructor_name'; });
+                    constructorKeys.filter(function (key) { return args[key][0] != '<'; }).forEach(function (key) {
+                        args[key] = _this.coloredConstructorName(args[key]);
+                    });
+                    log = formatTextIcons(_(log));
                 }
-                var constructorKeys = Object.keys(args).filter(function (key) { return key.substring(0, 16) == 'constructor_name'; });
-                constructorKeys.filter(function (key) { return args[key][0] != '<'; }).forEach(function (key) {
-                    args[key] = _this.coloredConstructorName(args[key]);
-                });
-                log = formatTextIcons(_(log));
             }
+            try { }
+            catch (e) {
+                console.error(log, args, "Exception thrown", e.stack);
+            }
+            return this.inherited(arguments);
         }
-        catch (e) {
-            console.error(log, args, "Exception thrown", e.stack);
+        finally {
         }
-        return this.inherited(arguments);
     };
     return Heat;
 }());

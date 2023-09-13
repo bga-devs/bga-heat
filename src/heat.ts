@@ -485,7 +485,7 @@ class Heat implements HeatGame {
                                 } else if (Object.keys(reactArgs.symbols).some(t => t != 'refresh')) {
                                     callback = () => (this as any).confirmationDialog(
                                         _("If you use Refresh now, it will skip the other optional reactions."),
-                                        () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined)
+                                        () => this.actReact(type, Array.isArray(entry[1]) ? number : undefined)
                                     );
                                 }
                             }
@@ -1426,23 +1426,23 @@ class Heat implements HeatGame {
         return `<div class="log-card-image" style="--personal-card-background-y: ${constructorId * 100 / 6}%;">${this.cardsManager.getHtml(card)}</div>`;
     }
 
+    private cardsImagesHtml(cards: Card[], args: any) {
+        return Object.values(cards).map((card: Card) => this.cardImageHtml(card, args)).join('');
+    }
+
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
-                for (const property in args) {
-                    /*if (['card_names'].includes(property) && args[property][0] != '<') {
-                        args[property] = `<strong>${_(args[property])}</strong>`;
-                    }*/
-                }
+                const reshuffle = `<div>${_("(discard is reshuffled to the deck)")}</div>`;
 
                 if (args.card_image === '' && args.card) {
-                    args.card_image = `<div class="log-card-set">${this.cardImageHtml(args.card, args)}</div>`;
+                    args.card_image = `${args.card.isReshuffled ? reshuffle : ''}<div class="log-card-set">${this.cardImageHtml(args.card, args)}</div>`;
                 }
 
                 if (args.card_image2 === '' && args.card2) {
-                    args.card_image2 = `<div class="log-card-set">${this.cardImageHtml(args.card2, args)}</div>`;
+                    args.card_image2 = `${args.card.isReshuffled ? reshuffle : ''}<div class="log-card-set">${this.cardImageHtml(args.card2, args)}</div>`;
                 }
 
                 if (args.finishIcon === '') {
@@ -1450,7 +1450,19 @@ class Heat implements HeatGame {
                 }
 
                 if (args.cards_images === '' && args.cards) {
-                    args.cards_images = `<div class="log-card-set">${Object.values(args.cards).map((card: Card) => this.cardImageHtml(card, args)).join('')}</div>`;
+                    const cards: Card[] = Object.values(args.cards);
+                    const shuffleIndex = cards.findIndex(card => card.isReshuffled)
+                    if (shuffleIndex === -1) {
+                        args.cards_images = `<div class="log-card-set">${this.cardsImagesHtml(Object.values(cards), args)}</div>`;
+                    } else {
+                        const cardsBefore = cards.slice(0, shuffleIndex);
+                        const cardsAfter = cards.slice(shuffleIndex);
+
+                        args.cards_images = `
+                        <div class="log-card-set">${this.cardsImagesHtml(cardsBefore, args)}</div>
+                        ${reshuffle}
+                        <div class="log-card-set">${this.cardsImagesHtml(cardsAfter, args)}</div>
+                        `;
                 }
                 
                 let constructorKeys = Object.keys(args).filter((key) => key.substring(0, 16) == 'constructor_name');
