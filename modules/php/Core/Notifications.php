@@ -200,12 +200,12 @@ class Notifications
       $pmsg = '';
       if ($reason == 'slipstream') {
         $msg = clienttranslate('${constructor_name} slipstreamed through a press corner and gain 1 sponsor card');
-        $pmsg = clienttranslate('You slipstreamed through a press corner and gain sponsor ${card_images}');
+        $pmsg = clienttranslate('You slipstreamed through a press corner and gain sponsor ${cards_images}');
       } elseif ($reason == 'exceed') {
-        $msg = clienttranslate('${constructor_name} exceeded speed limit a press corner by 2 or more and gain 1 sponsor card');
-        $pmsg = clienttranslate(
-          'You slipstreamed exceeded speed limit a press corner by 2 or more and gain sponsor ${card_images}'
+        $msg = clienttranslate(
+          '${constructor_name} exceeded the speed limit of a press corner by 2 or more and gain 1 sponsor card'
         );
+        $pmsg = clienttranslate('You exceeded the speed limit of a press corner by 2 or more and gain sponsor ${cards_images}');
       }
 
       self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1]);

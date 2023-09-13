@@ -425,6 +425,6 @@ class Circuit
     }
     $i = array_search($cornerPos, array_keys($this->corners));
     $event = Globals::getCurrentEvent();
-    return in_array($i, $event['press']);
+    return in_array($i, EVENTS[$event]['press']);
   }
 }
