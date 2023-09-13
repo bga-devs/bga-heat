@@ -137,7 +137,7 @@ $machinestates = [
 
   ST_PLANIFICATION => [
     'name' => 'planification',
-    'description' => clienttranslate('Waiting for others to their gear and card(s)'),
+    'description' => clienttranslate('Waiting for others to select their gear and card(s)'),
     'descriptionmyturn' => clienttranslate('${you} must select the gear and card(s) to play'),
     'type' => 'multipleactiveplayer',
     'args' => 'argsPlanification',
