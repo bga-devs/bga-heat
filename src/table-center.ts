@@ -373,7 +373,7 @@ class Circuit {
         });
     }
     
-    public addMapIndicator(cellId: number, clickCallback?: () => void, stress: boolean = false): void {
+    public addMapIndicator(cellId: number, clickCallback?: () => void, speed: number = 0, stress: boolean = false): void {
         const mapIndicator = document.createElement('div');
         mapIndicator.id = `map-indicator-${cellId}`,
         mapIndicator.classList.add('map-indicator');
@@ -387,9 +387,11 @@ class Circuit {
             mapIndicator.classList.add('clickable');
         }
 
+        if (speed) {
+            mapIndicator.innerHTML = `${speed}`;
+        }
         if (stress) {
             mapIndicator.classList.add('stress');
-            mapIndicator.innerHTML = `?`;
         }
     }
     

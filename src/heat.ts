@@ -832,7 +832,7 @@ class Heat implements HeatGame {
             if (selection.length && privateArgs) {
                 const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
                 const stressCardsSelected = selection.filter(card => card.effect == 'stress').length > 0;
-                totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed], undefined, stressCardsSelected));
+                totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed], undefined, totalSpeed, stressCardsSelected));
             }
 
         } else if (this.gamedatas.gamestate.name == 'discard') {

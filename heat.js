@@ -2259,13 +2259,21 @@ var CardsManager = /** @class */ (function (_super) {
             }
         }
         else {
-            className = 'upgrade-card';
-            var imagePosition = type - 1;
-            var image_items_per_row = 10;
-            var row = Math.floor(imagePosition / image_items_per_row);
-            var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
-            var yBackgroundPercent = row * 100;
-            style = "background-position: -".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%;");
+            if (type < 80) { // upgrade
+                className = 'upgrade-card';
+                var imagePosition = type - 1;
+                var image_items_per_row = 10;
+                var row = Math.floor(imagePosition / image_items_per_row);
+                var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+                var yBackgroundPercent = row * 100;
+                style = "background-position: -".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%;");
+            }
+            else { // sponsor
+                className = 'sponsor-card';
+                var imagePosition = type - 80;
+                var xBackgroundPercent = imagePosition * 100;
+                style = "background-position-x: -".concat(xBackgroundPercent, "%");
+            }
         }
         var html = "<div class=\"card personal-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front ".concat(className, "\" ").concat(col !== null ? "data-col=\"".concat(col, "\"") : '', " style=\"").concat(style, "\">").concat(type < 100 ? "<div class=\"text\">".concat(_(card.text), "</div>") : '', "\n                </div>\n            </div>\n        </div>");
         return html;
@@ -2621,7 +2629,8 @@ var Circuit = /** @class */ (function () {
             }, time + 200);
         });
     };
-    Circuit.prototype.addMapIndicator = function (cellId, clickCallback, stress) {
+    Circuit.prototype.addMapIndicator = function (cellId, clickCallback, speed, stress) {
+        if (speed === void 0) { speed = 0; }
         if (stress === void 0) { stress = false; }
         var mapIndicator = document.createElement('div');
         mapIndicator.id = "map-indicator-".concat(cellId),
@@ -2634,9 +2643,11 @@ var Circuit = /** @class */ (function () {
             mapIndicator.addEventListener('click', clickCallback);
             mapIndicator.classList.add('clickable');
         }
+        if (speed) {
+            mapIndicator.innerHTML = "".concat(speed);
+        }
         if (stress) {
             mapIndicator.classList.add('stress');
-            mapIndicator.innerHTML = "?";
         }
     };
     Circuit.prototype.removeMapIndicators = function () {
@@ -3630,7 +3641,7 @@ var Heat = /** @class */ (function () {
             if (selection.length && privateArgs_1) {
                 var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
                 var stressCardsSelected_1 = selection.filter(function (card) { return card.effect == 'stress'; }).length > 0;
-                totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed], undefined, stressCardsSelected_1); });
+                totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed], undefined, totalSpeed, stressCardsSelected_1); });
             }
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
