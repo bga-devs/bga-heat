@@ -31,7 +31,7 @@ $circuitDatas = [
       'tentX' => 53,
       'tentY' => 958,
       'sectorTentX' => 395,
-      'sectorTentY' => 990,
+      'sectorTentY' => 490,
     ],
     [
       'position' => 49,
