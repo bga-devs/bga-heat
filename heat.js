@@ -3643,7 +3643,7 @@ var Heat = /** @class */ (function () {
             var allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
             var useHeat = allowed && Math.abs(selection.length - gear) == 2;
             var label = allowed ?
-                _('Set gear to ${gear} and play selected cards').replace('${gear}', "".concat(selection.length)) + (useHeat ? formatTextIcons(' (+1 [Heat])') : '') :
+                "".concat(_('Play selected cards'), " (").concat(_('Gear:'), " ").concat(gear, " \u21D2 ").concat(selection.length, " ").concat(formatTextIcons(useHeat ? '[Heat]' : ''), ")") :
                 _('Select between ${min} and ${max} cards').replace('${min}', "".concat(minAllowed)).replace('${max}', "".concat(maxAllowed));
             document.getElementById("player-table-".concat(table.playerId, "-gear")).dataset.gear = "".concat(allowed ? selection.length : gear);
             var button = document.getElementById('actPlanification_button');
