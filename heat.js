@@ -3837,6 +3837,7 @@ var Heat = /** @class */ (function () {
             'pDraw',
             'clearPlayedCards',
             'cooldown',
+            'finishTurn',
             'finishRace',
             'endOfRace',
             'newLegendCard',
@@ -4079,6 +4080,16 @@ var Heat = /** @class */ (function () {
         playerTable.cooldown(cards);
         (_b = this.engineCounters[constructor_id]) === null || _b === void 0 ? void 0 : _b.incValue(cards.length);
     };
+    Heat.prototype.notif_finishTurn = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, n, lap;
+            return __generator(this, function (_a) {
+                constructor_id = args.constructor_id, n = args.n, lap = args.lap;
+                this.lapCounters[constructor_id].toValue(Math.min(n, lap));
+                return [2 /*return*/];
+            });
+        });
+    };
     Heat.prototype.notif_finishRace = function (args) {
         return __awaiter(this, void 0, void 0, function () {
             var constructor_id, pos;
@@ -4265,7 +4276,7 @@ var Heat = /** @class */ (function () {
                     args.card_image2 = "<div class=\"log-card-set\">".concat(this.cardImageHtml(args.card2, args), "</div>");
                 }
                 if (args.finishIcon === '') {
-                    args.finishIcon = "<div class=\"turn icon\"></div>";
+                    args.finishIcon = "<div class=\"flag icon\"></div>";
                 }
                 if (args.cards_images === '' && args.cards) {
                     args.cards_images = "<div class=\"log-card-set\">".concat(Object.values(args.cards).map(function (card) { return _this.cardImageHtml(card, args); }).join(''), "</div>");

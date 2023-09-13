@@ -233,6 +233,13 @@ interface NotifCooldownArgs {
     cards: Card[];
 }
 
+// finishTurn
+interface NotifFinishTurnArgs {
+    constructor_id: number;
+    n: number; // new current turn
+    lap: number; // nbrLaps
+}
+
 // finishRace
 interface NotifFinishRaceArgs {
     constructor_id: number;

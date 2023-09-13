@@ -1083,6 +1083,7 @@ class Heat implements HeatGame {
             'pDraw',
             'clearPlayedCards',
             'cooldown',
+            'finishTurn',
             'finishRace',
             'endOfRace',
             'newLegendCard',
@@ -1304,6 +1305,11 @@ class Heat implements HeatGame {
         this.engineCounters[constructor_id]?.incValue(cards.length);
     }
 
+    async notif_finishTurn(args: NotifFinishTurnArgs) {
+    const { constructor_id, n, lap } = args;
+    this.lapCounters[constructor_id].toValue(Math.min(n, lap));
+}
+
     async notif_finishRace(args: NotifFinishRaceArgs) {
         const { constructor_id, pos } = args;
         if (this.animationManager.animationsActive()) {
@@ -1493,7 +1499,7 @@ class Heat implements HeatGame {
                 }
 
                 if (args.finishIcon === '') {
-                    args.finishIcon = `<div class="turn icon"></div>`;
+                    args.finishIcon = `<div class="flag icon"></div>`;
                 }
 
                 if (args.cards_images === '' && args.cards) {
