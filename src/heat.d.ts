@@ -49,6 +49,15 @@ interface Weather {
     tokens: { [cornerId: number]: number };
 }
 
+interface Championship {
+    circuits: {
+        event: number;
+        circuit: string;
+    }[];
+    index: number;
+    name: string;
+}
+
 interface CircuitDatas {
     id: string;
     name: string;
@@ -72,6 +81,7 @@ interface HeatGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
+    championship: Championship;
     circuitDatas: CircuitDatas;
     nbrLaps: number;
     constructors: { [id: number]: Constructor };

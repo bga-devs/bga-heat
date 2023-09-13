@@ -81,10 +81,19 @@
   border-radius: 50%;
 }
 
-#press-token {
+.press-icon {
   position: absolute;
-  left: calc(var(--x) - 57px);
-  top: calc(var(--y) - 74px);
+  left: calc(var(--x) + 16px);
+  top: calc(var(--y) + 16px);
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  color: #116193;
+  text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white, 0 0 4px white, 0 0 5px white;
+}
+
+.press-token {
+  display: inline-block;
   width: 114px;
   height: 148px;
   background: url('img/press-token.png');

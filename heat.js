@@ -2326,6 +2326,18 @@ var LEADERBOARD_POSITIONS = {
     '-8': { x: 0, y: 336, a: 0 },
 };
 var WEATHER_TOKENS_ON_SECTOR_TENT = [0, 4, 5];
+var EVENTS_PRESS_CORNERS = {
+    1: [0],
+    2: [1],
+    3: [2],
+    4: [4],
+    5: [2, 4],
+    6: [2],
+    7: [0],
+    8: [1, 4],
+    9: [4],
+    10: [4],
+};
 // Wrapper for the animation that use requestAnimationFrame
 var CarAnimation = /** @class */ (function () {
     function CarAnimation(car, pathCells) {
@@ -2401,7 +2413,7 @@ var CarAnimation = /** @class */ (function () {
 var Circuit = /** @class */ (function () {
     function Circuit(game, gamedatas) {
         var _this = this;
-        var _a;
+        var _a, _b;
         this.game = game;
         this.gamedatas = gamedatas;
         this.scale = 1;
@@ -2410,6 +2422,11 @@ var Circuit = /** @class */ (function () {
         if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
             this.loadCircuit(gamedatas.circuitDatas);
             Object.values(this.gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
+            if ((_b = gamedatas.championship) === null || _b === void 0 ? void 0 : _b.circuits) {
+                var event_1 = gamedatas.championship.circuits[gamedatas.championship.index].event;
+                var pressCorners = EVENTS_PRESS_CORNERS[event_1];
+                pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
+            }
         }
     }
     Circuit.prototype.loadCircuit = function (circuitDatas) {
@@ -2417,7 +2434,6 @@ var Circuit = /** @class */ (function () {
         this.circuitDiv.style.backgroundImage = "url('".concat(this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : "".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl), "')");
         this.createCorners(this.circuitDatas.corners);
         this.createWeather(this.gamedatas.weather, this.circuitDatas);
-        //this.createPressToken(this.circuitDatas);
     };
     /**
      * Set map size, depending on available screen size.
@@ -2453,13 +2469,17 @@ var Circuit = /** @class */ (function () {
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
     };
-    Circuit.prototype.createPressToken = function (circuitDatas) {
-        var corner = circuitDatas.corners[12];
-        var pressTokenDiv = document.createElement('div');
-        pressTokenDiv.id = "press-token",
-            pressTokenDiv.style.setProperty('--x', "".concat(corner.tentX, "px"));
-        pressTokenDiv.style.setProperty('--y', "".concat(corner.tentY, "px"));
-        this.circuitDiv.insertAdjacentElement('beforeend', pressTokenDiv);
+    Circuit.prototype.createPressToken = function (cornerNumber) {
+        var corners = Object.values(this.circuitDatas.corners);
+        var corner = corners[cornerNumber % corners.length];
+        var pressIconDiv = document.createElement('div');
+        pressIconDiv.id = "press-icon-".concat(cornerNumber);
+        pressIconDiv.classList.add("press-icon");
+        pressIconDiv.style.setProperty('--x', "".concat(corner.tentX, "px"));
+        pressIconDiv.style.setProperty('--y', "".concat(corner.tentY, "px"));
+        pressIconDiv.innerHTML = "<i class=\"fa fa-camera\"></i>";
+        this.circuitDiv.insertAdjacentElement('beforeend', pressIconDiv);
+        this.game.setTooltip(pressIconDiv.id, "<div class=\"press-token\"></div>");
     };
     Circuit.prototype.createWeather = function (weather, circuitDatas) {
         if (weather === null || weather === void 0 ? void 0 : weather.tokens) {
@@ -4262,21 +4282,18 @@ var Heat = /** @class */ (function () {
                         var cardsAfter = cards.slice(shuffleIndex);
                         args.cards_images = "\n                        <div class=\"log-card-set\">".concat(this.cardsImagesHtml(cardsBefore, args), "</div>\n                        ").concat(reshuffle, "\n                        <div class=\"log-card-set\">").concat(this.cardsImagesHtml(cardsAfter, args), "</div>\n                        ");
                     }
-                    var constructorKeys = Object.keys(args).filter(function (key) { return key.substring(0, 16) == 'constructor_name'; });
-                    constructorKeys.filter(function (key) { return args[key][0] != '<'; }).forEach(function (key) {
-                        args[key] = _this.coloredConstructorName(args[key]);
-                    });
-                    log = formatTextIcons(_(log));
                 }
+                var constructorKeys = Object.keys(args).filter(function (key) { return key.substring(0, 16) == 'constructor_name'; });
+                constructorKeys.filter(function (key) { return args[key][0] != '<'; }).forEach(function (key) {
+                    args[key] = _this.coloredConstructorName(args[key]);
+                });
+                log = formatTextIcons(_(log));
             }
-            try { }
-            catch (e) {
-                console.error(log, args, "Exception thrown", e.stack);
-            }
-            return this.inherited(arguments);
         }
-        finally {
+        catch (e) {
+            console.error(log, args, "Exception thrown", e.stack);
         }
+        return this.inherited(arguments);
     };
     return Heat;
 }());

@@ -8,7 +8,6 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
-  fa-camera
   remove buttons when notifications are in titlebar
 
   - planification : highlight already selected cards (also on refresh), you have a parameter in the args :       

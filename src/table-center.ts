@@ -14,6 +14,19 @@ const LEADERBOARD_POSITIONS = {
 
 const WEATHER_TOKENS_ON_SECTOR_TENT = [0, 4, 5];
 
+const EVENTS_PRESS_CORNERS = {
+    1: [0],
+    2: [1],
+    3: [2],
+    4: [4],
+    5: [2, 4],
+    6: [2],
+    7: [0],
+    8: [1, 4],
+    9: [4],
+    10: [4],
+};
+
 // Wrapper for the animation that use requestAnimationFrame
 class CarAnimation {
     private newpath: SVGPathElement;
@@ -108,6 +121,12 @@ class Circuit {
             this.loadCircuit(gamedatas.circuitDatas);
 
             Object.values(this.gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
+
+            if (gamedatas.championship?.circuits) {
+                const event = gamedatas.championship.circuits[gamedatas.championship.index].event;
+                const pressCorners = EVENTS_PRESS_CORNERS[event];
+                pressCorners.forEach((cornerId: number) => this.createPressToken(cornerId));
+            }
         }
     }
     
@@ -117,7 +136,6 @@ class Circuit {
 
         this.createCorners(this.circuitDatas.corners);
         this.createWeather(this.gamedatas.weather, this.circuitDatas);
-        //this.createPressToken(this.circuitDatas);
     }
 
     /** 
@@ -155,13 +173,18 @@ class Circuit {
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
     }
     
-    private createPressToken(circuitDatas: CircuitDatas): void {
-        const corner = circuitDatas.corners[12];        
-        const pressTokenDiv = document.createElement('div');
-        pressTokenDiv.id = `press-token`,
-        pressTokenDiv.style.setProperty('--x', `${corner.tentX}px`);
-        pressTokenDiv.style.setProperty('--y', `${corner.tentY}px`);
-        this.circuitDiv.insertAdjacentElement('beforeend', pressTokenDiv);
+    private createPressToken(cornerNumber: number): void {
+        const corners = Object.values(this.circuitDatas.corners);
+        const corner = corners[cornerNumber % corners.length];
+        const pressIconDiv = document.createElement('div');
+        pressIconDiv.id = `press-icon-${cornerNumber}`;
+        pressIconDiv.classList.add(`press-icon`);
+        pressIconDiv.style.setProperty('--x', `${corner.tentX}px`);
+        pressIconDiv.style.setProperty('--y', `${corner.tentY}px`);
+        pressIconDiv.innerHTML = `<i class="fa fa-camera"></i>`
+        this.circuitDiv.insertAdjacentElement('beforeend', pressIconDiv);
+
+        this.game.setTooltip(pressIconDiv.id, `<div class="press-token"></div>`);
     }
     
     private createWeather(weather: Weather, circuitDatas: CircuitDatas): void {

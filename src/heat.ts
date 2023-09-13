@@ -1463,6 +1463,7 @@ class Heat implements HeatGame {
                         ${reshuffle}
                         <div class="log-card-set">${this.cardsImagesHtml(cardsAfter, args)}</div>
                         `;
+                    }
                 }
                 
                 let constructorKeys = Object.keys(args).filter((key) => key.substring(0, 16) == 'constructor_name');
