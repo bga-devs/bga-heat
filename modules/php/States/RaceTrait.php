@@ -40,8 +40,8 @@ trait RaceTrait
       $cell = $cells[$i];
       $constructor = Constructors::get($cId);
       $constructor->setCarCell($cell);
-      // $constructor->setTurn(-1);
-      $constructor->setTurn($this->getNbrLaps());
+      $constructor->setTurn(-1);
+      // $constructor->setTurn($this->getNbrLaps());
       $constructor->setGear(1);
       $constructor->setSpeed(null);
       $positions[$cId] = $cell;
