@@ -28,25 +28,24 @@ trait RaceTrait
         Globals::loadCircuitDatas();
       }
       $this->circuit = null; // Prevent caching
-
-      // Turn order
-      if ($datas['index'] > 0) {
-        // TODO
-        die('TODO: turn order for championship not first race');
-      }
-
       Notifications::newChampionshipRace($datas, $this->getCircuit()->getName());
     }
 
     // Place cars on starting positions
     $circuit = $this->getCircuit();
     $cells = $circuit->getStartingCells();
+    $positions = [];
+    $constructors = [];
     foreach (Constructors::getTurnOrder() as $i => $cId) {
+      $cell = $cells[$i];
       $constructor = Constructors::get($cId);
-      $constructor->setCarCell($cells[$i]);
-      $constructor->setTurn(-1);
+      $constructor->setCarCell($cell);
+      // $constructor->setTurn(-1);
+      $constructor->setTurn($this->getNbrLaps());
       $constructor->setGear(1);
       $constructor->setSpeed(null);
+      $positions[$cId] = $cell;
+      $constructors[] = $constructor;
     }
 
     // Weather
@@ -65,6 +64,8 @@ trait RaceTrait
         'tokens' => $cornerTokens,
       ]);
     }
+
+    Notifications::startRace($constructors, $positions, Globals::getWeather());
 
     // Draw heat and stress cards
     Cards::setupRace();
@@ -111,22 +112,62 @@ trait RaceTrait
     $scores = Globals::getScores();
     $score = [];
     $podium = [9, 6, 4, 3, 2, 1];
+    // TODO EVENT
     foreach (Constructors::getAll() as $cId => $constructor) {
       $podiumPos = -$constructor->getCarCell() - 1;
       $score[$cId] = $podium[$podiumPos] ?? 0;
       $constructor->incScore($score[$cId]);
     }
 
-    $circuitId = $this->getCircuit()->getId();
-    $scores[$circuitId] = $score;
-    Globals::setScores($scores);
-    Notifications::endOfRace($scores);
+    // Compute new turn order (only useful for championship)
+    $constructors = Constructors::getAll()->toAssoc();
+    uasort($constructors, function ($c1, $c2) use ($score) {
+      return $c2->getScore() - $c1->getScore() ?: $score[$c2->getId()] - $score[$c1->getId()];
+    });
+    $order = array_keys($constructors);
+    Globals::setTurnOrder($order);
+    $i = 0;
+    foreach ($constructors as $cId => $constructor) {
+      $constructor->setNo($i++);
+    }
 
-    if (false) {
-      // TOURNAMENT
-    } else {
+    // Notify
+    $circuitId = $this->getCircuit()->getId();
+    $scores[] = $score;
+    Globals::setScores($scores);
+    Notifications::endOfRace($scores, $order);
+
+    if (Globals::isChampionship()) {
+      $datas = Globals::getChampionshipDatas();
+      // End of championship
+      if ($datas['index'] + 1 == count($datas['circuits'])) {
+        $this->gamestate->jumpToState(ST_PRE_END_OF_GAME);
+      }
+      // Make sure eveyone can see results before moving to next race
+      else {
+        $this->gamestate->setAllPlayersMultiactive();
+        $this->gamestate->jumpToState(ST_CONFIRM_END_OF_RACE);
+      }
+    }
+    // Normal race => end of game
+    else {
       $this->gamestate->jumpToState(ST_PRE_END_OF_GAME);
     }
+  }
+
+  function actConfirmResults()
+  {
+    self::checkAction('actConfirmResults');
+    $pId = $this->getCurrentPId();
+    $this->gamestate->setPlayerNonMultiactive($pId, 'done');
+  }
+
+  function stProceedToNextRace()
+  {
+    $datas = Globals::getChampionshipDatas();
+    $datas['index'] = $datas['index'] + 1;
+    Globals::setChampionshipDatas($datas);
+    $this->gamestate->jumpToState(ST_SETUP_RACE);
   }
 
   function stPreEndOfGame()

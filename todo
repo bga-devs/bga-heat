@@ -8,6 +8,16 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
+  - state confirm race results 
+  - notif car positions + weather
+  - notif scores also contains order
+
+  - error when finishing the race :
+  Uncaught (in promise) TypeError: can't convert undefined to object
+    notif_endOfRace
+
+  - error when moving 0 space ahead
+
   remove buttons when notifications are in titlebar
 
   - planification : highlight already selected cards (also on refresh), you have a parameter in the args :       

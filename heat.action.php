@@ -133,6 +133,13 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actConfirmResults()
+  {
+    self::setAjaxMode();
+    $this->game->actConfirmResults();
+    self::ajaxResponse();
+  }
+
   //////////////////
   ///// UTILS  /////
   //////////////////

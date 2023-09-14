@@ -369,10 +369,11 @@ class Notifications
     ]);
   }
 
-  public static function endOfRace($scores)
+  public static function endOfRace($scores, $order)
   {
     self::notifyAll('endOfRace', clienttranslate('End of the race'), [
       'scores' => $scores,
+      'order' => $order,
     ]);
   }
 
@@ -481,6 +482,15 @@ class Notifications
         'index' => $i,
       ]
     );
+  }
+
+  public static function startRace($constructors, $positions, $weather)
+  {
+    self::notifyAll('startRace', clienttranslate('Order on the starting grid is: ${constructors_names}'), [
+      'constructors' => $constructors,
+      'weather' => $weather,
+      'cells' => $positions,
+    ]);
   }
 
   ///////////////////////////////////////////////////////////////

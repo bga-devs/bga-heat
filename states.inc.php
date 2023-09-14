@@ -118,6 +118,23 @@ $machinestates = [
     'transitions' => ['startRound' => ST_START_ROUND],
   ],
 
+  // CHAMPIONSHIP
+  ST_CONFIRM_END_OF_RACE => [
+    'name' => 'confirmEndOfRace',
+    'description' => clienttranslate('Some players are seeing end of round result'),
+    'descriptionmyturn' => clienttranslate('End of race result'),
+    'type' => 'multipleactiveplayer',
+    'possibleactions' => ['actConfirmResults'],
+    'transitions' => ['done' => ST_PROCEED_TO_NEXT_RACE],
+  ],
+
+  ST_PROCEED_TO_NEXT_RACE => [
+    'name' => 'proceedNextRace',
+    'description' => '',
+    'type' => 'game',
+    'action' => 'stProceedToNextRace',
+  ],
+
   /////////////////////////////////////
   //  ____                       _
   // |  _ \ ___  _   _ _ __   __| |
