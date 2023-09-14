@@ -30,6 +30,7 @@ class Heat implements HeatGame {
     private playersTables: PlayerTable[] = [];
     private legendTable?: LegendTable;
     private handCounters: Counter[] = [];
+    private gearCounters: Counter[] = [];
     private engineCounters: Counter[] = [];
     private speedCounters: Counter[] = [];
     private lapCounters: Counter[] = [];
@@ -689,6 +690,10 @@ class Heat implements HeatGame {
                     <div class="player-hand-card"></div> 
                     <span id="playerhand-counter-${constructor.id}"></span>
                 </div>
+                <div id="gear-counter-wrapper-${constructor.id}" class="gear-counter">
+                    <div class="gear icon"></div>
+                    <span id="gear-counter-${constructor.id}"></span>
+                </div>
                 <div id="engine-counter-wrapper-${constructor.id}" class="engine-counter">
                     <div class="engine icon"></div>
                     <span id="engine-counter-${constructor.id}"></span>
@@ -724,6 +729,10 @@ class Heat implements HeatGame {
                 this.handCounters[constructor.id].create(`playerhand-counter-${constructor.id}`);
                 this.handCounters[constructor.id].setValue(constructor.handCount);
 
+                this.gearCounters[constructor.id] = new ebg.counter();
+                this.gearCounters[constructor.id].create(`gear-counter-${constructor.id}`);
+                this.gearCounters[constructor.id].setValue(constructor.gear);
+
                 this.engineCounters[constructor.id] = new ebg.counter();
                 this.engineCounters[constructor.id].create(`engine-counter-${constructor.id}`);
                 this.engineCounters[constructor.id].setValue(Object.values(constructor.engine).length);
@@ -747,6 +756,7 @@ class Heat implements HeatGame {
         });
 
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
+        this.setTooltipToClass('gear-counter', _('Gear'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
         this.setTooltipToClass('speed-counter', _('Speed'));
         this.setTooltipToClass('lap-counter', _('Laps'));
@@ -778,8 +788,7 @@ class Heat implements HeatGame {
     private getHelpHtml() {
         let html = `
         <div id="help-popin">
-            <h1>${_("Assets")}</h2>
-            TODO
+            <h1>${_("TODO")}</h2>
         </div>`;
 
         return html;
@@ -1137,6 +1146,7 @@ class Heat implements HeatGame {
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
         playerTable.setCurrentGear(gear);
+        this.gearCounters[constructor_id].toValue(gear);
         const cards = Object.values(args.cards);
         this.handCounters[constructor_id]?.incValue(-cards.length);
         const promises = [playerTable.setInplay(cards)];

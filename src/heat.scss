@@ -44,49 +44,52 @@ html, .mode_3d #game_play_area_background {
   text-align: center;
   
   &.flag {
-    background-position-x: #{0 * 100% / 14};
+    background-position-x: #{0 * 100% / 15};
   }
   &.engine {
-    background-position-x: #{1 * 100% / 14};
+    background-position-x: #{1 * 100% / 15};
   }
   &.heat {
-    background-position-x: #{2 * 100% / 14};
+    background-position-x: #{2 * 100% / 15};
   }
   &.cooldown {
-    background-position-x: #{3 * 100% / 14};
+    background-position-x: #{3 * 100% / 15};
   }
   &.stress {
-    background-position-x: #{4 * 100% / 14};
+    background-position-x: #{4 * 100% / 15};
   }
   &.boost {
-    background-position-x: #{5 * 100% / 14};
+    background-position-x: #{5 * 100% / 15};
   }
   &.speed {
-    background-position-x: #{6 * 100% / 14};
+    background-position-x: #{6 * 100% / 15};
   }
   &.podium {
-    background-position-x: #{7 * 100% / 14};
+    background-position-x: #{7 * 100% / 15};
   }
   &.reduce-stress {
-    background-position-x: #{8 * 100% / 14};
+    background-position-x: #{8 * 100% / 15};
   }
   &.scrap {
-    background-position-x: #{9 * 100% / 14};
+    background-position-x: #{9 * 100% / 15};
   }
   &.direct {
-    background-position-x: #{10 * 100% / 14};
+    background-position-x: #{10 * 100% / 15};
   }
   &.adjust {
-    background-position-x: #{11 * 100% / 14};
+    background-position-x: #{11 * 100% / 15};
   }
   &.forced-heat {
-    background-position-x: #{12 * 100% / 14};
+    background-position-x: #{12 * 100% / 15};
   }
   &.refresh {
-    background-position-x: #{13 * 100% / 14};
+    background-position-x: #{13 * 100% / 15};
   }
   &.salvage {
-    background-position-x: #{14 * 100% / 14};
+    background-position-x: #{14 * 100% / 15};
+  }
+  &.gear {
+    background-position-x: #{15 * 100% / 15};
   }
 }
 

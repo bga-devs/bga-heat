@@ -3070,6 +3070,7 @@ var Heat = /** @class */ (function () {
     function Heat() {
         this.playersTables = [];
         this.handCounters = [];
+        this.gearCounters = [];
         this.engineCounters = [];
         this.speedCounters = [];
         this.lapCounters = [];
@@ -3575,13 +3576,16 @@ var Heat = /** @class */ (function () {
         });
         constructors.forEach(function (constructor) {
             var _a;
-            var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
+            var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"gear-counter-wrapper-").concat(constructor.id, "\" class=\"gear-counter\">\n                    <div class=\"gear icon\"></div>\n                    <span id=\"gear-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(constructor.pId));
             if (!constructor.ai) {
                 _this.handCounters[constructor.id] = new ebg.counter();
                 _this.handCounters[constructor.id].create("playerhand-counter-".concat(constructor.id));
                 _this.handCounters[constructor.id].setValue(constructor.handCount);
+                _this.gearCounters[constructor.id] = new ebg.counter();
+                _this.gearCounters[constructor.id].create("gear-counter-".concat(constructor.id));
+                _this.gearCounters[constructor.id].setValue(constructor.gear);
                 _this.engineCounters[constructor.id] = new ebg.counter();
                 _this.engineCounters[constructor.id].create("engine-counter-".concat(constructor.id));
                 _this.engineCounters[constructor.id].setValue(Object.values(constructor.engine).length);
@@ -3601,6 +3605,7 @@ var Heat = /** @class */ (function () {
             }
         });
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
+        this.setTooltipToClass('gear-counter', _('Gear'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
         this.setTooltipToClass('speed-counter', _('Speed'));
         this.setTooltipToClass('lap-counter', _('Laps'));
@@ -3625,7 +3630,7 @@ var Heat = /** @class */ (function () {
         this.playersTables.push(table);
     };
     Heat.prototype.getHelpHtml = function () {
-        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Assets"), "</h2>\n            TODO\n        </div>");
+        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("TODO"), "</h2>\n        </div>");
         return html;
     };
     Heat.prototype.getPossibleSpeeds = function (selectedCards, args) {
@@ -3934,6 +3939,7 @@ var Heat = /** @class */ (function () {
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
         playerTable.setCurrentGear(gear);
+        this.gearCounters[constructor_id].toValue(gear);
         var cards = Object.values(args.cards);
         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
         var promises = [playerTable.setInplay(cards)];
