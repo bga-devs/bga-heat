@@ -1049,6 +1049,58 @@ height: 241px; */
   top: 478px;
 }
 
+#championship-table {
+  /*min-width: 640px;
+  width: 100%;
+  position: relative;
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  #legend-board {
+    position: relative;
+    width: 1200px;
+    height: 793px;
+    padding: 0;
+    margin: 0;
+    background-size: contain;
+    background-image: url('img/mats/legend.jpg');
+
+    .deck {
+      position: absolute;
+      left: 115px;
+      top: 478px;
+    }
+
+    .discard {
+      position: absolute;
+      left: 729px;
+      top: 478px;
+    }
+  }*/
+}
+#championship-table #championship-circuits {
+  background: white;
+  border-radius: 20px;
+  height: 40px;
+  margin: 5px 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+#championship-table .championship-circuit {
+  border-radius: 20px;
+  height: 40px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#championship-table .championship-circuit.current {
+  background: #d61b1a;
+  color: white;
+}
+
 #help-popin h1 {
   color: #5890a9;
   font-size: 18px;

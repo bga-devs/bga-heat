@@ -429,7 +429,7 @@ class Notifications
 
   /////////////////////////////////
   //// CHAMPIONSHIP
-  public static function newChampionshipRace($datas, $name)
+  public static function newChampionshipRace($datas, $circuit)
   {
     $map = [
       EVENT_INAUGURATION => clienttranslate('New grandstand inauguration'),
@@ -452,7 +452,8 @@ class Notifications
         'i18n' => ['board', 'event'],
         'n' => $i + 1,
         'm' => count($datas['circuits']),
-        'board' => $name,
+        'board' => $circuit->getName(),
+        'circuitDatas' => $circuit->getUiData(),
         'event' => $map[$datas['circuits'][$i]['event']],
         'index' => $i,
       ]

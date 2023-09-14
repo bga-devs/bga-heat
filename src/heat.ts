@@ -29,6 +29,7 @@ class Heat implements HeatGame {
     private circuit: Circuit;
     private playersTables: PlayerTable[] = [];
     private legendTable?: LegendTable;
+    private championshipTable?: ChampionshipTable;
     private handCounters: Counter[] = [];
     private gearCounters: Counter[] = [];
     private engineCounters: Counter[] = [];
@@ -87,12 +88,20 @@ class Heat implements HeatGame {
         this.animationManager = new AnimationManager(this);
         this.cardsManager = new CardsManager(this);
         this.legendCardsManager = new LegendCardsManager(this);
+
+        const jumpToEntries = [
+            new JumpToEntry(_('Circuit'), 'table-center', { 'color': '#222222' })
+        ];
+        if (gamedatas.isLegend) {
+            jumpToEntries.push(new JumpToEntry(_('Legends'), 'legend-board', { 'color': '#39464c' }));
+        }
+        if (gamedatas.championship) {
+            jumpToEntries.unshift(new JumpToEntry(_('Championship'), 'championship-table', { 'color': '#39464c' }));
+        }
         
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
-            topEntries: [
-                new JumpToEntry(_('Main board'), 'table-center', { 'color': '#224757' })
-            ],
+            topEntries: jumpToEntries,
             entryClasses: 'round-point',
             defaultFolded: true,
         });
@@ -100,6 +109,9 @@ class Heat implements HeatGame {
         this.circuit = new Circuit(this, gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
+        if (gamedatas.championship) {
+            this.championshipTable = new ChampionshipTable(this, gamedatas);
+        }
         
         this.zoomManager = new ZoomManager({
             element: document.getElementById('tables'),
@@ -493,6 +505,9 @@ class Heat implements HeatGame {
 
                             (this as any).addActionButton(`actReact${type}_${number}_button`, formatTextIcons(label), callback);
                             this.setTooltip(`actReact${type}_${number}_button`, tooltip);
+                            if (type == 'salvage' && this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
+                                document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');
+                            }
                         });
                     });
                     break;
@@ -505,6 +520,9 @@ class Heat implements HeatGame {
                     this.onEnteringSalvage(args);
                     (this as any).addActionButton(`actSalvage_button`, _('Salvage selected cards'), () => this.actSalvage());
                     document.getElementById(`actSalvage_button`).classList.add('disabled');
+                case 'confirmEndOfRace':
+                    (this as any).addActionButton(`seen_button`, _("Seen"), () => this.actConfirmResults());
+                    break;
             }
         } else {
             switch (stateName) {
@@ -980,21 +998,13 @@ class Heat implements HeatGame {
         });
     }
   	
-    /*public actConfirmPartialTurn() {
-        if(!(this as any).checkAction('actConfirmPartialTurn')) {
+    public actConfirmResults() {
+        if(!(this as any).checkAction('actConfirmResults')) {
             return;
         }
 
-        this.takeAction('actConfirmPartialTurn');
+        this.takeAction('actConfirmResults');
     }
-  	
-    public actRestart() {
-        if(!(this as any).checkAction('actRestart')) {
-            return;
-        }
-
-        this.takeAction('actRestart');
-    }*/
 
     public takeAction(action: string, data?: any) {
         data = data || {};
@@ -1051,6 +1061,8 @@ class Heat implements HeatGame {
             'salvageCards',
             'directPlay',
             'eliminate',
+            'newChampionshipRace',
+            'startRace',
         ];
         
     
@@ -1293,9 +1305,9 @@ class Heat implements HeatGame {
     }
     
     notif_endOfRace(args: NotifEndOfRaceArgs) {
-        const scores = args.scores[this.gamedatas.circuitDatas.id];
-        
-        Object.entries(scores).forEach(([constructorId, score]) => this.setScore(this.gamedatas.constructors[constructorId].pId, score));
+        Object.values(this.gamedatas.constructors).forEach(constructor => 
+            this.setScore(constructor.id, Object.values(args.scores).map(circuitScores => circuitScores[constructor.id]).reduce((a, b) => a + b))
+        );
     }
 
     notif_newLegendCard(args: NotifNewLegendCardArgs) {
@@ -1340,8 +1352,19 @@ class Heat implements HeatGame {
             ...args,
             pos: cell
         }, true);
-    }    
-    
+    }  
+
+    async notif_newChampionshipRace(args: NotifNewChampionshipRaceArgs) {
+        const { index, circuitDatas } = args;
+        this.championshipTable.newChampionshipRace(index);
+        this.circuit.newCircuit(circuitDatas);
+    }
+
+    async notif_startRace(args: NotifStartRaceArgs) {
+        const { cells, weather } = args;
+        Object.entries(cells).forEach(([constructor_id, cell]) => this.circuit.moveCar(Number(constructor_id), cell));
+        this.circuit.createWeather(weather);
+    }
 
     private setRank(constructorId: number, pos: number, eliminated: boolean) {
         const playerId = this.getPlayerIdFromConstructorId(constructorId);
