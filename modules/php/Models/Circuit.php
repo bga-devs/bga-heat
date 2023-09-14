@@ -144,7 +144,7 @@ class Circuit
     $event = Globals::getCurrentEvent();
     if ($event == EVENT_SAFETY_REGULATIONS) {
       $value--;
-    } elseif ($value == EVENT_NEW_TITLE_SPONSOR) {
+    } elseif ($value == EVENT_TITLE_SPONSOR) {
       $value++;
     }
 

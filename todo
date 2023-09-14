@@ -8,6 +8,8 @@ Backend :
   - skip salvage (with logs) if empty discard
 
 Frontend :
+  - eliminate notif : eliminate($constructor, $cell)
+
   - state confirm race results 
   - notif car positions + weather
   - notif scores also contains order

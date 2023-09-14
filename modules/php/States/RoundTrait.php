@@ -14,9 +14,10 @@ trait RoundTrait
   function stStartRound()
   {
     Globals::setPlanification([]);
+    $skipped = Globals::getSkippedPlayers();
     $pIds = Constructors::getAll()
-      ->filter(function ($constructor) {
-        return !$constructor->isAI() && !$constructor->isFinished();
+      ->filter(function ($constructor) use ($skipped) {
+        return !$constructor->isAI() && !$constructor->isFinished() && !in_array($constructor->getPId(), $skipped);
       })
       ->map(function ($constructor) {
         return $constructor->getPId();
@@ -176,9 +177,10 @@ trait RoundTrait
     // => use that instead of BGA framework feature because in some rare case a player
     //    might become inactive eventhough the selection failed (seen in Agricola and Rauha at least already)
     $planification = Globals::getPlanification();
+    $skipped = Globals::getSkippedPlayers();
     $ids = [];
     foreach (Constructors::getAll() as $constructor) {
-      if ($constructor->isAI() || $constructor->isFinished()) {
+      if ($constructor->isAI() || $constructor->isFinished() || in_array($constructor->getPId(), $skipped)) {
         continue;
       }
       $ids[] = $constructor->getPId();
@@ -872,6 +874,10 @@ trait RoundTrait
       if ($nCars >= 3) {
         $sponsorsGained[] = EVENT_FIRST_LIVE_TV;
       }
+    }
+    // TITLE SPONSOR => SPIN OUT = out of race
+    elseif ($event == \EVENT_TITLE_SPONSOR && $spinOut) {
+      $constructor->eliminate();
     }
 
     // Draw sponsors into hand

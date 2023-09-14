@@ -153,8 +153,15 @@ class Heat extends Table
 
     if ($i < count($o['order'])) {
       $this->gamestate->jumpToState(ST_GENERIC_NEXT_PLAYER);
-      Constructors::changeActive($o['order'][$i]);
-      $this->jumpToOrCall($o['callback'], $o['args']);
+      $cId = $o['order'][$i];
+      $skippedPlayers = Globals::getSkippedPlayers();
+      $constructor = Constructors::get($cId);
+      if (!$constructor->isAI() && in_array($constructor->getPId(), $skippedPlayers)) {
+        $this->nextPlayerCustomOrder($key);
+      } else {
+        Constructors::changeActive($cId);
+        $this->jumpToOrCall($o['callback'], $o['args']);
+      }
     } else {
       $this->endCustomOrder($key);
     }
@@ -196,30 +203,31 @@ class Heat extends Table
    */
   public function zombieTurn($state, $activePlayer)
   {
-    // $skipped = Globals::getSkippedPlayers();
-    // if (!in_array((int) $activePlayer, $skipped)) {
-    //   $skipped[] = (int) $activePlayer;
-    //   Globals::setSkippedPlayers($skipped);
-    // }
+    $pId = (int) $activePlayer;
+    $skipped = Globals::getSkippedPlayers();
+    if (!in_array($pId, $skipped)) {
+      $skipped[] = $pId;
+      Globals::setSkippedPlayers($skipped);
+      $constructor = Constructors::getOfPlayer($pId);
+      $constructor->eliminate();
+    }
 
     $stateName = $state['name'];
     if ($state['type'] == 'activeplayer') {
-      // if ($stateName == 'confirmTurn') {
-      //   $this->actConfirmTurn();
-      // } elseif ($stateName == 'confirmPartialTurn') {
-      //   $this->actConfirmPartialTurn();
-      // }
-      // // Clear all node of player
-      // elseif (Engine::getNextUnresolved() != null) {
-      //   Engine::clearZombieNodes($activePlayer);
-      //   Engine::proceed();
-      // } else {
-      $this->gamestate->nextState('zombiePass');
-      // }
+      if (in_array($state['name'], ['chooseSpeed', 'react', 'salvage', 'slipstream', 'discard'])) {
+        $this->nextPlayerCustomOrder('reveal');
+      } elseif ($state['name'] == 'chooseUpgrade') {
+        $this->nextPlayerCustomOrder('draft');
+      } else {
+        $this->gamestate->nextState('zombiePass');
+      }
     } elseif ($state['type'] == 'multipleactiveplayer') {
-      // TODO
-      // Make sure player is in a non blocking status for role turn
-      $this->gamestate->setPlayerNonMultiactive($activePlayer, 'zombiePass');
+      if ($state['name'] == 'planification') {
+        $this->updateActivePlayersInitialSelection();
+      } else {
+        // Make sure player is in a non blocking status for role turn
+        $this->gamestate->setPlayerNonMultiactive($pId, 'zombiePass');
+      }
     }
   }
 

@@ -98,7 +98,7 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsSwapUpgrade',
     'possibleactions' => ['actSwapUpgrade', 'actPassSwapUpgrade'],
-    'transitions' => ['start' => ST_DRAW_SPONSORS],
+    'transitions' => ['start' => ST_DRAW_SPONSORS, 'zombiePass' => ST_DRAW_SPONSORS],
   ],
 
   ST_DRAW_SPONSORS => [
@@ -125,7 +125,7 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('End of race result'),
     'type' => 'multipleactiveplayer',
     'possibleactions' => ['actConfirmResults'],
-    'transitions' => ['done' => ST_PROCEED_TO_NEXT_RACE],
+    'transitions' => ['done' => ST_PROCEED_TO_NEXT_RACE, 'zombiePass' => ST_PROCEED_TO_NEXT_RACE],
   ],
 
   ST_PROCEED_TO_NEXT_RACE => [

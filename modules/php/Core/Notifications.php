@@ -438,7 +438,7 @@ class Notifications
       EVENT_RESTRICTIONS_LIFTED => clienttranslate('Engine restrictions lifted'),
       EVENT_RECORD_CROWDS => clienttranslate('Record crowds'),
       EVENT_CORRUPTION => clienttranslate('Corruption in rules committee'),
-      EVENT_NEW_TITLE_SPONSOR => clienttranslate('New title sponsor'),
+      EVENT_TITLE_SPONSOR => clienttranslate('New title sponsor'),
       EVENT_FIRST_LIVE_TV => clienttranslate('First live television race'),
       EVENT_SAFETY_REGULATIONS => clienttranslate('New safety regulations'),
       EVENT_FUTURE_UNKNOWN => clienttranslate('Title sponsor withdraws future unknown'),
@@ -515,6 +515,14 @@ class Notifications
       self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1]);
       self::notify($constructor, 'pDraw', $pmsg, ['constructor' => $constructor, 'cards' => [$card]]);
     }
+  }
+
+  public function eliminate($constructor, $cell)
+  {
+    self::notifyAll('eliminate', clienttranslate('${constructor_name} is eliminated from the race and will score 0 points'), [
+      'constructor' => $constructor,
+      'cell' => $cell,
+    ]);
   }
 
   ///////////////////////////////////////////////////////////////

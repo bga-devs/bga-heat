@@ -32,6 +32,8 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'salvage' => 'int',
     'refreshedCards' => 'obj',
 
+    'skippedPlayers' => 'obj',
+
     'legend' => 'bool',
     'legendCards' => 'obj',
     'legendCard' => 'int',

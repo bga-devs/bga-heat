@@ -1,6 +1,7 @@
 <?php
 namespace HEAT\Models;
 use HEAT\Managers\Players;
+use HEAT\Managers\Constructors;
 use HEAT\Managers\Cards;
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
@@ -180,5 +181,23 @@ class Constructor extends \HEAT\Helpers\DB_Model
     }
 
     return true;
+  }
+
+  public function eliminate()
+  {
+    if ($this->isFinished()) {
+      return;
+    }
+
+    $cells = Constructors::getAll()
+      ->map(function ($c) {
+        return $c->getCarCell();
+      })
+      ->toArray();
+    $podium = array_diff([-8, -7, -6, -5, -4, -3, -2, -1], $cells);
+    $cell = array_shift($podium);
+    $this->setCarCell($cell);
+    $this->setSpeed(0);
+    Notifications::eliminate($this, $cell);
   }
 }

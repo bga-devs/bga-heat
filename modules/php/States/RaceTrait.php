@@ -71,6 +71,7 @@ trait RaceTrait
     Cards::setupRace();
 
     Globals::setFinishedConstructors([]);
+    Globals::setSkippedPlayers([]);
     if (Globals::getGarageModuleMode() == \HEAT\OPTION_GARAGE_DRAFT) {
       Globals::setDraftRound(1);
       $this->gamestate->nextState('draft');
@@ -124,9 +125,13 @@ trait RaceTrait
     }
 
     // Award points
+    $skippedPlayers = Globals::getSkippedPlayers();
     foreach (Constructors::getAll() as $cId => $constructor) {
       $podiumPos = -$constructor->getCarCell() - 1;
       $score[$cId] = $podium[$podiumPos] ?? 0;
+      if (!$constructor->isAI() && in_array($constructor->getPId(), $skippedPlayers)) {
+        $score[$cId] = 0;
+      }
       $constructor->incScore($score[$cId]);
     }
 
