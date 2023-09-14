@@ -489,17 +489,26 @@ class Notifications
         $pmsg = clienttranslate('You exceeded the speed limit of a press corner by 2 or more and gain sponsor ${cards_images}');
       }
       // EVENT: SPEED RECORD -> REACH SPEED OF 15
-      elseif ($reason == 'record') {
+      elseif ($reason == EVENT_NEW_RECORD) {
         $msg = clienttranslate('${constructor_name} reached a speed of 15 or more and gain 1 sponsor card (event\'s effect)');
         $pmsg = clienttranslate('You reached a speed of 15 or more and gain sponsor ${cards_images} (event\'s effect)');
       }
       // EVENT: INAUGURATION -> FIRST 3 CARS TO FINISH 1st LAP
-      elseif ($reason == 'inauguration') {
+      elseif ($reason == EVENT_INAUGURATION) {
         $msg = clienttranslate(
           '${constructor_name} was among the first three drivers to finish the 1st lap and gain 1 sponsor card (event\'s effect)'
         );
         $pmsg = clienttranslate(
           'You were among the first three drivers to finish the 1st lap and gain sponsor ${cards_images} (event\'s effect)'
+        );
+      }
+      // EVENT: FIRST LIVE TV -> PASS 3 CARS IN A TURN
+      elseif ($reason == EVENT_FIRST_LIVE_TV) {
+        $msg = clienttranslate(
+          '${constructor_name} passed at least 3 cards during their round and gain 1 sponsor card (event\'s effect)'
+        );
+        $pmsg = clienttranslate(
+          'You passed at least 3 cards during your round and gain sponsor ${cards_images} (event\'s effect)'
         );
       }
 

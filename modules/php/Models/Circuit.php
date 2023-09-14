@@ -448,4 +448,23 @@ class Circuit
     $event = Globals::getCurrentEvent();
     return in_array($i, EVENTS[$event]['press']);
   }
+
+  // USEFUL FOR LIVE TV EVENT
+  public function getCardsInBetween($turn1, $pos1, $turn2, $pos2)
+  {
+    $length = $this->getLength();
+    $uid1 = $length * $turn1 + $pos1;
+    $uid2 = $length * $turn2 + $pos2;
+    $cars = 0;
+    for ($pos = $uid1 + 1; $pos <= $uid2; $pos++) {
+      if (!$this->isFree($pos, 1)) {
+        $cars++;
+      }
+      if (!$this->isFree($pos, 2)) {
+        $cars++;
+      }
+    }
+
+    return $cars;
+  }
 }

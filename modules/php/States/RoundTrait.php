@@ -848,7 +848,7 @@ trait RoundTrait
     $event = Globals::getCurrentEvent();
     // New record : must reach speed of 15
     if ($event == EVENT_NEW_RECORD && $speed >= 15) {
-      $sponsorsGained[] = 'record';
+      $sponsorsGained[] = EVENT_NEW_RECORD;
     }
     // Inauguration: first 3 cards to finish 1st lap
     elseif ($event == EVENT_INAUGURATION && $prevTurn == 0 && $turn == 1) {
@@ -863,7 +863,14 @@ trait RoundTrait
       }
 
       if ($alreadyCrossed < 3) {
-        $sponsorsGained[] = 'inauguration';
+        $sponsorsGained[] = EVENT_INAUGURATION;
+      }
+    }
+    // First live tv : must pass 3 cars
+    elseif ($event == EVENT_FIRST_LIVE_TV) {
+      $nCars = $this->getCircuit()->getCarsInBetween($prevTurn, $prevPosition, $turn, $position);
+      if ($nCars >= 3) {
+        $sponsorsGained[] = EVENT_FIRST_LIVE_TV;
       }
     }
 
