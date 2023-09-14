@@ -147,6 +147,10 @@ class Cards extends \HEAT\Helpers\Pieces
 
   public static function setupRace()
   {
+    // Clear previous heat/stress if any
+    self::clean();
+
+    // Create the stresses and heats
     $nStress = Game::get()
       ->getCircuit()
       ->getStressCards();
@@ -154,6 +158,25 @@ class Cards extends \HEAT\Helpers\Pieces
       ->getCircuit()
       ->getHeatCards();
 
+    ////// Weather /////
+    $weatherCard = Globals::getWeatherCard();
+    $loc = null;
+    $nHeatToMove = 0;
+    // Move 3 heat to deck
+    if ($weatherCard == WEATHER_RAIN) {
+      $loc = clienttranslate('deck');
+    }
+    // Move 3 heat to discard
+    elseif ($weatherCard == WEATHER_SUN) {
+      $loc = clienttranslate('discard');
+    }
+
+    if (!is_null($loc)) {
+      $nHeatToMove = min(3, $nHeat);
+      Notifications::weatherHeats($nHeatToMove, $loc);
+    }
+
+    // Create the cards
     $cards = [];
     foreach (Constructors::getAll() as $cId => $constructor) {
       if ($constructor->isAI()) {
@@ -162,18 +185,60 @@ class Cards extends \HEAT\Helpers\Pieces
 
       // Stress and heats
       $cards[] = ['type' => 110, 'nbr' => $nStress, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 111, 'nbr' => $nHeat, 'location' => "engine-$cId"];
+      $cards[] = ['type' => 111, 'nbr' => $nHeat - $nHeatToMove, 'location' => "engine-$cId"];
+      if (!is_null($loc)) {
+        $cards[] = ['type' => 111, 'nbr' => $nHeatToMove, 'location' => "$loc-$cId"];
+      }
     }
 
     self::create($cards, null);
-    //    Notifications::setupRace($cards, $nStress, $nHeat);
+
+    // Compute and send counters to UI
+    $counters = [];
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      $counters[$cId] = [
+        'engine' => $constructor->getEngine(),
+        'discard' => $constructor->getDiscard(),
+        'deckCount' => $constructor->getDeck()->count(),
+      ];
+    }
+
+    Notifications::setupRace($counters);
+  }
+
+  public static function clean()
+  {
+    // Get the generic heats and stresses and delete them
+    $heatAndStressCardIds = self::getAll()->filter(function ($card) {
+      return in_array($card['type'], [110, 111]);
+    });
+    self::DB()
+      ->delete()
+      ->whereIn('id', $heatAndStressCardIds)
+      ->run();
+
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      if ($constructor->isAI()) {
+        continue;
+      }
+
+      $discardIds = $constructor->getDiscard()->getIds();
+      if (!empty($discardIds)) {
+        self::move($discardIds, "deck-$cId");
+      }
+
+      $inPlayIds = $constructor->getInPlay()->getIds();
+      if (!empty($inPlayIds)) {
+        self::move($inPlayIds, "deck-$cId");
+      }
+    }
   }
 
   public static function fillHand($constructor)
   {
     $nCards = $constructor->getHand()->count();
     $nToDraw = Game::get()->getHandSizeLimit() - $nCards;
-    if ($nToDraw == 0) {
+    if ($nToDraw <= 0) {
       return;
     }
     $cards = Cards::draw($constructor->getId(), $nToDraw);

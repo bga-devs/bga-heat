@@ -87,20 +87,6 @@ trait RaceTrait
         continue;
       }
 
-      $weatherCard = Globals::getWeatherCard();
-      // Move 3 heat to deck
-      if ($weatherCard == WEATHER_RAIN) {
-        $heats = $constructor->getEngine()->limit(3);
-        Cards::move($heats->getIds(), "deck-$cId");
-        Notifications::weatherHeats($constructor, $heats, clienttranslate('deck'));
-      }
-      // Move 3 heat to discard
-      elseif ($weatherCard == WEATHER_SUN) {
-        $heats = $constructor->getEngine()->limit(3);
-        Cards::move($heats->getIds(), "discard-$cId");
-        Notifications::weatherHeats($constructor, $heats, clienttranslate('discard'));
-      }
-
       Cards::shuffle("deck-$cId");
       Cards::fillHand($constructor);
     }

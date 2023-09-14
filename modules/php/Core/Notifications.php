@@ -405,25 +405,25 @@ class Notifications
     );
   }
 
-  public static function weatherHeats($constructor, $heats, $location)
+  public static function weatherHeats($n, $location)
   {
-    self::notifyAll(
-      'weatherHeats',
-      clienttranslate('${constructor_name} moves ${cards_images} to ${loc} because of weather card'),
-      [
-        'i18n' => ['loc'],
-        'constructor' => $constructor,
-        'cards' => $heats,
-        'loc' => $location,
-        'location' => $location,
-      ]
-    );
+    self::notifyAll('weatherHeats', clienttranslate('Due to weather card, everyone move ${n} heat(s) to ${loc}'), [
+      'i18n' => ['loc'],
+      'loc' => $location,
+    ]);
   }
 
   public static function loadCircuit($circuit)
   {
     self::notifyAll('loadCircuit', '', [
       'circuit' => $circuit,
+    ]);
+  }
+
+  public static function setupRace($counters)
+  {
+    self::notifyAll('setupRace', '', [
+      'counters' => $counters,
     ]);
   }
 
