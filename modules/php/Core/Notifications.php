@@ -190,32 +190,6 @@ class Notifications
     );
   }
 
-  public function drawSponsor($constructor, $card, $reason)
-  {
-    if (is_null($card)) {
-      $msg = clienttranslate('${constructor_name} cannot draw a sponsor card because none are left');
-      self::message($msg, ['constructor' => $constructor]);
-    } else {
-      $msg = '';
-      $pmsg = '';
-      if ($reason == 'slipstream') {
-        $msg = clienttranslate('${constructor_name} slipstreamed through a press corner and gain 1 sponsor card');
-        $pmsg = clienttranslate('You slipstreamed through a press corner and gain sponsor ${cards_images}');
-      } elseif ($reason == 'exceed') {
-        $msg = clienttranslate(
-          '${constructor_name} exceeded the speed limit of a press corner by 2 or more and gain 1 sponsor card'
-        );
-        $pmsg = clienttranslate('You exceeded the speed limit of a press corner by 2 or more and gain sponsor ${cards_images}');
-      } elseif ($reason == 'record') {
-        $msg = clienttranslate('${constructor_name} reached a speed of 15 or more and gain 1 sponsor card (event\'s effect)');
-        $pmsg = clienttranslate('You reached a speed of 15 or more and gain sponsor ${cards_images} (event\'s effect)');
-      }
-
-      self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1]);
-      self::notify($constructor, 'pDraw', $pmsg, ['constructor' => $constructor, 'cards' => [$card]]);
-    }
-  }
-
   public function resolveBoost($constructor, $cards, $card, $i, $n)
   {
     $msg =
@@ -263,7 +237,7 @@ class Notifications
     );
   }
 
-  public function spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack)
+  public function spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $newTurn)
   {
     self::notifyAll(
       'spinOut',
@@ -278,6 +252,7 @@ class Notifications
         'limit' => $limit,
         'corner' => $cornerPos,
         'cell' => $cell,
+        'turn' => $newTurn,
         'stresses' => $stresses,
         'nCellsBack' => $nBack,
       ]
@@ -491,6 +466,46 @@ class Notifications
       'weather' => $weather,
       'cells' => $positions,
     ]);
+  }
+
+  public function drawSponsor($constructor, $card, $reason)
+  {
+    if (is_null($card)) {
+      $msg = clienttranslate('${constructor_name} cannot draw a sponsor card because none are left');
+      self::message($msg, ['constructor' => $constructor]);
+    } else {
+      $msg = '';
+      $pmsg = '';
+      // SLIPSTREAM THROUH PRESS CORNER
+      if ($reason == 'slipstream') {
+        $msg = clienttranslate('${constructor_name} slipstreamed through a press corner and gain 1 sponsor card');
+        $pmsg = clienttranslate('You slipstreamed through a press corner and gain sponsor ${cards_images}');
+      }
+      // EXCEED BY 2 PRESS CORNER SPEED
+      elseif ($reason == 'exceed') {
+        $msg = clienttranslate(
+          '${constructor_name} exceeded the speed limit of a press corner by 2 or more and gain 1 sponsor card'
+        );
+        $pmsg = clienttranslate('You exceeded the speed limit of a press corner by 2 or more and gain sponsor ${cards_images}');
+      }
+      // EVENT: SPEED RECORD -> REACH SPEED OF 15
+      elseif ($reason == 'record') {
+        $msg = clienttranslate('${constructor_name} reached a speed of 15 or more and gain 1 sponsor card (event\'s effect)');
+        $pmsg = clienttranslate('You reached a speed of 15 or more and gain sponsor ${cards_images} (event\'s effect)');
+      }
+      // EVENT: INAUGURATION -> FIRST 3 CARS TO FINISH 1st LAP
+      elseif ($reason == 'inauguration') {
+        $msg = clienttranslate(
+          '${constructor_name} was among the first three drivers to finish the 1st lap and gain 1 sponsor card (event\'s effect)'
+        );
+        $pmsg = clienttranslate(
+          'You were among the first three drivers to finish the 1st lap and gain sponsor ${cards_images} (event\'s effect)'
+        );
+      }
+
+      self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1]);
+      self::notify($constructor, 'pDraw', $pmsg, ['constructor' => $constructor, 'cards' => [$card]]);
+    }
   }
 
   ///////////////////////////////////////////////////////////////

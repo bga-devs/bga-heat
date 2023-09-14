@@ -111,8 +111,19 @@ trait RaceTrait
   {
     $scores = Globals::getScores();
     $score = [];
+
+    // Compute podium points depending on events
     $podium = [9, 6, 4, 3, 2, 1];
-    // TODO EVENT
+    $event = Globals::getCurrentEvent();
+    if ($event == EVENT_STRIKE) {
+      $podium[0] += 2;
+    } elseif ($event == EVENT_CORRUPTION) {
+      $podium[0]++;
+      $podium[1]++;
+      $podium[2]++;
+    }
+
+    // Award points
     foreach (Constructors::getAll() as $cId => $constructor) {
       $podiumPos = -$constructor->getCarCell() - 1;
       $score[$cId] = $podium[$podiumPos] ?? 0;

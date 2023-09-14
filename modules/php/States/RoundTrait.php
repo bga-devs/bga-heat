@@ -830,7 +830,7 @@ trait RoundTrait
             $newPosition = $constructor->getPosition();
             $length = $this->getCircuit()->getLength();
             $nBack = ($position - $newPosition + $length) % $length;
-            Notifications::spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack);
+            Notifications::spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $cornerTurn);
             $spinOut = true;
             break;
           } else {
@@ -844,9 +844,27 @@ trait RoundTrait
       }
     }
 
-    // Events
-    if (Globals::getCurrentEvent() == EVENT_NEW_RECORD && $speed >= 15) {
+    ////// EVENTS /////
+    $event = Globals::getCurrentEvent();
+    // New record : must reach speed of 15
+    if ($event == EVENT_NEW_RECORD && $speed >= 15) {
       $sponsorsGained[] = 'record';
+    }
+    // Inauguration: first 3 cards to finish 1st lap
+    elseif ($event == EVENT_INAUGURATION && $prevTurn == 0 && $turn == 1) {
+      $alreadyCrossed = 0;
+      foreach (Constructor::getAll() as $constructor2) {
+        if ($constructor->getId() == $constructor2->getId()) {
+          continue;
+        }
+        if ($constructor2->getTurn() >= 1) {
+          $alreadyCrossed++;
+        }
+      }
+
+      if ($alreadyCrossed < 3) {
+        $sponsorsGained[] = 'inauguration';
+      }
     }
 
     // Draw sponsors into hand
