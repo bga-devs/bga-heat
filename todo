@@ -6,8 +6,6 @@ Other :
 Backend : 
 
 Frontend :
-  - eliminate notif : eliminate($constructor, $cell)
-
   - state confirm race results 
   - notif car positions + weather
   - notif scores also contains order
@@ -17,6 +15,8 @@ Frontend :
     notif_endOfRace
 
   - error when moving 0 space ahead
+
+  - gray salvage if no discard
 
   remove buttons when notifications are in titlebar
 

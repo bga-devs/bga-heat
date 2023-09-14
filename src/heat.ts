@@ -740,7 +740,9 @@ class Heat implements HeatGame {
             this.lapCounters[constructor.id].setValue(Math.max(1, Math.min(gamedatas.nbrLaps, constructor.turn + 1)));
 
             if (constructor.carCell < 0) {
-                this.setRank(constructor.id, -constructor.carCell);
+                const eliminated = constructor.turn < this.gamedatas.nbrLaps || Boolean(this.gamedatas.players[constructor.pId]?.zombie);
+                this.setRank(constructor.id, -constructor.carCell, eliminated);
+                this.circuit.setEliminatedPodium(constructor.carCell);
             }
         });
 
@@ -1039,6 +1041,7 @@ class Heat implements HeatGame {
             'accelerate',
             'salvageCards',
             'directPlay',
+            'eliminate',
         ];
         
     
@@ -1257,15 +1260,18 @@ class Heat implements HeatGame {
     this.lapCounters[constructor_id].toValue(Math.min(n, lap));
 }
 
-    async notif_finishRace(args: NotifFinishRaceArgs) {
+    async notif_finishRace(args: NotifFinishRaceArgs, eliminated: boolean = false) {
         const { constructor_id, pos } = args;
         if (this.animationManager.animationsActive()) {
             await this.circuit.finishRace(constructor_id, pos);
         } else {
-            this.circuit.moveCar(constructor_id, -pos);
+            this.circuit.moveCar(constructor_id, pos);
         }
         
-        this.setRank(constructor_id, pos);
+        this.setRank(constructor_id, pos, eliminated);
+        if (eliminated) {
+            this.circuit.setEliminatedPodium(pos);
+        }
     }
 
     private setScore(playerId: number, score: number) {
@@ -1317,13 +1323,21 @@ class Heat implements HeatGame {
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).inplay.addCard(card);
     }
+
+    async notif_eliminate(args: NotifEliminateArgs) {
+        const { cell } = args;
+        await this.notif_finishRace({
+            ...args,
+            pos: cell
+        }, true);
+    }    
     
 
-    private setRank(constructorId: number, pos: number) {
+    private setRank(constructorId: number, pos: number, eliminated: boolean) {
         const playerId = this.getPlayerIdFromConstructorId(constructorId);
         document.getElementById(`overall_player_board_${playerId}`).classList.add('finished');
         document.getElementById(`podium-wrapper-${constructorId}`).classList.add('finished');
-        document.getElementById(`podium-counter-${constructorId}`).innerHTML = ''+pos;
+        document.getElementById(`podium-counter-${constructorId}`).innerHTML = `${eliminated ? '❌' : pos}`;
     }
     
     /*

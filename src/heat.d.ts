@@ -296,5 +296,8 @@ interface NotifDirectPlayArgs {
     card: Card;
 }
 
-
-
+// eliminate
+interface NotifEliminateArgs {
+    constructor_id: number;
+    cell: number;
+}

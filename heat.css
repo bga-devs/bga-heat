@@ -665,6 +665,13 @@ height: 241px; */
   background-position-x: 100%;
 }
 
+.eliminated-podium {
+  position: absolute;
+  left: calc(var(--x) + 20px);
+  top: calc(var(--y) - 23px);
+  font-size: 32px;
+}
+
 .map-indicator {
   position: absolute;
   left: -16px;

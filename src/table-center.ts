@@ -2,14 +2,14 @@ const MAP_WIDTH = 1650;
 const MAP_HEIGHT = 1100;
 
 const LEADERBOARD_POSITIONS = {
-    '-1': { x: 0, y: 0, a: 0 },
-    '-2': { x: -77, y: 52, a: 0 },
-    '-3': { x: 77, y: 52, a: 0 },
-    '-4': { x: 0, y: 128, a: 0 },
-    '-5': { x: 0, y: 180, a: 0 },
-    '-6': { x: 0, y: 232, a: 0 },
-    '-7': { x: 0, y: 284, a: 0 },
-    '-8': { x: 0, y: 336, a: 0 },
+    1: { x: 0, y: 0, a: 0 },
+    2: { x: -77, y: 52, a: 0 },
+    3: { x: 77, y: 52, a: 0 },
+    4: { x: 0, y: 128, a: 0 },
+    5: { x: 0, y: 180, a: 0 },
+    6: { x: 0, y: 232, a: 0 },
+    7: { x: 0, y: 284, a: 0 },
+    8: { x: 0, y: 336, a: 0 },
 };
 
 const WEATHER_TOKENS_ON_SECTOR_TENT = [0, 4, 5];
@@ -304,11 +304,11 @@ class Circuit {
     }
 
     private getCellPosition(carCell: number) {
-        const cell = structuredClone(carCell < 0 ? this.circuitDatas.podium : this.circuitDatas.cells[carCell]);
+        const cell = carCell < 0 ? structuredClone(this.circuitDatas.podium) : this.circuitDatas.cells[carCell];
 
         if (carCell < 0) {
-            cell.x += LEADERBOARD_POSITIONS[carCell].x;
-            cell.y += LEADERBOARD_POSITIONS[carCell].y;
+            cell.x += LEADERBOARD_POSITIONS[Math.abs(carCell)].x;
+            cell.y += LEADERBOARD_POSITIONS[Math.abs(carCell)].y;
         }
 
         return cell;
@@ -455,5 +455,13 @@ class Circuit {
         if (color) {
             setTimeout(() => this.showCorner(id), this.game.animationManager.animationsActive() ? 2000 : 1);
         }
+    }
+    
+    public setEliminatedPodium(pos: number) {
+        const cell = structuredClone(this.circuitDatas.podium);
+        cell.x += LEADERBOARD_POSITIONS[Math.abs(pos)].x;
+        cell.y += LEADERBOARD_POSITIONS[Math.abs(pos)].y;
+
+        this.circuitDiv.insertAdjacentHTML('beforeend', `<div class="eliminated-podium" style="--x: ${cell.x}px; --y: ${cell.y}px;">❌</div>`);
     }
 }

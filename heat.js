@@ -2316,14 +2316,14 @@ var LegendCardsManager = /** @class */ (function (_super) {
 var MAP_WIDTH = 1650;
 var MAP_HEIGHT = 1100;
 var LEADERBOARD_POSITIONS = {
-    '-1': { x: 0, y: 0, a: 0 },
-    '-2': { x: -77, y: 52, a: 0 },
-    '-3': { x: 77, y: 52, a: 0 },
-    '-4': { x: 0, y: 128, a: 0 },
-    '-5': { x: 0, y: 180, a: 0 },
-    '-6': { x: 0, y: 232, a: 0 },
-    '-7': { x: 0, y: 284, a: 0 },
-    '-8': { x: 0, y: 336, a: 0 },
+    1: { x: 0, y: 0, a: 0 },
+    2: { x: -77, y: 52, a: 0 },
+    3: { x: 77, y: 52, a: 0 },
+    4: { x: 0, y: 128, a: 0 },
+    5: { x: 0, y: 180, a: 0 },
+    6: { x: 0, y: 232, a: 0 },
+    7: { x: 0, y: 284, a: 0 },
+    8: { x: 0, y: 336, a: 0 },
 };
 var WEATHER_TOKENS_ON_SECTOR_TENT = [0, 4, 5];
 var EVENTS_PRESS_CORNERS = {
@@ -2563,10 +2563,10 @@ var Circuit = /** @class */ (function () {
         }
     };
     Circuit.prototype.getCellPosition = function (carCell) {
-        var cell = structuredClone(carCell < 0 ? this.circuitDatas.podium : this.circuitDatas.cells[carCell]);
+        var cell = carCell < 0 ? structuredClone(this.circuitDatas.podium) : this.circuitDatas.cells[carCell];
         if (carCell < 0) {
-            cell.x += LEADERBOARD_POSITIONS[carCell].x;
-            cell.y += LEADERBOARD_POSITIONS[carCell].y;
+            cell.x += LEADERBOARD_POSITIONS[Math.abs(carCell)].x;
+            cell.y += LEADERBOARD_POSITIONS[Math.abs(carCell)].y;
         }
         return cell;
     };
@@ -2705,6 +2705,12 @@ var Circuit = /** @class */ (function () {
         if (color) {
             setTimeout(function () { return _this.showCorner(id); }, this.game.animationManager.animationsActive() ? 2000 : 1);
         }
+    };
+    Circuit.prototype.setEliminatedPodium = function (pos) {
+        var cell = structuredClone(this.circuitDatas.podium);
+        cell.x += LEADERBOARD_POSITIONS[Math.abs(pos)].x;
+        cell.y += LEADERBOARD_POSITIONS[Math.abs(pos)].y;
+        this.circuitDiv.insertAdjacentHTML('beforeend', "<div class=\"eliminated-podium\" style=\"--x: ".concat(cell.x, "px; --y: ").concat(cell.y, "px;\">\u274C</div>"));
     };
     return Circuit;
 }());
@@ -3568,6 +3574,7 @@ var Heat = /** @class */ (function () {
             document.getElementById('player_boards').insertAdjacentHTML('beforeend', "\n            <div id=\"overall_player_board_".concat(constructor.pId, "\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n                    \n                    <div class=\"emblemwrap\" id=\"avatar_active_wrap_").concat(constructor.id, "\">\n                        <div src=\"img/gear.png\" alt=\"\" class=\"avatar avatar_active legend_avatar\" id=\"avatar_active_").concat(constructor.id, "\" style=\"--constructor-id: ").concat(constructor.id, "\"></div>\n                    </div>\n                                               \n                    <div class=\"player-name\" id=\"player_name_").concat(constructor.id, "\">\n                        ").concat(constructor.name, "\n                    </div>\n                    <div id=\"player_board_").concat(constructor.pId, "\" class=\"player_board_content\">\n                        <div class=\"player_score\">\n                            <span id=\"player_score_").concat(constructor.pId, "\" class=\"player_score_value\">-</span> <i class=\"fa fa-star\" id=\"icon_point_").concat(constructor.id, "\"></i>           \n                        </div>\n                    </div>\n                </div>\n            </div>"));
         });
         constructors.forEach(function (constructor) {
+            var _a;
             var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(constructor.pId));
@@ -3588,7 +3595,9 @@ var Heat = /** @class */ (function () {
             _this.lapCounters[constructor.id].create("lap-counter-".concat(constructor.id));
             _this.lapCounters[constructor.id].setValue(Math.max(1, Math.min(gamedatas.nbrLaps, constructor.turn + 1)));
             if (constructor.carCell < 0) {
-                _this.setRank(constructor.id, -constructor.carCell);
+                var eliminated = constructor.turn < _this.gamedatas.nbrLaps || Boolean((_a = _this.gamedatas.players[constructor.pId]) === null || _a === void 0 ? void 0 : _a.zombie);
+                _this.setRank(constructor.id, -constructor.carCell, eliminated);
+                _this.circuit.setEliminatedPodium(constructor.carCell);
             }
         });
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
@@ -3839,6 +3848,7 @@ var Heat = /** @class */ (function () {
             'accelerate',
             'salvageCards',
             'directPlay',
+            'eliminate',
         ];
         notifs.forEach(function (notifName) {
             dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -4083,7 +4093,8 @@ var Heat = /** @class */ (function () {
             });
         });
     };
-    Heat.prototype.notif_finishRace = function (args) {
+    Heat.prototype.notif_finishRace = function (args, eliminated) {
+        if (eliminated === void 0) { eliminated = false; }
         return __awaiter(this, void 0, void 0, function () {
             var constructor_id, pos;
             return __generator(this, function (_a) {
@@ -4096,10 +4107,13 @@ var Heat = /** @class */ (function () {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        this.circuit.moveCar(constructor_id, -pos);
+                        this.circuit.moveCar(constructor_id, pos);
                         _a.label = 3;
                     case 3:
-                        this.setRank(constructor_id, pos);
+                        this.setRank(constructor_id, pos, eliminated);
+                        if (eliminated) {
+                            this.circuit.setEliminatedPodium(pos);
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -4153,11 +4167,26 @@ var Heat = /** @class */ (function () {
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).inplay.addCard(card);
     };
-    Heat.prototype.setRank = function (constructorId, pos) {
+    Heat.prototype.notif_eliminate = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var cell;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        cell = args.cell;
+                        return [4 /*yield*/, this.notif_finishRace(__assign(__assign({}, args), { pos: cell }), true)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Heat.prototype.setRank = function (constructorId, pos, eliminated) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);
         document.getElementById("overall_player_board_".concat(playerId)).classList.add('finished');
         document.getElementById("podium-wrapper-".concat(constructorId)).classList.add('finished');
-        document.getElementById("podium-counter-".concat(constructorId)).innerHTML = '' + pos;
+        document.getElementById("podium-counter-".concat(constructorId)).innerHTML = "".concat(eliminated ? '❌' : pos);
     };
     /*
     * [Undocumented] Called by BGA framework on any notification message
