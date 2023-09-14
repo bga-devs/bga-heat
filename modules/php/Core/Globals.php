@@ -193,17 +193,21 @@ class Globals extends \HEAT\Helpers\DB_Manager
       if ($championship != \HEAT\OPTION_CHAMPIONSHIP_CUSTOM) {
         $datas = CHAMPIONSHIP_SEASONS[$championship];
         $datas['index'] = 0;
+        foreach ($datas['circuits'] as &$race) {
+          $race['name'] = self::getCircuitName($race['circuit']);
+        }
         self::setChampionshipDatas($datas);
       }
       // Random championship
       else {
-        $datas = ['name' => 'custom', 'circuits' => [], 'index' => 0];
+        $datas = ['name' => clienttranslate('Custom'), 'circuits' => [], 'index' => 0];
         $circuits = ['usa', 'italia', 'gb', 'france'];
         $events = array_keys(EVENTS);
         shuffle($circuits);
         shuffle($events);
         foreach ($circuits as $i => $circuit) {
           $datas['circuits'][] = [
+            'name' => self::getCircuitName($circuit),
             'circuit' => $circuit,
             'event' => $events[$i],
           ];
@@ -227,6 +231,17 @@ class Globals extends \HEAT\Helpers\DB_Manager
         self::loadCircuitDatas();
       }
     }
+  }
+
+  public function getCircuitName($circuitId)
+  {
+    $map = [
+      'usa' => clienttranslate('USA'),
+      'gb' => clienttranslate('Great-Britain'),
+      'france' => clienttranslate('France'),
+      'italia' => clienttranslate('Italia'),
+    ];
+    return $map[$circuitId];
   }
 
   public static function getWeatherCard()
