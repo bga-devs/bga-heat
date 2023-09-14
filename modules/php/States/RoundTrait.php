@@ -556,9 +556,15 @@ trait RoundTrait
     }
     // SALVAGE
     elseif ($symbol == SALVAGE) {
-      Globals::setSalvage($n);
-      $this->gamestate->jumpToState(ST_SALVAGE);
-      return;
+      if ($constructor->getDiscard()->empty()) {
+        Notifications::message(clienttranslate('${constructor_name} can\'t salvage any card because their discard is empty'), [
+          'constructor' => $constructor,
+        ]);
+      } else {
+        Globals::setSalvage($n);
+        $this->gamestate->jumpToState(ST_SALVAGE);
+        return;
+      }
     }
     // DIRECT
     elseif ($symbol == DIRECT) {

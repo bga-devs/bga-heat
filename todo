@@ -1,11 +1,9 @@
 Other :
-
+  - Cluttered hand: waiting for an answer from DoW about that.
+    How can we compute "valid cards to play" ? Should we take into account the cooldown the the car may get if it lands in a sector with a weather token ?
+    Can a player make a bet using stress by hoping to land in such sector ?
+    
 Backend : 
-  - planification : shouldnt be able to select heat (unless very rare case where you can play nothing) => moved to back, as front makes _private.cards selectable, and heat is in the least (player colored heat at least)
-  - should we send cellId for React and other questions to move cars ? So I can highlight the cell like I just did for Speed state.
-  - make last card of a discard notif always visible ?
-  - when using Refresh reaction, skip other reaction. And make sure there is no mandatory reaction pending.
-  - skip salvage (with logs) if empty discard
 
 Frontend :
   - eliminate notif : eliminate($constructor, $cell)
