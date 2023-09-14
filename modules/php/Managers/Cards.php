@@ -281,7 +281,7 @@ class Cards extends \HEAT\Helpers\Pieces
       37 => $f(ADVANCED_UPGRADE, 1, [ADJUST => 1, SCRAP => 2], clienttranslate('Tires')),
       38 => $f(ADVANCED_UPGRADE, 2, [ADJUST => 1, SCRAP => 2], clienttranslate('Tires')),
       39 => $f(ADVANCED_UPGRADE, 3, [ADJUST => -1, COOLDOWN => 2], clienttranslate('Tires')),
-      40 => $f(ADVANCED_UPGRADE, 0, [ADJUST => 1, COOLDOWN => 1, SLIPSTREAM => 1], clienttranslate('Tires')),
+      40 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, ADJUST => 1, COOLDOWN => 1, SLIPSTREAM => 1], clienttranslate('Tires')),
       41 => $f(ADVANCED_UPGRADE, 0, [ADJUST => 2, BOOST => 2], clienttranslate('Tires')),
       // Turbo charger
       42 => $f(ADVANCED_UPGRADE, 7, [HEAT => 2, COOLDOWN => 3], clienttranslate('Turbo charger')),
