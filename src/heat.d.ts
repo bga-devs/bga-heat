@@ -258,7 +258,8 @@ interface NotifFinishRaceArgs {
 
 // endOfRace
 interface NotifEndOfRaceArgs {
-    scores: { [circuitId: string]: { [constructor_id: number]: number}};
+    order: number[]; // constructor_ids
+    scores: { [index: number]: { [constructor_id: number]: number}};
 }
 
 // newLegendCard
@@ -300,4 +301,19 @@ interface NotifDirectPlayArgs {
 interface NotifEliminateArgs {
     constructor_id: number;
     cell: number;
+}
+
+// newChampionshipRace
+interface NotifNewChampionshipRaceArgs {
+    board: string;
+    event: string;
+    index: number;
+    circuitDatas: CircuitDatas;
+}
+
+// startRace
+interface NotifStartRaceArgs {
+    constructor_ids: number[];
+    weather: Weather;
+    cells: { [constructor_id: number]: number };
 }

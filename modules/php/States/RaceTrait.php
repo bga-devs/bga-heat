@@ -28,7 +28,7 @@ trait RaceTrait
         Globals::loadCircuitDatas();
       }
       $this->circuit = null; // Prevent caching
-      Notifications::newChampionshipRace($datas, $this->getCircuit()->getName());
+      Notifications::newChampionshipRace($datas, $this->getCircuit());
     }
 
     // Place cars on starting positions

@@ -119,8 +119,7 @@ class Circuit {
 
         if (gamedatas.circuitDatas?.jpgUrl) {
             this.loadCircuit(gamedatas.circuitDatas);
-
-            Object.values(this.gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
+            this.createWeather(this.gamedatas.weather);
 
             if (gamedatas.championship?.circuits) {
                 const event = gamedatas.championship.circuits[gamedatas.championship.index].event;
@@ -135,7 +134,14 @@ class Circuit {
         this.circuitDiv.style.backgroundImage = `url('${this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : `${g_gamethemeurl}img/${this.circuitDatas.jpgUrl}`}')`;
 
         this.createCorners(this.circuitDatas.corners);
-        this.createWeather(this.gamedatas.weather, this.circuitDatas);
+
+        Object.values(this.gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
+    }
+    
+    public newCircuit(circuitDatas: CircuitDatas) {
+        this.circuitDiv.innerHTML = '';
+        
+        this.loadCircuit(circuitDatas);
     }
 
     /** 
@@ -187,10 +193,10 @@ class Circuit {
         this.game.setTooltip(pressIconDiv.id, `<div class="press-token"></div>`);
     }
     
-    private createWeather(weather: Weather, circuitDatas: CircuitDatas): void {
+    public createWeather(weather: Weather): void {
         if (weather?.tokens) {
-            this.createWeatherCard(weather.card, circuitDatas.weatherCardPos);
-            this.createWeatherTokens(weather.tokens, circuitDatas.corners, weather.card);
+            this.createWeatherCard(weather.card, this.circuitDatas.weatherCardPos);
+            this.createWeatherTokens(weather.tokens, this.circuitDatas.corners, weather.card);
         }
     }
     

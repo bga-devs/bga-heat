@@ -138,13 +138,13 @@ const CHAMPIONSHIP_SEASONS = [
     'circuits' => [
       ['circuit' => 'gb', 'event' => EVENT_INAUGURATION],
       ['circuit' => 'usa', 'event' => EVENT_NEW_RECORD],
-      ['circuit' => 'italy', 'event' => EVENT_STRIKE],
+      ['circuit' => 'italia', 'event' => EVENT_STRIKE],
     ],
   ],
   \HEAT\OPTION_CHAMPIONSHIP_SEASON_62 => [
     'name' => 1962,
     'circuits' => [
-      ['circuit' => 'italy', 'event' => EVENT_RESTRICTIONS_LIFTED],
+      ['circuit' => 'italia', 'event' => EVENT_RESTRICTIONS_LIFTED],
       ['circuit' => 'gb', 'event' => EVENT_RECORD_CROWDS],
       ['circuit' => 'france', 'event' => EVENT_CORRUPTION],
     ],
@@ -155,7 +155,7 @@ const CHAMPIONSHIP_SEASONS = [
       ['circuit' => 'usa', 'event' => EVENT_TITLE_SPONSOR],
       ['circuit' => 'gb', 'event' => EVENT_FIRST_LIVE_TV],
       ['circuit' => 'france', 'event' => EVENT_SAFETY_REGULATIONS],
-      ['circuit' => 'italy', 'event' => EVENT_FUTURE_UNKNOWN],
+      ['circuit' => 'italia', 'event' => EVENT_FUTURE_UNKNOWN],
     ],
   ],
 ];

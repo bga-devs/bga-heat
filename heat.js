@@ -2421,7 +2421,7 @@ var Circuit = /** @class */ (function () {
         this.circuitDiv = document.getElementById('circuit');
         if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
             this.loadCircuit(gamedatas.circuitDatas);
-            Object.values(this.gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
+            this.createWeather(this.gamedatas.weather);
             if ((_b = gamedatas.championship) === null || _b === void 0 ? void 0 : _b.circuits) {
                 var event_1 = gamedatas.championship.circuits[gamedatas.championship.index].event;
                 var pressCorners = EVENTS_PRESS_CORNERS[event_1];
@@ -2430,10 +2430,15 @@ var Circuit = /** @class */ (function () {
         }
     }
     Circuit.prototype.loadCircuit = function (circuitDatas) {
+        var _this = this;
         this.circuitDatas = circuitDatas;
         this.circuitDiv.style.backgroundImage = "url('".concat(this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : "".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl), "')");
         this.createCorners(this.circuitDatas.corners);
-        this.createWeather(this.gamedatas.weather, this.circuitDatas);
+        Object.values(this.gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
+    };
+    Circuit.prototype.newCircuit = function (circuitDatas) {
+        this.circuitDiv.innerHTML = '';
+        this.loadCircuit(circuitDatas);
     };
     /**
      * Set map size, depending on available screen size.
@@ -2481,10 +2486,10 @@ var Circuit = /** @class */ (function () {
         this.circuitDiv.insertAdjacentElement('beforeend', pressIconDiv);
         this.game.setTooltip(pressIconDiv.id, "<div class=\"press-token\"></div>");
     };
-    Circuit.prototype.createWeather = function (weather, circuitDatas) {
+    Circuit.prototype.createWeather = function (weather) {
         if (weather === null || weather === void 0 ? void 0 : weather.tokens) {
-            this.createWeatherCard(weather.card, circuitDatas.weatherCardPos);
-            this.createWeatherTokens(weather.tokens, circuitDatas.corners, weather.card);
+            this.createWeatherCard(weather.card, this.circuitDatas.weatherCardPos);
+            this.createWeatherTokens(weather.tokens, this.circuitDatas.corners, weather.card);
         }
     };
     Circuit.prototype.createWeatherCard = function (type, wheatherCardPos) {
@@ -3057,6 +3062,21 @@ var LegendTable = /** @class */ (function () {
     };
     return LegendTable;
 }());
+var ChampionshipTable = /** @class */ (function () {
+    function ChampionshipTable(game, gamedatas) {
+        this.game = game;
+        var html = "\n        <div id=\"championship-table\">\n            <div id=\"championship-circuits\">";
+        gamedatas.championship.circuits.forEach(function (circuit, index) {
+            return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                ").concat(circuit.circuit, "\n            </div>\n            ");
+        });
+        html += "\n            </div>\n        </div>\n        ";
+        document.getElementById('table-center').insertAdjacentHTML('beforebegin', html);
+    }
+    ChampionshipTable.prototype.newChampionshipRace = function (index) {
+        document.querySelectorAll('.championship-circuit').forEach(function (elem) { return elem.classList.toggle('current', Number(elem.dataset.index) == index); });
+    };
+    return ChampionshipTable;
+}());
 var ANIMATION_MS = 500;
 var MIN_NOTIFICATION_MS = 1200;
 var ACTION_TIMER_DURATION = 5;
@@ -3114,17 +3134,27 @@ var Heat = /** @class */ (function () {
         this.animationManager = new AnimationManager(this);
         this.cardsManager = new CardsManager(this);
         this.legendCardsManager = new LegendCardsManager(this);
+        var jumpToEntries = [
+            new JumpToEntry(_('Circuit'), 'table-center', { 'color': '#222222' })
+        ];
+        if (gamedatas.isLegend) {
+            jumpToEntries.push(new JumpToEntry(_('Legends'), 'legend-board', { 'color': '#39464c' }));
+        }
+        if (gamedatas.championship) {
+            jumpToEntries.unshift(new JumpToEntry(_('Championship'), 'championship-table', { 'color': '#39464c' }));
+        }
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
-            topEntries: [
-                new JumpToEntry(_('Main board'), 'table-center', { 'color': '#224757' })
-            ],
+            topEntries: jumpToEntries,
             entryClasses: 'round-point',
             defaultFolded: true,
         });
         this.circuit = new Circuit(this, gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
+        if (gamedatas.championship) {
+            this.championshipTable = new ChampionshipTable(this, gamedatas);
+        }
         this.zoomManager = new ZoomManager({
             element: document.getElementById('tables'),
             smooth: false,
@@ -3462,6 +3492,9 @@ var Heat = /** @class */ (function () {
                             }
                             _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
                             _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), tooltip);
+                            if (type == 'salvage' && _this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
+                                document.getElementById("actReact".concat(type, "_").concat(number, "_button")).classList.add('disabled');
+                            }
                         });
                     });
                     break;
@@ -3474,6 +3507,9 @@ var Heat = /** @class */ (function () {
                     this.onEnteringSalvage(args);
                     this.addActionButton("actSalvage_button", _('Salvage selected cards'), function () { return _this.actSalvage(); });
                     document.getElementById("actSalvage_button").classList.add('disabled');
+                case 'confirmEndOfRace':
+                    this.addActionButton("seen_button", _("Seen"), function () { return _this.actConfirmResults(); });
+                    break;
             }
         }
         else {
@@ -3787,21 +3823,12 @@ var Heat = /** @class */ (function () {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return -card.id; })),
         });
     };
-    /*public actConfirmPartialTurn() {
-        if(!(this as any).checkAction('actConfirmPartialTurn')) {
+    Heat.prototype.actConfirmResults = function () {
+        if (!this.checkAction('actConfirmResults')) {
             return;
         }
-
-        this.takeAction('actConfirmPartialTurn');
-    }
-    
-    public actRestart() {
-        if(!(this as any).checkAction('actRestart')) {
-            return;
-        }
-
-        this.takeAction('actRestart');
-    }*/
+        this.takeAction('actConfirmResults');
+    };
     Heat.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -3854,6 +3881,8 @@ var Heat = /** @class */ (function () {
             'salvageCards',
             'directPlay',
             'eliminate',
+            'newChampionshipRace',
+            'startRace',
         ];
         notifs.forEach(function (notifName) {
             dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -4135,10 +4164,8 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_endOfRace = function (args) {
         var _this = this;
-        var scores = args.scores[this.gamedatas.circuitDatas.id];
-        Object.entries(scores).forEach(function (_a) {
-            var constructorId = _a[0], score = _a[1];
-            return _this.setScore(_this.gamedatas.constructors[constructorId].pId, score);
+        Object.values(this.gamedatas.constructors).forEach(function (constructor) {
+            return _this.setScore(constructor.id, Object.values(args.scores).map(function (circuitScores) { return circuitScores[constructor.id]; }).reduce(function (a, b) { return a + b; }));
         });
     };
     Heat.prototype.notif_newLegendCard = function (args) {
@@ -4185,6 +4212,32 @@ var Heat = /** @class */ (function () {
                         _a.sent();
                         return [2 /*return*/];
                 }
+            });
+        });
+    };
+    Heat.prototype.notif_newChampionshipRace = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var index, circuitDatas;
+            return __generator(this, function (_a) {
+                index = args.index, circuitDatas = args.circuitDatas;
+                this.championshipTable.newChampionshipRace(index);
+                this.circuit.newCircuit(circuitDatas);
+                return [2 /*return*/];
+            });
+        });
+    };
+    Heat.prototype.notif_startRace = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var cells, weather;
+            var _this = this;
+            return __generator(this, function (_a) {
+                cells = args.cells, weather = args.weather;
+                Object.entries(cells).forEach(function (_a) {
+                    var constructor_id = _a[0], cell = _a[1];
+                    return _this.circuit.moveCar(Number(constructor_id), cell);
+                });
+                this.circuit.createWeather(weather);
+                return [2 /*return*/];
             });
         });
     };

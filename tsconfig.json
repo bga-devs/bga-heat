@@ -37,6 +37,7 @@
         "src/table-center.ts",
         "src/player-table.ts",
         "src/legend-table.ts",
+        "src/championship-table.ts",
         "src/heat.ts",
         "src/define.ts"
     ]
