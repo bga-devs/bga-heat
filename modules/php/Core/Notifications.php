@@ -176,6 +176,7 @@ class Notifications
       [
         'constructor' => $constructor,
         'n' => count($cards),
+        'areSponsors' => $areSponsors,
       ]
     );
 
@@ -186,6 +187,7 @@ class Notifications
       [
         'constructor' => $constructor,
         'cards' => $cards->toArray(),
+        'areSponsors' => $areSponsors,
       ]
     );
   }
@@ -381,10 +383,16 @@ class Notifications
 
   public static function endDraftRound($round, $cardIds)
   {
-    self::notifyAll('endDraftRound', clienttranslate('End of draft round n°${round}, removing leftover cards'), [
-      'round' => $round,
-      'cardIds' => $cardIds,
-    ]);
+    self::notifyAll(
+      'endDraftRound',
+      Globals::isChampionship()
+        ? clienttranslate('End of draft round, removing leftover cards')
+        : clienttranslate('End of draft round n°${round}, removing leftover cards'),
+      [
+        'round' => $round,
+        'cardIds' => $cardIds,
+      ]
+    );
   }
 
   public static function reformingDeckWithUpgrades()

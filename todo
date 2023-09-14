@@ -6,6 +6,19 @@ Other :
 Backend : 
 
 Frontend :
+  - finished car displayed as eliminated car
+  
+  - end of race error : 
+  TypeError: document.getElementById(...) is null
+    setScore https://studio.boardgamearena.com:8084/data/themereleases/current/games/heat/999999-9999/heat.js?1694726222535:4162
+    notif_endOfRace https://studio.boardgamearena.com:8084/data/themereleases/current/games/heat/999999-9999/heat.js?1694726222535:4168
+
+
+  - notif weatherHeats: purely informative now, nothing to do in front
+
+  - notif draw: use 'areSponsors' boolean field to know if it comes from deck or not
+    => currently the deck counter decreases even if drawing from sponsor deck
+
   - notif scores also contains order
 
   - error when moving 0 space ahead

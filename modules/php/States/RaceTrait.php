@@ -364,12 +364,21 @@ trait RaceTrait
     $card2 = Cards::get($cardId2);
     Notifications::swapUpgrade($constructor, $card1, $card2);
 
-    $this->stFinishDraft();
+    $this->stFinishChampionshipDraft();
   }
 
   function actPassSwapUpgrade()
   {
     self::checkAction('actPassSwapUpgrade');
+    $this->stFinishChampionshipDraft();
+  }
+
+  function stFinishChampionshipDraft()
+  {
+    // Clear market
+    $cardIds = Cards::getInLocation('market')->getIds();
+    Cards::move($cardIds, 'box');
+    Notifications::endDraftRound(1, $cardIds);
     $this->stFinishDraft();
   }
 

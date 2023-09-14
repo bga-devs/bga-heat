@@ -209,27 +209,30 @@ class Cards extends \HEAT\Helpers\Pieces
   public static function clean()
   {
     // Get the generic heats and stresses and delete them
-    $heatAndStressCardIds = self::getAll()->filter(function ($card) {
-      return in_array($card['type'], [110, 111]);
-    });
-    self::DB()
-      ->delete()
-      ->whereIn('id', $heatAndStressCardIds)
-      ->run();
+    $heatAndStressCardIds = self::getAll()
+      ->filter(function ($card) {
+        return in_array($card['type'], [110, 111]);
+      })
+      ->getIds();
+    if (!empty($heatAndStressCardIds)) {
+      self::DB()
+        ->delete()
+        ->whereIn('card_id', $heatAndStressCardIds)
+        ->run();
+    }
 
     foreach (Constructors::getAll() as $cId => $constructor) {
       if ($constructor->isAI()) {
         continue;
       }
 
-      $discardIds = $constructor->getDiscard()->getIds();
-      if (!empty($discardIds)) {
-        self::move($discardIds, "deck-$cId");
-      }
-
-      $inPlayIds = $constructor->getInPlay()->getIds();
-      if (!empty($inPlayIds)) {
-        self::move($inPlayIds, "deck-$cId");
+      $cardIds = array_merge(
+        $constructor->getDiscard()->getIds(),
+        $constructor->getPlayedCards()->getIds(),
+        $constructor->getHand()->getIds()
+      );
+      if (!empty($cardIds)) {
+        self::move($cardIds, "deck-$cId");
       }
     }
   }

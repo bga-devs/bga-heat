@@ -753,6 +753,7 @@ trait RoundTrait
 
     $constructor = Constructors::getActive();
     Globals::setPositionBeforeSlipstream($constructor->getPosition());
+    Globals::setTurnBeforeSlipstream($constructor->getTurn());
 
     if ($n > 0) {
       if (!array_key_exists($n, $this->argsSlipstream()['cells'])) {
@@ -809,8 +810,8 @@ trait RoundTrait
 
     // For each corner, check speed against max speed of corner
     $spinOut = false;
+    $speed = $constructor->getSpeed();
     if (!empty($corners)) {
-      $speed = $constructor->getSpeed();
       foreach ($corners as $infos) {
         list($cornerPos, $cornerTurn) = $infos;
         $limit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
