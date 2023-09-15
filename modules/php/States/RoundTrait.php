@@ -108,34 +108,54 @@ trait RoundTrait
         return $card['effect'] != HEAT;
       });
 
-      // Compute corresponding speeds
-      $boostingCardIds = [];
-      $speeds = $hand->map(function ($card) use (&$boostingCardIds) {
-        $speed = $card['speed'];
-
-        // Handle + symbols
-        $nBoosts = $card['symbols'][BOOST] ?? 0;
-        if ($nBoosts > 0) {
-          $boostingCardIds[] = $card['id'];
-          $t = [];
-          for ($i = $nBoosts; $i <= 4 * $nBoosts; $i++) {
-            $t[] = $speed + $i;
-          }
-          $speed = $t;
-        }
-
-        return $speed;
-      });
-      // Compute max speed
-      $maxSpeed = 0;
-      foreach ($speeds as $speed) {
-        $maxSpeed += is_array($speed) ? max($speed) : $speed;
+      // Do we have a cluttered hand ?
+      $clutteredHand = false;
+      $gear = $constructor->getGear();
+      $minGear = max(1, $gear - ($constructor->hasNoHeat() ? 1 : 2));
+      if (count($hand) < $minGear) {
+        $clutteredHand = true;
       }
-      // Compute corresponding cells
-      $cells = [];
-      $pos = $constructor->getPosition();
-      for ($i = 0; $i <= $maxSpeed; $i++) {
-        $cells[$i] = $this->getCircuit()->getFreeCell($pos + $i, $constructor->getId(), false);
+
+      // Cluttered hand => make heat selectable
+      if ($clutteredHand) {
+        $pos = $constructor->getPosition();
+        $cells = [$this->getCircuit()->getFreeCell($pos, $constructor->getId(), false)];
+        $hand = $constructor->getHand();
+        $speeds = $hand->map(function ($card) {
+          return 0;
+        });
+      }
+      // Compute how far can he go
+      else {
+        // Compute corresponding speeds
+        $boostingCardIds = [];
+        $speeds = $hand->map(function ($card) use (&$boostingCardIds) {
+          $speed = $card['speed'];
+
+          // Handle + symbols
+          $nBoosts = $card['symbols'][BOOST] ?? 0;
+          if ($nBoosts > 0) {
+            $boostingCardIds[] = $card['id'];
+            $t = [];
+            for ($i = $nBoosts; $i <= 4 * $nBoosts; $i++) {
+              $t[] = $speed + $i;
+            }
+            $speed = $t;
+          }
+
+          return $speed;
+        });
+        // Compute max speed
+        $maxSpeed = 0;
+        foreach ($speeds as $speed) {
+          $maxSpeed += is_array($speed) ? max($speed) : $speed;
+        }
+        // Compute corresponding cells
+        $cells = [];
+        $pos = $constructor->getPosition();
+        for ($i = 0; $i <= $maxSpeed; $i++) {
+          $cells[$i] = $this->getCircuit()->getFreeCell($pos + $i, $constructor->getId(), false);
+        }
       }
 
       $args['_private'][$pId] = [
@@ -143,7 +163,8 @@ trait RoundTrait
         'speeds' => $speeds,
         'cells' => $cells,
         'selection' => $planification[$pId] ?? null,
-        'boostingCardIds' => $boostingCardIds,
+        'boostingCardIds' => $boostingCardIds ?? [],
+        'clutteredHand' => $clutteredHand,
       ];
     }
 
@@ -155,10 +176,20 @@ trait RoundTrait
     self::checkAction('actPlan');
     $player = Players::getCurrent();
     $constructor = Constructors::getOfPlayer($player->getId());
+    $args = $this->argsPlanification()['_private'][$player->getId()];
     $newGear = count($cardIds);
     if (abs($newGear - $constructor->getGear()) > 1) {
       if ($constructor->hasNoHeat()) {
         throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 2.'));
+      }
+    }
+    if ($args['clutteredHand']) {
+      foreach ($constructor->getHand() as $card) {
+        if ($card['effect'] != HEAT && !in_array($card['id'], $cardIds)) {
+          throw new UserException(
+            clienttranslate('Cluttered hand: you need to select all your speed cards and complete with heats.')
+          );
+        }
       }
     }
 
@@ -251,6 +282,22 @@ trait RoundTrait
     Cards::move($cardIds, ['inplay', $constructor->getId()]);
     $cards = Cards::getMany($cardIds);
     Notifications::reveal($constructor, $newGear, $cards, $heat);
+
+    // Are we cluttered ??
+    $clutteredHand = false;
+    foreach ($cards as $card) {
+      if ($card['effect'] == HEAT) {
+        $clutteredHand = true;
+        break;
+      }
+    }
+    if ($clutteredHand) {
+      Notifications::message(clienttranslate('${constructor_name} has a cluttered hand so their turn is skipped'), [
+        'constructor' => $constructor,
+      ]);
+      $this->stReplenish();
+      return;
+    }
 
     // Store previous position and store symbols
     Globals::setRefreshedCards([]);

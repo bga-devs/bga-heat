@@ -3,16 +3,7 @@ Other :
     How can we compute "valid cards to play" ? Should we take into account the cooldown the the car may get if it lands in a sector with a weather token ?
     Can a player make a bet using stress by hoping to land in such sector ?
     
-Backend : 
- - draw notif : sort cards by `type`
- - compute inRaceProgress and send it in moveCar notif
- - global progress : something like this :
-     function getGameProgression() {
-        $totalProgress = $raceIndex * 100 / $raceNumber;
-        $inRaceProgress = $this->getInRaceProgress($year);
-        return $totalProgress + ($inYearProgress / $raceNumber);
-    }
-
+Backend :
   - option for Pro Legends - You can make the Legends
 tougher opponents by increasing the
 Top Speed values on all cards by 1,
@@ -21,6 +12,8 @@ against Legends with a +2 Top Speed.
 If yes, How many max ? 3 ? Ask Adrien ?
 
 Frontend :
+ - message notifs : put in title bar
+
  - rethink inPLay deck position. place it where ithe market is? Or Force it to 1 line only ? Remove stress card when they are resolved ?
   - planification : highlight already selected cards (also on refresh), you have a parameter in the args :       
       'selection' => $planification[$pId] ?? null,
