@@ -53,7 +53,7 @@ trait LegendTrait
       // If yes, then go to the "slot cell" instead
       else {
         $speed = ($cornerPos - 1 - $slot - $pos + $length) % $length;
-        $this->moveCar($constructor, $speed);
+        $this->moveCar($constructor, $speed, false, $slot);
       }
     }
 

@@ -38,6 +38,7 @@ const OPTION_CHAMPIONSHIP_RANDOM = 99;
 const OPTION_CHAMPIONSHIP_CUSTOM = 100;
 
 const OPTION_LEGEND = 110;
+const OPTION_LEGEND_PRO = 109;
 
 /**
  * User preferences

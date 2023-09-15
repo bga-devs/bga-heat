@@ -134,6 +134,43 @@ $game_options = [
     ],
   ],
 
+  OPTION_LEGEND_PRO => [
+    'name' => totranslate('Pro Legends'),
+    'values' => [
+      0 => [
+        'name' => clienttranslate('Disabled'),
+      ],
+      1 => [
+        'name' => clienttranslate('+1'),
+        'tmdisplay' => clienttranslate('[Legend:+1]'),
+      ],
+      2 => [
+        'name' => clienttranslate('+2'),
+        'tmdisplay' => clienttranslate('[Legend:+2]'),
+      ],
+      3 => [
+        'name' => clienttranslate('+3'),
+        'tmdisplay' => clienttranslate('[Legend:+3]'),
+      ],
+      4 => [
+        'name' => clienttranslate('+4'),
+        'tmdisplay' => clienttranslate('[Legend:+4]'),
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_LEGEND,
+        'value' => [0],
+      ],
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER],
+      ],
+    ],
+  ],
+
   OPTION_CIRCUIT => [
     'name' => totranslate('Circuit'),
     'values' => [

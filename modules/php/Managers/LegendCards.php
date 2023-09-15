@@ -36,7 +36,19 @@ class LegendCards
     if ($cardId == -1) {
       return null;
     } else {
-      return self::$cards[$cardId];
+      $datas = self::$cards[$cardId];
+
+      // Legend pro module
+      $n = Globals::getLegendPro();
+      if ($n > 0) {
+        foreach ($datas as &$column) {
+          foreach ($column as &$speed) {
+            $speed += $n;
+          }
+        }
+      }
+
+      return $datas;
     }
   }
 

@@ -4,14 +4,11 @@ Other :
     Can a player make a bet using stress by hoping to land in such sector ?
     
 Backend :
-  - option for Pro Legends - You can make the Legends
-tougher opponents by increasing the
-Top Speed values on all cards by 1,
-or even more. The designers usually race
-against Legends with a +2 Top Speed.
-If yes, How many max ? 3 ? Ask Adrien ?
+
 
 Frontend :
+ - format [+]
+
  - message notifs : put in title bar
 
  - rethink inPLay deck position. place it where ithe market is? Or Force it to 1 line only ? Remove stress card when they are resolved ?

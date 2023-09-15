@@ -38,6 +38,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'legendCards' => 'obj',
     'legendCard' => 'int',
     'legendCardDrawn' => 'bool',
+    'legendPro' => 'int',
 
     // Game options
     'circuit' => 'str',
@@ -182,6 +183,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     $nLegends = $options[\HEAT\OPTION_LEGEND] ?? 0;
     self::setCountConstructors(count($players) + $nLegends);
     self::setLegend($nLegends > 0);
+    self::setLegendPro($options[\HEAT\OPTION_LEGEND_PRO] ?? 0);
     self::setNbrLaps($options[\HEAT\OPTION_NBR_LAPS] ?? 0);
     self::setGarageModuleMode($options[\HEAT\OPTION_GARAGE_CHOICE] ?? \HEAT\OPTION_GARAGE_RANDOM);
     self::setWeatherModule(($options[\HEAT\OPTION_WEATHER_MODULE] ?? \HEAT\OPTION_DISABLED) == \HEAT\OPTION_WEATHER_ENABLED);

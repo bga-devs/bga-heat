@@ -410,12 +410,12 @@ trait RoundTrait
     $this->stAdrenaline();
   }
 
-  public function moveCar($constructor, $n, $slipstream = false)
+  public function moveCar($constructor, $n, $slipstream = false, $legendSlot = null)
   {
     list($newCell, $nSpacesForward, $extraTurns, $path) = $this->getCircuit()->getReachedCell($constructor, $n);
     $constructor->setCarCell($newCell);
     $constructor->incTurn($extraTurns);
-    Notifications::moveCar($constructor, $newCell, $n, $nSpacesForward, $extraTurns, $path, $slipstream);
+    Notifications::moveCar($constructor, $newCell, $n, $nSpacesForward, $extraTurns, $path, $slipstream, $legendSlot);
   }
 
   //////////////////////////////////////////////////////////////////

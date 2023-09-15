@@ -56,14 +56,29 @@ class Notifications
     ]);
   }
 
-  public function moveCar($constructor, $newCell, $speed, $nSpacesForward, $extraTurns, $path, $slipstream = false)
-  {
+  public function moveCar(
+    $constructor,
+    $newCell,
+    $speed,
+    $nSpacesForward,
+    $extraTurns,
+    $path,
+    $slipstream = false,
+    $legendSlot = null
+  ) {
     $msg =
       $speed == $nSpacesForward
         ? clienttranslate('${constructor_name} moves their car ${nForward} spaces forward')
         : clienttranslate(
           '${constructor_name} moves their car ${nForward} spaces forward out of ${speed} because they are blocked by other cars'
         );
+
+    if (!is_null($legendSlot)) {
+      $msg = clienttranslate(
+        '${constructor_name} moves their car ${nForward} spaces forward to reach space n°${slot} before next corner'
+      );
+    }
+
     if ($slipstream) {
       $msg =
         $speed == $nSpacesForward
@@ -80,7 +95,8 @@ class Notifications
       'nForward' => $nSpacesForward,
       'path' => $path,
       'progress' => Game::get()->getRaceProgress(),
-      'preserve' => ['path'],
+      'preserve' => ['path', 'slot'],
+      'slot' => $legendSlot,
     ]);
 
     if ($extraTurns > 0 && $constructor->getTurn() > 0) {
