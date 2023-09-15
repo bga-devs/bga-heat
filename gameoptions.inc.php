@@ -223,7 +223,31 @@ $game_options = [
       [
         'type' => 'otheroptionisnot',
         'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER],
+        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER, OPTION_SETUP_CHAMPIONSHIP],
+      ],
+    ],
+  ],
+  OPTION_GARAGE_MODULE_CHAMPIONSHIP => [
+    'name' => totranslate('Garage module'),
+    'values' => [
+      OPTION_GARAGE_BASIC => [
+        'name' => clienttranslate('Basic upgrades only'),
+        'tmdisplay' => clienttranslate('[Garage: basic]'),
+      ],
+      OPTION_GARAGE_ADVANCED => [
+        'name' => clienttranslate('Advanced upgrades only'),
+        'tmdisplay' => clienttranslate('[Garage: advanced]'),
+      ],
+      OPTION_GARAGE_MIXED => [
+        'name' => clienttranslate('All upgrades'),
+        'tmdisplay' => clienttranslate('[Garage]'),
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroption',
+        'id' => OPTION_SETUP,
+        'value' => OPTION_SETUP_CHAMPIONSHIP,
       ],
     ],
   ],
