@@ -245,7 +245,7 @@ class Notifications
     self::notifyAll(
       'spinOut',
       clienttranslate(
-        '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) to discard'
+        '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) to discard. They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'
       ),
       [
         'constructor' => $constructor,
@@ -257,6 +257,7 @@ class Notifications
         'cell' => $cell,
         'turn' => $newTurn,
         'stresses' => $stresses,
+        'm' => count($stresses),
         'nCellsBack' => $nBack,
       ]
     );
