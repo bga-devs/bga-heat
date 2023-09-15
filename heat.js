@@ -3174,7 +3174,6 @@ var ChampionshipTable = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.gamedatas = gamedatas;
-        this.maxProgress = 0;
         var html = "\n        <div id=\"championship-table\">\n            <div id=\"championship-circuits-progress\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\"><div></div>");
         gamedatas.championship.circuits.forEach(function (_, index) {
             return html += "\n                <div id=\"circuit-progress-".concat(index, "\" class=\"circuit-progress ").concat(gamedatas.championship.index > index ? 'finished' : '', "\">\n                    <div id=\"current-circuit-progress-").concat(index, "\" class=\"current-circuit-progress\"></div>\n                </div>");
@@ -3189,21 +3188,15 @@ var ChampionshipTable = /** @class */ (function () {
         championshipCircuits.addEventListener('click', function () {
             championshipCircuits.dataset.folded = (championshipCircuits.dataset.folded == 'false').toString();
         });
-        var maxProgress = Object.values(gamedatas.constructors).map(function (constructor) { return constructor.raceProgress; }).reduce(function (a, b) { return a > b ? a : b; });
-        console.log(Object.values(gamedatas.constructors).map(function (constructor) { return constructor.raceProgress; }), maxProgress, this.maxProgress, this.gamedatas.championship.index);
-        this.setRaceProgress(maxProgress);
+        this.setRaceProgress(gamedatas.progress);
     }
     ChampionshipTable.prototype.newChampionshipRace = function (index) {
         this.setRaceFinished(index - 1);
         document.querySelectorAll('.championship-circuit').forEach(function (elem) { return elem.classList.toggle('current', Number(elem.dataset.index) == index); });
         this.gamedatas.championship.index = index;
-        this.maxProgress = 0;
     };
     ChampionshipTable.prototype.setRaceProgress = function (progress) {
-        if (progress > this.maxProgress) {
-            this.maxProgress = progress;
-            document.getElementById("current-circuit-progress-".concat(this.gamedatas.championship.index)).style.width = "".concat(Math.min(100, progress * 100), "%");
-        }
+        document.getElementById("current-circuit-progress-".concat(this.gamedatas.championship.index)).style.width = "".concat(Math.min(100, progress * 100), "%");
     };
     ChampionshipTable.prototype.setRaceFinished = function (index) {
         document.getElementById("circuit-progress-".concat(index)).classList.add('finished');

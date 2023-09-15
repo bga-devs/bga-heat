@@ -1,6 +1,4 @@
 class ChampionshipTable {
-    private maxProgress: number = 0;
-
     constructor(private game: HeatGame, private gamedatas: HeatGamedatas) {
         let html = `
         <div id="championship-table">
@@ -40,23 +38,17 @@ class ChampionshipTable {
             championshipCircuits.dataset.folded = (championshipCircuits.dataset.folded == 'false').toString();
         });
 
-        const maxProgress = Object.values(gamedatas.constructors).map(constructor => constructor.raceProgress).reduce((a, b) => a > b ? a : b);
-        console.log(Object.values(gamedatas.constructors).map(constructor => constructor.raceProgress), maxProgress, this.maxProgress, this.gamedatas.championship.index);
-        this.setRaceProgress(maxProgress);
+        this.setRaceProgress(gamedatas.progress);
     }
     
     public newChampionshipRace(index: number) {
         this.setRaceFinished(index - 1);
         document.querySelectorAll('.championship-circuit').forEach((elem: HTMLElement) => elem.classList.toggle('current', Number(elem.dataset.index) == index));
         this.gamedatas.championship.index = index;
-        this.maxProgress = 0;
     }
 
     public setRaceProgress(progress: number) {
-        if (progress > this.maxProgress) {
-            this.maxProgress = progress;
-            document.getElementById(`current-circuit-progress-${this.gamedatas.championship.index}`).style.width = `${Math.min(100, progress * 100)}%`;
-        }
+        document.getElementById(`current-circuit-progress-${this.gamedatas.championship.index}`).style.width = `${Math.min(100, progress * 100)}%`;
     }
 
     public setRaceFinished(index: number) {

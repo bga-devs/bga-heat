@@ -24,7 +24,6 @@ interface Constructor {
     inplay?: { [id: number]: Card};
     discard: { [id: number]: Card};
     deckCount: number;
-    raceProgress: number;
 }
 
 interface Cell {
@@ -90,6 +89,7 @@ interface HeatGamedatas {
     isLegend: boolean;
     legendCard: LegendCard;
     weather: Weather;
+    progress: number;
 }
 
 interface HeatGame extends Game {
