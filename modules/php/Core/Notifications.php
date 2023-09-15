@@ -197,15 +197,15 @@ class Notifications
   {
     $msg =
       $i == 1 && $n == 1
-        ? clienttranslate('${constructor_name} discards ${cards_images} and keep ${card_image} to resolve boost symbol')
+        ? clienttranslate('${constructor_name} discards ${cards_images} and keep ${card_image} to resolve [+] symbol')
         : clienttranslate(
-          '${constructor_name} discards ${cards_images} and keep ${card_image} to resolve boost symbol (${i} / ${n})'
+          '${constructor_name} discards ${cards_images} and keep ${card_image} to resolve [+] symbol (${i} / ${n})'
         );
     if (empty($cards)) {
       $msg =
         $i == 1 && $n == 1
-          ? clienttranslate('${constructor_name} flips ${card_image} to resolve boost symbol')
-          : clienttranslate('${constructor_name} flips ${card_image} to resolve boost symbol (${i} / ${n})');
+          ? clienttranslate('${constructor_name} flips ${card_image} to resolve [+] symbol')
+          : clienttranslate('${constructor_name} flips ${card_image} to resolve [+] symbol (${i} / ${n})');
     }
 
     self::notifyAll('resolveBoost', $msg, [
@@ -281,7 +281,7 @@ class Notifications
   public function heatedBoost($constructor, $heats, $cards, $card)
   {
     if (!is_null($heats)) {
-      self::notifyAll('payHeats', clienttranslate('${constructor_name} discards 1 heat to get the boost effect'), [
+      self::notifyAll('payHeats', clienttranslate('${constructor_name} discards 1 heat to get the [+] effect'), [
         'constructor' => $constructor,
         'cards' => $heats->toArray(),
       ]);
