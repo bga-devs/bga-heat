@@ -80,10 +80,13 @@ class Constructor extends \HEAT\Helpers\DB_Model
     if ($this->isFinished()) {
       return 1;
     }
+    $circuit = Game::get()->getCircuit();
+    if (!$circuit->isInitialized()) {
+      return 0;
+    }
 
     $position = $this->getPosition();
     $turn = $this->getTurn();
-    $circuit = Game::get()->getCircuit();
     $length = $circuit->getLength();
     $nLaps = $circuit->getNbrLaps();
 

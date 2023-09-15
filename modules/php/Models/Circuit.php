@@ -57,6 +57,10 @@ class Circuit
     ];
   }
 
+  public function isInitialized()
+  {
+    return !is_null($this->datas);
+  }
   public function __construct($datas)
   {
     if (empty($datas)) {
@@ -246,8 +250,12 @@ class Circuit
 
   public function getPosition($constructor)
   {
+    if (!$this->isInitialized()) {
+      return 0;
+    }
+
     $currentCell = $constructor->getCarCell();
-    return $this->cells[$currentCell]['pos'];
+    return $this->cells[$currentCell]['pos'] ?? 0;
   }
 
   public function getLane($constructor)

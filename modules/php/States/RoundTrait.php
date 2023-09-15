@@ -110,7 +110,7 @@ trait RoundTrait
 
       // Compute corresponding speeds
       $boostingCardIds = [];
-      $speeds = $hand->map(function ($card) {
+      $speeds = $hand->map(function ($card) use (&$boostingCardIds) {
         $speed = $card['speed'];
 
         // Handle + symbols
