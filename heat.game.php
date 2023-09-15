@@ -80,11 +80,11 @@ class Heat extends Table
       'prefs' => Preferences::getUiData($pId),
       'players' => Players::getUiData($pId),
       'constructors' => Constructors::getUiData($pId),
-      // 'cards' => Cards::getUiData(),
       'circuit' => Globals::getCircuit(),
       'circuitDatas' => $this->getCircuit()->getUiData(),
       'nbrLaps' => $this->getNbrLaps(),
       'weather' => Globals::getWeather(),
+      'progress' => $this->getRaceProgress(),
 
       'isLegend' => Globals::isLegend(),
       'legendCard' => LegendCards::getCurrentCard(),
@@ -107,16 +107,21 @@ class Heat extends Table
       $raceIndex = 0;
       $raceNumber = 1;
     }
-
     $totalProgress = ($raceIndex * 100) / $raceNumber;
+
+    $inRaceProgress = $this->getRaceProgress();
+    return 100 * ($totalProgress + $inRaceProgress / $raceNumber);
+  }
+
+  function getRaceProgress()
+  {
     $inRaceProgresses = Constructors::getAll()
       ->map(function ($constructor) {
         return $constructor->getRaceProgress();
       })
       ->toArray();
     $inRaceProgress = array_sum($inRaceProgresses) / count($inRaceProgresses);
-
-    return 100 * ($totalProgress + $inRaceProgress / $raceNumber);
+    return $inRaceProgress;
   }
 
   function actChangePreference($pref, $value)

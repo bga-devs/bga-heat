@@ -79,7 +79,7 @@ class Notifications
       'speed' => $speed,
       'nForward' => $nSpacesForward,
       'path' => $path,
-      'progress' => $constructor->getRaceProgress(),
+      'progress' => Game::get()->getRaceProgress(),
       'preserve' => ['path'],
     ]);
 
