@@ -24,6 +24,7 @@ interface Constructor {
     inplay?: { [id: number]: Card};
     discard: { [id: number]: Card};
     deckCount: number;
+    raceProgress: number;
 }
 
 interface Cell {
@@ -122,6 +123,7 @@ interface EnteringPlanificationPrivateArgs {
     selection: string[];
     cells: { [speed: number]: number /*destination cell*/ };
     speeds: { [cardId: number]: number | number[]};
+    boostingCardIds: number[];
 }
 
 interface EnteringPlanificationArgs {    
@@ -193,6 +195,7 @@ interface NotifMoveCarArgs {
     speed: number;
     nForward: number;
     path: number[];
+    progress: number;
 }
 
 // payHeats

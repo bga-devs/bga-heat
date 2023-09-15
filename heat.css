@@ -1151,12 +1151,33 @@ height: 241px; */
   top: 478px;
 }
 
+#championship-table {
+  margin: 5px 0;
+}
+#championship-table #championship-circuits-progress, #championship-table #championship-circuits {
+  display: grid;
+  grid-template-columns: 100px repeat(var(--race-count), 1fr);
+  gap: 15px;
+}
+#championship-table .circuit-progress {
+  height: 8px;
+  border-radius: 4px;
+}
+#championship-table .circuit-progress.finished {
+  background: #d61b1a;
+}
+#championship-table .circuit-progress.finished .current-circuit-progress {
+  display: none;
+}
+#championship-table .circuit-progress .current-circuit-progress {
+  background: #ed8d17;
+  width: 0%;
+  height: 100%;
+  border-radius: 4px;
+}
 #championship-table #championship-circuits {
   background: white;
   border-radius: 20px;
-  margin: 5px 0;
-  display: grid;
-  grid-template-columns: 100px repeat(var(--race-count), 1fr);
 }
 #championship-table #championship-circuits[data-folded=true] .championship-circuit.current .card {
   transform: scale(0.15);

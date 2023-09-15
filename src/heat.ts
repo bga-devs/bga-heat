@@ -866,7 +866,7 @@ class Heat implements HeatGame {
             const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
             if (selection.length && privateArgs) {
                 const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
-                const stressCardsSelected = selection.filter(card => card.effect == 'stress').length > 0;
+                const stressCardsSelected = selection.some(card => privateArgs.boostingCardIds.includes(card.id));
                 totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed], undefined, totalSpeed, stressCardsSelected));
             }
 
@@ -1178,11 +1178,13 @@ class Heat implements HeatGame {
     }  
 
     notif_moveCar(args: NotifMoveCarArgs) {
-        const { constructor_id, cell, path, speed } = args;
+        const { constructor_id, cell, path, speed, progress } = args;
 
         if (this.gamedatas.constructors[constructor_id].ai) {
             this.speedCounters[constructor_id].toValue(speed);
         }
+
+        this.championshipTable?.setRaceProgress(progress);
 
         return this.circuit.moveCar(constructor_id, cell, path);
     } 

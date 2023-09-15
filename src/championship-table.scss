@@ -1,12 +1,36 @@
 #championship-table {
+  margin: 5px 0;
+
+  #championship-circuits-progress, #championship-circuits {
+    display: grid;
+    grid-template-columns: 100px repeat(var(--race-count), 1fr);
+    gap: 15px;
+  }
+  
+
+  .circuit-progress {
+    height: 8px;
+    border-radius: 4px;
+
+    &.finished {
+      background: #d61b1a;
+
+      .current-circuit-progress {
+        display: none;
+      }
+    }
+
+    .current-circuit-progress {
+      background: #ed8d17;
+      width: 0%;
+      height: 100%;
+      border-radius: 4px;
+    }
+  }
 
   #championship-circuits {
     background: white;
     border-radius: 20px;
-    margin: 5px 0;
-    display: grid;
-    grid-template-columns: 100px repeat(var(--race-count), 1fr);
-    
 
     &[data-folded="true"] {
       .championship-circuit.current {

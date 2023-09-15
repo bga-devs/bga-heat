@@ -3173,19 +3173,40 @@ var ChampionshipTable = /** @class */ (function () {
     function ChampionshipTable(game, gamedatas) {
         var _this = this;
         this.game = game;
-        var html = "\n        <div id=\"championship-table\">\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">").concat(gamedatas.championship.name, "</div>");
+        this.gamedatas = gamedatas;
+        this.maxProgress = 0;
+        var html = "\n        <div id=\"championship-table\">\n            <div id=\"championship-circuits-progress\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\"><div></div>");
+        gamedatas.championship.circuits.forEach(function (_, index) {
+            return html += "\n                <div id=\"circuit-progress-".concat(index, "\" class=\"circuit-progress ").concat(gamedatas.championship.index > index ? 'finished' : '', "\">\n                    <div id=\"current-circuit-progress-").concat(index, "\" class=\"current-circuit-progress\"></div>\n                </div>");
+        });
+        html += "\n            </div>\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">").concat(gamedatas.championship.name, "</div>");
         gamedatas.championship.circuits.forEach(function (circuit, index) {
             return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                <span class=\"circuit-name\">").concat(circuit.name, "</span>\n                ").concat(_this.game.eventCardsManager.getHtml(circuit.event), "\n            </div>\n            ");
         });
         html += "\n            </div>\n        </div>\n        ";
         document.getElementById('table-center').insertAdjacentHTML('beforebegin', html);
-        var championshipCircuuits = document.getElementById('championship-circuits');
-        championshipCircuuits.addEventListener('click', function () {
-            championshipCircuuits.dataset.folded = (championshipCircuuits.dataset.folded == 'false').toString();
+        var championshipCircuits = document.getElementById('championship-circuits');
+        championshipCircuits.addEventListener('click', function () {
+            championshipCircuits.dataset.folded = (championshipCircuits.dataset.folded == 'false').toString();
         });
+        var maxProgress = Object.values(gamedatas.constructors).map(function (constructor) { return constructor.raceProgress; }).reduce(function (a, b) { return a > b ? a : b; });
+        console.log(Object.values(gamedatas.constructors).map(function (constructor) { return constructor.raceProgress; }), maxProgress, this.maxProgress, this.gamedatas.championship.index);
+        this.setRaceProgress(maxProgress);
     }
     ChampionshipTable.prototype.newChampionshipRace = function (index) {
+        this.setRaceFinished(index - 1);
         document.querySelectorAll('.championship-circuit').forEach(function (elem) { return elem.classList.toggle('current', Number(elem.dataset.index) == index); });
+        this.gamedatas.championship.index = index;
+        this.maxProgress = 0;
+    };
+    ChampionshipTable.prototype.setRaceProgress = function (progress) {
+        if (progress > this.maxProgress) {
+            this.maxProgress = progress;
+            document.getElementById("current-circuit-progress-".concat(this.gamedatas.championship.index)).style.width = "".concat(Math.min(100, progress * 100), "%");
+        }
+    };
+    ChampionshipTable.prototype.setRaceFinished = function (index) {
+        document.getElementById("circuit-progress-".concat(index)).classList.add('finished');
     };
     return ChampionshipTable;
 }());
@@ -3826,7 +3847,7 @@ var Heat = /** @class */ (function () {
             var privateArgs_1 = this.gamedatas.gamestate.args._private;
             if (selection.length && privateArgs_1) {
                 var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
-                var stressCardsSelected_1 = selection.filter(function (card) { return card.effect == 'stress'; }).length > 0;
+                var stressCardsSelected_1 = selection.some(function (card) { return privateArgs_1.boostingCardIds.includes(card.id); });
                 totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed], undefined, totalSpeed, stressCardsSelected_1); });
             }
         }
@@ -4097,10 +4118,12 @@ var Heat = /** @class */ (function () {
         return Promise.all(promises);
     };
     Heat.prototype.notif_moveCar = function (args) {
-        var constructor_id = args.constructor_id, cell = args.cell, path = args.path, speed = args.speed;
+        var _a;
+        var constructor_id = args.constructor_id, cell = args.cell, path = args.path, speed = args.speed, progress = args.progress;
         if (this.gamedatas.constructors[constructor_id].ai) {
             this.speedCounters[constructor_id].toValue(speed);
         }
+        (_a = this.championshipTable) === null || _a === void 0 ? void 0 : _a.setRaceProgress(progress);
         return this.circuit.moveCar(constructor_id, cell, path);
     };
     Heat.prototype.notif_updateTurnOrder = function (args) {
