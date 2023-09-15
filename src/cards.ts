@@ -138,6 +138,16 @@ class CardsManager extends CardManager<Card> {
                     tooltip += `<br><br>${icons}`;
                 }
                 return tooltip;
+            case 'sponsor': 
+                return `<strong>${_(card.text)}</strong>
+                <br><br>
+                ${Object.entries(card.symbols).map(([symbol, number]) => `<div>${this.game.getGarageModuleIconTooltip(symbol, number)}</div>`).join('<br>')}
+                <br>
+                <div>
+                    <strong>${_("One-time use")}</strong>
+                    <br>
+                    ${ _("During the discard step, this card is removed instead of going to the discard.") }
+                </div>`;
             default:
                 switch (card.type) {
                     case 101: case 102: case 103: case 104:

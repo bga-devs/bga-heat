@@ -6,6 +6,7 @@ $playerColors: '12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d';
 @import '../node_modules/bga-cards/bga-cards';
 @import 'cards';
 @import 'legend-cards';
+@import 'event-cards';
 @import 'table-center';
 @import 'playerboards';
 @import 'player-table';
@@ -13,6 +14,20 @@ $playerColors: '12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d';
 @import 'championship-table';
 @import 'help';
 @import 'upload-form';
+
+@font-face {
+  font-family: 'Aachen Bold';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Aachen Bold'), url('img/aachen-bold-opentype.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'roboto_slabbold';
+  src: url('img/RobotoSlab-Bold-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
 
 /* make space between buttons on touch devices */
 @media (hover: none) {
@@ -45,52 +60,55 @@ html, .mode_3d #game_play_area_background {
   text-align: center;
   
   &.flag {
-    background-position-x: #{0 * 100% / 15};
+    background-position-x: #{0 * 100% / 16};
   }
   &.engine {
-    background-position-x: #{1 * 100% / 15};
+    background-position-x: #{1 * 100% / 16};
   }
   &.heat {
-    background-position-x: #{2 * 100% / 15};
+    background-position-x: #{2 * 100% / 16};
   }
   &.cooldown {
-    background-position-x: #{3 * 100% / 15};
+    background-position-x: #{3 * 100% / 16};
   }
   &.stress {
-    background-position-x: #{4 * 100% / 15};
+    background-position-x: #{4 * 100% / 16};
   }
   &.boost {
-    background-position-x: #{5 * 100% / 15};
+    background-position-x: #{5 * 100% / 16};
   }
   &.speed {
-    background-position-x: #{6 * 100% / 15};
+    background-position-x: #{6 * 100% / 16};
   }
   &.podium {
-    background-position-x: #{7 * 100% / 15};
+    background-position-x: #{7 * 100% / 16};
   }
   &.reduce-stress {
-    background-position-x: #{8 * 100% / 15};
+    background-position-x: #{8 * 100% / 16};
   }
   &.scrap {
-    background-position-x: #{9 * 100% / 15};
+    background-position-x: #{9 * 100% / 16};
   }
   &.direct {
-    background-position-x: #{10 * 100% / 15};
+    background-position-x: #{10 * 100% / 16};
   }
   &.adjust {
-    background-position-x: #{11 * 100% / 15};
+    background-position-x: #{11 * 100% / 16};
   }
   &.forced-heat {
-    background-position-x: #{12 * 100% / 15};
+    background-position-x: #{12 * 100% / 16};
   }
   &.refresh {
-    background-position-x: #{13 * 100% / 15};
+    background-position-x: #{13 * 100% / 16};
   }
   &.salvage {
-    background-position-x: #{14 * 100% / 15};
+    background-position-x: #{14 * 100% / 16};
   }
   &.gear {
-    background-position-x: #{15 * 100% / 15};
+    background-position-x: #{15 * 100% / 16};
+  }
+  &.mandatory {
+    background-position-x: #{16 * 100% / 16};
   }
 }
 

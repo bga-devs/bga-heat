@@ -30,16 +30,16 @@
                 }
 
                 .legend-icon {
-                    width: 64px;
-                    height: 64px;
+                    width: 48px;
+                    height: 48px;
                     background: url('img/legend-icons.png');
                     background-size: 100% auto;
                     background-position-y: calc(var(--color) * 20%);
                     color: white;
                     text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
-                    text-align: center;
-                    font-size: 36px;
-                    line-height: 100px;
+                    text-align: center;    
+                    font-size: 32px;
+                    line-height: 72px;
                 }
             }
         }

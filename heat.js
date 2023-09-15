@@ -2227,6 +2227,11 @@ var CardsManager = /** @class */ (function (_super) {
                     tooltip += "<br><br>".concat(icons);
                 }
                 return tooltip;
+            case 'sponsor':
+                return "<strong>".concat(_(card.text), "</strong>\n                <br><br>\n                ").concat(Object.entries(card.symbols).map(function (_a) {
+                    var symbol = _a[0], number = _a[1];
+                    return "<div>".concat(_this.game.getGarageModuleIconTooltip(symbol, number), "</div>");
+                }).join('<br>'), "\n                <br>\n                <div>\n                    <strong>").concat(_("One-time use"), "</strong>\n                    <br>\n                    ").concat(_("During the discard step, this card is removed instead of going to the discard."), "\n                </div>");
             default:
                 switch (card.type) {
                     case 101:
@@ -2313,6 +2318,101 @@ var LegendCardsManager = /** @class */ (function (_super) {
     };
     return LegendCardsManager;
 }(CardManager));
+var EventCardsManager = /** @class */ (function () {
+    function EventCardsManager(game) {
+        this.game = game;
+    }
+    EventCardsManager.prototype.getTexts = function (card) {
+        switch (card) {
+            case 1:
+                return {
+                    title: _('NEW GRANDSTAND INAUGURATION'),
+                    rule: _('First three drivers to cross the Finish Line on the 1st lap immediately gain a Sponsorship card.'),
+                    year: '1961',
+                    race: 1,
+                    country: _('GREAT BRITAIN'),
+                };
+            case 2:
+                return {
+                    title: _('NEW SPEED RECORD!'),
+                    rule: _('Each time you reach a Speed of 15 or more, immediately gain a Sponsorship card.'),
+                    year: '1961',
+                    race: 2,
+                    country: _('USA'),
+                };
+            case 3:
+                return {
+                    title: _('DRIVERS’ STRIKE'),
+                    rule: _('This race is one lap shorter than usual. The winner of this race is awarded 2 extra Championship points.'),
+                    year: '1961',
+                    race: 3,
+                    country: _('ITALY'),
+                };
+            case 4:
+                return {
+                    title: _('ENGINE RESTRICTIONS LIFTED'),
+                    rule: _('All drivers start the race with an extra Heat card from the reserve in their Engine spot.'),
+                    year: '1962',
+                    race: 1,
+                    country: _('ITALY'),
+                };
+            case 5:
+                return {
+                    title: _('RECORD CROWDS'),
+                    rule: _('This race is one lap longer than usual and hand size is increased to 8 cards.'),
+                    year: '1962',
+                    race: 2,
+                    country: _('GREAT BRITAIN'),
+                };
+            case 6:
+                return {
+                    title: _('CORRUPTION IN RULES COMMITTEE'),
+                    rule: _('The top 3 finishers of this race are awarded an extra Championship point.'),
+                    year: '1962',
+                    race: 3,
+                    country: _('FRANCE'),
+                };
+            case 7:
+                return {
+                    title: _('NEW TITLE SPONSOR'),
+                    rule: _('No Special Rules.'),
+                    year: '1963',
+                    race: 1,
+                    country: _('USA'),
+                };
+            case 8:
+                return {
+                    title: _('FIRST LIVE TELEVISED RACE'),
+                    rule: _('If you pass 3 cars in a single round, immediately gain a Sponsorship card.'),
+                    year: '1963',
+                    race: 2,
+                    country: _('GREAT BRITAIN'),
+                };
+            case 9:
+                return {
+                    title: _('NEW SAFETY REGULATIONS'),
+                    rule: _('All drivers start the race with 2 less Heat cards and 1 less Stress card than usual. Hand size is reduced to 6 cards.'),
+                    year: '1963',
+                    race: 3,
+                    country: _('FRANCE'),
+                };
+            case 10:
+                return {
+                    title: _('TITLE SPONSOR WITHDRAWS FUTURE UNKNOWN'),
+                    rule: _('All drivers start the race with an extra Stress card from the reserve in their Deck. If you spin out, you are eliminated from the race and score 0 Championship points.'),
+                    year: '1963',
+                    race: 4,
+                    country: _('ITALY'),
+                };
+        }
+    };
+    EventCardsManager.prototype.getHtml = function (card) {
+        var texts = this.getTexts(card);
+        var html = "<div class=\"card event-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\" data-index=\"".concat(card, "\">\n                    <div class=\"title-and-rule\">\n                        <div class=\"title\">").concat(texts.title, "</div>\n                        <div class=\"rule\">").concat(texts.rule, "</div>\n                    </div>\n                    <div class=\"bottom-line\">\n                        <span class=\"year\">").concat(texts.year, "</span>\n                        \u2022\n                        <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', texts.race), "</span>\n                        \u2022\n                        <span class=\"country\">").concat(texts.country, "</span>\n                    </div>\n                </div>\n            </div>\n        </div>");
+        return html;
+    };
+    return EventCardsManager;
+}());
 var MAP_WIDTH = 1650;
 var MAP_HEIGHT = 1100;
 var LEADERBOARD_POSITIONS = {
@@ -2605,7 +2705,7 @@ var Circuit = /** @class */ (function () {
     Circuit.prototype.moveCar = function (constructorId, carCell, path) {
         var _this = this;
         var car = document.getElementById("car-".concat(constructorId));
-        if (path) {
+        if (path === null || path === void 0 ? void 0 : path.length) {
             return this.moveCarWithAnimation(car, path).then(function () { return _this.moveCar(constructorId, carCell); });
         }
         else {
@@ -2816,7 +2916,8 @@ var PlayerTable = /** @class */ (function () {
         this.inplay.removeAll();
         return this.inplay.addCards(cards);
     };
-    PlayerTable.prototype.clearPlayedCards = function (cardIds) {
+    PlayerTable.prototype.clearPlayedCards = function (cardIds, sponsorIds) {
+        this.inplay.removeCards(sponsorIds.map(function (sponsorId) { return ({ id: sponsorId }); }));
         return this.discard.addCards(this.inplay.getCards());
     };
     PlayerTable.prototype.cooldown = function (cards) {
@@ -2867,12 +2968,15 @@ var PlayerTable = /** @class */ (function () {
         this.setCurrentGear(1);
         return promise !== null && promise !== void 0 ? promise : Promise.resolve(true);
     };
-    PlayerTable.prototype.drawCardsPublic = function (n) {
+    PlayerTable.prototype.drawCardsPublic = function (n, areSponsors) {
         return __awaiter(this, void 0, void 0, function () {
             var isReshuffled, count, before, after;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (areSponsors) {
+                            return [2 /*return*/];
+                        }
                         isReshuffled = this.deck.getCardNumber() < n;
                         if (!!isReshuffled) return [3 /*break*/, 1];
                         count = this.deck.getCardNumber() - n;
@@ -2892,7 +2996,10 @@ var PlayerTable = /** @class */ (function () {
             });
         });
     };
-    PlayerTable.prototype.drawCardsPrivate = function (cards) {
+    PlayerTable.prototype.drawCardsPrivate = function (cards, areSponsors) {
+        if (areSponsors) {
+            return this.hand.addCards(cards);
+        }
         return this.addCardsFromDeck(cards, this.hand);
     };
     PlayerTable.prototype.scrapCards = function (cards) {
@@ -3064,13 +3171,18 @@ var LegendTable = /** @class */ (function () {
 }());
 var ChampionshipTable = /** @class */ (function () {
     function ChampionshipTable(game, gamedatas) {
+        var _this = this;
         this.game = game;
-        var html = "\n        <div id=\"championship-table\">\n            <div id=\"championship-circuits\">";
+        var html = "\n        <div id=\"championship-table\">\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">").concat(gamedatas.championship.name, "</div>");
         gamedatas.championship.circuits.forEach(function (circuit, index) {
-            return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                ").concat(circuit.circuit, "\n            </div>\n            ");
+            return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                <span class=\"circuit-name\">").concat(circuit.name, "</span>\n                ").concat(_this.game.eventCardsManager.getHtml(circuit.event), "\n            </div>\n            ");
         });
         html += "\n            </div>\n        </div>\n        ";
         document.getElementById('table-center').insertAdjacentHTML('beforebegin', html);
+        var championshipCircuuits = document.getElementById('championship-circuits');
+        championshipCircuuits.addEventListener('click', function () {
+            championshipCircuuits.dataset.folded = (championshipCircuuits.dataset.folded == 'false').toString();
+        });
     }
     ChampionshipTable.prototype.newChampionshipRace = function (index) {
         document.querySelectorAll('.championship-circuit').forEach(function (elem) { return elem.classList.toggle('current', Number(elem.dataset.index) == index); });
@@ -3134,6 +3246,7 @@ var Heat = /** @class */ (function () {
         this.animationManager = new AnimationManager(this);
         this.cardsManager = new CardsManager(this);
         this.legendCardsManager = new LegendCardsManager(this);
+        this.eventCardsManager = new EventCardsManager(this);
         var jumpToEntries = [
             new JumpToEntry(_('Circuit'), 'table-center', { 'color': '#222222' })
         ];
@@ -3453,7 +3566,7 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltip('direct', 1);
                                     break;
                                 case 'heat':
-                                    label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
+                                    label = "<div class=\"icon forced-heat\">".concat(number, "</div> <div class=\"icon mandatory\"></div>");
                                     tooltip = _this.getGarageModuleIconTooltip('heat', number);
                                     break;
                                 case 'boost':
@@ -3477,7 +3590,7 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltip('salvage', number);
                                     break;
                                 case 'scrap':
-                                    label = "<div class=\"icon scrap\">".concat(number, "</div>");
+                                    label = "<div class=\"icon scrap\">".concat(number, "</div> <div class=\"icon mandatory\"></div>");
                                     tooltip = _this.getGarageModuleIconTooltip('scrap', number);
                                     break;
                             }
@@ -3615,6 +3728,7 @@ var Heat = /** @class */ (function () {
             var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"gear-counter-wrapper-").concat(constructor.id, "\" class=\"gear-counter\">\n                    <div class=\"gear icon\"></div>\n                    <span id=\"gear-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(constructor.pId));
+            _this.setScore(constructor.pId, constructor.score);
             if (!constructor.ai) {
                 _this.handCounters[constructor.id] = new ebg.counter();
                 _this.handCounters[constructor.id].create("playerhand-counter-".concat(constructor.id));
@@ -3637,7 +3751,9 @@ var Heat = /** @class */ (function () {
             if (constructor.carCell < 0) {
                 var eliminated = constructor.turn < _this.gamedatas.nbrLaps || Boolean((_a = _this.gamedatas.players[constructor.pId]) === null || _a === void 0 ? void 0 : _a.zombie);
                 _this.setRank(constructor.id, -constructor.carCell, eliminated);
-                _this.circuit.setEliminatedPodium(constructor.carCell);
+                if (eliminated) {
+                    _this.circuit.setEliminatedPodium(constructor.carCell);
+                }
             }
         });
         this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
@@ -3883,6 +3999,7 @@ var Heat = /** @class */ (function () {
             'eliminate',
             'newChampionshipRace',
             'startRace',
+            'setupRace',
         ];
         notifs.forEach(function (notifName) {
             dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -3890,10 +4007,11 @@ var Heat = /** @class */ (function () {
                 var promise = _this["notif_".concat(notifName)](notifDetails.args);
                 var promises = promise ? [promise] : [];
                 var minDuration = 1;
-                var msg = /*this.formatString(*/ _this.format_string_recursive(notifDetails.log, notifDetails.args) /*)*/;
+                var msg = _this.format_string_recursive(notifDetails.log, notifDetails.args);
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
+                    $('generalactions').innerHTML = '';
                     // If there is some text, we let the message some time, to be read 
                     minDuration = MIN_NOTIFICATION_MS;
                 }
@@ -3979,7 +4097,10 @@ var Heat = /** @class */ (function () {
         return Promise.all(promises);
     };
     Heat.prototype.notif_moveCar = function (args) {
-        var constructor_id = args.constructor_id, cell = args.cell, path = args.path;
+        var constructor_id = args.constructor_id, cell = args.cell, path = args.path, speed = args.speed;
+        if (this.gamedatas.constructors[constructor_id].ai) {
+            this.speedCounters[constructor_id].toValue(speed);
+        }
         return this.circuit.moveCar(constructor_id, cell, path);
     };
     Heat.prototype.notif_updateTurnOrder = function (args) {
@@ -4062,12 +4183,12 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_draw = function (args) {
         var _a;
-        var constructor_id = args.constructor_id;
+        var constructor_id = args.constructor_id, areSponsors = args.areSponsors;
         var n = Number(args.n);
         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(n);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
-        playerTable.drawCardsPublic(n);
+        playerTable.drawCardsPublic(n, areSponsors);
     };
     Heat.prototype.notif_discard = function (args) {
         var _a;
@@ -4079,11 +4200,11 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_pDraw = function (args) {
         var _a;
-        var constructor_id = args.constructor_id;
+        var constructor_id = args.constructor_id, areSponsors = args.areSponsors;
         var cards = Object.values(args.cards);
         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(cards.length);
         var playerTable = this.getCurrentPlayerTable();
-        playerTable.drawCardsPrivate(cards);
+        playerTable.drawCardsPrivate(cards, areSponsors);
     };
     Heat.prototype.notif_pDiscard = function (args) {
         var _a;
@@ -4094,14 +4215,14 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_clearPlayedCards = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, cardIds, playerId, playerTable;
+            var constructor_id, cardIds, sponsorIds, playerId, playerTable;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        constructor_id = args.constructor_id, cardIds = args.cardIds;
+                        constructor_id = args.constructor_id, cardIds = args.cardIds, sponsorIds = args.sponsorIds;
                         playerId = this.getPlayerIdFromConstructorId(constructor_id);
                         playerTable = this.getPlayerTable(playerId);
-                        return [4 /*yield*/, playerTable.clearPlayedCards(cardIds)];
+                        return [4 /*yield*/, playerTable.clearPlayedCards(cardIds, sponsorIds)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -4164,8 +4285,11 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_endOfRace = function (args) {
         var _this = this;
+        this.notif_updateTurnOrder({
+            constructor_ids: args.order
+        });
         Object.values(this.gamedatas.constructors).forEach(function (constructor) {
-            return _this.setScore(constructor.id, Object.values(args.scores).map(function (circuitScores) { return circuitScores[constructor.id]; }).reduce(function (a, b) { return a + b; }));
+            return _this.setScore(_this.getPlayerIdFromConstructorId(constructor.id), Object.values(args.scores).map(function (circuitScores) { return circuitScores[constructor.id]; }).reduce(function (a, b) { return a + b; }));
         });
     };
     Heat.prototype.notif_newLegendCard = function (args) {
@@ -4222,6 +4346,7 @@ var Heat = /** @class */ (function () {
                 index = args.index, circuitDatas = args.circuitDatas;
                 this.championshipTable.newChampionshipRace(index);
                 this.circuit.newCircuit(circuitDatas);
+                document.getElementById("player_boards").querySelectorAll('.finished').forEach(function (elem) { return elem.classList.remove('finished'); });
                 return [2 /*return*/];
             });
         });
@@ -4237,6 +4362,32 @@ var Heat = /** @class */ (function () {
                     return _this.circuit.moveCar(Number(constructor_id), cell);
                 });
                 this.circuit.createWeather(weather);
+                return [2 /*return*/];
+            });
+        });
+    };
+    Heat.prototype.notif_setupRace = function (args) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_c) {
+                (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.hand.removeAll();
+                (_b = this.handCounters[this.getConstructorId()]) === null || _b === void 0 ? void 0 : _b.setValue(0);
+                Object.entries(args.counters).forEach(function (_a) {
+                    var constructor_id = _a[0], counters = _a[1];
+                    var table = _this.getPlayerTable(_this.getPlayerIdFromConstructorId(Number(constructor_id)));
+                    if (table) {
+                        table.inplay.removeAll();
+                        table.deck.setCardNumber(counters === null || counters === void 0 ? void 0 : counters.deckCount, table.fakeDeckCard);
+                        _this.engineCounters[constructor_id].setValue(Object.values(counters.engine).length);
+                        table.engine.removeAll();
+                        table.engine.addCards(Object.values(counters.engine));
+                        table.discard.removeAll();
+                        table.discard.addCards(Object.values(counters.discard));
+                        _this.gearCounters[constructor_id].setValue(1);
+                        table.setCurrentGear(1);
+                    }
+                });
                 return [2 /*return*/];
             });
         });

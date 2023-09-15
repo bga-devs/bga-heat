@@ -4,39 +4,28 @@ Other :
     Can a player make a bet using stress by hoping to land in such sector ?
     
 Backend : 
+ - draw notif : sort cards by `type`
+ - compute inRaceProgress and send it in moveCar notif
+ - global progress : something like this :
+     function getGameProgression() {
+        $totalProgress = $raceIndex * 100 / $raceNumber;
+        $inRaceProgress = $this->getInRaceProgress($year);
+        return $totalProgress + ($inYearProgress / $raceNumber);
+    }
+
+  - option for Pro Legends - You can make the Legends
+tougher opponents by increasing the
+Top Speed values on all cards by 1,
+or even more. The designers usually race
+against Legends with a +2 Top Speed.
+If yes, How many max ? 3 ? Ask Adrien ?
 
 Frontend :
-  - finished car displayed as eliminated car
-  
-  - end of race error : 
-  TypeError: document.getElementById(...) is null
-    setScore https://studio.boardgamearena.com:8084/data/themereleases/current/games/heat/999999-9999/heat.js?1694726222535:4162
-    notif_endOfRace https://studio.boardgamearena.com:8084/data/themereleases/current/games/heat/999999-9999/heat.js?1694726222535:4168
-
-
-  - notif weatherHeats: purely informative now, nothing to do in front
-
-  - notif draw: use 'areSponsors' boolean field to know if it comes from deck or not
-    => currently the deck counter decreases even if drawing from sponsor deck
-
-  - notif scores also contains order
-
-  - error when moving 0 space ahead
-
-  remove buttons when notifications are in titlebar
-
+ - rethink inPLay deck position. place it where ithe market is? Or Force it to 1 line only ? Remove stress card when they are resolved ?
   - planification : highlight already selected cards (also on refresh), you have a parameter in the args :       
       'selection' => $planification[$pId] ?? null,
 
-  -   public function clearPlayedCards($constructor, $cardIds, $sponsorIds) => new field 'sponsorIds', cards should be destroyed or something
-  => maybe we need to display a sponsor deck/discard somewhere 
-
   - upload form: only allow .heat files
-
-  - championship: new field received in getAllDatas
-    'event' => id of the event card (following sprite in img/) 
-      => you have the names of events around line 400 in Notifications.php and also the relevant information about events in constants.inc.php
-      => display a press icon on the correct corner
 
   - refresh : display the name of the card (only if several refresh ?) => maybe with the same formatting as accelerate
   - for accelerate/refresh => make the card clickable ?

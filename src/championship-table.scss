@@ -3,10 +3,39 @@
   #championship-circuits {
     background: white;
     border-radius: 20px;
-    height: 40px;
     margin: 5px 0;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 100px repeat(var(--race-count), 1fr);
+    
+
+    &[data-folded="true"] {
+      .championship-circuit.current {
+        .card {
+          transform: scale(0.15);
+          margin: 0 -150px;
+        }
+      }
+    }
+
+    &[data-folded="false"] {
+      .championship-circuit.current {
+        flex-direction: column;
+        height: 270px;
+        .card {
+          margin: 10px 0;
+        }
+      }
+    }
+  }
+
+  .championship-name {
+    height: 40px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Aachen Bold';
+    color: #91d7e8;
   }
 
   .championship-circuit {
@@ -16,39 +45,24 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: height 0.5s;
+
+    .circuit-name {
+      font-weight: bold;
+    }
+
+    .card {
+      transition: transform 0.5s, margin 0.5s;
+    }
 
     &.current {
       background: #d61b1a;
       color: white;
+      cursor: pointer;
+    }
+
+    &:not(.current) .card {
+      display: none;
     }
   }
-  /*min-width: 640px;
-  width: 100%;
-  position: relative;
-  margin: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  #legend-board {
-    position: relative;
-    width: 1200px;
-    height: 793px;
-    padding: 0;
-    margin: 0;
-    background-size: contain;
-    background-image: url('img/mats/legend.jpg');
-
-    .deck {
-      position: absolute;
-      left: 115px;
-      top: 478px;
-    }
-
-    .discard {
-      position: absolute;
-      left: 729px;
-      top: 478px;
-    }
-  }*/
 }

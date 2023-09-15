@@ -53,6 +53,7 @@ interface Championship {
     circuits: {
         event: number;
         circuit: string;
+        name: string;
     }[];
     index: number;
     name: string;
@@ -94,6 +95,7 @@ interface HeatGame extends Game {
     animationManager: AnimationManager;
     cardsManager: CardsManager;
     legendCardsManager: LegendCardsManager;
+    eventCardsManager: EventCardsManager;
 
     getPlayerId(): number;
     getPlayer(playerId: number): HeatPlayer;
@@ -181,14 +183,14 @@ interface NotifRevealArgs {
     constructor_id: number;
     gear: number; // new gear
     cards: { [id: number]: Card};
-    heat?: any; // TODO
+    heat?: Card;
 }
 
 // moveCar
 interface NotifMoveCarArgs {
     constructor_id: number;
     cell: number;
-    speed: any; // TODO number as string
+    speed: number;
     nForward: number;
     path: number[];
 }
@@ -213,6 +215,7 @@ interface NotifSpinOutArgs extends NotifPayHeatsArgs {
 interface NotifCardsArgs {
     constructor_id: number;
     n: number;
+    areSponsors: boolean;
 }
 
 // discard
@@ -224,12 +227,14 @@ interface NotifDiscardCardsArgs extends NotifCardsArgs {
 interface NotifPCardsArgs {
     constructor_id: number;
     cards: { [id: number]: Card};
+    areSponsors: boolean;
 }
 
 // clearPlayedCards
 interface NotifClearPlayedCardsArgs {
     constructor_id: number;
     cardIds: number[];
+    sponsorIds: number[];
 }
 
 // updateTurnOrder
@@ -316,4 +321,13 @@ interface NotifStartRaceArgs {
     constructor_ids: number[];
     weather: Weather;
     cells: { [constructor_id: number]: number };
+}
+
+// setupRace
+interface NotifSetupRaceArgs {
+    counters: { [constructor_id: number]: {
+        deckCount: number;
+        engine: { [id: number]: Card };
+        discard: { [id: number]: Card };
+    } };
 }

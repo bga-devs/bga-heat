@@ -1,0 +1,92 @@
+.event-card {
+    position: relative;
+    width: 363px;
+    height: 225px;
+    border-radius: 8px;  
+
+    .card-sides {
+        .card-side {
+            border-radius: 8px;
+            background-image: url('img/events.jpg');  
+            background-size: 100% auto; 
+
+            &>* {
+                pointer-events: all !important;
+                user-select: none;
+            }
+            &.front {
+                @for $index from 1 through 10 {
+                    &[data-index="#{$index}"]  {
+                        background-position-y: #{($index - 1) * 100% / 9};
+                    }
+                }
+
+                text-shadow: 0 0 1px black, 0 0 2px black;
+
+                .title-and-rule {
+                    position: absolute;
+                    top: 30px;
+                    left: 36px;
+                    width: 230px;
+                    height: 134px;
+                    text-align: center;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-evenly;
+                    align-items: center;
+
+                    .title {
+                        font-family: 'Aachen Bold';
+                        //font-weight: bold;
+                        color: #ffcd05;
+                        font-size: 120%;
+                        text-shadow: none;
+
+                        /* Fallback: Set a background color. */
+                        background-color: #ffcd05;
+                    
+                        /* Create the gradient. */
+                        background-image: linear-gradient(90deg, #fffcd6, #ffcd05, #db4427);
+                    
+                        /* Set the background size and repeat properties. */
+                        background-size: 100%;
+                        background-repeat: repeat;
+                    
+                        /* Use the text as a mask for the background. */
+                        /* This will show the gradient as a text color rather than element bg. */
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent; 
+                        -moz-background-clip: text;
+                        -moz-text-fill-color: transparent;
+                    }
+
+                    .rule {
+                        font-family: 'roboto_slabbold';
+                    }
+                }
+
+                .bottom-line {
+                    font-family: 'Aachen Bold';
+                    position: absolute;
+                    top: 166px;
+                    left: 36px;
+                    width: 230px;
+                    text-align: center;
+                    //font-weight: bold;
+                    border-top: 2px solid #ffe49b;
+                    padding: 7px 0;
+
+                    .year {
+                        color: #91d7e8;
+                    }
+                    .race {
+                        color: #ffe08e;
+                    }
+                    .country {
+                        color: #d1effc;
+                    }
+                }
+            }
+        }
+    }
+}

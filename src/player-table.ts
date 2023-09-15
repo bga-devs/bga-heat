@@ -42,7 +42,7 @@ class PlayerTable {
     private currentPlayer: boolean;
     private currentGear: number;
 
-    private fakeDeckCard: Card;
+    public fakeDeckCard: Card;
 
     constructor(private game: HeatGame, player: HeatPlayer, constructor: Constructor) {
         this.playerId = Number(player.id);
@@ -142,7 +142,9 @@ class PlayerTable {
         return this.inplay.addCards(cards);
     }
     
-    public clearPlayedCards(cardIds: number[]): Promise<any> {
+    public clearPlayedCards(cardIds: number[], sponsorIds: number[]): Promise<any> {
+        this.inplay.removeCards(sponsorIds.map(sponsorId => ({id: sponsorId} as Card)));
+
         return this.discard.addCards(this.inplay.getCards());
     }
     
@@ -193,7 +195,11 @@ class PlayerTable {
         return promise ?? Promise.resolve(true);
     }
     
-    public async drawCardsPublic(n: number): Promise<any> {
+    public async drawCardsPublic(n: number, areSponsors: boolean): Promise<any> {
+        if (areSponsors) {
+            return;
+        }
+
         const isReshuffled = this.deck.getCardNumber() < n;
         if (!isReshuffled) {
             const count = this.deck.getCardNumber() - n;
@@ -214,7 +220,11 @@ class PlayerTable {
         }
     }
     
-    public drawCardsPrivate(cards: Card[]): Promise<any> {
+    public drawCardsPrivate(cards: Card[], areSponsors: boolean): Promise<any> {
+        if (areSponsors) {
+            return this.hand.addCards(cards);
+        }
+
         return this.addCardsFromDeck(cards, this.hand);
     }
     

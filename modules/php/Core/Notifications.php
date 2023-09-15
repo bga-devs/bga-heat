@@ -418,6 +418,7 @@ class Notifications
     self::notifyAll('weatherHeats', clienttranslate('Due to weather card, everyone move ${n} heat(s) to ${loc}'), [
       'i18n' => ['loc'],
       'loc' => $location,
+      'n' => $n,
     ]);
   }
 

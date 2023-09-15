@@ -619,16 +619,118 @@ height: 241px; */
   justify-items: center;
 }
 .legend-card .card-sides .card-side.front .legend-icon {
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   background: url("img/legend-icons.png");
   background-size: 100% auto;
   background-position-y: calc(var(--color) * 20%);
   color: white;
   text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
   text-align: center;
-  font-size: 36px;
-  line-height: 100px;
+  font-size: 32px;
+  line-height: 72px;
+}
+
+.event-card {
+  position: relative;
+  width: 363px;
+  height: 225px;
+  border-radius: 8px;
+}
+.event-card .card-sides .card-side {
+  border-radius: 8px;
+  background-image: url("img/events.jpg");
+  background-size: 100% auto;
+}
+.event-card .card-sides .card-side > * {
+  pointer-events: all !important;
+  user-select: none;
+}
+.event-card .card-sides .card-side.front {
+  text-shadow: 0 0 1px black, 0 0 2px black;
+}
+.event-card .card-sides .card-side.front[data-index="1"] {
+  background-position-y: 0%;
+}
+.event-card .card-sides .card-side.front[data-index="2"] {
+  background-position-y: 11.1111111111%;
+}
+.event-card .card-sides .card-side.front[data-index="3"] {
+  background-position-y: 22.2222222222%;
+}
+.event-card .card-sides .card-side.front[data-index="4"] {
+  background-position-y: 33.3333333333%;
+}
+.event-card .card-sides .card-side.front[data-index="5"] {
+  background-position-y: 44.4444444444%;
+}
+.event-card .card-sides .card-side.front[data-index="6"] {
+  background-position-y: 55.5555555556%;
+}
+.event-card .card-sides .card-side.front[data-index="7"] {
+  background-position-y: 66.6666666667%;
+}
+.event-card .card-sides .card-side.front[data-index="8"] {
+  background-position-y: 77.7777777778%;
+}
+.event-card .card-sides .card-side.front[data-index="9"] {
+  background-position-y: 88.8888888889%;
+}
+.event-card .card-sides .card-side.front[data-index="10"] {
+  background-position-y: 100%;
+}
+.event-card .card-sides .card-side.front .title-and-rule {
+  position: absolute;
+  top: 30px;
+  left: 36px;
+  width: 230px;
+  height: 134px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.event-card .card-sides .card-side.front .title-and-rule .title {
+  font-family: "Aachen Bold";
+  color: #ffcd05;
+  font-size: 120%;
+  text-shadow: none;
+  /* Fallback: Set a background color. */
+  background-color: #ffcd05;
+  /* Create the gradient. */
+  background-image: linear-gradient(90deg, #fffcd6, #ffcd05, #db4427);
+  /* Set the background size and repeat properties. */
+  background-size: 100%;
+  background-repeat: repeat;
+  /* Use the text as a mask for the background. */
+  /* This will show the gradient as a text color rather than element bg. */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-background-clip: text;
+  -moz-text-fill-color: transparent;
+}
+.event-card .card-sides .card-side.front .title-and-rule .rule {
+  font-family: "roboto_slabbold";
+}
+.event-card .card-sides .card-side.front .bottom-line {
+  font-family: "Aachen Bold";
+  position: absolute;
+  top: 166px;
+  left: 36px;
+  width: 230px;
+  text-align: center;
+  border-top: 2px solid #ffe49b;
+  padding: 7px 0;
+}
+.event-card .card-sides .card-side.front .bottom-line .year {
+  color: #91d7e8;
+}
+.event-card .card-sides .card-side.front .bottom-line .race {
+  color: #ffe08e;
+}
+.event-card .card-sides .card-side.front .bottom-line .country {
+  color: #d1effc;
 }
 
 #table-center {
@@ -1049,44 +1151,32 @@ height: 241px; */
   top: 478px;
 }
 
-#championship-table {
-  /*min-width: 640px;
-  width: 100%;
-  position: relative;
-  margin: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  #legend-board {
-    position: relative;
-    width: 1200px;
-    height: 793px;
-    padding: 0;
-    margin: 0;
-    background-size: contain;
-    background-image: url('img/mats/legend.jpg');
-
-    .deck {
-      position: absolute;
-      left: 115px;
-      top: 478px;
-    }
-
-    .discard {
-      position: absolute;
-      left: 729px;
-      top: 478px;
-    }
-  }*/
-}
 #championship-table #championship-circuits {
   background: white;
   border-radius: 20px;
-  height: 40px;
   margin: 5px 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 100px repeat(var(--race-count), 1fr);
+}
+#championship-table #championship-circuits[data-folded=true] .championship-circuit.current .card {
+  transform: scale(0.15);
+  margin: 0 -150px;
+}
+#championship-table #championship-circuits[data-folded=false] .championship-circuit.current {
+  flex-direction: column;
+  height: 270px;
+}
+#championship-table #championship-circuits[data-folded=false] .championship-circuit.current .card {
+  margin: 10px 0;
+}
+#championship-table .championship-name {
+  height: 40px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Aachen Bold";
+  color: #91d7e8;
 }
 #championship-table .championship-circuit {
   border-radius: 20px;
@@ -1095,10 +1185,21 @@ height: 241px; */
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: height 0.5s;
+}
+#championship-table .championship-circuit .circuit-name {
+  font-weight: bold;
+}
+#championship-table .championship-circuit .card {
+  transition: transform 0.5s, margin 0.5s;
 }
 #championship-table .championship-circuit.current {
   background: #d61b1a;
   color: white;
+  cursor: pointer;
+}
+#championship-table .championship-circuit:not(.current) .card {
+  display: none;
 }
 
 #help-popin h1 {
@@ -1180,6 +1281,18 @@ height: 241px; */
   margin-top: 30px;
 }
 
+@font-face {
+  font-family: "Aachen Bold";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Aachen Bold"), url("img/aachen-bold-opentype.woff") format("woff");
+}
+@font-face {
+  font-family: "roboto_slabbold";
+  src: url("img/RobotoSlab-Bold-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
 /* make space between buttons on touch devices */
 @media (hover: none) {
   #page-title .action-button.bgabutton, #page-title .bgabutton {
@@ -1213,48 +1326,51 @@ html, .mode_3d #game_play_area_background {
   background-position-x: 0%;
 }
 .icon.engine {
-  background-position-x: 6.6666666667%;
+  background-position-x: 6.25%;
 }
 .icon.heat {
-  background-position-x: 13.3333333333%;
+  background-position-x: 12.5%;
 }
 .icon.cooldown {
-  background-position-x: 20%;
+  background-position-x: 18.75%;
 }
 .icon.stress {
-  background-position-x: 26.6666666667%;
+  background-position-x: 25%;
 }
 .icon.boost {
-  background-position-x: 33.3333333333%;
+  background-position-x: 31.25%;
 }
 .icon.speed {
-  background-position-x: 40%;
+  background-position-x: 37.5%;
 }
 .icon.podium {
-  background-position-x: 46.6666666667%;
+  background-position-x: 43.75%;
 }
 .icon.reduce-stress {
-  background-position-x: 53.3333333333%;
+  background-position-x: 50%;
 }
 .icon.scrap {
-  background-position-x: 60%;
+  background-position-x: 56.25%;
 }
 .icon.direct {
-  background-position-x: 66.6666666667%;
+  background-position-x: 62.5%;
 }
 .icon.adjust {
-  background-position-x: 73.3333333333%;
+  background-position-x: 68.75%;
 }
 .icon.forced-heat {
-  background-position-x: 80%;
+  background-position-x: 75%;
 }
 .icon.refresh {
-  background-position-x: 86.6666666667%;
+  background-position-x: 81.25%;
 }
 .icon.salvage {
-  background-position-x: 93.3333333333%;
+  background-position-x: 87.5%;
 }
 .icon.gear {
+  background-position-x: 93.75%;
+}
+.icon.mandatory {
   background-position-x: 100%;
 }
 

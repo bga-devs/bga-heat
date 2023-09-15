@@ -350,7 +350,7 @@ class Circuit {
 
     public moveCar(constructorId: number, carCell: number, path?: number[]): Promise<any> {
         const car = document.getElementById(`car-${constructorId}`);
-        if (path) {
+        if (path?.length) {
             return this.moveCarWithAnimation(car, path).then(() => this.moveCar(constructorId, carCell));
         } else {
             const cell = this.getCellPosition(carCell);
