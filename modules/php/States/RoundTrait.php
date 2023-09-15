@@ -392,7 +392,7 @@ trait RoundTrait
     if ($no == $maxNo - 1 || ($no == $maxNo - 2 && $nbr >= 5)) {
       $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
       $symbols[ADRENALINE] = 1;
-      Notifications::gainAdrenaline($constructor, $no == $nbr - 1);
+      Notifications::gainAdrenaline($constructor, $no == $maxNo - 1);
     }
 
     // Additional cooldown from gear
