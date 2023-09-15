@@ -109,11 +109,22 @@ trait RoundTrait
       });
 
       // Compute corresponding speeds
+      $boostingCardIds = [];
       $speeds = $hand->map(function ($card) {
-        if ($card['effect'] == STRESS) {
-          return [1, 2, 3, 4];
+        $speed = $card['speed'];
+
+        // Handle + symbols
+        $nBoosts = $card['symbols'][BOOST] ?? 0;
+        if ($nBoosts > 0) {
+          $boostingCardIds[] = $card['id'];
+          $t = [];
+          for ($i = $nBoosts; $i <= 4 * $nBoosts; $i++) {
+            $t[] = $speed + $i;
+          }
+          $speed = $t;
         }
-        return $card['speed'];
+
+        return $speed;
       });
       // Compute max speed
       $maxSpeed = 0;
@@ -132,6 +143,7 @@ trait RoundTrait
         'speeds' => $speeds,
         'cells' => $cells,
         'selection' => $planification[$pId] ?? null,
+        'boostingCardIds' => $boostingCardIds,
       ];
     }
 
