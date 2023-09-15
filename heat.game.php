@@ -99,7 +99,24 @@ class Heat extends Table
    */
   function getGameProgression()
   {
-    return 50; // TODO
+    if (Globals::isChampionship()) {
+      $datas = Globals::getChampionshipDatas();
+      $raceIndex = $datas['index'];
+      $raceNumber = count($datas['circuits']);
+    } else {
+      $raceIndex = 0;
+      $raceNumber = 1;
+    }
+
+    $totalProgress = ($raceIndex * 100) / $raceNumber;
+    $inRaceProgresses = Constructors::getAll()
+      ->map(function ($constructor) {
+        return $constructor->getRaceProgress();
+      })
+      ->toArray();
+    $inRaceProgress = array_sum($inRaceProgresses) / count($inRaceProgresses);
+
+    return 100 * ($totalProgress + $inRaceProgress / $raceNumber);
   }
 
   function actChangePreference($pref, $value)

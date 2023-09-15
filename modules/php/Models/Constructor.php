@@ -41,6 +41,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
       'discard' => $this->getDiscard(),
       'deckCount' => $this->getDeck()->count(),
       'inplay' => $this->getPlayedCards(),
+      'raceProgress' => $this->getRaceProgress(),
     ]);
   }
 
@@ -72,6 +73,23 @@ class Constructor extends \HEAT\Helpers\DB_Model
     return Game::get()
       ->getCircuit()
       ->getPosition($this);
+  }
+
+  public function getRaceProgress()
+  {
+    if ($this->isFinished()) {
+      return 1;
+    }
+
+    $position = $this->getPosition();
+    $turn = $this->getTurn();
+    $circuit = Game::get()->getCircuit();
+    $length = $circuit->getLength();
+    $nLaps = $circuit->getNbrLaps();
+
+    $uid = $turn * $length + $position;
+    $max = $nLaps * $length;
+    return min(1, $uid / $max);
   }
 
   public function getLane()

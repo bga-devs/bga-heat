@@ -79,6 +79,7 @@ class Notifications
       'speed' => $speed,
       'nForward' => $nSpacesForward,
       'path' => $path,
+      'progress' => $constructor->getRaceProgress(),
       'preserve' => ['path'],
     ]);
 
