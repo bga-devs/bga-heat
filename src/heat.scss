@@ -248,3 +248,9 @@ html, .mode_3d #game_play_area_background {
     }
   }
 }
+
+.press-corner-ul, .press-corner-ul li {
+  list-style: disc;
+  list-style-type: disc;
+  list-style-position: inside;
+}

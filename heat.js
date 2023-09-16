@@ -2425,7 +2425,7 @@ var Circuit = /** @class */ (function () {
         pressIconDiv.style.setProperty('--y', "".concat(corner.tentY, "px"));
         pressIconDiv.innerHTML = "<i class=\"fa fa-camera\"></i>";
         this.circuitDiv.insertAdjacentElement('beforeend', pressIconDiv);
-        this.game.setTooltip(pressIconDiv.id, "<div class=\"press-token\"></div>");
+        this.game.setTooltip(pressIconDiv.id, "\n        <div class=\"press-token\"></div><br><br>\n        \n        <strong>".concat(_("Press Corner"), "</strong><br><br>\n        ").concat(_("The international press is waiting in a specific corner for something spectacular to happen. This gives all players a permanent challenge throughout the race."), "\n        <br>\n        ").concat(_("To gain a Sponsorship card this way you must either:"), "<br>\n        <ul class=\"press-corner-ul\">\n            <li>").concat(_("Cross the Corner Line thanks to your Slipstream move (Speed is irrelevant in this case)."), "</li>\n            <li>").concat(_("Exceed the Speed Limit of the Press Corner (potentially modified by a Road Conditions token) by 2 or more."), "</li>\n        </ul>\n        <br>\n        ").concat(_("Note: You cannot gain more than one Sponsorship card each time you go through a Press Corner."), "        \n        "));
     };
     Circuit.prototype.createWeather = function (weather) {
         if (weather === null || weather === void 0 ? void 0 : weather.tokens) {
