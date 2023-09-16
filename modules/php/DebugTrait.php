@@ -51,6 +51,15 @@ trait DebugTrait
     $this->DbQuery("UPDATE constructors SET `turn` = 2");
   }
 
+  function clutterHand($constructorId = null) {
+    if ($constructorId === null) {
+      $constructor = Constructors::getActive();
+      $constructorId = $constructor->getId();
+    }
+    $this->DbQuery("UPDATE constructors SET `gear` = 4 WHERE id = $constructorId");
+    $this->DbQuery("UPDATE `cards` SET `type` = 111 WHERE card_location = 'hand-$constructorId'");
+  }
+
   /*
    * loadBug: in studio, type loadBug(20762) into the table chat to load a bug report from production
    * client side JavaScript will fetch each URL below in sequence, then refresh the page

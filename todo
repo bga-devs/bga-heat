@@ -4,7 +4,7 @@ Other :
     Can a player make a bet using stress by hoping to land in such sector ?
     
 Backend :
-
+ - Cluttered hand: set gear to 1
 
 Frontend :
  - rethink inPLay deck position. place it where ithe market is? Or Force it to 1 line only ? Remove stress card when they are resolved ?
