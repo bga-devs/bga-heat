@@ -37,10 +37,6 @@ trait SetupTrait
     }
     // Championship
     elseif ($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP) {
-      if ($this->getBgaEnvironment() != 'studio') {
-        throw new \BgaVisibleSystemException('WIP. Not available on prod');
-      }
-
       $options[\HEAT\OPTION_NBR_LAPS] = 0;
       $options[\HEAT\OPTION_GARAGE_MODULE] = \HEAT\OPTION_GARAGE_MIXED;
       $options[\HEAT\OPTION_GARAGE_MODULE] = $options[\HEAT\OPTION_GARAGE_MODULE_CHAMPIONSHIP];
