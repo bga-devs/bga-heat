@@ -2167,7 +2167,7 @@ var EventCardsManager = /** @class */ (function () {
         switch (card) {
             case 1:
                 return {
-                    title: _('NEW GRANDSTAND INAUGURATION'),
+                    title: _('New grandstand inauguration'),
                     rule: _('First three drivers to cross the Finish Line on the 1st lap immediately gain a Sponsorship card.'),
                     year: '1961',
                     race: 1,
@@ -2175,7 +2175,7 @@ var EventCardsManager = /** @class */ (function () {
                 };
             case 2:
                 return {
-                    title: _('NEW SPEED RECORD!'),
+                    title: _('New speed record!'),
                     rule: _('Each time you reach a Speed of 15 or more, immediately gain a Sponsorship card.'),
                     year: '1961',
                     race: 2,
@@ -2183,7 +2183,7 @@ var EventCardsManager = /** @class */ (function () {
                 };
             case 3:
                 return {
-                    title: _('DRIVERS’ STRIKE'),
+                    title: _('Drivers’ strike'),
                     rule: _('This race is one lap shorter than usual. The winner of this race is awarded 2 extra Championship points.'),
                     year: '1961',
                     race: 3,
@@ -2191,7 +2191,7 @@ var EventCardsManager = /** @class */ (function () {
                 };
             case 4:
                 return {
-                    title: _('ENGINE RESTRICTIONS LIFTED'),
+                    title: _('Engine restrictions lifted'),
                     rule: _('All drivers start the race with an extra Heat card from the reserve in their Engine spot.'),
                     year: '1962',
                     race: 1,
@@ -2199,7 +2199,7 @@ var EventCardsManager = /** @class */ (function () {
                 };
             case 5:
                 return {
-                    title: _('RECORD CROWDS'),
+                    title: _('Record crowds'),
                     rule: _('This race is one lap longer than usual and hand size is increased to 8 cards.'),
                     year: '1962',
                     race: 2,
@@ -2207,7 +2207,7 @@ var EventCardsManager = /** @class */ (function () {
                 };
             case 6:
                 return {
-                    title: _('CORRUPTION IN RULES COMMITTEE'),
+                    title: _('Corruption in rules committee'),
                     rule: _('The top 3 finishers of this race are awarded an extra Championship point.'),
                     year: '1962',
                     race: 3,
@@ -2215,7 +2215,7 @@ var EventCardsManager = /** @class */ (function () {
                 };
             case 7:
                 return {
-                    title: _('NEW TITLE SPONSOR'),
+                    title: _('New title sponsor'),
                     rule: _('No Special Rules.'),
                     year: '1963',
                     race: 1,
@@ -2223,7 +2223,7 @@ var EventCardsManager = /** @class */ (function () {
                 };
             case 8:
                 return {
-                    title: _('FIRST LIVE TELEVISED RACE'),
+                    title: _('First live televised race'),
                     rule: _('If you pass 3 cars in a single round, immediately gain a Sponsorship card.'),
                     year: '1963',
                     race: 2,
@@ -2231,7 +2231,7 @@ var EventCardsManager = /** @class */ (function () {
                 };
             case 9:
                 return {
-                    title: _('NEW SAFETY REGULATIONS'),
+                    title: _('New safety regulations'),
                     rule: _('All drivers start the race with 2 less Heat cards and 1 less Stress card than usual. Hand size is reduced to 6 cards.'),
                     year: '1963',
                     race: 3,
@@ -2239,7 +2239,7 @@ var EventCardsManager = /** @class */ (function () {
                 };
             case 10:
                 return {
-                    title: _('TITLE SPONSOR WITHDRAWS FUTURE UNKNOWN'),
+                    title: _('Title sponsor withdraws future unknown'),
                     rule: _('All drivers start the race with an extra Stress card from the reserve in their Deck. If you spin out, you are eliminated from the race and score 0 Championship points.'),
                     year: '1963',
                     race: 4,
@@ -2539,9 +2539,11 @@ var Circuit = /** @class */ (function () {
             this.game.setTooltip(car.id, "".concat(html, "\"></div> <strong style=\"color: #").concat(CONSTRUCTORS_COLORS[constructor.id], ";\">").concat(constructor.name, "</strong>"));
         }
         var cell = this.getCellPosition(constructor.carCell);
-        car.style.setProperty('--x', "".concat(cell.x, "px"));
-        car.style.setProperty('--y', "".concat(cell.y, "px"));
-        car.style.setProperty('--r', "".concat(cell.a, "deg"));
+        if (cell) {
+            car.style.setProperty('--x', "".concat(cell.x, "px"));
+            car.style.setProperty('--y', "".concat(cell.y, "px"));
+            car.style.setProperty('--r', "".concat(cell.a, "deg"));
+        }
     };
     Circuit.prototype.moveCar = function (constructorId, carCell, path) {
         var _this = this;

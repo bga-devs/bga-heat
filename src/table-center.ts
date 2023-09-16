@@ -356,9 +356,11 @@ class Circuit {
             this.game.setTooltip(car.id, `${html}"></div> <strong style="color: #${CONSTRUCTORS_COLORS[constructor.id]};">${constructor.name}</strong>`);
         }
         const cell = this.getCellPosition(constructor.carCell);
-        car.style.setProperty('--x', `${cell.x}px`);
-        car.style.setProperty('--y', `${cell.y}px`);
-        car.style.setProperty('--r', `${cell.a}deg`);
+        if (cell) {
+            car.style.setProperty('--x', `${cell.x}px`);
+            car.style.setProperty('--y', `${cell.y}px`);
+            car.style.setProperty('--r', `${cell.a}deg`);
+        }
     }
 
     public moveCar(constructorId: number, carCell: number, path?: number[]): Promise<any> {

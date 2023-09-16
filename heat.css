@@ -714,6 +714,7 @@ height: 241px; */
   align-items: center;
 }
 .event-card .card-sides .card-side.front .title-and-rule .title {
+  text-transform: uppercase;
   font-family: "Aachen Bold";
   color: #ffcd05;
   font-size: 120%;
@@ -737,6 +738,7 @@ height: 241px; */
 }
 .event-card .card-sides .card-side.front .bottom-line {
   font-family: "Aachen Bold";
+  font-size: 85%;
   position: absolute;
   top: 166px;
   left: 36px;

@@ -36,6 +36,7 @@
                     align-items: center;
 
                     .title {
+                        text-transform: uppercase;
                         font-family: 'Aachen Bold';
                         //font-weight: bold;
                         color: #ffcd05;
@@ -67,6 +68,7 @@
 
                 .bottom-line {
                     font-family: 'Aachen Bold';
+                    font-size: 85%;
                     position: absolute;
                     top: 166px;
                     left: 36px;

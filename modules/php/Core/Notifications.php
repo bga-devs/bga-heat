@@ -461,12 +461,12 @@ class Notifications
     $map = [
       EVENT_INAUGURATION => clienttranslate('New grandstand inauguration'),
       EVENT_NEW_RECORD => clienttranslate('New speed record!'),
-      EVENT_STRIKE => clienttranslate('Drivers\' strike'),
+      EVENT_STRIKE => clienttranslate('Drivers’ strike'),
       EVENT_RESTRICTIONS_LIFTED => clienttranslate('Engine restrictions lifted'),
       EVENT_RECORD_CROWDS => clienttranslate('Record crowds'),
       EVENT_CORRUPTION => clienttranslate('Corruption in rules committee'),
       EVENT_TITLE_SPONSOR => clienttranslate('New title sponsor'),
-      EVENT_FIRST_LIVE_TV => clienttranslate('First live television race'),
+      EVENT_FIRST_LIVE_TV => clienttranslate('First live televised race'),
       EVENT_SAFETY_REGULATIONS => clienttranslate('New safety regulations'),
       EVENT_FUTURE_UNKNOWN => clienttranslate('Title sponsor withdraws future unknown'),
     ];

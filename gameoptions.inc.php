@@ -100,35 +100,35 @@ $game_options = [
         [
           'type' => 'maxplayers',
           'value' => 5,
-          'message' => clienttranslate('Number of lengeds + players can\'t exceed 6'),
+          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
         ],
       ],
       2 => [
         [
           'type' => 'maxplayers',
           'value' => 4,
-          'message' => clienttranslate('Number of lengeds + players can\'t exceed 6'),
+          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
         ],
       ],
       3 => [
         [
           'type' => 'maxplayers',
           'value' => 3,
-          'message' => clienttranslate('Number of lengeds + players can\'t exceed 6'),
+          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
         ],
       ],
       4 => [
         [
           'type' => 'maxplayers',
           'value' => 2,
-          'message' => clienttranslate('Number of lengeds + players can\'t exceed 6'),
+          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
         ],
       ],
       5 => [
         [
           'type' => 'maxplayers',
           'value' => 1,
-          'message' => clienttranslate('Number of lengeds + players can\'t exceed 6'),
+          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
         ],
       ],
     ],
