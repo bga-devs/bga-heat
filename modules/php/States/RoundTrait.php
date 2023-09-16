@@ -921,7 +921,7 @@ trait RoundTrait
     // Inauguration: first 3 cards to finish 1st lap
     elseif ($event == EVENT_INAUGURATION && $prevTurn == 0 && $turn == 1) {
       $alreadyCrossed = 0;
-      foreach (Constructor::getAll() as $constructor2) {
+      foreach (Constructors::getAll() as $constructor2) {
         if ($constructor->getId() == $constructor2->getId()) {
           continue;
         }
