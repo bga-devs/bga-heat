@@ -65,16 +65,6 @@ class Heat implements HeatGame {
         
         this.gamedatas = gamedatas;
 
-        // TODO TEMP
-        Object.values(gamedatas.players).forEach((player, index) => {
-            //const playerId = Number(player.id);
-            //if (playerId == this.getPlayerId()) {
-            //    player.hand = gamedatas.cards.filter(card => card.location == 'hand' && card.pId == playerId);
-            //}
-            //player.handCount = gamedatas.cards.filter(card => card.location == 'hand' && card.pId == playerId).length;
-        });
-        
-
         if (gamedatas.circuitDatas?.jpgUrl && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
             g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
@@ -841,16 +831,27 @@ class Heat implements HeatGame {
     
     public onHandCardSelectionChange(selection: Card[]): void {
         if (this.gamedatas.gamestate.name == 'planification') {
+            const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
+            const clutteredHand = privateArgs?.clutteredHand;
+
             const table = this.getCurrentPlayerTable();
             const gear = table.getCurrentGear();
 
-            const minAllowed = Math.max(1, gear - 2);
-            const maxAllowed = Math.min(4, gear + 2);
+            const maxGearChange = clutteredHand ? 1 : 2;
+            const minAllowed = Math.max(1, gear - maxGearChange);
+            const maxAllowed = Math.min(4, gear + maxGearChange);
             let allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
             const useHeat = allowed && Math.abs(selection.length - gear) == 2;
-            const label = allowed ? 
+            let label = '';
+            if (allowed) {
+                label = clutteredHand ? 
+                _('Unclutter hand with selected cards') :
                 `${_('Play selected cards')} (${_('Gear:')} ${gear} ⇒ ${selection.length} ${formatTextIcons(useHeat ? '[Heat]' : '')})` :
-                _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
+            } else {
+                label = _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
+            }
+            
+                
 
             document.getElementById(`player-table-${table.playerId}-gear`).dataset.gear = `${allowed ? selection.length : gear}`;
 
@@ -863,7 +864,6 @@ class Heat implements HeatGame {
             button.classList.toggle('disabled', !allowed);
 
             this.circuit.removeMapIndicators();
-            const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
             if (selection.length && privateArgs) {
                 const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
                 const stressCardsSelected = selection.some(card => privateArgs.boostingCardIds.includes(card.id));
@@ -1039,6 +1039,7 @@ class Heat implements HeatGame {
         });
 
         const notifs = [
+            'message',
             'loadCircuit',
             'chooseUpgrade',
             'swapUpgrade',
@@ -1117,6 +1118,10 @@ class Heat implements HeatGame {
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
         );
     } 
+
+    notif_message() {
+        // just to log them on the title bar
+    }
 
     notif_loadCircuit(args: NotifLoadCircuitArgs) {
         const { circuit } = args;
@@ -1393,7 +1398,7 @@ class Heat implements HeatGame {
             const table = this.getPlayerTable(this.getPlayerIdFromConstructorId(Number(constructor_id)));
             if (table) {
                 table.inplay.removeAll();
-                table.deck.setCardNumber(counters?.deckCount, table.fakeDeckCard);                
+                table.deck.setCardNumber(counters?.deckCount);                
                 this.engineCounters[constructor_id].setValue(Object.values(counters.engine).length);
                 table.engine.removeAll();
                 table.engine.addCards(Object.values(counters.engine));
@@ -1516,40 +1521,46 @@ class Heat implements HeatGame {
         return Object.values(cards).map((card: Card) => this.cardImageHtml(card, args)).join('');
     }
 
+    private formatArgCardImage(args: any, argName: string, argImageName: string) {
+        if (args[argImageName] === '' && args[argName]) {
+            const reshuffle = `<div>${_("(discard is reshuffled to the deck)")}</div>`;
+            args[argImageName] = `${args[argName].isReshuffled ? reshuffle : ''}<div class="log-card-set">${this.cardImageHtml(args[argName], args)}</div>`;
+        }
+    }
+
+    private formatArgCardsImages(args: any, argName: string, argImageName: string) {
+        if (args[argImageName] === '' && args[argName]) {
+            const cards: Card[] = Object.values(args[argName]);
+            const shuffleIndex = cards.findIndex(card => card.isReshuffled)
+            if (shuffleIndex === -1) {
+                args[argImageName] = `<div class="log-card-set">${this.cardsImagesHtml(Object.values(cards), args)}</div>`;
+            } else {
+                const cardsBefore = cards.slice(0, shuffleIndex);
+                const cardsAfter = cards.slice(shuffleIndex);
+
+                const reshuffle = `<div>${_("(discard is reshuffled to the deck)")}</div>`;
+                args[argImageName] = `
+                <div class="log-card-set">${this.cardsImagesHtml(cardsBefore, args)}</div>
+                ${reshuffle}
+                <div class="log-card-set">${this.cardsImagesHtml(cardsAfter, args)}</div>
+                `;
+            }
+        }
+    }
+
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
-                const reshuffle = `<div>${_("(discard is reshuffled to the deck)")}</div>`;
 
-                if (args.card_image === '' && args.card) {
-                    args.card_image = `${args.card.isReshuffled ? reshuffle : ''}<div class="log-card-set">${this.cardImageHtml(args.card, args)}</div>`;
-                }
-
-                if (args.card_image2 === '' && args.card2) {
-                    args.card_image2 = `${args.card.isReshuffled ? reshuffle : ''}<div class="log-card-set">${this.cardImageHtml(args.card2, args)}</div>`;
-                }
+                this.formatArgCardImage(args, 'card', 'card_image');
+                this.formatArgCardImage(args, 'card2', 'card_image2');
+                this.formatArgCardsImages(args, 'cards', 'cards_images');
+                this.formatArgCardsImages(args, 'cards2', 'cards_images2');
 
                 if (args.finishIcon === '') {
                     args.finishIcon = `<div class="flag icon"></div>`;
-                }
-
-                if (args.cards_images === '' && args.cards) {
-                    const cards: Card[] = Object.values(args.cards);
-                    const shuffleIndex = cards.findIndex(card => card.isReshuffled)
-                    if (shuffleIndex === -1) {
-                        args.cards_images = `<div class="log-card-set">${this.cardsImagesHtml(Object.values(cards), args)}</div>`;
-                    } else {
-                        const cardsBefore = cards.slice(0, shuffleIndex);
-                        const cardsAfter = cards.slice(shuffleIndex);
-
-                        args.cards_images = `
-                        <div class="log-card-set">${this.cardsImagesHtml(cardsBefore, args)}</div>
-                        ${reshuffle}
-                        <div class="log-card-set">${this.cardsImagesHtml(cardsAfter, args)}</div>
-                        `;
-                    }
                 }
                 
                 let constructorKeys = Object.keys(args).filter((key) => key.substring(0, 16) == 'constructor_name');

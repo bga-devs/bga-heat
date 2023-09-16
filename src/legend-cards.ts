@@ -19,8 +19,8 @@ class LegendCardsManager extends CardManager<LegendCard> {
         });
     }
 
-    private setupFrontDiv(card: LegendCard, div: HTMLElement) { 
-        if (!Object.values(card).length) {
+    private setupFrontDiv(card: LegendCard, div: HTMLElement) {
+        if (!Array.isArray(card) || !Object.values(card).length) {
             return;
         }
 

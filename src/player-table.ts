@@ -3,13 +3,35 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 
 const PERSONAL_CARDS_SORTING = (a: Card, b: Card) => Number(a.type) - Number(b.type);
 
-class InPlayStock extends LineStock<Card> {
+/*
+
+function manualPositionFitUpdateDisplay(element, cards, lastCard, stock) {
+    const halfClientWidth = element.clientWidth / 2;
+    const MARGIN = 8;
+    const CARD_WIDTH = 100;
+    let cardDistance = CARD_WIDTH + MARGIN;
+    const containerWidth = element.clientWidth;
+    const uncompressedWidth = (cards.length * CARD_WIDTH) + ((cards.length - 1) * MARGIN);
+    if (uncompressedWidth > containerWidth) {
+        cardDistance = Math.floor(CARD_WIDTH * containerWidth / (cards.length * CARD_WIDTH));
+    }
+
+    cards.forEach((card, index) => {
+        const cardDiv = stock.getCardElement(card);
+        const cardLeft = halfClientWidth + cardDistance * (index - (cards.length - 1) / 2);
+
+        cardDiv.style.left = `${ cardLeft - CARD_WIDTH / 2 }px`;
+    });
+}*/
+
+// new ManualPositionStock(cardsManager, document.getElementById('manual-position-fit-stock'), undefined, manualPositionFitUpdateDisplay);
+class InPlayStock extends /*ManualPositionStock*/LineStock<Card> {
     private playerId: number;
 
-    constructor(game: HeatGame, constructor: Constructor) {
+    constructor(game: HeatGame, constructor: Constructor, ) {
         super(game.cardsManager, document.getElementById(`player-table-${constructor.pId}-inplay`), {
             sort: PERSONAL_CARDS_SORTING,
-        });
+        }/*, manualPositionFitUpdateDisplay*/);
         this.playerId = constructor.pId;
         this.addCards(Object.values(constructor.inplay));
         this.toggleInPlay(); // in case inplay is empty, addCard is not called
@@ -42,14 +64,10 @@ class PlayerTable {
     private currentPlayer: boolean;
     private currentGear: number;
 
-    public fakeDeckCard: Card;
-
     constructor(private game: HeatGame, player: HeatPlayer, constructor: Constructor) {
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         this.currentGear = constructor.gear;
-
-        this.fakeDeckCard = { id: `${this.playerId}-top-deck` as any } as Card;
 
         let html = `
         <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color}; --personal-card-background-y: ${constructor.id * 100 / 6}%;">
@@ -90,7 +108,6 @@ class PlayerTable {
         
         this.deck = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-deck`), {
             cardNumber: constructor.deckCount,
-            topCard: constructor.deckCount ? this.fakeDeckCard : null,
             counter: {
                 extraClasses: 'round',
             }
@@ -102,7 +119,14 @@ class PlayerTable {
             topCard: engineCards[0], // TODO check if ordered
             counter: {
                 extraClasses: 'round',
-            }
+            },
+            fakeCardGenerator: deckId => ({
+                id: `${deckId}-top-engine` as any,
+                type: 111,
+                location: 'engine',
+                effect: 'heat',
+                state: ''
+            } as Card),
         });
         
         const discardCards = Object.values(constructor.discard);
@@ -203,18 +227,18 @@ class PlayerTable {
         const isReshuffled = this.deck.getCardNumber() < n;
         if (!isReshuffled) {
             const count = this.deck.getCardNumber() - n;
-            this.deck.setCardNumber(count, count > 0 ? this.fakeDeckCard : null);
+            this.deck.setCardNumber(count);
             return Promise.resolve(true);
         } else {
             const before = this.deck.getCardNumber();
             const after = this.discard.getCardNumber() - (n - before);
 
-            this.deck.setCardNumber(this.discard.getCardNumber(), this.fakeDeckCard);
+            this.deck.setCardNumber(this.discard.getCardNumber());
             this.discard.setCardNumber(0);
 
             await this.deck.shuffle(10, (card: Card, index: number) => card.id = -1000 - index);
 
-            this.deck.setCardNumber(after, this.fakeDeckCard);
+            this.deck.setCardNumber(after);
 
             return true;
         }
@@ -271,7 +295,7 @@ class PlayerTable {
 
         await this.deck.addCards(cards, undefined, { visible: false, }, true);
 
-        this.deck.setCardNumber(this.deck.getCardNumber(), this.fakeDeckCard);
+        this.deck.setCardNumber(this.deck.getCardNumber());
 
         await this.deck.shuffle(10, (card: Card, index: number) => card.id = -1000 - index);
 
@@ -285,7 +309,7 @@ class PlayerTable {
         await this.deck.addCards(this.discard.getCards());
 
         this.discard.setCardNumber(0);
-        this.deck.setCardNumber(cardNumber, this.fakeDeckCard);
+        this.deck.setCardNumber(cardNumber);
         await this.deck.shuffle(10, (card: Card, index: number) => card.id = -1000 - index);
     }
 

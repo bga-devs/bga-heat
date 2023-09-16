@@ -124,6 +124,7 @@ interface EnteringPlanificationPrivateArgs {
     cells: { [speed: number]: number /*destination cell*/ };
     speeds: { [cardId: number]: number | number[]};
     boostingCardIds: number[];
+    clutteredHand: boolean;
 }
 
 interface EnteringPlanificationArgs {    

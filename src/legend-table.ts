@@ -16,9 +16,11 @@ class LegendTable {
         
         this.deck = new Deck<LegendCard>(this.game.legendCardsManager, document.getElementById(`legend-deck`), {
             topCard: [],
+            fakeCardGenerator: () => [],
         });
         
         this.discard = new Deck<LegendCard>(this.game.legendCardsManager, document.getElementById(`legend-discard`), {
+            cardNumber: legendCard ? 1 : 0,
             topCard: legendCard,
         }); 
     }

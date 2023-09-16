@@ -7,10 +7,6 @@ Backend :
 
 
 Frontend :
- - format [+]
-
- - message notifs : put in title bar
-
  - rethink inPLay deck position. place it where ithe market is? Or Force it to 1 line only ? Remove stress card when they are resolved ?
   - planification : highlight already selected cards (also on refresh), you have a parameter in the args :       
       'selection' => $planification[$pId] ?? null,
@@ -25,5 +21,3 @@ Frontend :
   - user pref : voir seulement le haut des cartes en main => garder environ 1/6 de la hauteur et mettre le plateau joueur par dessus, permet d'avoir une vue globale plus complète
 
   - zoom icons are gone => No they are just under the map, as the map now autoscale like in TTR
-
-  - find a font simir to BetterFaster-Italic for card text
