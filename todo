@@ -2,14 +2,9 @@ Other :
   - Cluttered hand: waiting for an answer from DoW about that.
     How can we compute "valid cards to play" ? Should we take into account the cooldown the the car may get if it lands in a sector with a weather token ?
     Can a player make a bet using stress by hoping to land in such sector ?
-    
-Backend :
- - Cluttered hand: set gear to 1
 
 Frontend :
- - clutteredHand notif
-
- - rethink inPLay deck position. place it where ithe market is? Or Force it to 1 line only ? Remove stress card when they are resolved ?
+ - rethink inPLay deck position. place it where the market is? Or Force it to 1 line only ?
   - planification : highlight already selected cards (also on refresh), you have a parameter in the args :       
       'selection' => $planification[$pId] ?? null,
 
