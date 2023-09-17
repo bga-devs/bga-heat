@@ -2786,39 +2786,40 @@ var PlayerTable = /** @class */ (function () {
         return this.inplay.addCards(cards);
     };
     PlayerTable.prototype.clearPlayedCards = function (cardIds, sponsorIds) {
-        this.inplay.removeCards(sponsorIds.map(function (sponsorId) { return ({ id: sponsorId }); }));
-        return this.discard.addCards(this.inplay.getCards());
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.inplay.removeCards(sponsorIds.map(function (sponsorId) { return ({ id: sponsorId }); }))];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.discard.addCards(this.inplay.getCards())];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     PlayerTable.prototype.cooldown = function (cards) {
-        return this.engine.addCards(cards);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.engine.addCards(cards)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     PlayerTable.prototype.payHeats = function (cards) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        if (this.engine.getCardNumber() > cards.length) {
-                            this.engine.addCard({
-                                id: "".concat(this.playerId, "-top-engine"),
-                                type: 111,
-                                location: 'engine',
-                                effect: 'heat',
-                                state: ''
-                            }, undefined, {
-                                autoUpdateCardNumber: false,
-                                autoRemovePreviousCards: false,
-                            });
-                        }
-                        this.engine.addCards(cards, undefined, {
-                            autoUpdateCardNumber: false,
-                            autoRemovePreviousCards: false,
-                        });
-                        return [4 /*yield*/, this.discard.addCards(cards, undefined, {
-                                autoRemovePreviousCards: false,
-                            }, 250)];
+                    case 0: return [4 /*yield*/, this.discard.addCards(cards, { fromStock: this.engine })];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, true];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -2891,6 +2892,7 @@ var PlayerTable = /** @class */ (function () {
                         this.deck.addCard(card, undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
+                            visible: false,
                         });
                         return [4 /*yield*/, this.discard.addCard(card)];
                     case 4:
@@ -2920,6 +2922,7 @@ var PlayerTable = /** @class */ (function () {
                         this.deck.addCard(card, undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
+                            visible: false,
                         });
                         return [4 /*yield*/, this.inplay.addCard(card)];
                     case 4:
@@ -2973,9 +2976,7 @@ var PlayerTable = /** @class */ (function () {
             });
         });
     };
-    PlayerTable.prototype.addCardsFromDeck = function (cards, to, addCardSettings, shift) {
-        if (addCardSettings === void 0) { addCardSettings = undefined; }
-        if (shift === void 0) { shift = 250; }
+    PlayerTable.prototype.addCardsFromDeck = function (cards, to) {
         return __awaiter(this, void 0, void 0, function () {
             var shuffleIndex, cardsBefore, cardsAfter;
             return __generator(this, function (_a) {
@@ -2983,26 +2984,29 @@ var PlayerTable = /** @class */ (function () {
                     case 0:
                         shuffleIndex = cards.findIndex(function (card) { return card.isReshuffled; });
                         if (!(shuffleIndex === -1)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, to.addCards(cards, { fromStock: this.deck, }, addCardSettings, shift)];
+                        return [4 /*yield*/, to.addCards(cards, { fromStock: this.deck, }, undefined, 250)];
                     case 1:
                         _a.sent();
-                        return [3 /*break*/, 5];
+                        return [3 /*break*/, 6];
                     case 2:
                         cardsBefore = cards.slice(0, shuffleIndex);
                         cardsAfter = cards.slice(shuffleIndex);
-                        return [4 /*yield*/, to.addCards(cardsBefore, { fromStock: this.deck, }, addCardSettings, shift)];
+                        return [4 /*yield*/, to.addCards(cardsBefore, { fromStock: this.deck, }, undefined, 250)];
                     case 3:
                         _a.sent();
-                        this.moveDiscardToDeckAndShuffle();
+                        return [4 /*yield*/, this.moveDiscardToDeckAndShuffle()];
+                    case 4:
+                        _a.sent();
                         this.deck.addCards(cardsAfter, undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
+                            visible: false,
                         });
-                        return [4 /*yield*/, to.addCards(cardsAfter, { fromStock: this.deck, }, addCardSettings, shift)];
-                    case 4:
+                        return [4 /*yield*/, to.addCards(cardsAfter, { fromStock: this.deck, }, undefined, 250)];
+                    case 5:
                         _a.sent();
-                        _a.label = 5;
-                    case 5: return [2 /*return*/, true];
+                        _a.label = 6;
+                    case 6: return [2 /*return*/, true];
                 }
             });
         });

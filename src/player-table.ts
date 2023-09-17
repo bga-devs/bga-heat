@@ -166,40 +166,18 @@ class PlayerTable {
         return this.inplay.addCards(cards);
     }
     
-    public clearPlayedCards(cardIds: number[], sponsorIds: number[]): Promise<any> {
-        this.inplay.removeCards(sponsorIds.map(sponsorId => ({id: sponsorId} as Card)));
+    public async clearPlayedCards(cardIds: number[], sponsorIds: number[]): Promise<any> {
+        await this.inplay.removeCards(sponsorIds.map(sponsorId => ({id: sponsorId} as Card)));
 
-        return this.discard.addCards(this.inplay.getCards());
+        await this.discard.addCards(this.inplay.getCards());
     }
     
-    public cooldown(cards: Card[]): Promise<any> {
-        return this.engine.addCards(cards);
+    public async cooldown(cards: Card[]): Promise<any> {
+        await this.engine.addCards(cards);
     }
     
     public async payHeats(cards: Card[]): Promise<any> {
-        if (this.engine.getCardNumber() > cards.length) {
-            this.engine.addCard({
-                id: `${this.playerId}-top-engine` as any,
-                type: 111,
-                location: 'engine',
-                effect: 'heat',
-                state: ''
-            } as Card, undefined, <AddCardToDeckSettings>{
-                autoUpdateCardNumber: false,
-                autoRemovePreviousCards: false,
-            });
-        }
-        
-        this.engine.addCards(cards, undefined, <AddCardToDeckSettings>{
-            autoUpdateCardNumber: false,
-            autoRemovePreviousCards: false,
-        });
-
-        await this.discard.addCards(cards, undefined, <AddCardToDeckSettings>{
-            autoRemovePreviousCards: false,
-        }, 250);
-
-        return true;
+        await this.discard.addCards(cards, { fromStock: this.engine });
     }
     
     public spinOut(stresses: number[]): Promise<any> {
@@ -263,6 +241,7 @@ class PlayerTable {
             this.deck.addCard(card, undefined, <AddCardToDeckSettings>{
                 autoUpdateCardNumber: false,
                 autoRemovePreviousCards: false,
+                visible: false,
             });
             await this.discard.addCard(card);
         }
@@ -280,6 +259,7 @@ class PlayerTable {
         this.deck.addCard(card, undefined, <AddCardToDeckSettings>{
             autoUpdateCardNumber: false,
             autoRemovePreviousCards: false,
+            visible: false,
         });
         await this.inplay.addCard(card);
 
@@ -313,23 +293,24 @@ class PlayerTable {
         await this.deck.shuffle(10, (card: Card, index: number) => card.id = -1000 - index);
     }
 
-    public async addCardsFromDeck(cards: Card[], to: CardStock<Card>, addCardSettings: AddCardSettings = undefined, shift: number | boolean = 250): Promise<any> {
+    public async addCardsFromDeck(cards: Card[], to: CardStock<Card>): Promise<any> {
         const shuffleIndex = cards.findIndex(card => card.isReshuffled)
         if (shuffleIndex === -1) {
-            await to.addCards(cards, { fromStock: this.deck, }, addCardSettings, shift);
+            await to.addCards(cards, { fromStock: this.deck, }, undefined, 250);
         } else {
             const cardsBefore = cards.slice(0, shuffleIndex);
             const cardsAfter = cards.slice(shuffleIndex);
             
-            await to.addCards(cardsBefore, { fromStock: this.deck, }, addCardSettings, shift);
+            await to.addCards(cardsBefore, { fromStock: this.deck, }, undefined, 250);
 
-            this.moveDiscardToDeckAndShuffle();
+            await this.moveDiscardToDeckAndShuffle();
 
             this.deck.addCards(cardsAfter, undefined, <AddCardToDeckSettings>{
                 autoUpdateCardNumber: false,
                 autoRemovePreviousCards: false,
+                visible: false,
             });
-            await to.addCards(cardsAfter, { fromStock: this.deck, }, addCardSettings, shift);
+            await to.addCards(cardsAfter, { fromStock: this.deck, }, undefined, 250);
         }
 
         return true;

@@ -848,7 +848,7 @@ class Heat implements HeatGame {
             if (allowed) {
                 label = clutteredHand ? 
                 _('Unclutter hand with selected cards') :
-                `${_('Play selected cards')} (${_('Gear:')} ${gear} ⇒ ${selection.length} ${formatTextIcons(useHeat ? '[Heat]' : '')})` :
+                `${_('Play selected cards')} (${_('Gear:')} ${gear} ⇒ ${selection.length} ${formatTextIcons(useHeat ? '[Heat]' : '')})`;
             } else {
                 label = _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
             }
