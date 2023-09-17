@@ -866,7 +866,7 @@ class Heat implements HeatGame {
             button.classList.toggle('disabled', !allowed);
 
             this.circuit.removeMapIndicators();
-            if (selection.length && privateArgs) {
+            if (selection.length && privateArgs && !clutteredHand) {
                 const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
                 const stressCardsSelected = selection.some(card => privateArgs.boostingCardIds.includes(card.id));
                 totalSpeeds.forEach(totalSpeed => this.circuit.addMapIndicator(privateArgs.cells[totalSpeed], undefined, totalSpeed, stressCardsSelected));
@@ -1096,6 +1096,7 @@ class Heat implements HeatGame {
                 }
 
                 // tell the UI notification ends, if the function returned a promise. 
+                console.log('notif minDuration', minDuration);
                 Promise.all([...promises, sleep(minDuration)]).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
             });
             (this as any).notifqueue.setSynchronous(notifName, undefined);
@@ -1170,7 +1171,7 @@ class Heat implements HeatGame {
         // TODO
     }  
 
-    notif_reveal(args: NotifRevealArgs) {
+    async notif_reveal(args: NotifRevealArgs) {
         const { constructor_id, gear, heat } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
@@ -1178,11 +1179,10 @@ class Heat implements HeatGame {
         this.gearCounters[constructor_id].toValue(gear);
         const cards = Object.values(args.cards);
         this.handCounters[constructor_id]?.incValue(-cards.length);
-        const promises = [playerTable.setInplay(cards)];
+        await playerTable.setInplay(cards);
         if (heat) {
-            promises.push(playerTable.discard.addCard(heat));
+            await this.payHeats(constructor_id, [heat]);
         }
-        return Promise.all(promises);
     }  
 
     notif_moveCar(args: NotifMoveCarArgs) {

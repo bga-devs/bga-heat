@@ -3719,7 +3719,7 @@ var Heat = /** @class */ (function () {
             }*/
             button.classList.toggle('disabled', !allowed);
             this.circuit.removeMapIndicators();
-            if (selection.length && privateArgs_1) {
+            if (selection.length && privateArgs_1 && !clutteredHand) {
                 var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
                 var stressCardsSelected_1 = selection.some(function (card) { return privateArgs_1.boostingCardIds.includes(card.id); });
                 totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed], undefined, totalSpeed, stressCardsSelected_1); });
@@ -3914,6 +3914,7 @@ var Heat = /** @class */ (function () {
                     }
                 }
                 // tell the UI notification ends, if the function returned a promise. 
+                console.log('notif minDuration', minDuration);
                 Promise.all(__spreadArray(__spreadArray([], promises, true), [sleep(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
             });
             _this.notifqueue.setSynchronous(notifName, undefined);
@@ -3983,18 +3984,30 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_reveal = function (args) {
         var _a;
-        var constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
-        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        var playerTable = this.getPlayerTable(playerId);
-        playerTable.setCurrentGear(gear);
-        this.gearCounters[constructor_id].toValue(gear);
-        var cards = Object.values(args.cards);
-        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
-        var promises = [playerTable.setInplay(cards)];
-        if (heat) {
-            promises.push(playerTable.discard.addCard(heat));
-        }
-        return Promise.all(promises);
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, gear, heat, playerId, playerTable, cards;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
+                        playerId = this.getPlayerIdFromConstructorId(constructor_id);
+                        playerTable = this.getPlayerTable(playerId);
+                        playerTable.setCurrentGear(gear);
+                        this.gearCounters[constructor_id].toValue(gear);
+                        cards = Object.values(args.cards);
+                        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
+                        return [4 /*yield*/, playerTable.setInplay(cards)];
+                    case 1:
+                        _b.sent();
+                        if (!heat) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.payHeats(constructor_id, [heat])];
+                    case 2:
+                        _b.sent();
+                        _b.label = 3;
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
     };
     Heat.prototype.notif_moveCar = function (args) {
         var _a;
