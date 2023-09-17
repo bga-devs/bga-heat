@@ -17,13 +17,17 @@ trait LegendTrait
     $pos = $constructor->getPosition();
     $turn = $constructor->getTurn();
     $cornerPos = $this->getCircuit()->getNextCorner($pos);
-    $linePos = $this->getCircuit()->getLegendLane($cornerPos);
+    $linePos = $this->getCircuit()->getLegendLine($cornerPos);
+
+    $length = $this->getCircuit()->getLength();
+    $deltaCorner = ($cornerPos - $pos + $length) % $length;
+    $deltaLine = ($linePos - $pos + $length) % $length;
 
     LegendCards::drawIfNeeded();
     list($slot, $number) = LegendCards::getCurrentCardInfos($constructor);
 
     // A => cross the corner
-    if ($linePos <= $pos && $pos < $cornerPos) {
+    if ($deltaCorner < $deltaLine && ($pos < $cornerPos || $turn < $this->getNbrLaps())) {
       // Try to move at corner speed + "slot cell" number
       $speed = $this->getCircuit()->getCornerMaxSpeed($cornerPos) + $slot;
       list($newCell, $nSpacesForward, $extraTurns, $path) = $this->getCircuit()->getReachedCell($constructor, $speed);
@@ -35,7 +39,6 @@ trait LegendTrait
       // Otherwise, stop before second corner
       else {
         $cornerPos = $cornersCrossed[1][0];
-        $length = $this->getCircuit()->getLength();
         $speed = ($cornerPos - 1 - $pos + $length) % $length;
         $this->moveCar($constructor, $speed);
       }
@@ -43,11 +46,8 @@ trait LegendTrait
     // B => approaching the corner
     else {
       // Try to move ahead at speed = number on the Helmet
-      $length = $this->getCircuit()->getLength();
-      $cornerPos = $this->getCircuit()->getNextCorner($pos);
-      $delta = ($cornerPos - $pos + $length) % $length;
       // Check if that makes the car cross the corner
-      if ($number < $delta) {
+      if ($number < $deltaCorner || $turn == $this->getNbrLaps()) {
         $this->moveCar($constructor, $number);
       }
       // If yes, then go to the "slot cell" instead

@@ -9,7 +9,7 @@ class Circuit
   protected $name = null;
   protected $datas = null;
   protected $corners = [];
-  protected $legendLanes = [];
+  protected $legendLines = [];
   protected $raceLanes = [];
   protected $startingCells = [];
   protected $cells = [];
@@ -77,7 +77,7 @@ class Circuit
       }
 
       $this->corners[$pos] = $info['speed'];
-      $this->legendLanes[$pos] = $info['legend'];
+      $this->legendLines[$pos] = $info['legend'];
       $lane = $info['lane'];
       $this->raceLanes[] = $lane;
     }
@@ -442,9 +442,9 @@ class Circuit
     return $token;
   }
 
-  public function getLegendLane($cornerPos)
+  public function getLegendLine($cornerPos)
   {
-    return $this->legendLanes[$cornerPos];
+    return $this->legendLines[$cornerPos];
   }
 
   public function isPressCorner($cornerPos)
