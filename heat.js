@@ -3994,15 +3994,12 @@ var Heat = /** @class */ (function () {
         if (heat) {
             promises.push(playerTable.discard.addCard(heat));
         }
-        this.speedCounters[constructor_id].setValue(cards.map(function (card) { var _a; return (_a = card.speed) !== null && _a !== void 0 ? _a : 0; }).reduce(function (a, b) { return a + b; }, 0));
         return Promise.all(promises);
     };
     Heat.prototype.notif_moveCar = function (args) {
         var _a;
-        var constructor_id = args.constructor_id, cell = args.cell, path = args.path, speed = args.speed, progress = args.progress;
-        if (this.gamedatas.constructors[constructor_id].ai) {
-            this.speedCounters[constructor_id].toValue(speed);
-        }
+        var constructor_id = args.constructor_id, cell = args.cell, path = args.path, totalSpeed = args.totalSpeed, progress = args.progress;
+        this.setSpeedCounter(constructor_id, totalSpeed);
         (_a = this.championshipTable) === null || _a === void 0 ? void 0 : _a.setRaceProgress(progress);
         return this.circuit.moveCar(constructor_id, cell, path);
     };
@@ -4128,6 +4125,7 @@ var Heat = /** @class */ (function () {
                         return [4 /*yield*/, playerTable.clearPlayedCards(cardIds, sponsorIds)];
                     case 1:
                         _a.sent();
+                        this.setSpeedCounter(constructor_id, null);
                         return [2 /*return*/];
                 }
             });
@@ -4186,6 +4184,14 @@ var Heat = /** @class */ (function () {
             document.getElementById("player_score_".concat(playerId)).innerText = "".concat(score);
         }
     };
+    Heat.prototype.setSpeedCounter = function (constructorId, speed) {
+        if (this.speedCounters[constructorId] && speed !== null) {
+            this.speedCounters[constructorId].toValue(speed);
+        }
+        else {
+            document.getElementById("speed-counter-".concat(constructorId)).innerText = "".concat(speed !== null ? speed : '-');
+        }
+    };
     Heat.prototype.notif_endOfRace = function (args) {
         var _this = this;
         this.notif_updateTurnOrder({
@@ -4204,25 +4210,18 @@ var Heat = /** @class */ (function () {
         return this.getPlayerTable(playerId).scrapCards(Object.values(cards));
     };
     Heat.prototype.notif_resolveBoost = function (args) {
-        var _a;
         var constructor_id = args.constructor_id, cards = args.cards, card = args.card;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        this.speedCounters[constructor_id].incValue((_a = card.speed) !== null && _a !== void 0 ? _a : 0);
         return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
     };
-    Heat.prototype.notif_accelerate = function (args) {
-        var constructor_id = args.constructor_id, speed = args.speed;
-        this.speedCounters[constructor_id].incValue(speed);
-    };
+    Heat.prototype.notif_accelerate = function (args) { };
     Heat.prototype.notif_salvageCards = function (args) {
         var constructor_id = args.constructor_id, cards = args.cards, discard = args.discard;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard));
     };
     Heat.prototype.notif_directPlay = function (args) {
-        var _a;
         var constructor_id = args.constructor_id, card = args.card;
-        this.speedCounters[constructor_id].incValue((_a = card.speed) !== null && _a !== void 0 ? _a : 0);
         this.handCounters[constructor_id].incValue(-1);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).inplay.addCard(card);

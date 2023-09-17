@@ -1182,16 +1182,13 @@ class Heat implements HeatGame {
         if (heat) {
             promises.push(playerTable.discard.addCard(heat));
         }
-        this.speedCounters[constructor_id].setValue(cards.map(card => card.speed ?? 0).reduce((a, b) => a + b, 0));
         return Promise.all(promises);
     }  
 
     notif_moveCar(args: NotifMoveCarArgs) {
-        const { constructor_id, cell, path, speed, progress } = args;
+        const { constructor_id, cell, path, totalSpeed, progress } = args;
 
-        if (this.gamedatas.constructors[constructor_id].ai) {
-            this.speedCounters[constructor_id].toValue(speed);
-        }
+        this.setSpeedCounter(constructor_id, totalSpeed);
 
         this.championshipTable?.setRaceProgress(progress);
 
@@ -1289,6 +1286,7 @@ class Heat implements HeatGame {
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
         await playerTable.clearPlayedCards(cardIds, sponsorIds);
+        this.setSpeedCounter(constructor_id, null);
     }
 
     notif_cooldown(args: NotifCooldownArgs) {
@@ -1326,6 +1324,14 @@ class Heat implements HeatGame {
             document.getElementById(`player_score_${playerId}`).innerText = `${score}`;
         }
     }
+
+    private setSpeedCounter(constructorId: number, speed: number | null) {
+        if (this.speedCounters[constructorId] && speed !== null) {
+            this.speedCounters[constructorId].toValue(speed);
+        } else {
+            document.getElementById(`speed-counter-${constructorId}`).innerText = `${speed !== null ? speed : '-'}`;
+        }
+    }
     
     notif_endOfRace(args: NotifEndOfRaceArgs) {
         this.notif_updateTurnOrder({
@@ -1349,14 +1355,10 @@ class Heat implements HeatGame {
     notif_resolveBoost(args: NotifResolveBoostArgs) {
         const { constructor_id, cards, card } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        this.speedCounters[constructor_id].incValue(card.speed ?? 0);
         return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
     }
 
-    notif_accelerate(args: NotifAccelerateArgs) {
-        const { constructor_id, speed } = args;
-        this.speedCounters[constructor_id].incValue(speed);
-    }  
+    notif_accelerate(args: NotifAccelerateArgs) {}  
 
     notif_salvageCards(args: NotifSalvageCardsArgs) {
         const { constructor_id, cards, discard } = args;
@@ -1365,8 +1367,7 @@ class Heat implements HeatGame {
     } 
 
     notif_directPlay(args: NotifDirectPlayArgs) {
-        const { constructor_id, card } = args;
-        this.speedCounters[constructor_id].incValue(card.speed ?? 0);        
+        const { constructor_id, card } = args;      
         this.handCounters[constructor_id].incValue(-1);
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).inplay.addCard(card);

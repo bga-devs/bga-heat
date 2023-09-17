@@ -1050,6 +1050,7 @@ trait RoundTrait
     Cards::move($cardIds, ['discard', $constructor->getId()]);
     Cards::move($sponsorIds, ['discard-sponsors']);
     Notifications::clearPlayedCards($constructor, $cardIds, $sponsorIds);
+    $constructor->setSpeed(null);
 
     // Replenish
     Cards::fillHand($constructor);

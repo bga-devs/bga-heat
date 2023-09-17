@@ -97,6 +97,7 @@ class Notifications
       'progress' => Game::get()->getRaceProgress(),
       'preserve' => ['path', 'slot'],
       'slot' => $legendSlot,
+      'totalSpeed' => $constructor->getSpeed(),
     ]);
 
     if ($extraTurns > 0 && $constructor->getTurn() > 0) {

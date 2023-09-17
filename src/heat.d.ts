@@ -197,6 +197,7 @@ interface NotifMoveCarArgs {
     nForward: number;
     path: number[];
     progress: number;
+    totalSpeed: number;
 }
 
 // payHeats
