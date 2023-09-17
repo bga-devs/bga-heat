@@ -366,9 +366,16 @@ class Circuit {
     public moveCar(constructorId: number, carCell: number, path?: number[]): Promise<any> {
         const car = document.getElementById(`car-${constructorId}`);
         if (path?.length) {
-            return this.moveCarWithAnimation(car, path).then(() => this.moveCar(constructorId, carCell));
+            try {
+                return this.moveCarWithAnimation(car, path).then(() => this.moveCar(constructorId, carCell));
+            } catch (e) {
+                return this.moveCar(constructorId, carCell);
+            }
         } else {
             const cell = this.getCellPosition(carCell);
+            if (!cell) {
+                console.warn('Cell not found : cell ', carCell, 'constructorId', constructorId);
+            }
             car.style.setProperty('--x', `${cell.x}px`);
             car.style.setProperty('--y', `${cell.y}px`);
             car.style.setProperty('--r', `${cell.a}deg`);

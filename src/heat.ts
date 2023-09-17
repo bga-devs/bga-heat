@@ -1073,6 +1073,7 @@ class Heat implements HeatGame {
             'newChampionshipRace',
             'startRace',
             'setupRace',
+            'clutteredHand',
         ];
         
     
@@ -1308,7 +1309,7 @@ class Heat implements HeatGame {
         if (this.animationManager.animationsActive()) {
             await this.circuit.finishRace(constructor_id, pos);
         } else {
-            this.circuit.moveCar(constructor_id, pos);
+            this.circuit.moveCar(constructor_id, -pos);
         }
         
         this.setRank(constructor_id, pos, eliminated);
@@ -1413,6 +1414,12 @@ class Heat implements HeatGame {
                 table.setCurrentGear(1);
             }
         });
+    }
+    
+    notif_clutteredHand(args: NotifMoveCarArgs) {
+        const { constructor_id } = args;
+
+        this.gearCounters[constructor_id].toValue(1);
     }
 
     private setRank(constructorId: number, pos: number, eliminated: boolean) {

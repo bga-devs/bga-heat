@@ -46,6 +46,17 @@ trait DebugTrait
     $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'deck', 'discard')");
   }
 
+  // endRaceExcept(1)
+  function endRaceExcept($constructorId = null)
+  {
+    if ($constructorId === null) {
+      $constructor = Constructors::getActive();
+      $constructorId = $constructor->getId();
+    }
+    $this->DbQuery("UPDATE constructors SET `turn` = 2 WHERE `id` <> $constructorId");
+  }
+
+  // endRace()
   function endRace()
   {
     $this->DbQuery("UPDATE constructors SET `turn` = 2");

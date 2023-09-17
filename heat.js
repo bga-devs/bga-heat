@@ -2549,10 +2549,18 @@ var Circuit = /** @class */ (function () {
         var _this = this;
         var car = document.getElementById("car-".concat(constructorId));
         if (path === null || path === void 0 ? void 0 : path.length) {
-            return this.moveCarWithAnimation(car, path).then(function () { return _this.moveCar(constructorId, carCell); });
+            try {
+                return this.moveCarWithAnimation(car, path).then(function () { return _this.moveCar(constructorId, carCell); });
+            }
+            catch (e) {
+                return this.moveCar(constructorId, carCell);
+            }
         }
         else {
             var cell = this.getCellPosition(carCell);
+            if (!cell) {
+                console.warn('Cell not found : cell ', carCell, 'constructorId', constructorId);
+            }
             car.style.setProperty('--x', "".concat(cell.x, "px"));
             car.style.setProperty('--y', "".concat(cell.y, "px"));
             car.style.setProperty('--r', "".concat(cell.a, "deg"));
@@ -3896,6 +3904,7 @@ var Heat = /** @class */ (function () {
             'newChampionshipRace',
             'startRace',
             'setupRace',
+            'clutteredHand',
         ];
         notifs.forEach(function (notifName) {
             dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -4177,7 +4186,7 @@ var Heat = /** @class */ (function () {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        this.circuit.moveCar(constructor_id, pos);
+                        this.circuit.moveCar(constructor_id, -pos);
                         _a.label = 3;
                     case 3:
                         this.setRank(constructor_id, pos, eliminated);
@@ -4306,6 +4315,10 @@ var Heat = /** @class */ (function () {
                 return [2 /*return*/];
             });
         });
+    };
+    Heat.prototype.notif_clutteredHand = function (args) {
+        var constructor_id = args.constructor_id;
+        this.gearCounters[constructor_id].toValue(1);
     };
     Heat.prototype.setRank = function (constructorId, pos, eliminated) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);
