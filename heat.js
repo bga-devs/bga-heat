@@ -3905,7 +3905,9 @@ var Heat = /** @class */ (function () {
                     $('pagemaintitletext').innerHTML = msg;
                     $('generalactions').innerHTML = '';
                     // If there is some text, we let the message some time, to be read 
-                    minDuration = MIN_NOTIFICATION_MS;
+                    if (_this.animationManager.animationsActive()) {
+                        minDuration = MIN_NOTIFICATION_MS;
+                    }
                 }
                 // tell the UI notification ends, if the function returned a promise. 
                 Promise.all(__spreadArray(__spreadArray([], promises, true), [sleep(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });

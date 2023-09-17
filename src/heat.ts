@@ -1090,7 +1090,9 @@ class Heat implements HeatGame {
                     $('generalactions').innerHTML = '';
 
                     // If there is some text, we let the message some time, to be read 
-                    minDuration = MIN_NOTIFICATION_MS;
+                    if (this.animationManager.animationsActive()) {
+                        minDuration = MIN_NOTIFICATION_MS;
+                    }
                 }
 
                 // tell the UI notification ends, if the function returned a promise. 

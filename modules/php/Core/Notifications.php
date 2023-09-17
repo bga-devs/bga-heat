@@ -533,10 +533,10 @@ class Notifications
       // EVENT: FIRST LIVE TV -> PASS 3 CARS IN A TURN
       elseif ($reason == EVENT_FIRST_LIVE_TV) {
         $msg = clienttranslate(
-          '${constructor_name} passed at least 3 cards during their round and gain 1 sponsor card (event\'s effect)'
+          '${constructor_name} passed at least 3 cars during their round and gain 1 sponsor card (event\'s effect)'
         );
         $pmsg = clienttranslate(
-          'You passed at least 3 cards during your round and gain sponsor ${cards_images} (event\'s effect)'
+          'You passed at least 3 cars during your round and gain sponsor ${cards_images} (event\'s effect)'
         );
       }
 
