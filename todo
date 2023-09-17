@@ -7,6 +7,8 @@ Backend :
  - Cluttered hand: set gear to 1
 
 Frontend :
+ - clutteredHand notif
+
  - rethink inPLay deck position. place it where ithe market is? Or Force it to 1 line only ? Remove stress card when they are resolved ?
   - planification : highlight already selected cards (also on refresh), you have a parameter in the args :       
       'selection' => $planification[$pId] ?? null,

@@ -292,9 +292,8 @@ trait RoundTrait
       }
     }
     if ($clutteredHand) {
-      Notifications::message(clienttranslate('${constructor_name} has a cluttered hand so their turn is skipped'), [
-        'constructor' => $constructor,
-      ]);
+      $constructor->setGear(1);
+      Notifications::clutteredHand($constructor);
       $this->stReplenish();
       return;
     }

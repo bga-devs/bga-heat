@@ -280,6 +280,17 @@ class Notifications
     );
   }
 
+  public function clutteredHand($constructor)
+  {
+    self::notifyAll(
+      'clutteredHand',
+      clienttranslate('${constructor_name} has a cluttered hand so their turn is skipped and their gear is set to 1'),
+      [
+        'constructor' => $constructor,
+      ]
+    );
+  }
+
   public function cooldown($constructor, $heats)
   {
     self::notifyAll('cooldown', clienttranslate('${constructor_name} cooldowns ${n} heat(s)'), [
