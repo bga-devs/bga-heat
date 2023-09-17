@@ -664,7 +664,7 @@ trait RoundTrait
 
   public function stReact()
   {
-    $symbols = Globals::getSymbols();
+    $symbols = $this->argsReact()['symbols'];
     foreach ($symbols as $symbol => $n) {
       if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
         if (!empty($n)) {
