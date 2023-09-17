@@ -302,6 +302,7 @@ trait RoundTrait
     Globals::setRefreshedCards([]);
     Globals::setPreviousPosition($constructor->getPosition());
     Globals::setPreviousTurn($constructor->getTurn());
+    Globals::setUsedBoost(false);
     $symbols = [];
     foreach ($cards as $card) {
       foreach ($card['symbols'] as $symbol => $n) {
@@ -449,13 +450,6 @@ trait RoundTrait
       Notifications::gainGearCooldown($constructor, $gear, $n);
     }
 
-    // Add the boost symbol
-    if ($roadCondition == ROAD_CONDITION_FREE_BOOST) {
-      $symbols[BOOST] = 1;
-    } else {
-      $symbols[HEATED_BOOST] = 1;
-    }
-
     // Weather might add 1 cooldown
     if ($roadCondition == ROAD_CONDITION_COOLING_BONUS) {
       $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
@@ -481,11 +475,22 @@ trait RoundTrait
   public function argsReact()
   {
     $constructor = Constructors::getActive();
+    $roadCondition = $constructor->getRoadCondition();
     $symbols = Globals::getSymbols();
     // Remove symbols that do not apply at this step
     $notReactSymbols = [SLIPSTREAM];
     foreach ($notReactSymbols as $symbol) {
       unset($symbols[$symbol]);
+    }
+
+    // Boost bonus
+    if (!Globals::isUsedBoost()) {
+      // Add the boost symbol
+      if ($roadCondition == ROAD_CONDITION_FREE_BOOST) {
+        $symbols[BOOST] = 1;
+      } else {
+        $symbols[HEATED_BOOST] = 1;
+      }
     }
 
     // Compute which ones are actually usable
@@ -549,6 +554,7 @@ trait RoundTrait
     }
     // HEATED BOOST
     elseif ($symbol == HEATED_BOOST || $symbol == BOOST) {
+      Globals::setUsedBoost(true);
       if ($symbol == HEATED_BOOST) {
         if ($constructor->hasNoHeat()) {
           throw new UserException(clienttranslate('You dont have enough heat to pay for the boost.'));
