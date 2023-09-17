@@ -364,11 +364,11 @@ class Cards extends \HEAT\Helpers\Pieces
       48 => $f(HEAT, 0),
 
       // SPONSORS
-      80 => $f(SPONSOR, [1, 2, 3, 4], [], clienttranslate('Dramdo Brakes')),
-      81 => $f(SPONSOR, 4, [COOLDOWN => 2], clienttranslate('Fredo&F. C.S.')),
-      82 => $f(SPONSOR, 1, [SLIPSTREAM => 2], clienttranslate('Aperault RPM Cie')),
-      83 => $f(SPONSOR, 6, [], clienttranslate('Lord&Co. T.B.')),
-      84 => $f(SPONSOR, 3, [ADJUST => 1], clienttranslate('De Angeli Wings Inc.')),
+      80 => $f(SPONSOR, [1, 2, 3, 4], [], 'Dramdo Brakes'),
+      81 => $f(SPONSOR, 4, [COOLDOWN => 2], 'Fredo&F. C.S.'),
+      82 => $f(SPONSOR, 1, [SLIPSTREAM => 2], 'Aperault RPM Cie'),
+      83 => $f(SPONSOR, 6, [], 'Lord&Co. T.B.'),
+      84 => $f(SPONSOR, 3, [ADJUST => 1], 'De Angeli Wings Inc.'),
     ];
   }
 }

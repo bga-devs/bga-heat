@@ -3263,8 +3263,10 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.initMarketStock = function () {
         var _this = this;
+        var _a;
         if (!this.market) {
-            document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\"></div>\n            ");
+            var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
+            document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
             this.market.onSelectionChange = function (selection) { return _this.onMarketSelectionChange(selection); };
         }
@@ -3306,8 +3308,11 @@ var Heat = /** @class */ (function () {
         this.getCurrentPlayerTable().setHandSelectable('multiple', args._private.cardIds);
     };
     Heat.prototype.onEnteringSalvage = function (args) {
+        var _this = this;
+        var _a;
         if (!this.market) {
-            document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\"></div>\n            ");
+            var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
+            document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
             this.market.onSelectionChange = function (selection) {
                 document.getElementById("actSalvage_button").classList.toggle('disabled', selection.length > args.n);
@@ -3529,7 +3534,8 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.getConstructorId = function () {
         var _this = this;
-        return Number(Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); }).id);
+        var _a;
+        return Number((_a = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); })) === null || _a === void 0 ? void 0 : _a.id);
     };
     Heat.prototype.getPlayer = function (playerId) {
         return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });

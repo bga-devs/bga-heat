@@ -240,8 +240,9 @@ class Heat implements HeatGame {
 
     private initMarketStock() {
         if (!this.market) {
+            const constructor = Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId());
             document.getElementById('table-center').insertAdjacentHTML('beforebegin', `
-                <div id="market"></div>
+                <div id="market" style="--personal-card-background-y: ${(constructor?.id ?? 0) * 100 / 6}%;"></div>
             `);
             this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
             this.market.onSelectionChange = selection => this.onMarketSelectionChange(selection);
@@ -292,8 +293,9 @@ class Heat implements HeatGame {
 
     private onEnteringSalvage(args: EnteringSalvageArgs) {
         if (!this.market) {
+            const constructor = Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId());
             document.getElementById('table-center').insertAdjacentHTML('beforebegin', `
-                <div id="market"></div>
+                <div id="market" style="--personal-card-background-y: ${(constructor?.id ?? 0) * 100 / 6}%;"></div>
             `);
             this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
             this.market.onSelectionChange = selection => {
@@ -549,7 +551,7 @@ class Heat implements HeatGame {
     }
 
     private getConstructorId(): number {
-        return Number(Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId()).id);
+        return Number(Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId())?.id);
     }
 
     public getPlayer(playerId: number): HeatPlayer {
