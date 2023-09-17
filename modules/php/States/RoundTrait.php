@@ -525,7 +525,8 @@ trait RoundTrait
     self::checkAction('actReact');
     $constructor = Constructors::getActive();
     $symbols = Globals::getSymbols();
-    $n = $symbols[$symbol] ?? null;
+    $args = $this->argsReact();
+    $n = $args['symbols'][$symbol] ?? null;
     if (is_null($n)) {
       throw new \BgaVisibleSystemException('Invalid symbol. Should not happen');
     }

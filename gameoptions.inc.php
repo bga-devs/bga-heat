@@ -311,7 +311,7 @@ $game_options = [
       [
         'type' => 'otheroptionisnot',
         'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_CHAMPIONSHIP],
+        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_CHAMPIONSHIP],
       ],
     ],
   ],
