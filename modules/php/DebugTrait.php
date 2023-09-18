@@ -46,6 +46,11 @@ trait DebugTrait
     $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'deck', 'discard')");
   }
 
+  function discardEngine()
+  {
+    $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'engine', 'discard')");
+  }
+
   // endRaceExcept(1)
   function endRaceExcept($constructorId = null)
   {

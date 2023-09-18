@@ -4003,17 +4003,18 @@ var Heat = /** @class */ (function () {
                         playerTable = this.getPlayerTable(playerId);
                         playerTable.setCurrentGear(gear);
                         this.gearCounters[constructor_id].toValue(gear);
+                        if (!heat) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.payHeats(constructor_id, [heat])];
+                    case 1:
+                        _b.sent();
+                        _b.label = 2;
+                    case 2:
                         cards = Object.values(args.cards);
                         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
                         return [4 /*yield*/, playerTable.setInplay(cards)];
-                    case 1:
+                    case 3:
                         _b.sent();
-                        if (!heat) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.payHeats(constructor_id, [heat])];
-                    case 2:
-                        _b.sent();
-                        _b.label = 3;
-                    case 3: return [2 /*return*/];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -4088,8 +4089,10 @@ var Heat = /** @class */ (function () {
                         this.circuit.moveCar(constructor_id, cell);
                         _b.label = 4;
                     case 4:
+                        this.gearCounters[constructor_id].toValue(1);
                         playerId = this.getPlayerIdFromConstructorId(constructor_id);
                         playerTable = this.getPlayerTable(playerId);
+                        this.getPlayerTable(playerId).setCurrentGear(1);
                         (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(stresses.length);
                         return [4 /*yield*/, playerTable.spinOut(stresses)];
                     case 5:
@@ -4319,6 +4322,8 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_clutteredHand = function (args) {
         var constructor_id = args.constructor_id;
         this.gearCounters[constructor_id].toValue(1);
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        this.getPlayerTable(playerId).setCurrentGear(1);
     };
     Heat.prototype.setRank = function (constructorId, pos, eliminated) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);

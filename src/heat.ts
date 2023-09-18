@@ -1178,12 +1178,14 @@ class Heat implements HeatGame {
         const playerTable = this.getPlayerTable(playerId);
         playerTable.setCurrentGear(gear);
         this.gearCounters[constructor_id].toValue(gear);
-        const cards = Object.values(args.cards);
-        this.handCounters[constructor_id]?.incValue(-cards.length);
-        await playerTable.setInplay(cards);
+        
         if (heat) {
             await this.payHeats(constructor_id, [heat]);
         }
+        
+        const cards = Object.values(args.cards);
+        this.handCounters[constructor_id]?.incValue(-cards.length);
+        await playerTable.setInplay(cards);
     }  
 
     notif_moveCar(args: NotifMoveCarArgs) {
@@ -1236,8 +1238,10 @@ class Heat implements HeatGame {
             this.circuit.moveCar(constructor_id, cell);
         }
 
+        this.gearCounters[constructor_id].toValue(1);
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
+        this.getPlayerTable(playerId).setCurrentGear(1);
         
         this.handCounters[constructor_id]?.incValue(stresses.length);
 
@@ -1420,6 +1424,8 @@ class Heat implements HeatGame {
         const { constructor_id } = args;
 
         this.gearCounters[constructor_id].toValue(1);
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        this.getPlayerTable(playerId).setCurrentGear(1);
     }
 
     private setRank(constructorId: number, pos: number, eliminated: boolean) {
