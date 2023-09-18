@@ -3307,7 +3307,8 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onEnteringChooseSpeed = function (args) {
         var _this = this;
         Object.entries(args.speeds).forEach(function (entry) {
-            return _this.circuit.addMapIndicator(entry[1], function () { return _this.actChooseSpeed(Number(entry[0])); });
+            var speed = Number(entry[0]);
+            _this.circuit.addMapIndicator(entry[1], function () { return _this.actChooseSpeed(speed); }, speed);
         });
     };
     Heat.prototype.onEnteringSlipstream = function (args) {
@@ -3415,10 +3416,6 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'react':
                     var reactArgs_1 = args;
-                    this.addActionButton("actPassReact_button", _('Pass'), function () { return _this.actPassReact(); });
-                    if (!reactArgs_1.canPass) {
-                        document.getElementById("actPassReact_button").classList.add('disabled');
-                    }
                     Object.entries(reactArgs_1.symbols).forEach(function (entry, index) {
                         var type = entry[0];
                         var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
@@ -3504,6 +3501,10 @@ var Heat = /** @class */ (function () {
                             }
                         });
                     });
+                    this.addActionButton("actPassReact_button", _('Pass'), function () { return _this.actPassReact(); });
+                    if (!reactArgs_1.canPass) {
+                        document.getElementById("actPassReact_button").classList.add('disabled');
+                    }
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
