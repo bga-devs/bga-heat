@@ -27,7 +27,7 @@ trait LegendTrait
     list($slot, $number) = LegendCards::getCurrentCardInfos($constructor);
 
     // A => cross the corner
-    if ($deltaCorner < $deltaLine && ($pos < $cornerPos || $turn < $this->getNbrLaps())) {
+    if (($deltaLine == 0 || $deltaCorner < $deltaLine) && ($pos < $cornerPos || $turn < $this->getNbrLaps())) {
       // Try to move at corner speed + "slot cell" number
       $speed = $this->getCircuit()->getCornerMaxSpeed($cornerPos) + $slot;
       list($newCell, $nSpacesForward, $extraTurns, $path) = $this->getCircuit()->getReachedCell($constructor, $speed);
