@@ -1001,11 +1001,13 @@ trait RoundTrait
     $cardIds = $this->argsDiscard()['_private']['active']['cardIds'];
     if (empty($cardIds)) {
       $this->actDiscard([]);
+      return;
     }
 
     $constructor = Constructors::getActive();
     if ($constructor->getTurn() >= $this->getNbrLaps()) {
       $this->actDiscard([]);
+      return;
     }
   }
 

@@ -64,10 +64,11 @@ trait DebugTrait
   // endRace()
   function endRace()
   {
-    $this->DbQuery("UPDATE constructors SET `turn` = 2");
+    $this->DbQuery('UPDATE constructors SET `turn` = 2');
   }
 
-  function clutterHand($constructorId = null) {
+  function clutterHand($constructorId = null)
+  {
     if ($constructorId === null) {
       $constructor = Constructors::getActive();
       $constructorId = $constructor->getId();
@@ -128,8 +129,7 @@ trait DebugTrait
       $sql[] = "UPDATE stats SET stats_player_id=$studioPlayer WHERE stats_player_id=$pId";
 
       // Add game-specific SQL update the tables for your game
-      $sql[] = "UPDATE meeples SET player_id=$studioPlayer WHERE player_id=$pId";
-      $sql[] = "UPDATE user_preferences SET player_id=$studioPlayer WHERE player_id=$pId";
+      $sql[] = "UPDATE constructors SET player_id=$studioPlayer WHERE player_id=$pId";
 
       // This could be improved, it assumes you had sequential studio accounts before loading
       // e.g., quietmint0, quietmint1, quietmint2, etc. are at the table
@@ -146,43 +146,6 @@ trait DebugTrait
       self::DbQuery($q);
     }
 
-    /******************
-     *** Fix Globals ***
-     ******************/
-
-    // Turn orders
-    $turnOrders = Globals::getCustomTurnOrders();
-    foreach ($turnOrders as $key => &$order) {
-      $t = [];
-      foreach ($order['order'] as $pId) {
-        $t[] = $map[$pId];
-      }
-      $order['order'] = $t;
-    }
-    Globals::setCustomTurnOrders($turnOrders);
-
-    // Engine
-    $engine = Globals::getEngine();
-    self::loadDebugUpdateEngine($engine, $map);
-    Globals::setEngine($engine);
-
-    // First player
-    $fp = Globals::getFirstPlayer();
-    Globals::setFirstPlayer($map[$fp]);
-
     self::reloadPlayersBasicInfos();
-  }
-
-  function loadDebugUpdateEngine(&$node, $map)
-  {
-    if (isset($node['pId'])) {
-      $node['pId'] = $map[(int) $node['pId']];
-    }
-
-    if (isset($node['childs'])) {
-      foreach ($node['childs'] as &$child) {
-        self::loadDebugUpdateEngine($child, $map);
-      }
-    }
   }
 }
