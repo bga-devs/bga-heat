@@ -466,6 +466,18 @@ class Notifications
     ]);
   }
 
+  public static function randomUpgrades($constructor, $cards)
+  {
+    self::notifyAll(
+      'randomUpgrades',
+      clienttranslate('${constructor_name} will play with the following upgrades: ${cards_images}'),
+      [
+        'constructor' => $constructor,
+        'cards' => $cards,
+      ]
+    );
+  }
+
   /////////////////////////////////
   //// CHAMPIONSHIP
   public static function newChampionshipRace($datas, $circuit)

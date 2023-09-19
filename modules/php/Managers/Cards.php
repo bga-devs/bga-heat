@@ -140,7 +140,8 @@ class Cards extends \HEAT\Helpers\Pieces
         if ($constructor->isAI()) {
           continue;
         }
-        static::pickForLocation(3, 'upgrades', "deck-$cId");
+        $cards = static::pickForLocation(3, 'upgrades', "deck-$cId");
+        Notifications::randomUpgrades($constructor, $cards);
       }
     }
   }

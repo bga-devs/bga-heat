@@ -790,9 +790,6 @@ trait RoundTrait
       $slipstreams = $t;
     }
 
-    // TODO : bonuses for optional slipstream increase
-    // TODO : weather module optional slipstream increase
-
     $cells = [];
     foreach ($slipstreams as $n) {
       $cell = $this->getCircuit()->getSlipstreamResult($constructor, $n);
@@ -949,7 +946,7 @@ trait RoundTrait
       }
     }
     // TITLE SPONSOR => SPIN OUT = out of race
-    elseif ($event == \EVENT_TITLE_SPONSOR && $spinOut) {
+    elseif ($event == \EVENT_FUTURE_UNKNOWN && $spinOut) {
       $constructor->eliminate();
     }
 

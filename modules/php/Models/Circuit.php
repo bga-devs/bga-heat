@@ -148,7 +148,7 @@ class Circuit
     $event = Globals::getCurrentEvent();
     if ($event == EVENT_SAFETY_REGULATIONS) {
       $value--;
-    } elseif ($value == EVENT_TITLE_SPONSOR) {
+    } elseif ($value == EVENT_FUTURE_UNKNOWN) {
       $value++;
     }
 
@@ -338,7 +338,6 @@ class Circuit
   public function getSlipstreamResult($constructor, $n)
   {
     $currentPosition = $this->getPosition($constructor);
-    // TODO : check section and weather condition that might prevent slipstream
 
     // Is there a car next to me or in front of me ?
     $currentLane = $this->getLane($constructor);
@@ -347,7 +346,7 @@ class Circuit
       return false;
     }
 
-    // Cant slipstream on last last if that makes you cross finish lane
+    // Cant slipstream on last turn if that makes you cross finish lane
     $newPosition = $currentPosition + $n;
     $extraTurn = intdiv($newPosition, $this->getLength());
     if ($constructor->getTurn() + $extraTurn >= $this->getNbrLaps()) {
