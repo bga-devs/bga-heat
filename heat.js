@@ -2508,13 +2508,17 @@ var Circuit = /** @class */ (function () {
                 return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream."), "\n                ");
         }
     };
-    Circuit.prototype.getCellPosition = function (carCell) {
-        var cell = carCell < 0 ? structuredClone(this.circuitDatas.podium) : this.circuitDatas.cells[carCell];
-        if (carCell < 0) {
-            cell.x += LEADERBOARD_POSITIONS[Math.abs(carCell)].x;
-            cell.y += LEADERBOARD_POSITIONS[Math.abs(carCell)].y;
-        }
+    Circuit.prototype.getPodiumPosition = function (pos) {
+        var cell = structuredClone(this.circuitDatas.podium);
+        cell.x += LEADERBOARD_POSITIONS[pos].x;
+        cell.y += LEADERBOARD_POSITIONS[pos].y;
         return cell;
+    };
+    Circuit.prototype.getCellPosition = function (carCell) {
+        if (carCell < 0) {
+            this.getPodiumPosition(-carCell);
+        }
+        return this.circuitDatas.cells[carCell];
     };
     Circuit.prototype.createCar = function (constructor) {
         var car = document.getElementById("car-".concat(constructor.id));
@@ -2547,8 +2551,9 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.moveCar = function (constructorId, carCell, path) {
         var _this = this;
+        this.removeMapIndicators();
         var car = document.getElementById("car-".concat(constructorId));
-        if (path === null || path === void 0 ? void 0 : path.length) {
+        if ((path === null || path === void 0 ? void 0 : path.length) > 1) {
             try {
                 return this.moveCarWithAnimation(car, path).then(function () { return _this.moveCar(constructorId, carCell); });
             }
@@ -2559,7 +2564,7 @@ var Circuit = /** @class */ (function () {
         else {
             var cell = this.getCellPosition(carCell);
             if (!cell) {
-                console.warn('Cell not found : cell ', carCell, 'constructorId', constructorId);
+                console.warn('Cell not found (moveCar) : cell ', carCell, 'constructorId', constructorId);
             }
             car.style.setProperty('--x', "".concat(cell.x, "px"));
             car.style.setProperty('--y', "".concat(cell.y, "px"));
@@ -2569,6 +2574,7 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.spinOutWithAnimation = function (constructorId, carCell, cellsDiff) {
         var _this = this;
+        this.removeMapIndicators();
         return new Promise(function (resolve) {
             var car = document.getElementById("car-".concat(constructorId));
             var time = cellsDiff * 250;
@@ -2576,6 +2582,9 @@ var Circuit = /** @class */ (function () {
             car.classList.add('with-transition');
             car.clientWidth;
             var cell = _this.getCellPosition(carCell);
+            if (!cell) {
+                console.warn('Cell not found (spinOutWithAnimation) : cell ', carCell, 'constructorId', constructorId);
+            }
             car.style.setProperty('--x', "".concat(cell.x, "px"));
             car.style.setProperty('--y', "".concat(cell.y, "px"));
             car.style.setProperty('--r', "".concat(cell.a + 1080, "deg"));
@@ -2595,7 +2604,10 @@ var Circuit = /** @class */ (function () {
             car.style.setProperty('--transition-time', "".concat(time, "ms"));
             car.classList.add('with-transition');
             car.clientWidth;
-            var cell = _this.getCellPosition(-pos);
+            var cell = _this.getPodiumPosition(pos);
+            if (!cell) {
+                console.warn('Cell not found (finishRace) : cell ', pos, 'constructorId', constructorId);
+            }
             car.style.setProperty('--x', "".concat(cell.x, "px"));
             car.style.setProperty('--y', "".concat(cell.y, "px"));
             car.style.setProperty('--r', "".concat(cell.a, "deg"));
@@ -2662,10 +2674,8 @@ var Circuit = /** @class */ (function () {
             setTimeout(function () { return _this.showCorner(id); }, this.game.animationManager.animationsActive() ? 2000 : 1);
         }
     };
-    Circuit.prototype.setEliminatedPodium = function (pos) {
-        var cell = structuredClone(this.circuitDatas.podium);
-        cell.x += LEADERBOARD_POSITIONS[Math.abs(pos)].x;
-        cell.y += LEADERBOARD_POSITIONS[Math.abs(pos)].y;
+    Circuit.prototype.setEliminatedPodium = function (position) {
+        var cell = this.getPodiumPosition(position);
         this.circuitDiv.insertAdjacentHTML('beforeend', "<div class=\"eliminated-podium\" style=\"--x: ".concat(cell.x, "px; --y: ").concat(cell.y, "px;\">\u274C</div>"));
     };
     return Circuit;
@@ -3648,7 +3658,7 @@ var Heat = /** @class */ (function () {
                 var eliminated = constructor.turn < _this.gamedatas.nbrLaps || Boolean((_a = _this.gamedatas.players[constructor.pId]) === null || _a === void 0 ? void 0 : _a.zombie);
                 _this.setRank(constructor.id, -constructor.carCell, eliminated);
                 if (eliminated) {
-                    _this.circuit.setEliminatedPodium(constructor.carCell);
+                    _this.circuit.setEliminatedPodium(-constructor.carCell);
                 }
             }
         });
@@ -4179,7 +4189,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_finishRace = function (args, eliminated) {
         if (eliminated === void 0) { eliminated = false; }
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, pos;
+            var constructor_id, pos, carCell;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -4190,7 +4200,8 @@ var Heat = /** @class */ (function () {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        this.circuit.moveCar(constructor_id, -pos);
+                        carCell = -pos;
+                        this.circuit.moveCar(constructor_id, carCell);
                         _a.label = 3;
                     case 3:
                         this.setRank(constructor_id, pos, eliminated);

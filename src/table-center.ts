@@ -322,15 +322,18 @@ class Circuit {
         }
     }
 
-    private getCellPosition(carCell: number) {
-        const cell = carCell < 0 ? structuredClone(this.circuitDatas.podium) : this.circuitDatas.cells[carCell];
-
-        if (carCell < 0) {
-            cell.x += LEADERBOARD_POSITIONS[Math.abs(carCell)].x;
-            cell.y += LEADERBOARD_POSITIONS[Math.abs(carCell)].y;
-        }
-
+    private getPodiumPosition(pos: number) {
+        const cell = structuredClone(this.circuitDatas.podium);
+        cell.x += LEADERBOARD_POSITIONS[pos].x;
+        cell.y += LEADERBOARD_POSITIONS[pos].y;
         return cell;
+    }
+
+    private getCellPosition(carCell: number) {
+        if (carCell < 0) {
+            this.getPodiumPosition(-carCell);
+        }
+        return this.circuitDatas.cells[carCell];
     }
 
     private createCar(constructor: Constructor) {
@@ -364,8 +367,10 @@ class Circuit {
     }
 
     public moveCar(constructorId: number, carCell: number, path?: number[]): Promise<any> {
+        this.removeMapIndicators();
+
         const car = document.getElementById(`car-${constructorId}`);
-        if (path?.length) {
+        if (path?.length > 1) {
             try {
                 return this.moveCarWithAnimation(car, path).then(() => this.moveCar(constructorId, carCell));
             } catch (e) {
@@ -374,7 +379,7 @@ class Circuit {
         } else {
             const cell = this.getCellPosition(carCell);
             if (!cell) {
-                console.warn('Cell not found : cell ', carCell, 'constructorId', constructorId);
+                console.warn('Cell not found (moveCar) : cell ', carCell, 'constructorId', constructorId);
             }
             car.style.setProperty('--x', `${cell.x}px`);
             car.style.setProperty('--y', `${cell.y}px`);
@@ -385,6 +390,8 @@ class Circuit {
     
 
     public spinOutWithAnimation(constructorId: number, carCell: number, cellsDiff: number): Promise<any> {
+        this.removeMapIndicators();
+        
         return new Promise((resolve) => {
             const car = document.getElementById(`car-${constructorId}`);
             const time = cellsDiff * 250;
@@ -392,6 +399,9 @@ class Circuit {
             car.classList.add('with-transition');
             car.clientWidth;
             const cell = this.getCellPosition(carCell);
+            if (!cell) {
+                console.warn('Cell not found (spinOutWithAnimation) : cell ', carCell, 'constructorId', constructorId);
+            }
             car.style.setProperty('--x', `${cell.x}px`);
             car.style.setProperty('--y', `${cell.y}px`);
             car.style.setProperty('--r', `${cell.a + 1080}deg`);
@@ -412,7 +422,10 @@ class Circuit {
             car.style.setProperty('--transition-time', `${time}ms`);
             car.classList.add('with-transition');
             car.clientWidth;
-            const cell = this.getCellPosition(-pos);
+            const cell = this.getPodiumPosition(pos);
+            if (!cell) {
+                console.warn('Cell not found (finishRace) : cell ', pos, 'constructorId', constructorId);
+            }
             car.style.setProperty('--x', `${cell.x}px`);
             car.style.setProperty('--y', `${cell.y}px`);
             car.style.setProperty('--r', `${cell.a}deg`);
@@ -485,10 +498,8 @@ class Circuit {
         }
     }
     
-    public setEliminatedPodium(pos: number) {
-        const cell = structuredClone(this.circuitDatas.podium);
-        cell.x += LEADERBOARD_POSITIONS[Math.abs(pos)].x;
-        cell.y += LEADERBOARD_POSITIONS[Math.abs(pos)].y;
+    public setEliminatedPodium(position: number) {
+        const cell = this.getPodiumPosition(position);
 
         this.circuitDiv.insertAdjacentHTML('beforeend', `<div class="eliminated-podium" style="--x: ${cell.x}px; --y: ${cell.y}px;">❌</div>`);
     }

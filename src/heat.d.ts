@@ -263,7 +263,7 @@ interface NotifFinishTurnArgs {
 // finishRace
 interface NotifFinishRaceArgs {
     constructor_id: number;
-    pos: number;
+    pos: number; // this time positive, not like carCell !
 }
 
 // endOfRace

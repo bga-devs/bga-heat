@@ -768,7 +768,7 @@ class Heat implements HeatGame {
                 const eliminated = constructor.turn < this.gamedatas.nbrLaps || Boolean(this.gamedatas.players[constructor.pId]?.zombie);
                 this.setRank(constructor.id, -constructor.carCell, eliminated);
                 if (eliminated) {
-                    this.circuit.setEliminatedPodium(constructor.carCell);
+                    this.circuit.setEliminatedPodium(-constructor.carCell);
                 }
             }
         });
@@ -1315,7 +1315,8 @@ class Heat implements HeatGame {
         if (this.animationManager.animationsActive()) {
             await this.circuit.finishRace(constructor_id, pos);
         } else {
-            this.circuit.moveCar(constructor_id, -pos);
+            const carCell = -pos;
+            this.circuit.moveCar(constructor_id, carCell);
         }
         
         this.setRank(constructor_id, pos, eliminated);
