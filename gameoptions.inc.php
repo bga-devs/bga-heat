@@ -31,6 +31,7 @@ require_once 'modules/php/gameoptions.inc.php';
 $game_options = [
   OPTION_SETUP => [
     'name' => totranslate('Mode'),
+    'default' => OPTION_SETUP_BEGINNER,
     'values' => [
       OPTION_SETUP_FIRST_GAME => [
         'name' => clienttranslate('First game'),
@@ -291,6 +292,7 @@ $game_options = [
 
   OPTION_GARAGE_CHOICE => [
     'name' => totranslate('Choosing upgrades'),
+    'default' => OPTION_GARAGE_DRAFT,
     'values' => [
       OPTION_GARAGE_RANDOM => [
         'name' => clienttranslate('Random'),

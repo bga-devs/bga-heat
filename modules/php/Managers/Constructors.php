@@ -46,19 +46,15 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
 
   public function assignConstructorAutoma($fakePId, $cId, $no)
   {
-    $name = clienttranslate('Legend I');
-    if ($fakePId < -5) {
-      $name = clienttranslate('Legend II');
-    }
-    if ($fakePId < -10) {
-      $name = clienttranslate('Legend III');
-    }
-    if ($fakePId < -15) {
-      $name = clienttranslate('Legend IV');
-    }
-    if ($fakePId < -20) {
-      $name = clienttranslate('Legend V');
-    }
+    $names = [
+      \CONSTRUCTOR_BLACK => clienttranslate('Black legend'),
+      \CONSTRUCTOR_BLUE => clienttranslate('Blue legend'),
+      \CONSTRUCTOR_RED => clienttranslate('Red legend'),
+      \CONSTRUCTOR_YELLOW => clienttranslate('Yellow legend'),
+      \CONSTRUCTOR_GREEN => clienttranslate('Green legend'),
+      \CONSTRUCTOR_GRAY => clienttranslate('Gray legend'),
+    ];
+    $name = $names[$cId];
 
     self::DB()->insert([
       'id' => $cId,
