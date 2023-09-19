@@ -245,7 +245,7 @@ class Notifications
   {
     self::notifyAll(
       'payHeats',
-      clienttranslate('${constructor_name} discards ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit}'),
+      clienttranslate('${constructor_name} pays ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit}'),
       [
         'constructor' => $constructor,
         'n' => count($cards),
@@ -262,7 +262,7 @@ class Notifications
     self::notifyAll(
       'spinOut',
       clienttranslate(
-        '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) to discard. They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'
+        '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) in their engine. They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'
       ),
       [
         'constructor' => $constructor,
@@ -310,7 +310,7 @@ class Notifications
   public function heatedBoost($constructor, $heats, $cards, $card)
   {
     if (!is_null($heats)) {
-      self::notifyAll('payHeats', clienttranslate('${constructor_name} discards 1 heat to get the [+] effect'), [
+      self::notifyAll('payHeats', clienttranslate('${constructor_name} pays 1 heat to get the [+] effect'), [
         'constructor' => $constructor,
         'cards' => $heats->toArray(),
       ]);
@@ -328,7 +328,7 @@ class Notifications
 
   public function payHeats($constructor, $heats)
   {
-    self::notifyAll('payHeats', clienttranslate('${constructor_name} discards ${n} heat(s) for its played card(s)'), [
+    self::notifyAll('payHeats', clienttranslate('${constructor_name} pays ${n} heat(s) for its played card(s)'), [
       'constructor' => $constructor,
       'cards' => $heats->toArray(),
       'n' => $heats->count(),
