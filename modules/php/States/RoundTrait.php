@@ -378,6 +378,7 @@ trait RoundTrait
 
     return [
       'speeds' => $speeds,
+      'descSuffix' => count($speeds) == 1 ? 'SingleChoice' : '',
     ];
   }
 

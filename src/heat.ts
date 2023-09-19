@@ -276,9 +276,10 @@ class Heat implements HeatGame {
     }
 
     private onEnteringChooseSpeed(args: EnteringChooseSpeedArgs) {
-        Object.entries(args.speeds).forEach(entry => 
-            this.circuit.addMapIndicator(entry[1], () => this.actChooseSpeed(Number(entry[0])))
-        );
+        Object.entries(args.speeds).forEach(entry => {
+            const speed = Number(entry[0]);
+            this.circuit.addMapIndicator(entry[1], () => this.actChooseSpeed(speed), speed);
+        });
     }
 
     private onEnteringSlipstream(args: EnteringSlipstreamArgs) {
@@ -401,10 +402,6 @@ class Heat implements HeatGame {
                     break;
                 case 'react':
                     const reactArgs = args as EnteringReactArgs;
-                    (this as any).addActionButton(`actPassReact_button`, _('Pass'), () => this.actPassReact());
-                    if (!reactArgs.canPass) {
-                        document.getElementById(`actPassReact_button`).classList.add('disabled');
-                    }
 
                     Object.entries(reactArgs.symbols).forEach((entry, index) => {
                         const type = entry[0];
@@ -504,6 +501,11 @@ class Heat implements HeatGame {
                             }
                         });
                     });
+                    
+                    (this as any).addActionButton(`actPassReact_button`, _('Pass'), () => this.actPassReact());
+                    if (!reactArgs.canPass) {
+                        document.getElementById(`actPassReact_button`).classList.add('disabled');
+                    }
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
@@ -1182,7 +1184,7 @@ class Heat implements HeatGame {
         if (heat) {
             await this.payHeats(constructor_id, [heat]);
         }
-        
+
         const cards = Object.values(args.cards);
         this.handCounters[constructor_id]?.incValue(-cards.length);
         await playerTable.setInplay(cards);
