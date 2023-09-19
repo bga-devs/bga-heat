@@ -453,7 +453,8 @@ class Circuit
     }
     $i = array_search($cornerPos, array_keys($this->corners));
     $event = Globals::getCurrentEvent();
-    return in_array($i, EVENTS[$event]['press']);
+    $pressCorners = array_map(fn($j) => $j % count($this->corners), EVENTS[$event]['press']);
+    return in_array($i, $pressCorners);
   }
 
   // USEFUL FOR LIVE TV EVENT

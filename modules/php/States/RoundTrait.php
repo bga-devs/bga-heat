@@ -882,15 +882,16 @@ trait RoundTrait
         $delta = $speed - $limit;
         // Have we overspeed ?
         if ($delta > 0) {
+          $nHeatsToPay = $delta;
           // Road condition can increase number of heat to pay
           $roadCondition = $this->getCircuit()->getRoadCondition($cornerPos);
           if ($roadCondition == \ROAD_CONDITION_MORE_HEAT) {
-            $delta++;
+            $nHeatsToPay++;
           }
 
           // Are we spinning out ??
           $available = $constructor->getEngine()->count();
-          if ($delta > $available) {
+          if ($nHeatsToPay > $available) {
             $cards = $constructor->payHeats($available);
             $cell = $this->getCircuit()->getFirstFreeCell($cornerPos - 1, $constructor->getId());
             $stresses = Cards::addStress($constructor, $constructor->getGear() <= 2 ? 1 : 2);
@@ -902,12 +903,23 @@ trait RoundTrait
             $newPosition = $constructor->getPosition();
             $length = $this->getCircuit()->getLength();
             $nBack = ($position - $newPosition + $length) % $length;
-            Notifications::spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $cornerTurn);
+            Notifications::spinOut(
+              $constructor,
+              $speed,
+              $limit,
+              $cornerPos,
+              $cards,
+              $cell,
+              $stresses,
+              $nBack,
+              $cornerTurn,
+              $roadCondition
+            );
             $spinOut = true;
             break;
           } else {
-            $cards = $constructor->payHeats($delta);
-            Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos);
+            $cards = $constructor->payHeats($nHeatsToPay);
+            Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos, $roadCondition);
             if ($delta >= 2 && $this->getCircuit()->isPressCorner($cornerPos)) {
               $sponsorsGained[] = 'exceed';
             }

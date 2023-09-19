@@ -241,43 +241,49 @@ class Notifications
     ]);
   }
 
-  public function payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos)
+  public function payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos, $roadCondition)
   {
-    self::notifyAll(
-      'payHeats',
-      clienttranslate('${constructor_name} pays ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit}'),
-      [
-        'constructor' => $constructor,
-        'n' => count($cards),
-        'cards' => $cards->toArray(),
-        'speed' => $speed,
-        'limit' => $limit,
-        'corner' => $cornerPos,
-      ]
-    );
+    $msg = clienttranslate('${constructor_name} pays ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit}');
+    if ($roadCondition == \ROAD_CONDITION_MORE_HEAT) {
+      $msg = clienttranslate(
+        '${constructor_name} pays ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit} (extra heat from road condition)'
+      );
+    }
+
+    self::notifyAll('payHeats', $msg, [
+      'constructor' => $constructor,
+      'n' => count($cards),
+      'cards' => $cards->toArray(),
+      'speed' => $speed,
+      'limit' => $limit,
+      'corner' => $cornerPos,
+    ]);
   }
 
   public function spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $newTurn)
   {
-    self::notifyAll(
-      'spinOut',
-      clienttranslate(
-        '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) in their engine. They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'
-      ),
-      [
-        'constructor' => $constructor,
-        'n' => count($cards),
-        'cards' => $cards->toArray(),
-        'speed' => $speed,
-        'limit' => $limit,
-        'corner' => $cornerPos,
-        'cell' => $cell,
-        'turn' => $newTurn,
-        'stresses' => $stresses,
-        'm' => count($stresses),
-        'nCellsBack' => $nBack,
-      ]
+    $msg = clienttranslate(
+      '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) in their engine. They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'
     );
+    if ($roadCondition == \ROAD_CONDITION_MORE_HEAT) {
+      $msg = clienttranslate(
+        '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) in their engine (extra heat needed from road condition). They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'
+      );
+    }
+
+    self::notifyAll('spinOut', $msg, [
+      'constructor' => $constructor,
+      'n' => count($cards),
+      'cards' => $cards->toArray(),
+      'speed' => $speed,
+      'limit' => $limit,
+      'corner' => $cornerPos,
+      'cell' => $cell,
+      'turn' => $newTurn,
+      'stresses' => $stresses,
+      'm' => count($stresses),
+      'nCellsBack' => $nBack,
+    ]);
   }
 
   public function clutteredHand($constructor)
