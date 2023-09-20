@@ -884,8 +884,8 @@ trait RoundTrait
     if (!empty($corners)) {
       foreach ($corners as $infos) {
         list($cornerPos, $cornerTurn) = $infos;
-        $limit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
-        $limit += $speedLimitModifier;
+        $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
+        $limit = $rawLimit + $speedLimitModifier;
         $delta = $speed - $limit;
         // Have we overspeed ?
         if ($delta > 0) {
@@ -927,7 +927,7 @@ trait RoundTrait
           } else {
             $cards = $constructor->payHeats($nHeatsToPay);
             Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos, $roadCondition);
-            if ($delta >= 2 && $this->getCircuit()->isPressCorner($cornerPos)) {
+            if ($speed >= 2 + $rawLimit && $this->getCircuit()->isPressCorner($cornerPos)) {
               // At most 1 sponsor card by corner
               if (!in_array($cornerPos, $slipstreamedCorners)) {
                 $sponsorsGained[] = 'exceed';
