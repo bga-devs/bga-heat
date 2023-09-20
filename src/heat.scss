@@ -233,6 +233,12 @@ html, .mode_3d #game_play_area_background {
   max-height: 54px;
   overflow: hidden;
   vertical-align: middle;
+
+  @for $symbols from 1 through 4 {
+    &[data-symbols="#{$symbols}"]  {
+      max-height: #{54px + ($symbols * 66px)};
+    }
+  }
 }
 
 #page-title {

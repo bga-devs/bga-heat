@@ -1978,7 +1978,7 @@ var CardsManager = /** @class */ (function (_super) {
             case 2:
             case 3:
             case 47:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they flip cards like Stress."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they add [+] symbols."));
             // Body
             case 4:
             case 5:
@@ -2067,12 +2067,12 @@ var CardsManager = /** @class */ (function (_super) {
                 if (icons != '') {
                     tooltip += "<br><br>".concat(icons);
                 }
-                return tooltip;
+                return formatTextIcons(tooltip);
             case 'sponsor':
                 return "<strong>".concat(_(card.text), "</strong>\n                <br><br>\n                ").concat(Object.entries(card.symbols).map(function (_a) {
                     var symbol = _a[0], number = _a[1];
                     return "<div>".concat(_this.game.getGarageModuleIconTooltip(symbol, number), "</div>");
-                }).join('<br>'), "\n                <br>\n                <div>\n                    <strong>").concat(_("One-time use"), "</strong>\n                    <br>\n                    ").concat(_("During the discard step, this card is removed instead of going to the discard."), "\n                </div>");
+                }).join('<br>'), "\n                <br>\n                <div>\n                    <strong>").concat(_("One-time use"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("During the discard step, this card is removed instead of going to the discard."), "\n                </div>");
             default:
                 switch (card.type) {
                     case 101:
@@ -2516,7 +2516,7 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.getCellPosition = function (carCell) {
         if (carCell < 0) {
-            this.getPodiumPosition(-carCell);
+            return this.getPodiumPosition(-carCell);
         }
         return this.circuitDatas.cells[carCell];
     };
@@ -3437,13 +3437,13 @@ var Heat = /** @class */ (function () {
                             }
                         }
                         numbers.forEach(function (number) {
-                            var _a;
                             var label = "";
                             var tooltip = "";
                             switch (type) {
                                 case 'accelerate':
-                                    //label = `+1 [Speed]<br>${this.cardImageHtml(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number), { constructor_id: this.getConstructorId() })}`;
-                                    label = "+".concat(reactArgs_1.flippedCards, " [Speed]<br>(").concat(_(_this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; }).text), ")");
+                                    var accelerateCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
+                                    label = "+".concat(reactArgs_1.flippedCards, " [Speed]<br>").concat(_this.cardImageHtml(accelerateCard, { constructor_id: _this.getConstructorId() }));
+                                    //label = `+${reactArgs.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
                                     tooltip = _this.getGarageModuleIconTooltip('accelerate', reactArgs_1.flippedCards);
                                     break;
                                 case 'adjust':
@@ -3463,7 +3463,9 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                     break;
                                 case 'direct':
-                                    label = "<div class=\"icon direct\"></div><br>(".concat(_((_a = _this.getCurrentPlayerTable().hand.getCards().find(function (card) { return card.id == number; })) === null || _a === void 0 ? void 0 : _a.text), ")");
+                                    var directCard = _this.getCurrentPlayerTable().hand.getCards().find(function (card) { return card.id == number; });
+                                    label = "<div class=\"icon direct\"></div><br>".concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
+                                    //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = _this.getGarageModuleIconTooltip('direct', 1);
                                     break;
                                 case 'heat':
@@ -3472,11 +3474,12 @@ var Heat = /** @class */ (function () {
                                     break;
                                 case 'boost':
                                 case 'heated-boost':
+                                    var paid = type == 'heated-boost';
                                     label = "[Boost] > [Speed]";
-                                    if (type == 'heated-boost') {
+                                    if (paid) {
                                         label += " (1[Heat])";
                                     }
-                                    tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>");
+                                    tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _("Regardless of which gear you are in you may pay 1 Heat to boost once per turn.") : '', "\n                                    ").concat(_("Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step."), "</i>");
                                     break;
                                 case 'reduce':
                                     label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
@@ -3505,7 +3508,7 @@ var Heat = /** @class */ (function () {
                                 }
                             }
                             _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
-                            _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), tooltip);
+                            _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(tooltip));
                             if (type == 'salvage' && _this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
                                 document.getElementById("actReact".concat(type, "_").concat(number, "_button")).classList.add('disabled');
                             }
@@ -3578,7 +3581,7 @@ var Heat = /** @class */ (function () {
             case 'accelerate':
                 return "\n                    <strong>".concat(_("Accelerate"), "</strong>\n                    <br>\n                    ").concat(_("You may increase your Speed by ${number} for every card flipped this turn (from Upgrades, Stress and Boost). If you do, you must increase it for all the flipped cards.").replace('${number}', number), "\n                ");
             case 'adjust':
-                return "\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong>\n                    <br>\n                    ").concat((number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat((number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number), "\n                ");
             case 'boost':
                 return "\n                    <strong>".concat(_("Boost"), "</strong>\n                    <br>\n                    ").concat(_("Flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                    <br>\n                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>\n                ");
             case 'cooldown':
@@ -3586,7 +3589,7 @@ var Heat = /** @class */ (function () {
             case 'direct':
                 return "\n                    <strong>".concat(_("Direct Play"), "</strong>\n                    <br>\n                    ").concat(_("You may play this card from your hand. If you do, it applies as if you played it normally, including Speed and mandatory/optional icons."), "\n                ");
             case 'heat':
-                return "\n                    <strong>".concat(_("Heat"), "</strong>\n                    <br>\n                    ").concat(_("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_("Heat"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number), "\n                ");
             case 'reduce':
                 return "\n                    <strong>".concat(_("Reduce Stress"), "</strong>\n                    <br>\n                    ").concat(_("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number), "\n                ");
             case 'refresh':
@@ -3594,7 +3597,7 @@ var Heat = /** @class */ (function () {
             case 'salvage':
                 return "\n                    <strong>".concat(_("Salvage"), "</strong>\n                    <br>\n                    ").concat(_("You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.").replace('${number}', number), "\n                ");
             case 'scrap':
-                return "\n                    <strong>".concat(_("Scrap"), "</strong>\n                    <br>\n                    ").concat(_("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_("Scrap"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number), "\n                ");
             case 'slipstream':
                 return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number), "\n                ");
         }
@@ -3879,9 +3882,6 @@ var Heat = /** @class */ (function () {
     Heat.prototype.setupNotifications = function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
-        dojo.connect(this.notifqueue, 'addToLog', function () {
-            _this.addLogClass();
-        });
         var notifs = [
             'message',
             'loadCircuit',
@@ -3916,6 +3916,7 @@ var Heat = /** @class */ (function () {
             'startRace',
             'setupRace',
             'clutteredHand',
+            'loadBug',
         ];
         notifs.forEach(function (notifName) {
             dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -4343,88 +4344,46 @@ var Heat = /** @class */ (function () {
         document.getElementById("podium-wrapper-".concat(constructorId)).classList.add('finished');
         document.getElementById("podium-counter-".concat(constructorId)).innerHTML = "".concat(eliminated ? '❌' : pos);
     };
-    /*
-    * [Undocumented] Called by BGA framework on any notification message
-    * Handle cancelling log messages for restart turn
+    /**
+    * Load production bug report handler
     */
-    /* @Override */
-    Heat.prototype.onPlaceLogOnChannel = function (msg) {
-        var currentLogId = this.notifqueue.next_log_id;
-        var currentMobileLogId = this.next_log_id;
-        var res = this.inherited(arguments);
-        this._notif_uid_to_log_id[msg.uid] = currentLogId;
-        this._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
-        this._last_notif = {
-            logId: currentLogId,
-            mobileLogId: currentMobileLogId,
-            msg: msg,
-        };
-        return res;
-    };
-    Heat.prototype.cancelLogs = function (notifIds) {
-        var _this = this;
-        notifIds.forEach(function (uid) {
-            if (_this._notif_uid_to_log_id.hasOwnProperty(uid)) {
-                var logId = _this._notif_uid_to_log_id[uid];
-                if ($('log_' + logId)) {
-                    dojo.addClass('log_' + logId, 'cancel');
+    Heat.prototype.notif_loadBug = function (n) {
+        var that = this;
+        function fetchNextUrl() {
+            var url = n.args.urls.shift();
+            console.log('Fetching URL', url, '...');
+            // all the calls have to be made with ajaxcall in order to add the csrf token, otherwise you'll get "Invalid session information for this action. Please try reloading the page or logging in again"
+            that.ajaxcall(url, {
+                lock: true,
+            }, that, function (success) {
+                console.log('=> Success ', success);
+                if (n.args.urls.length > 1) {
+                    fetchNextUrl();
                 }
-            }
-            if (_this._notif_uid_to_mobile_log_id.hasOwnProperty(uid)) {
-                var mobileLogId = _this._notif_uid_to_mobile_log_id[uid];
-                if ($('dockedlog_' + mobileLogId)) {
-                    dojo.addClass('dockedlog_' + mobileLogId, 'cancel');
+                else if (n.args.urls.length > 0) {
+                    //except the last one, clearing php cache
+                    url = n.args.urls.shift();
+                    dojo.xhrGet({
+                        url: url,
+                        headers: {
+                            'X-Request-Token': bgaConfig.requestToken,
+                        },
+                        load: function (success) {
+                            console.log('Success for URL', url, success);
+                            console.log('Done, reloading page');
+                            window.location.reload();
+                        },
+                        handleAs: 'text',
+                        error: function (error) { return console.log('Error while loading : ', error); },
+                    });
                 }
-            }
-        });
-    };
-    Heat.prototype.addLogClass = function () {
-        var _a;
-        if (this._last_notif == null) {
-            return;
+            }, function (error) {
+                if (error)
+                    console.log('=> Error ', error);
+            });
         }
-        var notif = this._last_notif;
-        var type = notif.msg.type;
-        if (type == 'history_history') {
-            type = notif.msg.args.originalType;
-        }
-        if ($('log_' + notif.logId)) {
-            dojo.addClass('log_' + notif.logId, 'notif_' + type);
-            var methodName = 'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
-            (_a = this[methodName]) === null || _a === void 0 ? void 0 : _a.call(this, notif);
-        }
-        if ($('dockedlog_' + notif.mobileLogId)) {
-            dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
-        }
-    };
-    Heat.prototype.onClick = function (elem, callback) {
-        elem.addEventListener('click', callback);
-    };
-    Heat.prototype.onAddingNewUndoableStepToLog = function (notif) {
-        var _this = this;
-        var _a, _b, _c, _d;
-        if (!$("log_".concat(notif.logId))) {
-            return;
-        }
-        var stepId = notif.msg.args.stepId;
-        $("log_".concat(notif.logId)).dataset.step = stepId;
-        if ($("dockedlog_".concat(notif.mobileLogId))) {
-            $("dockedlog_".concat(notif.mobileLogId)).dataset.step = stepId;
-        }
-        if ((_d = (_c = (_b = (_a = this.gamedatas) === null || _a === void 0 ? void 0 : _a.gamestate) === null || _b === void 0 ? void 0 : _b.args) === null || _c === void 0 ? void 0 : _c.previousSteps) === null || _d === void 0 ? void 0 : _d.includes(parseInt(stepId))) {
-            this.onClick($("log_".concat(notif.logId)), function () { return _this.undoToStep(stepId); });
-            if ($("dockedlog_".concat(notif.mobileLogId))) {
-                this.onClick($("dockedlog_".concat(notif.mobileLogId)), function () { return _this.undoToStep(stepId); });
-            }
-        }
-    };
-    Heat.prototype.undoToStep = function (stepId) {
-        this.stopActionTimer();
-        this.checkAction('actRestart');
-        this.takeAction('actUndoToStep', { stepId: stepId } /*, false*/);
-    };
-    Heat.prototype.stopActionTimer = function () {
-        console.warn('TODO');
+        console.log('Notif: load bug', n.args);
+        fetchNextUrl();
     };
     Heat.prototype.coloredConstructorName = function (constructorName) {
         return "<span style=\"font-weight: bold; color: #".concat(CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.name == constructorName; }).id], "\">").concat(constructorName, "</span>");
@@ -4433,7 +4392,7 @@ var Heat = /** @class */ (function () {
         var _this = this;
         var _a, _b;
         var constructorId = (_a = args.constructor_id) !== null && _a !== void 0 ? _a : (_b = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); })) === null || _b === void 0 ? void 0 : _b.id;
-        return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat(constructorId * 100 / 6, "%;\">").concat(this.cardsManager.getHtml(card), "</div>");
+        return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat(constructorId * 100 / 6, "%;\" data-symbols=\"").concat(card.type < 100 ? Object.keys(card.symbols).length : 0, "\">").concat(this.cardsManager.getHtml(card), "</div>");
     };
     Heat.prototype.cardsImagesHtml = function (cards, args) {
         var _this = this;

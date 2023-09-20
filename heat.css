@@ -1529,6 +1529,18 @@ html, .mode_3d #game_play_area_background {
   overflow: hidden;
   vertical-align: middle;
 }
+.log-card-image[data-symbols="1"] {
+  max-height: 120px;
+}
+.log-card-image[data-symbols="2"] {
+  max-height: 186px;
+}
+.log-card-image[data-symbols="3"] {
+  max-height: 252px;
+}
+.log-card-image[data-symbols="4"] {
+  max-height: 318px;
+}
 
 #page-title .log-card-set {
   display: inline-block;

@@ -331,7 +331,7 @@ class Circuit {
 
     private getCellPosition(carCell: number) {
         if (carCell < 0) {
-            this.getPodiumPosition(-carCell);
+            return this.getPodiumPosition(-carCell);
         }
         return this.circuitDatas.cells[carCell];
     }

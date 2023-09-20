@@ -5,6 +5,7 @@ declare const dojo: Dojo;
 declare const _;
 declare const g_gamethemeurl;
 declare const g_img_preload;
+declare const bgaConfig;
 
 const ANIMATION_MS = 500;
 const MIN_NOTIFICATION_MS = 1200;
@@ -418,8 +419,9 @@ class Heat implements HeatGame {
                             let tooltip = ``;
                             switch (type) {
                                 case 'accelerate':
-                                    //label = `+1 [Speed]<br>${this.cardImageHtml(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number), { constructor_id: this.getConstructorId() })}`;
-                                    label = `+${reactArgs.flippedCards} [Speed]<br>(${_(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number).text) })`;
+                                    const accelerateCard = this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number);
+                                    label = `+${reactArgs.flippedCards} [Speed]<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
+                                    //label = `+${reactArgs.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
                                     tooltip = this.getGarageModuleIconTooltip('accelerate', reactArgs.flippedCards);
                                     break;
                                 case 'adjust':
@@ -444,7 +446,9 @@ class Heat implements HeatGame {
                                     tooltip = this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                     break;
                                 case 'direct':
-                                    label = `<div class="icon direct"></div><br>(${_(this.getCurrentPlayerTable().hand.getCards().find(card => card.id == number)?.text) })`;
+                                    const directCard = this.getCurrentPlayerTable().hand.getCards().find(card => card.id == number);
+                                    label = `<div class="icon direct"></div><br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+                                    //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = this.getGarageModuleIconTooltip('direct', 1);
                                     break;
                                 case 'heat':
@@ -453,16 +457,18 @@ class Heat implements HeatGame {
                                     break;
                                 case 'boost':
                                 case 'heated-boost':
+                                    const paid = type == 'heated-boost';
                                     label = `[Boost] > [Speed]`;
-                                    if (type == 'heated-boost') {
+                                    if (paid) {
                                         label += ` (1[Heat])`;
                                     }
                                     tooltip = `
                                     <strong>${_("Boost")}</strong>
                                     <br><br>
-                                    ${_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly.")}
+                                    ${paid ? _("Regardless of which gear you are in you may pay 1 Heat to boost once per turn.") : ''}
+                                    ${_("Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly.")}
                                     <br><br>
-                                    <i>${_("Note: Boost increases your Speed value for the purpose of the Check Corner step.")}</i>`;
+                                    <i>${_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.")}</i>`;
                                     break;
                                 case 'reduce':
                                     label = `<div class="icon reduce-stress">${number}</div>`;
@@ -495,7 +501,7 @@ class Heat implements HeatGame {
                             }
 
                             (this as any).addActionButton(`actReact${type}_${number}_button`, formatTextIcons(label), callback);
-                            this.setTooltip(`actReact${type}_${number}_button`, tooltip);
+                            this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
                             if (type == 'salvage' && this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
                                 document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');
                             }
@@ -582,7 +588,7 @@ class Heat implements HeatGame {
                 `;
             case 'adjust':
                 return `
-                    <strong>${_("Adjust Speed Limit")}</strong>
+                    <strong>${_("Adjust Speed Limit")}</strong> <div class="mandatory icon"></div>
                     <br>
                     ${ (number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number) }
                 `;
@@ -608,7 +614,7 @@ class Heat implements HeatGame {
                 `;
             case 'heat':
                 return `
-                    <strong>${_("Heat")}</strong>
+                    <strong>${_("Heat")}</strong> <div class="mandatory icon"></div>
                     <br>
                     ${ _("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number) }
                 `;
@@ -632,7 +638,7 @@ class Heat implements HeatGame {
                 `;
             case 'scrap':
                 return `
-                    <strong>${_("Scrap")}</strong>
+                    <strong>${_("Scrap")}</strong> <div class="mandatory icon"></div>
                     <br>
                     ${ _("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number) }
                 `;
@@ -1038,10 +1044,6 @@ class Heat implements HeatGame {
     setupNotifications() {
         //log( 'notifications subscriptions setup' );
 
-        dojo.connect((this as any).notifqueue, 'addToLog', () => {
-            this.addLogClass();
-        });
-
         const notifs = [
             'message',
             'loadCircuit',
@@ -1076,6 +1078,7 @@ class Heat implements HeatGame {
             'startRace',
             'setupRace',
             'clutteredHand',
+            'loadBug',
         ];
         
     
@@ -1436,98 +1439,54 @@ class Heat implements HeatGame {
         document.getElementById(`overall_player_board_${playerId}`).classList.add('finished');
         document.getElementById(`podium-wrapper-${constructorId}`).classList.add('finished');
         document.getElementById(`podium-counter-${constructorId}`).innerHTML = `${eliminated ? '❌' : pos}`;
-    }
+    }  
     
-    /*
-    * [Undocumented] Called by BGA framework on any notification message
-    * Handle cancelling log messages for restart turn
+    /**
+    * Load production bug report handler
     */
-    /* @Override */
-    public onPlaceLogOnChannel(msg: any) {
-     var currentLogId = (this as any).notifqueue.next_log_id;
-     var currentMobileLogId = (this as any).next_log_id;
-     var res = (this as any).inherited(arguments);
-     (this as any)._notif_uid_to_log_id[msg.uid] = currentLogId;
-     (this as any)._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
-     (this as any)._last_notif = {
-       logId: currentLogId,
-       mobileLogId: currentMobileLogId,
-       msg,
-     };
-     return res;
-    }
-    
-    private cancelLogs(notifIds: string[]) {
-      notifIds.forEach((uid) => {
-        if ((this as any)._notif_uid_to_log_id.hasOwnProperty(uid)) {
-          let logId = (this as any)._notif_uid_to_log_id[uid];
-          if ($('log_' + logId)) {
-            dojo.addClass('log_' + logId, 'cancel');
-          }
-        }
-        if ((this as any)._notif_uid_to_mobile_log_id.hasOwnProperty(uid)) {
-          let mobileLogId = (this as any)._notif_uid_to_mobile_log_id[uid];
-          if ($('dockedlog_' + mobileLogId)) {
-            dojo.addClass('dockedlog_' + mobileLogId, 'cancel');
-          }
-        }
-      });
-    }
-    
-    addLogClass() {
-      if ((this as any)._last_notif == null) {
-        return;
-      }
+   notif_loadBug(n) {
+     const that: any = this;
+     function fetchNextUrl() {
+       var url = n.args.urls.shift();
+       console.log('Fetching URL', url, '...');
+       // all the calls have to be made with ajaxcall in order to add the csrf token, otherwise you'll get "Invalid session information for this action. Please try reloading the page or logging in again"
+       that.ajaxcall(
+         url,
+         {
+           lock: true,
+         },
+         that,
+         function (success) {
+           console.log('=> Success ', success);
 
-      let notif = (this as any)._last_notif;
-      let type = notif.msg.type;
-      if (type == 'history_history') {
-        type = notif.msg.args.originalType;
-      }
-
-      if ($('log_' + notif.logId)) {
-        dojo.addClass('log_' + notif.logId, 'notif_' + type);
-
-        var methodName = 'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
-        this[methodName]?.(notif);
-      }
-      if ($('dockedlog_' + notif.mobileLogId)) {
-        dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
-      }
-    }
-
-    private onClick(elem: HTMLElement, callback) {
-        elem.addEventListener('click', callback);
-    }
-
-    protected onAddingNewUndoableStepToLog(notif) {
-      if (!$(`log_${notif.logId}`)) {
-        return;
-      }
-      let stepId = notif.msg.args.stepId;
-      $(`log_${notif.logId}`).dataset.step = stepId;
-      if ($(`dockedlog_${notif.mobileLogId}`)) {
-        $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
-      }
-
-      if (this.gamedatas?.gamestate?.args?.previousSteps?.includes(parseInt(stepId))) {
-        this.onClick($(`log_${notif.logId}`), () => this.undoToStep(stepId));
-
-        if ($(`dockedlog_${notif.mobileLogId}`)) {
-            this.onClick($(`dockedlog_${notif.mobileLogId}`), () => this.undoToStep(stepId));
-        }
-      }
-    }    
-    
-    undoToStep(stepId: number) {
-      this.stopActionTimer();
-      (this as any).checkAction('actRestart');
-      this.takeAction('actUndoToStep', { stepId }/*, false*/);
-    }
-
-    stopActionTimer() {
-        console.warn('TODO');
-    }
+           if (n.args.urls.length > 1) {
+             fetchNextUrl();
+           } else if (n.args.urls.length > 0) {
+             //except the last one, clearing php cache
+             url = n.args.urls.shift();
+             (dojo as any).xhrGet({
+               url: url,
+               headers: {
+                 'X-Request-Token': bgaConfig.requestToken,
+               },
+               load: success => {
+                 console.log('Success for URL', url, success);
+                 console.log('Done, reloading page');
+                 window.location.reload();
+               },
+               handleAs: 'text',
+               error: error => console.log('Error while loading : ', error),
+             });
+           }
+         },
+         error => {
+           if (error) console.log('=> Error ', error);
+         },
+       );
+     }
+     console.log('Notif: load bug', n.args);
+     fetchNextUrl();
+   }
 
     private coloredConstructorName(constructorName: string): string {
         return `<span style="font-weight: bold; color: #${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == constructorName).id]}">${constructorName}</span>`;
@@ -1535,7 +1494,7 @@ class Heat implements HeatGame {
 
     private cardImageHtml(card: Card, args: any) {
         const constructorId = args.constructor_id ?? Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId())?.id;
-        return `<div class="log-card-image" style="--personal-card-background-y: ${constructorId * 100 / 6}%;">${this.cardsManager.getHtml(card)}</div>`;
+        return `<div class="log-card-image" style="--personal-card-background-y: ${constructorId * 100 / 6}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
     }
 
     private cardsImagesHtml(cards: Card[], args: any) {
