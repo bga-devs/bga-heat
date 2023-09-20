@@ -129,7 +129,7 @@ const EVENTS = [
   EVENT_TITLE_SPONSOR => ['sponsors' => 3, 'press' => [0]],
   EVENT_FIRST_LIVE_TV => ['sponsors' => 1, 'press' => [1, 3]],
   EVENT_SAFETY_REGULATIONS => ['sponsors' => 1, 'press' => [3]],
-  EVENT_FUTURE_UNKNOWN => ['sponsors' => 1, 'press' => [3]],
+  EVENT_FUTURE_UNKNOWN => ['sponsors' => 0, 'press' => [3]],
 ];
 
 const CHAMPIONSHIP_SEASONS = [

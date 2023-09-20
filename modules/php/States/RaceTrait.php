@@ -388,13 +388,15 @@ trait RaceTrait
     Cards::shuffle('sponsors');
     $event = Globals::getCurrentEvent();
     $n = EVENTS[$event]['sponsors'];
-    foreach (Constructors::getAll() as $cId => $constructor) {
-      if ($constructor->isAI()) {
-        continue;
-      }
+    if ($n > 0) {
+      foreach (Constructors::getAll() as $cId => $constructor) {
+        if ($constructor->isAI()) {
+          continue;
+        }
 
-      $cards = Cards::pickForLocation($n, 'sponsors', "hand-$cId");
-      Notifications::draw($constructor, $cards, true);
+        $cards = Cards::pickForLocation($n, 'sponsors', "hand-$cId");
+        Notifications::draw($constructor, $cards, true);
+      }
     }
 
     $this->gamestate->nextState('start');
