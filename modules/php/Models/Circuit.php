@@ -458,13 +458,13 @@ class Circuit
   }
 
   // USEFUL FOR LIVE TV EVENT
-  public function getCardsInBetween($turn1, $pos1, $turn2, $pos2)
+  public function getCarsInBetween($turn1, $pos1, $turn2, $pos2)
   {
     $length = $this->getLength();
     $uid1 = $length * $turn1 + $pos1;
     $uid2 = $length * $turn2 + $pos2;
     $cars = 0;
-    for ($pos = $uid1 + 1; $pos <= $uid2; $pos++) {
+    for ($pos = $uid1 + 1; $pos < $uid2; $pos++) {
       if (!$this->isFree($pos, 1)) {
         $cars++;
       }

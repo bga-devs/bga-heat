@@ -102,7 +102,7 @@ class Heat extends Table
     if (Globals::isChampionship()) {
       $datas = Globals::getChampionshipDatas();
       $raceIndex = $datas['index'];
-      $raceNumber = count($datas['circuits']);
+      $raceNumber = max(1, count($datas['circuits']));
     } else {
       $raceIndex = 0;
       $raceNumber = 1;

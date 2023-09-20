@@ -260,7 +260,7 @@ class Notifications
     ]);
   }
 
-  public function spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $newTurn)
+  public function spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $newTurn, $roadCondition)
   {
     $msg = clienttranslate(
       '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) in their engine. They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'

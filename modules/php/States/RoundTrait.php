@@ -777,7 +777,7 @@ trait RoundTrait
     // Any refreshed cards ?
     $refreshedCards = Globals::getRefreshedCards();
     if (!empty($refreshedCards)) {
-      $cards = array_merge($cards, $refreshedCards);
+      $cards = array_merge($cards->toArray(), $refreshedCards);
     }
 
     foreach ($cards as $card) {
@@ -861,6 +861,7 @@ trait RoundTrait
 
     // Sponsor cards gained
     $sponsorsGained = [];
+    $slipstreamedCorners = [];
 
     // Check if player slipstreamed through a press corner
     $slipstreamedCorners = $this->getCircuit()->getCornersInBetween(
@@ -873,6 +874,7 @@ trait RoundTrait
       list($cornerPos, $cornerTurn) = $infos;
       if ($this->getCircuit()->isPressCorner($cornerPos)) {
         $sponsorsGained[] = 'slipstream';
+        $slipstreamedCorners[] = $cornerPos;
       }
     }
 
@@ -926,7 +928,10 @@ trait RoundTrait
             $cards = $constructor->payHeats($nHeatsToPay);
             Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos, $roadCondition);
             if ($delta >= 2 && $this->getCircuit()->isPressCorner($cornerPos)) {
-              $sponsorsGained[] = 'exceed';
+              // At most 1 sponsor card by corner
+              if (!in_array($cornerPos, $slipstreamedCorners)) {
+                $sponsorsGained[] = 'exceed';
+              }
             }
           }
         }
