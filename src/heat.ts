@@ -5,6 +5,7 @@ declare const dojo: Dojo;
 declare const _;
 declare const g_gamethemeurl;
 declare const g_img_preload;
+declare const bgaConfig;
 
 const ANIMATION_MS = 500;
 const MIN_NOTIFICATION_MS = 1200;
@@ -1040,10 +1041,6 @@ class Heat implements HeatGame {
     setupNotifications() {
         //log( 'notifications subscriptions setup' );
 
-        dojo.connect((this as any).notifqueue, 'addToLog', () => {
-            this.addLogClass();
-        });
-
         const notifs = [
             'message',
             'loadCircuit',
@@ -1078,6 +1075,7 @@ class Heat implements HeatGame {
             'startRace',
             'setupRace',
             'clutteredHand',
+            'loadBug',
         ];
         
     
@@ -1438,98 +1436,54 @@ class Heat implements HeatGame {
         document.getElementById(`overall_player_board_${playerId}`).classList.add('finished');
         document.getElementById(`podium-wrapper-${constructorId}`).classList.add('finished');
         document.getElementById(`podium-counter-${constructorId}`).innerHTML = `${eliminated ? '❌' : pos}`;
-    }
+    }  
     
-    /*
-    * [Undocumented] Called by BGA framework on any notification message
-    * Handle cancelling log messages for restart turn
+    /**
+    * Load production bug report handler
     */
-    /* @Override */
-    public onPlaceLogOnChannel(msg: any) {
-     var currentLogId = (this as any).notifqueue.next_log_id;
-     var currentMobileLogId = (this as any).next_log_id;
-     var res = (this as any).inherited(arguments);
-     (this as any)._notif_uid_to_log_id[msg.uid] = currentLogId;
-     (this as any)._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
-     (this as any)._last_notif = {
-       logId: currentLogId,
-       mobileLogId: currentMobileLogId,
-       msg,
-     };
-     return res;
-    }
-    
-    private cancelLogs(notifIds: string[]) {
-      notifIds.forEach((uid) => {
-        if ((this as any)._notif_uid_to_log_id.hasOwnProperty(uid)) {
-          let logId = (this as any)._notif_uid_to_log_id[uid];
-          if ($('log_' + logId)) {
-            dojo.addClass('log_' + logId, 'cancel');
-          }
-        }
-        if ((this as any)._notif_uid_to_mobile_log_id.hasOwnProperty(uid)) {
-          let mobileLogId = (this as any)._notif_uid_to_mobile_log_id[uid];
-          if ($('dockedlog_' + mobileLogId)) {
-            dojo.addClass('dockedlog_' + mobileLogId, 'cancel');
-          }
-        }
-      });
-    }
-    
-    addLogClass() {
-      if ((this as any)._last_notif == null) {
-        return;
-      }
+   notif_loadBug(n) {
+     const that: any = this;
+     function fetchNextUrl() {
+       var url = n.args.urls.shift();
+       console.log('Fetching URL', url, '...');
+       // all the calls have to be made with ajaxcall in order to add the csrf token, otherwise you'll get "Invalid session information for this action. Please try reloading the page or logging in again"
+       that.ajaxcall(
+         url,
+         {
+           lock: true,
+         },
+         that,
+         function (success) {
+           console.log('=> Success ', success);
 
-      let notif = (this as any)._last_notif;
-      let type = notif.msg.type;
-      if (type == 'history_history') {
-        type = notif.msg.args.originalType;
-      }
-
-      if ($('log_' + notif.logId)) {
-        dojo.addClass('log_' + notif.logId, 'notif_' + type);
-
-        var methodName = 'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
-        this[methodName]?.(notif);
-      }
-      if ($('dockedlog_' + notif.mobileLogId)) {
-        dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
-      }
-    }
-
-    private onClick(elem: HTMLElement, callback) {
-        elem.addEventListener('click', callback);
-    }
-
-    protected onAddingNewUndoableStepToLog(notif) {
-      if (!$(`log_${notif.logId}`)) {
-        return;
-      }
-      let stepId = notif.msg.args.stepId;
-      $(`log_${notif.logId}`).dataset.step = stepId;
-      if ($(`dockedlog_${notif.mobileLogId}`)) {
-        $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
-      }
-
-      if (this.gamedatas?.gamestate?.args?.previousSteps?.includes(parseInt(stepId))) {
-        this.onClick($(`log_${notif.logId}`), () => this.undoToStep(stepId));
-
-        if ($(`dockedlog_${notif.mobileLogId}`)) {
-            this.onClick($(`dockedlog_${notif.mobileLogId}`), () => this.undoToStep(stepId));
-        }
-      }
-    }    
-    
-    undoToStep(stepId: number) {
-      this.stopActionTimer();
-      (this as any).checkAction('actRestart');
-      this.takeAction('actUndoToStep', { stepId }/*, false*/);
-    }
-
-    stopActionTimer() {
-        console.warn('TODO');
-    }
+           if (n.args.urls.length > 1) {
+             fetchNextUrl();
+           } else if (n.args.urls.length > 0) {
+             //except the last one, clearing php cache
+             url = n.args.urls.shift();
+             (dojo as any).xhrGet({
+               url: url,
+               headers: {
+                 'X-Request-Token': bgaConfig.requestToken,
+               },
+               load: success => {
+                 console.log('Success for URL', url, success);
+                 console.log('Done, reloading page');
+                 window.location.reload();
+               },
+               handleAs: 'text',
+               error: error => console.log('Error while loading : ', error),
+             });
+           }
+         },
+         error => {
+           if (error) console.log('=> Error ', error);
+         },
+       );
+     }
+     console.log('Notif: load bug', n.args);
+     fetchNextUrl();
+   }
 
     private coloredConstructorName(constructorName: string): string {
         return `<span style="font-weight: bold; color: #${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == constructorName).id]}">${constructorName}</span>`;
