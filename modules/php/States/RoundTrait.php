@@ -479,7 +479,7 @@ trait RoundTrait
     $roadCondition = $constructor->getRoadCondition();
     $symbols = Globals::getSymbols();
     // Remove symbols that do not apply at this step
-    $notReactSymbols = [SLIPSTREAM];
+    $notReactSymbols = [SLIPSTREAM, REFRESH];
     foreach ($notReactSymbols as $symbol) {
       unset($symbols[$symbol]);
     }
@@ -538,7 +538,7 @@ trait RoundTrait
     }
 
     // Update remaining symbols
-    if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
+    if (in_array($symbol, [DIRECT, ACCELERATE])) {
       $symbols[$symbol] = array_values(array_diff($symbols[$symbol], [$arg]));
     } else {
       unset($symbols[$symbol]);
@@ -593,27 +593,6 @@ trait RoundTrait
     elseif ($symbol == SCRAP) {
       $cards = $constructor->scrapCards($n);
       Notifications::scrapCards($constructor, $cards);
-    }
-    // REFRESH
-    elseif ($symbol == REFRESH) {
-      if (!$this->canPassReact($symbols)) {
-        throw new \BgaVisibleSystemException('You cant use refresh with pending mandatory reactions. Should not happen');
-      }
-      $cardId = $arg;
-      $card = Cards::getSingle($cardId);
-      Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
-      Notifications::refresh($constructor, $card);
-
-      // Remove any other symbols
-      $symbols = [
-        REFRESH => $symbols[REFRESH],
-      ];
-      Globals::setSymbols($symbols);
-
-      // Keep in memory this card. Useful for slipstream
-      $refreshedCards = Globals::getRefreshedCards();
-      $refreshedCards[] = $card;
-      Globals::setRefreshedCards($refreshedCards);
     }
     // ACCELERATE
     elseif ($symbol == ACCELERATE) {
@@ -774,6 +753,7 @@ trait RoundTrait
       ];
     }
 
+    // TODO : REMOVE
     // Any refreshed cards ?
     $refreshedCards = Globals::getRefreshedCards();
     if (!empty($refreshedCards)) {
@@ -999,6 +979,28 @@ trait RoundTrait
   //   \___(_) |____/|_|___/\___\__,_|_|  \__,_|
   /////////////////////////////////////////////////////
 
+  // // REFRESH
+  // elseif ($symbol == REFRESH) {
+  //   if (!$this->canPassReact($symbols)) {
+  //     throw new \BgaVisibleSystemException('You cant use refresh with pending mandatory reactions. Should not happen');
+  //   }
+  //   $cardId = $arg;
+  //   $card = Cards::getSingle($cardId);
+  //   Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
+  //   Notifications::refresh($constructor, $card);
+
+  //   // Remove any other symbols
+  //   $symbols = [
+  //     REFRESH => $symbols[REFRESH],
+  //   ];
+  //   Globals::setSymbols($symbols);
+
+  //   // Keep in memory this card. Useful for slipstream
+  //   $refreshedCards = Globals::getRefreshedCards();
+  //   $refreshedCards[] = $card;
+  //   Globals::setRefreshedCards($refreshedCards);
+  // }
+
   public function argsDiscard()
   {
     $constructor = Constructors::getActive();
@@ -1006,10 +1008,15 @@ trait RoundTrait
       return !in_array($card['effect'], [HEAT, STRESS]);
     });
 
+    // Any card to refresh ?
+    $symbols = Globals::getSymbols();
+    $refreshedIds = $symbols[REFRESH] ?? [];
+
     return [
       '_private' => [
         'active' => [
           'cardIds' => $cards->getIds(),
+          'refreshedIds' => $refreshedIds,
         ],
       ],
     ];
@@ -1017,25 +1024,45 @@ trait RoundTrait
 
   public function stDiscard()
   {
-    $cardIds = $this->argsDiscard()['_private']['active']['cardIds'];
-    if (empty($cardIds)) {
-      $this->actDiscard([]);
+    // Auto skip if nothing to refresh and cant discard anything
+    $args = $this->argsDiscard()['_private']['active'];
+    $cardIds = $args['cardIds'];
+    if (empty($cardIds) && empty($args['refreshedIds'])) {
+      $this->actDiscard([], []);
       return;
     }
 
+    // Autoskip if race is over (no point in discarding more card)
     $constructor = Constructors::getActive();
     if ($constructor->getTurn() >= $this->getNbrLaps()) {
-      $this->actDiscard([]);
+      $this->actDiscard([], []);
       return;
     }
   }
 
-  public function actDiscard($cardIds)
+  public function actDiscard($cardIds, $refreshedIds)
   {
     self::checkAction('actDiscard');
+    $constructor = Constructors::getActive();
+    $args = $this->argsDiscard()['_private']['active'];
+
+    // Refresh cards
+    if (count($refreshedIds) > 0) {
+      $ids = $args['refreshedIds'];
+      if (!empty(array_diff($refreshedIds, $ids))) {
+        throw new \BgaVisibleSystemException('Invalid cards to refresh. Should not happen');
+      }
+
+      foreach ($refreshedIds as $cardId) {
+        $card = Cards::getSingle($cardId);
+        Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
+        Notifications::refresh($constructor, $card);
+      }
+    }
+
+    // Discard cards
     if (count($cardIds) > 0) {
-      $constructor = Constructors::getActive();
-      $ids = $this->argsDiscard()['_private']['active']['cardIds'];
+      $ids = $args['cardIds'];
       if (!empty(array_diff($cardIds, $ids))) {
         throw new \BgaVisibleSystemException('Invalid cards to discard. Should not happen');
       }
