@@ -247,6 +247,7 @@ html, .mode_3d #game_play_area_background {
 
     .log-card-image {
       display: inline-flex;
+      max-height: 54px !important; // to forbid the title bar to grow too big during notifs
 
       &:not(:first-child) {
         margin-left: -168px;

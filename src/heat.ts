@@ -160,22 +160,10 @@ class Heat implements HeatGame {
             case 'swapUpgrade':
                 this.onEnteringSwapUpgrade(args.args);
                 break;
+            case 'planification':            
+                this.updatePlannedCards(args.args._private?.selection ?? [], 'onEnteringState onEnteringPlanification');
+                break;
             }
-    }
-
-    /*
-     * Add a blue/grey button if it doesn't already exists
-     */
-    public addPrimaryActionButton(id, text, callback, zone = 'customActions'): void {
-      if (!$(id)) (this as any).addActionButton(id, text, callback, zone, false, 'blue');
-    }
-
-    public addSecondaryActionButton(id, text, callback, zone = 'customActions'): void {
-      if (!$(id)) (this as any).addActionButton(id, text, callback, zone, false, 'gray');
-    }
-
-    public addDangerActionButton(id, text, callback, zone = 'customActions'): void {
-      if (!$(id)) (this as any).addActionButton(id, text, callback, zone, false, 'red');
     }
     
     public changePageTitle(suffix: string = null, save: boolean = false): void {
@@ -276,6 +264,18 @@ class Heat implements HeatGame {
         }
     }
 
+    private updatePlannedCards(plannedCardsIds: number[], from: string) {
+        console.log('updatePlannedCards', plannedCardsIds, from);
+
+        document.querySelectorAll(`.planned-card`).forEach(elem => elem.classList.remove('planned-card'));
+
+        if (plannedCardsIds?.length) {
+            const playerTable = this.getCurrentPlayerTable();        
+            const cards = playerTable.hand.getCards();
+            plannedCardsIds?.forEach(id => playerTable.hand.getCardElement(cards.find(card => Number(card.id) == id)).classList.add('planned-card'));
+        }
+    }
+
     private onEnteringChooseSpeed(args: EnteringChooseSpeedArgs) {
         Object.entries(args.speeds).forEach(entry => {
             const speed = Number(entry[0]);
@@ -341,6 +341,7 @@ class Heat implements HeatGame {
     private onLeavingPlanification() {
         this.onLeavingHandSelection();
         this.circuit.removeMapIndicators();
+        this.updatePlannedCards([], 'onLeavingPlanification');
     }
 
     private onLeavingHandSelection() {
@@ -1175,7 +1176,7 @@ class Heat implements HeatGame {
     } 
     
     notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
-        // TODO
+        this.updatePlannedCards(args.args._private.selection, 'notif_updatePlanification');
     }  
 
     async notif_reveal(args: NotifRevealArgs) {
@@ -1386,10 +1387,10 @@ class Heat implements HeatGame {
     }
 
     async notif_eliminate(args: NotifEliminateArgs) {
-        const { cell } = args;
+        const { pos: cell } = args;
         await this.notif_finishRace({
             ...args,
-            pos: cell
+            pos: -cell
         }, true);
     }  
 

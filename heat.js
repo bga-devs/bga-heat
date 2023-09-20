@@ -2785,10 +2785,8 @@ var PlayerTable = /** @class */ (function () {
         if (selectableCardsIds === void 0) { selectableCardsIds = null; }
         if (selectedCardsIds === void 0) { selectedCardsIds = null; }
         var cards = this.hand.getCards();
-        var selectedCardClass = this.hand.getSelectedCardClass();
-        document.getElementById("player-table-".concat(this.playerId, "-hand")).querySelectorAll(".".concat(selectedCardClass)).forEach(function (elem) { return elem.classList.remove(selectedCardClass); });
         this.hand.setSelectionMode(selectionMode, selectableCardsIds ? cards.filter(function (card) { return selectableCardsIds.includes(Number(card.id)); }) : undefined);
-        selectedCardsIds === null || selectedCardsIds === void 0 ? void 0 : selectedCardsIds.forEach(function (id) { return _this.hand.getCardElement(cards.find(function (card) { return Number(card.id) == id; })).classList.add(selectedCardClass); });
+        selectedCardsIds === null || selectedCardsIds === void 0 ? void 0 : selectedCardsIds.forEach(function (id) { return _this.hand.selectCard(cards.find(function (card) { return Number(card.id) == id; })); });
     };
     PlayerTable.prototype.getCurrentGear = function () {
         return this.currentGear;
@@ -3198,7 +3196,7 @@ var Heat = /** @class */ (function () {
     //                  You can use this method to perform some user interface changes at this moment.
     //
     Heat.prototype.onEnteringState = function (stateName, args) {
-        var _a, _b;
+        var _a, _b, _c, _d;
         log('Entering state: ' + stateName, args.args);
         if ((_a = args.args) === null || _a === void 0 ? void 0 : _a.descSuffix) {
             this.changePageTitle(args.args.descSuffix);
@@ -3217,25 +3215,10 @@ var Heat = /** @class */ (function () {
             case 'swapUpgrade':
                 this.onEnteringSwapUpgrade(args.args);
                 break;
+            case 'planification':
+                this.updatePlannedCards((_d = (_c = args.args._private) === null || _c === void 0 ? void 0 : _c.selection) !== null && _d !== void 0 ? _d : [], 'onEnteringState onEnteringPlanification');
+                break;
         }
-    };
-    /*
-     * Add a blue/grey button if it doesn't already exists
-     */
-    Heat.prototype.addPrimaryActionButton = function (id, text, callback, zone) {
-        if (zone === void 0) { zone = 'customActions'; }
-        if (!$(id))
-            this.addActionButton(id, text, callback, zone, false, 'blue');
-    };
-    Heat.prototype.addSecondaryActionButton = function (id, text, callback, zone) {
-        if (zone === void 0) { zone = 'customActions'; }
-        if (!$(id))
-            this.addActionButton(id, text, callback, zone, false, 'gray');
-    };
-    Heat.prototype.addDangerActionButton = function (id, text, callback, zone) {
-        if (zone === void 0) { zone = 'customActions'; }
-        if (!$(id))
-            this.addActionButton(id, text, callback, zone, false, 'red');
     };
     Heat.prototype.changePageTitle = function (suffix, save) {
         if (suffix === void 0) { suffix = null; }
@@ -3316,6 +3299,15 @@ var Heat = /** @class */ (function () {
             this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
         }
     };
+    Heat.prototype.updatePlannedCards = function (plannedCardsIds, from) {
+        console.log('updatePlannedCards', plannedCardsIds, from);
+        document.querySelectorAll(".planned-card").forEach(function (elem) { return elem.classList.remove('planned-card'); });
+        if (plannedCardsIds === null || plannedCardsIds === void 0 ? void 0 : plannedCardsIds.length) {
+            var playerTable_1 = this.getCurrentPlayerTable();
+            var cards_1 = playerTable_1.hand.getCards();
+            plannedCardsIds === null || plannedCardsIds === void 0 ? void 0 : plannedCardsIds.forEach(function (id) { return playerTable_1.hand.getCardElement(cards_1.find(function (card) { return Number(card.id) == id; })).classList.add('planned-card'); });
+        }
+    };
     Heat.prototype.onEnteringChooseSpeed = function (args) {
         var _this = this;
         Object.entries(args.speeds).forEach(function (entry) {
@@ -3374,6 +3366,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onLeavingPlanification = function () {
         this.onLeavingHandSelection();
         this.circuit.removeMapIndicators();
+        this.updatePlannedCards([], 'onLeavingPlanification');
     };
     Heat.prototype.onLeavingHandSelection = function () {
         var _a;
@@ -4007,7 +4000,7 @@ var Heat = /** @class */ (function () {
         this.market = null;
     };
     Heat.prototype.notif_updatePlanification = function (args) {
-        // TODO
+        this.updatePlannedCards(args.args._private.selection, 'notif_updatePlanification');
     };
     Heat.prototype.notif_reveal = function (args) {
         var _a;
@@ -4276,8 +4269,8 @@ var Heat = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        cell = args.cell;
-                        return [4 /*yield*/, this.notif_finishRace(__assign(__assign({}, args), { pos: cell }), true)];
+                        cell = args.pos;
+                        return [4 /*yield*/, this.notif_finishRace(__assign(__assign({}, args), { pos: -cell }), true)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];

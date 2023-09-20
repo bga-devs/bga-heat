@@ -106,8 +106,6 @@ interface HeatGame extends Game {
     setTooltip(id: string, html: string): void;
     onHandCardSelectionChange(selection: Card[]): void;
     changePageTitle(suffix?: string, save?: boolean): void;
-    addPrimaryActionButton(id, text, callback, zone?): void;
-    addSecondaryActionButton(id, text, callback, zone?): void
 }
 
 interface EnteringChooseUpgradeArgs {
@@ -175,10 +173,8 @@ interface NotifSwapUpgradeArgs extends NotifChooseUpgradeArgs {
 }
 
 // updatePlanification
-interface NotifUpdatePlanificationArgs { // TODO
-    _private: {
-        // TODO
-    };
+interface NotifUpdatePlanificationArgs {
+    args: EnteringPlanificationArgs;
 }
 
 // reveal
@@ -310,7 +306,7 @@ interface NotifDirectPlayArgs {
 // eliminate
 interface NotifEliminateArgs {
     constructor_id: number;
-    cell: number;
+    pos: number;
 }
 
 // newChampionshipRace

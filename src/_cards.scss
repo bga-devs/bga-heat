@@ -84,6 +84,14 @@
         .card-side {
             box-shadow: unset;
         }
+    } 
+
+    &.planned-card {
+        outline: 5px solid orange;
+
+        .card-side {
+            box-shadow: unset;
+        }
     }
 }
 

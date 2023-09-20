@@ -603,6 +603,12 @@ height: 241px; */
 .personal-card.bga-cards_selected-card:not(.bga-cards_disabled-card) .card-side {
   box-shadow: unset;
 }
+.personal-card.planned-card {
+  outline: 5px solid orange;
+}
+.personal-card.planned-card .card-side {
+  box-shadow: unset;
+}
 
 @keyframes selectable-card-animation {
   0% {
@@ -1548,6 +1554,7 @@ html, .mode_3d #game_play_area_background {
 }
 #page-title .log-card-set .log-card-image {
   display: inline-flex;
+  max-height: 54px !important;
 }
 #page-title .log-card-set .log-card-image:not(:first-child) {
   margin-left: -168px;
