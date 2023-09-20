@@ -121,7 +121,7 @@ class action_heat extends APP_GameAction
     self::setAjaxMode();
     $cardIds = self::getArg('cardIds', AT_json, true);
     $this->validateJSonAlphaNum($cardIds, 'cardIds');
-    $this->game->actDiscard($cardIds);
+    $this->game->actDiscard($cardIds, []);
     self::ajaxResponse();
   }
 

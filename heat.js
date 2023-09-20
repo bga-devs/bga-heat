@@ -3523,8 +3523,10 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
-                    this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(); });
+                    this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); });
+                    this.addActionButton("actNoDiscard_button", _('No additional discard'), function () { return _this.actDiscard([]); }, null, null, 'red');
                     this.onHandCardSelectionChange([]);
+                    ;
                     break;
                 case 'salvage':
                     this.onEnteringSalvage(args);
@@ -3752,11 +3754,12 @@ var Heat = /** @class */ (function () {
             }
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
-            var label = selection.length ?
-                _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length)) :
-                _('No additional discard');
-            var button = document.getElementById('actDiscard_button');
-            button.innerHTML = label;
+            var label = _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length));
+            var buttonDiscard = document.getElementById('actDiscard_button');
+            var buttonNoDiscard = document.getElementById('actNoDiscard_button');
+            buttonDiscard.innerHTML = label;
+            buttonDiscard.classList.toggle('disabled', !selection.length);
+            buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
         }
         else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
             this.checkSwapUpgradeSelectionState();
@@ -3842,11 +3845,10 @@ var Heat = /** @class */ (function () {
             arg: arg
         });
     };
-    Heat.prototype.actDiscard = function () {
+    Heat.prototype.actDiscard = function (selectedCards) {
         if (!this.checkAction('actDiscard')) {
             return;
         }
-        var selectedCards = this.getCurrentPlayerTable().hand.getSelection();
         this.takeAction('actDiscard', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
