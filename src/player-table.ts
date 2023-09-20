@@ -141,10 +141,14 @@ class PlayerTable {
         this.inplay = new InPlayStock(this.game, constructor); 
     }
 
-    public setHandSelectable(selectionMode: CardSelectionMode, selectableCardsIds: number[] | null = null, selectedCardsIds: string[] | null = null) {
+    public setHandSelectable(selectionMode: CardSelectionMode, selectableCardsIds: number[] | null = null, selectedCardsIds: number[] | null = null) {
         const cards = this.hand.getCards();
+        const selectedCardClass = this.hand.getSelectedCardClass();
+        document.getElementById(`player-table-${this.playerId}-hand`).querySelectorAll(`.${selectedCardClass}`).forEach(elem => elem.classList.remove(selectedCardClass));
+
         this.hand.setSelectionMode(selectionMode, selectableCardsIds ? cards.filter(card => selectableCardsIds.includes(Number(card.id))) : undefined);
-        selectedCardsIds?.forEach(id => this.hand.getCardElement(cards.find(card => Number(card.id) == Number(id)))?.classList.add(this.hand.getSelectedCardClass())); // TODO make all numbers?
+        
+        selectedCardsIds?.forEach(id => this.hand.getCardElement(cards.find(card => Number(card.id) == id)).classList.add(selectedCardClass));
     }
     
     public getCurrentGear(): number {

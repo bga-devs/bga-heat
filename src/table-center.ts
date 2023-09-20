@@ -299,7 +299,7 @@ class Circuit {
                 `;
             case 1:
                 return `
-                    <strong>${_("Overheat")}</strong>
+                    <strong>${_("Overheat")}</strong> <div class="mandatory icon"></div>
                     <br>
                     ${ _("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one.") }
                 `;
