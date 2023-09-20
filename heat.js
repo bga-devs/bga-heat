@@ -3317,8 +3317,8 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.onEnteringSlipstream = function (args) {
         var _this = this;
-        Object.entries(args.cells).forEach(function (entry) {
-            return _this.circuit.addMapIndicator(entry[1][0], function () { return _this.actSlipstream(Number(entry[0])); });
+        Object.entries(args.speeds).forEach(function (entry) {
+            return _this.circuit.addMapIndicator(entry[1], function () { return _this.actSlipstream(Number(entry[0])); });
         });
     };
     Heat.prototype.onEnteringDiscard = function (args) {
@@ -3377,6 +3377,18 @@ var Heat = /** @class */ (function () {
         (_a = document.getElementById('market')) === null || _a === void 0 ? void 0 : _a.remove();
         this.market = null;
     };
+    Heat.prototype.createChooseSpeedButtons = function (args, clickAction) {
+        var _this = this;
+        Object.entries(args.speeds).forEach(function (entry) {
+            var speed = Number(entry[0]);
+            var label = _('Move ${cell} cell(s)').replace('${cell}', "".concat(speed));
+            if (args.heatCosts[speed]) {
+                label += " (".concat(args.heatCosts[speed], "[Heat])");
+            }
+            _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), formatTextIcons(label), function () { return clickAction(speed); });
+            _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
+        });
+    };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
@@ -3405,18 +3417,12 @@ var Heat = /** @class */ (function () {
                 case 'chooseSpeed':
                     var chooseSpeedArgs = args;
                     this.onEnteringChooseSpeed(chooseSpeedArgs);
-                    Object.entries(chooseSpeedArgs.speeds).forEach(function (entry) {
-                        _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), _('Move ${cell} cell(s)').replace('${cell}', "".concat(entry[0])), function () { return _this.actChooseSpeed(Number(entry[0])); });
-                        _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
-                    });
+                    this.createChooseSpeedButtons(chooseSpeedArgs, function (speed) { return _this.actChooseSpeed(speed); });
                     break;
                 case 'slipstream':
                     var slipstreamArgs = args;
                     this.onEnteringSlipstream(slipstreamArgs);
-                    Object.entries(slipstreamArgs.cells).forEach(function (entry) {
-                        _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), _('Move ${cell} cell(s)').replace('${cell}', "".concat(entry[0])), function () { return _this.actSlipstream(Number(entry[0])); });
-                        _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1][0]);
-                    });
+                    this.createChooseSpeedButtons(slipstreamArgs, function (speed) { return _this.actSlipstream(speed); });
                     this.addActionButton("actPassSlipstream_button", _('Pass'), function () { return _this.actSlipstream(0); });
                     break;
                 case 'react':

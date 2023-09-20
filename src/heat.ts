@@ -284,8 +284,8 @@ class Heat implements HeatGame {
     }
 
     private onEnteringSlipstream(args: EnteringSlipstreamArgs) {
-        Object.entries(args.cells).forEach(entry => 
-            this.circuit.addMapIndicator(entry[1][0], () => this.actSlipstream(Number(entry[0])))
+        Object.entries(args.speeds).forEach(entry => 
+            this.circuit.addMapIndicator(entry[1], () => this.actSlipstream(Number(entry[0])))
         );
     }
 
@@ -353,6 +353,21 @@ class Heat implements HeatGame {
         this.market = null;
     }
 
+    private createChooseSpeedButtons(args: EnteringChooseSpeedArgs, clickAction: (speed) => void) {
+        Object.entries(args.speeds).forEach(entry => {
+            const speed = Number(entry[0]);
+            let label = _('Move ${cell} cell(s)').replace('${cell}', `${speed}`);
+            if (args.heatCosts[speed]) {
+                label += ` (${args.heatCosts[speed]}[Heat])`;
+            }
+            (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, formatTextIcons(label), () => clickAction(speed));
+            this.linkButtonHoverToMapIndicator(
+                document.getElementById(`chooseSpeed${entry[0]}_button`),
+                entry[1],
+            );
+        });
+    }
+
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
@@ -382,24 +397,12 @@ class Heat implements HeatGame {
                 case 'chooseSpeed':
                     const chooseSpeedArgs = args as EnteringChooseSpeedArgs;
                     this.onEnteringChooseSpeed(chooseSpeedArgs);
-                    Object.entries(chooseSpeedArgs.speeds).forEach(entry => {
-                        (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, _('Move ${cell} cell(s)').replace('${cell}', `${entry[0]}`), () => this.actChooseSpeed(Number(entry[0])))
-                        this.linkButtonHoverToMapIndicator(
-                            document.getElementById(`chooseSpeed${entry[0]}_button`),
-                            entry[1],
-                        );
-                    });
+                    this.createChooseSpeedButtons(chooseSpeedArgs, speed => this.actChooseSpeed(speed));
                     break;
                 case 'slipstream':
                     const slipstreamArgs = args as EnteringSlipstreamArgs;
                     this.onEnteringSlipstream(slipstreamArgs);
-                    Object.entries(slipstreamArgs.cells).forEach(entry => {
-                        (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, _('Move ${cell} cell(s)').replace('${cell}', `${entry[0]}`), () => this.actSlipstream(Number(entry[0])))
-                        this.linkButtonHoverToMapIndicator(
-                            document.getElementById(`chooseSpeed${entry[0]}_button`),
-                            entry[1][0],
-                        );
-                    });
+                    this.createChooseSpeedButtons(slipstreamArgs, speed => this.actSlipstream(speed));
                     (this as any).addActionButton(`actPassSlipstream_button`, _('Pass'), () => this.actSlipstream(0));
                     break;
                 case 'react':

@@ -130,12 +130,11 @@ interface EnteringPlanificationArgs {
 }
 
 interface EnteringChooseSpeedArgs {
+    heatCosts: { [speed: number]: number /*heatCost*/ };
     speeds: { [speed: number]: number /*destination cell*/ };
 }
 
-interface EnteringSlipstreamArgs {
-    cells: { [speed: number]: [number, number[]] /*destination cell*/ };
-}
+type EnteringSlipstreamArgs = EnteringChooseSpeedArgs;
 
 interface EnteringReactArgs {
     canPass: boolean;

@@ -350,7 +350,7 @@ trait RoundTrait
     $constructor = Constructors::getActive();
 
     // Compute speed
-    $speeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    $speeds = [0];
     foreach ($constructor->getPlayedCards() as $card) {
       $t = [];
 
@@ -797,7 +797,7 @@ trait RoundTrait
 
   public function stSlipstream()
   {
-    if (empty($this->argsSlipstream()['cells'])) {
+    if (empty($this->argsSlipstream()['speeds'])) {
       $this->actSlipstream(0);
     }
   }
@@ -811,7 +811,7 @@ trait RoundTrait
     Globals::setTurnBeforeSlipstream($constructor->getTurn());
 
     if ($n > 0) {
-      if (!array_key_exists($n, $this->argsSlipstream()['cells'])) {
+      if (!array_key_exists($n, $this->argsSlipstream()['speeds'])) {
         throw new \BgaVisibleSystemException('Invalid slipstream. Should not happen');
       }
 
