@@ -496,7 +496,12 @@ trait RoundTrait
 
     // Compute which ones are actually usable
     $doableSymbols = [];
-    foreach ($symbols as $symbol => $n) {
+    foreach ($symbols as $symbol => &$n) {
+      // TODO : remove, only for unblocking tables
+      if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
+        $n = array_values($n);
+      }
+
       if ($constructor->canUseSymbol($symbol)) {
         $doableSymbols[] = $symbol;
       }
@@ -534,7 +539,7 @@ trait RoundTrait
 
     // Update remaining symbols
     if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
-      $symbols[$symbol] = array_diff($symbols[$symbol], [$arg]);
+      $symbols[$symbol] = array_values(array_diff($symbols[$symbol], [$arg]));
     } else {
       unset($symbols[$symbol]);
     }
