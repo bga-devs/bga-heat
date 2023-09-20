@@ -288,7 +288,7 @@ class Circuit
     return $this->getFreeCell($position);
   }
 
-  public function getReachedCell($constructor, $speed, $computePath = false, $computeHeatCost = false)
+  public function getReachedCell($constructor, $speed, $computePath = false, $computeHeatCost = false, $isSlipstream = false)
   {
     if ($speed == 0) {
       return [$constructor->getCarCell(), 0, 0, []];
@@ -337,6 +337,9 @@ class Circuit
     }
 
     // Compute the heat cost
+    if ($isSlipstream) {
+      $speed = $constructor->getSpeed();
+    }
     list($heatCost, $spinOut) = $this->getCrossedCornersTotalHeatCost(
       $constructor,
       $speed,
@@ -375,7 +378,7 @@ class Circuit
     }
 
     // Check that you move at least one cell forward
-    list($cell, $nSpacesForward, , $path, $heatCost, $spinOut) = $this->getReachedCell($constructor, $n, true, true);
+    list($cell, $nSpacesForward, , $path, $heatCost, $spinOut) = $this->getReachedCell($constructor, $n, true, true, true);
     if ($nSpacesForward == 0) {
       return false;
     }
@@ -431,6 +434,7 @@ class Circuit
     // For each corner, check speed against max speed of corner
     $spinOut = false;
     $costs = [];
+    $limits = [];
     $available = $constructor->getEngine()->count();
 
     if (!empty($corners)) {
@@ -438,6 +442,7 @@ class Circuit
         list($cornerPos, $cornerTurn) = $infos;
         $rawLimit = $this->getCornerMaxSpeed($cornerPos);
         $limit = $rawLimit + $speedLimitModifier;
+        $limits[$cornerPos] = $limit;
         $delta = $speed - $limit;
 
         if ($delta > 0) {
@@ -449,19 +454,18 @@ class Circuit
           }
 
           // Are we spinning out ??
+          $costs[$cornerPos] = $nHeatsToPay;
           if ($nHeatsToPay > $available) {
-            $costs[$cornerPos] = $available;
             $spinOut = true;
             break;
           } else {
-            $costs[$cornerPos] = $nHeatsToPay;
             $available -= $nHeatsToPay;
           }
         }
       }
     }
 
-    return [$costs, $spinOut];
+    return [$costs, $spinOut, $limits];
   }
 
   // Get corner ahead

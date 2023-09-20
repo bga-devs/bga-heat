@@ -838,13 +838,7 @@ trait RoundTrait
     $prevTurn = Globals::getPreviousTurn();
     $position = $constructor->getPosition();
     $turn = $constructor->getTurn();
-    $corners = $this->getCircuit()->getCornersInBetween($prevTurn, $prevPosition, $turn, $position);
-
-    // Max speed modificator
-    $speedLimitModifier = 0;
-    foreach ($constructor->getPlayedCards() as $card) {
-      $speedLimitModifier += $card['symbols'][ADJUST] ?? 0;
-    }
+    // $corners = >getCornersInBetween($prevTurn, $prevPosition, $turn, $position);
 
     // Sponsor cards gained
     $sponsorsGained = [];
@@ -868,58 +862,47 @@ trait RoundTrait
     // For each corner, check speed against max speed of corner
     $spinOut = false;
     $speed = $constructor->getSpeed();
-    if (!empty($corners)) {
-      foreach ($corners as $infos) {
-        list($cornerPos, $cornerTurn) = $infos;
-        $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
-        $limit = $rawLimit + $speedLimitModifier;
-        $delta = $speed - $limit;
-        // Have we overspeed ?
-        if ($delta > 0) {
-          $nHeatsToPay = $delta;
-          // Road condition can increase number of heat to pay
-          $roadCondition = $this->getCircuit()->getRoadCondition($cornerPos);
-          if ($roadCondition == \ROAD_CONDITION_MORE_HEAT) {
-            $nHeatsToPay++;
-          }
+    // prettier-ignore
+    list($corners, , $limits) = $this->getCircuit()->getCrossedCornersHeatCosts($constructor, $speed, $prevTurn, $prevPosition, $turn, $position);
 
-          // Are we spinning out ??
+    if (!empty($corners)) {
+      foreach ($corners as $cornerPos => $nHeatsToPay) {
+        if ($nHeatsToPay > 0) {
+          $roadCondition = $this->getCircuit()->getCornerWeather($cornerPos);
+          $limit = $limits[$cornerPos];
           $available = $constructor->getEngine()->count();
+
           if ($nHeatsToPay > $available) {
             $cards = $constructor->payHeats($available);
             $cell = $this->getCircuit()->getFirstFreeCell($cornerPos - 1, $constructor->getId());
             $stresses = Cards::addStress($constructor, $constructor->getGear() <= 2 ? 1 : 2);
             $constructor->setCarCell($cell);
             $constructor->setGear(1);
-            $constructor->setTurn($cornerTurn);
 
             // How many cells back ?
             $newPosition = $constructor->getPosition();
             $length = $this->getCircuit()->getLength();
             $nBack = ($position - $newPosition + $length) % $length;
-            Notifications::spinOut(
-              $constructor,
-              $speed,
-              $limit,
-              $cornerPos,
-              $cards,
-              $cell,
-              $stresses,
-              $nBack,
-              $cornerTurn,
-              $roadCondition
-            );
+            if ($newPosition > $position) {
+              $constructor->incTurn(-1);
+              $turn--;
+            }
+
+            // prettier-ignore
+            Notifications::spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $turn, $roadCondition);
             $spinOut = true;
             break;
           } else {
             $cards = $constructor->payHeats($nHeatsToPay);
             Notifications::payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos, $roadCondition);
-            if ($speed >= 2 + $rawLimit && $this->getCircuit()->isPressCorner($cornerPos)) {
-              // At most 1 sponsor card by corner
-              if (!in_array($cornerPos, $slipstreamedCorners)) {
-                $sponsorsGained[] = 'exceed';
-              }
-            }
+          }
+        }
+
+        $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
+        if ($speed >= 2 + $rawLimit && $this->getCircuit()->isPressCorner($cornerPos)) {
+          // At most 1 sponsor card by corner
+          if (!in_array($cornerPos, $slipstreamedCorners)) {
+            $sponsorsGained[] = 'exceed';
           }
         }
       }
