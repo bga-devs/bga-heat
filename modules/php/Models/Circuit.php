@@ -288,13 +288,14 @@ class Circuit
     return $this->getFreeCell($position);
   }
 
-  public function getReachedCell($constructor, $speed)
+  public function getReachedCell($constructor, $speed, $computePath = false, $computeHeatCost = false)
   {
     if ($speed == 0) {
       return [$constructor->getCarCell(), 0, 0, []];
     }
 
     $cId = $constructor->getId();
+    $currentTurn = $constructor->getTurn();
     $currentPosition = $this->getPosition($constructor);
     $currentLane = $this->getLane($constructor);
 
@@ -304,19 +305,21 @@ class Circuit
 
     // Compute the path
     $path = [$constructor->getCarCell()];
-    for ($pos = $currentPosition + 1; $pos < $newPosition; $pos++) {
-      if ($currentLane == 1.5) {
-        $currentLane = $this->getRaceLane($pos);
-      }
+    if ($computePath) {
+      for ($pos = $currentPosition + 1; $pos < $newPosition; $pos++) {
+        if ($currentLane == 1.5) {
+          $currentLane = $this->getRaceLane($pos);
+        }
 
-      if ($this->isFree($pos, $currentLane)) {
-        $path[] = $this->getCell($pos, $currentLane);
-      } elseif ($this->isFree($pos, 3 - $currentLane)) {
-        $currentLane = 3 - $currentLane;
-        $path[] = $this->getCell($pos, $currentLane);
-      } else {
-        $currentLane = 1.5;
-        $path[] = [$this->getCell($pos, 1), $this->getCell($pos, 2)];
+        if ($this->isFree($pos, $currentLane)) {
+          $path[] = $this->getCell($pos, $currentLane);
+        } elseif ($this->isFree($pos, 3 - $currentLane)) {
+          $currentLane = 3 - $currentLane;
+          $path[] = $this->getCell($pos, $currentLane);
+        } else {
+          $currentLane = 1.5;
+          $path[] = [$this->getCell($pos, 1), $this->getCell($pos, 2)];
+        }
       }
     }
 
@@ -332,7 +335,25 @@ class Circuit
     } else {
       $cellId = $path[0];
     }
-    return [$cellId, $nSpacesForward, $extraTurn, $path];
+
+    // Compute the heat cost
+    list($heatCost, $spinOut) = $this->getCrossedCornersTotalHeatCost(
+      $constructor,
+      $speed,
+      $currentTurn,
+      $currentPosition,
+      $currentTurn + $extraTurn,
+      $newPosition
+    );
+
+    return [
+      $cellId,
+      $nSpacesForward,
+      $extraTurn,
+      $computePath ? $path : null,
+      $computeHeatCost ? $heatCost : null,
+      $computeHeatCost ? $spinOut : null,
+    ];
   }
 
   public function getSlipstreamResult($constructor, $n)
@@ -354,12 +375,12 @@ class Circuit
     }
 
     // Check that you move at least one cell forward
-    list($cell, $nSpacesForward, , $path) = $this->getReachedCell($constructor, $n);
+    list($cell, $nSpacesForward, , $path, $heatCost, $spinOut) = $this->getReachedCell($constructor, $n, true, true);
     if ($nSpacesForward == 0) {
       return false;
     }
 
-    return [$cell, $path];
+    return [$cell, $path, $heatCost, $spinOut];
   }
 
   public function getCornersInBetween($turn1, $pos1, $turn2, $pos2)
@@ -389,6 +410,58 @@ class Circuit
     }
 
     return $limit;
+  }
+
+  public function getCrossedCornersTotalHeatCost($constructor, $speed, $turn1, $pos1, $turn2, $pos2)
+  {
+    list($costs, $spinOut) = $this->getCrossedCornersHeatCosts($constructor, $speed, $turn1, $pos1, $turn2, $pos2);
+    return [array_sum($costs), $spinOut];
+  }
+
+  public function getCrossedCornersHeatCosts($constructor, $speed, $turn1, $pos1, $turn2, $pos2)
+  {
+    $corners = $this->getCornersInBetween($turn1, $pos1, $turn2, $pos2);
+
+    // Max speed modificator
+    $speedLimitModifier = 0;
+    foreach ($constructor->getPlayedCards() as $card) {
+      $speedLimitModifier += $card['symbols'][ADJUST] ?? 0;
+    }
+
+    // For each corner, check speed against max speed of corner
+    $spinOut = false;
+    $costs = [];
+    $available = $constructor->getEngine()->count();
+
+    if (!empty($corners)) {
+      foreach ($corners as $infos) {
+        list($cornerPos, $cornerTurn) = $infos;
+        $rawLimit = $this->getCornerMaxSpeed($cornerPos);
+        $limit = $rawLimit + $speedLimitModifier;
+        $delta = $speed - $limit;
+
+        if ($delta > 0) {
+          $nHeatsToPay = $delta;
+          // Road condition can increase number of heat to pay
+          $roadCondition = $this->getRoadCondition($cornerPos);
+          if ($roadCondition == \ROAD_CONDITION_MORE_HEAT) {
+            $nHeatsToPay++;
+          }
+
+          // Are we spinning out ??
+          if ($nHeatsToPay > $available) {
+            $costs[$cornerPos] = $available;
+            $spinOut = true;
+            break;
+          } else {
+            $costs[$cornerPos] = $nHeatsToPay;
+            $available -= $nHeatsToPay;
+          }
+        }
+      }
+    }
+
+    return [$costs, $spinOut];
   }
 
   // Get corner ahead

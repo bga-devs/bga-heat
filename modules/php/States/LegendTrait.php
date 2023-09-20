@@ -30,7 +30,7 @@ trait LegendTrait
     if (($deltaLine == 0 || $deltaCorner < $deltaLine) && ($pos < $cornerPos || $turn < $this->getNbrLaps())) {
       // Try to move at corner speed + "slot cell" number
       $speed = $this->getCircuit()->getCornerMaxSpeed($cornerPos) + $slot;
-      list($newCell, $nSpacesForward, $extraTurns, $path) = $this->getCircuit()->getReachedCell($constructor, $speed);
+      list($newCell, $nSpacesForward, $extraTurns, $path, ,) = $this->getCircuit()->getReachedCell($constructor, $speed, true);
       // Check if that makes the car cross AT MOST one corner
       $cornersCrossed = $this->getCircuit()->getCornersInBetween($turn, $pos, $turn + $extraTurns, $pos + $nSpacesForward);
       if (count($cornersCrossed) <= 1) {

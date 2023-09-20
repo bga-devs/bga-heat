@@ -350,7 +350,7 @@ trait RoundTrait
     $constructor = Constructors::getActive();
 
     // Compute speed
-    $speeds = [0];
+    $speeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     foreach ($constructor->getPlayedCards() as $card) {
       $t = [];
 
@@ -369,15 +369,18 @@ trait RoundTrait
     }
     $possibleSpeeds = $speeds;
 
-    // Compute ending cells
+    // Compute ending cells and heat to pay
     $speeds = [];
+    $heatCosts = [];
     foreach ($possibleSpeeds as $speed) {
-      list($newCell, , ,) = $this->getCircuit()->getReachedCell($constructor, $speed);
+      list($newCell, , , , $heatCost, $spinOut) = $this->getCircuit()->getReachedCell($constructor, $speed, false, true);
       $speeds[$speed] = $newCell;
+      $heatCosts[$speed] = $heatCost;
     }
 
     return [
       'speeds' => $speeds,
+      'heatCosts' => $heatCosts,
       'descSuffix' => count($speeds) == 1 ? 'SingleChoice' : '',
     ];
   }
@@ -413,7 +416,7 @@ trait RoundTrait
 
   public function moveCar($constructor, $n, $slipstream = false, $legendSlot = null)
   {
-    list($newCell, $nSpacesForward, $extraTurns, $path) = $this->getCircuit()->getReachedCell($constructor, $n);
+    list($newCell, $nSpacesForward, $extraTurns, $path, ,) = $this->getCircuit()->getReachedCell($constructor, $n, true, false);
     $constructor->setCarCell($newCell);
     $constructor->incTurn($extraTurns);
     Notifications::moveCar($constructor, $newCell, $n, $nSpacesForward, $extraTurns, $path, $slipstream, $legendSlot);
@@ -775,16 +778,20 @@ trait RoundTrait
       $slipstreams = $t;
     }
 
-    $cells = [];
+    $speeds = [];
+    $heatCosts = [];
     foreach ($slipstreams as $n) {
-      $cell = $this->getCircuit()->getSlipstreamResult($constructor, $n);
-      if ($cell !== false) {
-        $cells[$n] = $cell;
+      $res = $this->getCircuit()->getSlipstreamResult($constructor, $n);
+      if ($res !== false) {
+        list($cell, $path, $heatCost, $spinOut) = $res;
+        $speeds[$n] = $cell;
+        $heatCosts[$n] = $heatCost;
       }
     }
 
     return [
-      'cells' => $cells,
+      'speeds' => $speeds,
+      'heatCosts' => $heatCosts,
     ];
   }
 
