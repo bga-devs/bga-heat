@@ -1,6 +1,7 @@
 .player-table {
   min-width: 640px;
   width: 100%;
+  box-sizing: border-box;
   position: relative;
   background: #FFFFFF33;
   //box-shadow: 0 0 5px 2px var(--player-color);

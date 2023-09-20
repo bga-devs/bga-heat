@@ -981,6 +981,7 @@ height: 241px; */
 .player-table {
   min-width: 640px;
   width: 100%;
+  box-sizing: border-box;
   position: relative;
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid var(--player-color);

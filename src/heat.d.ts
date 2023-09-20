@@ -120,7 +120,7 @@ interface EnteringSwapUpgradeArgs extends EnteringChooseUpgradeArgs {
 
 interface EnteringPlanificationPrivateArgs {
     cards: number[];
-    selection: string[];
+    selection: number[];
     cells: { [speed: number]: number /*destination cell*/ };
     speeds: { [cardId: number]: number | number[]};
     boostingCardIds: number[];

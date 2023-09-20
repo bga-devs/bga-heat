@@ -2497,7 +2497,7 @@ var Circuit = /** @class */ (function () {
             case 0:
                 return "\n                    <strong>".concat(_("Weather"), "</strong>\n                    <br>\n                    ").concat(_("Weather effect applies to this sector:"), "\n                    <br>\n                    ").concat(this.getWeatherCardEffectTooltip(cardType), "\n                ");
             case 1:
-                return "\n                    <strong>".concat(_("Overheat"), "</strong>\n                    <br>\n                    ").concat(_("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one."), "\n                ");
+                return "\n                    <strong>".concat(_("Overheat"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one."), "\n                ");
             case 2:
                 return this.game.getGarageModuleIconTooltip('adjust', -1);
             case 3:
@@ -2785,8 +2785,10 @@ var PlayerTable = /** @class */ (function () {
         if (selectableCardsIds === void 0) { selectableCardsIds = null; }
         if (selectedCardsIds === void 0) { selectedCardsIds = null; }
         var cards = this.hand.getCards();
+        var selectedCardClass = this.hand.getSelectedCardClass();
+        document.getElementById("player-table-".concat(this.playerId, "-hand")).querySelectorAll(".".concat(selectedCardClass)).forEach(function (elem) { return elem.classList.remove(selectedCardClass); });
         this.hand.setSelectionMode(selectionMode, selectableCardsIds ? cards.filter(function (card) { return selectableCardsIds.includes(Number(card.id)); }) : undefined);
-        selectedCardsIds === null || selectedCardsIds === void 0 ? void 0 : selectedCardsIds.forEach(function (id) { var _a; return (_a = _this.hand.getCardElement(cards.find(function (card) { return Number(card.id) == Number(id); }))) === null || _a === void 0 ? void 0 : _a.classList.add(_this.hand.getSelectedCardClass()); }); // TODO make all numbers?
+        selectedCardsIds === null || selectedCardsIds === void 0 ? void 0 : selectedCardsIds.forEach(function (id) { return _this.hand.getCardElement(cards.find(function (card) { return Number(card.id) == id; })).classList.add(selectedCardClass); });
     };
     PlayerTable.prototype.getCurrentGear = function () {
         return this.currentGear;
@@ -3521,8 +3523,10 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
-                    this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(); });
+                    this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); });
+                    this.addActionButton("actNoDiscard_button", _('No additional discard'), function () { return _this.actDiscard([]); }, null, null, 'red');
                     this.onHandCardSelectionChange([]);
+                    ;
                     break;
                 case 'salvage':
                     this.onEnteringSalvage(args);
@@ -3579,7 +3583,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.getGarageModuleIconTooltip = function (symbol, number) {
         switch (symbol) {
             case 'accelerate':
-                return "\n                    <strong>".concat(_("Accelerate"), "</strong>\n                    <br>\n                    ").concat(_("You may increase your Speed by ${number} for every card flipped this turn (from Upgrades, Stress and Boost). If you do, you must increase it for all the flipped cards.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_("Accelerate"), "</strong>\n                    <br>\n                    ").concat(_("You may increase your Speed by ${number} for every [+] symbol used by you this turn (from Upgrades, Stress, Boost, etc). If you do, you must increase it for all [+] symbols used and this counts for corner checks.").replace('${number}', number), "\n                ");
             case 'adjust':
                 return "\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat((number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number), "\n                ");
             case 'boost':
@@ -3587,17 +3591,17 @@ var Heat = /** @class */ (function () {
             case 'cooldown':
                 return "\n                    <strong>".concat(_("Cooldown"), "</strong>\n                    <br>\n                    ").concat(_("Cooldown allows you to take ${number} Heat card(s) from your hand and put it back in your Engine (so you can use the Heat card again). ").replace('${number}', number), "\n                ");
             case 'direct':
-                return "\n                    <strong>".concat(_("Direct Play"), "</strong>\n                    <br>\n                    ").concat(_("You may play this card from your hand. If you do, it applies as if you played it normally, including Speed and mandatory/optional icons."), "\n                ");
+                return "\n                    <strong>".concat(_("Direct Play"), "</strong>\n                    <br>\n                    ").concat(_("You may play this card from your hand in the React step. If you do, it applies as if you played it normally, including Speed value and mandatory/optional icons."), "\n                ");
             case 'heat':
                 return "\n                    <strong>".concat(_("Heat"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number), "\n                ");
             case 'reduce':
                 return "\n                    <strong>".concat(_("Reduce Stress"), "</strong>\n                    <br>\n                    ").concat(_("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number), "\n                ");
             case 'refresh':
-                return "\n                    <strong>".concat(_("Refresh"), "</strong>\n                    <br>\n                    ").concat(_("You may place this card back on top of your draw deck at the end of the React step."), "\n                ");
+                return "\n                    <strong>".concat(_("Refresh"), "</strong>\n                    <br>\n                    ").concat(_("You may place this card back on top of your draw deck instead of discarding it, when discarding cards."), "\n                ");
             case 'salvage':
                 return "\n                    <strong>".concat(_("Salvage"), "</strong>\n                    <br>\n                    ").concat(_("You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.").replace('${number}', number), "\n                ");
             case 'scrap':
-                return "\n                    <strong>".concat(_("Scrap"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_("Scrap"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Discard the top card of your draw deck ${number} times.").replace('${number}', number), "\n                ");
             case 'slipstream':
                 return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number), "\n                ");
         }
@@ -3734,12 +3738,14 @@ var Heat = /** @class */ (function () {
             }
             document.getElementById("player-table-".concat(table.playerId, "-gear")).dataset.gear = "".concat(allowed ? selection.length : gear);
             var button = document.getElementById('actPlanification_button');
-            button.innerHTML = label;
-            // we let the user able to click, so the back will explain in the error why he can't
-            /*if (allowed && useHeat && this.engineCounters[this.getConstructorId()].getValue() == 0) {
-                allowed = false;
-            }*/
-            button.classList.toggle('disabled', !allowed);
+            if (button) {
+                button.innerHTML = label;
+                // we let the user able to click, so the back will explain in the error why he can't
+                /*if (allowed && useHeat && this.engineCounters[this.getConstructorId()].getValue() == 0) {
+                    allowed = false;
+                }*/
+                button.classList.toggle('disabled', !allowed);
+            }
             this.circuit.removeMapIndicators();
             if (selection.length && privateArgs_1 && !clutteredHand) {
                 var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
@@ -3748,11 +3754,12 @@ var Heat = /** @class */ (function () {
             }
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
-            var label = selection.length ?
-                _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length)) :
-                _('No additional discard');
-            var button = document.getElementById('actDiscard_button');
-            button.innerHTML = label;
+            var label = _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length));
+            var buttonDiscard = document.getElementById('actDiscard_button');
+            var buttonNoDiscard = document.getElementById('actNoDiscard_button');
+            buttonDiscard.innerHTML = label;
+            buttonDiscard.classList.toggle('disabled', !selection.length);
+            buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
         }
         else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
             this.checkSwapUpgradeSelectionState();
@@ -3838,11 +3845,10 @@ var Heat = /** @class */ (function () {
             arg: arg
         });
     };
-    Heat.prototype.actDiscard = function () {
+    Heat.prototype.actDiscard = function (selectedCards) {
         if (!this.checkAction('actDiscard')) {
             return;
         }
-        var selectedCards = this.getCurrentPlayerTable().hand.getSelection();
         this.takeAction('actDiscard', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });

@@ -515,8 +515,10 @@ class Heat implements HeatGame {
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
-                    (this as any).addActionButton(`actDiscard_button`, '', () => this.actDiscard());
+                    (this as any).addActionButton(`actDiscard_button`, '', () => this.actDiscard(this.getCurrentPlayerTable().hand.getSelection()));
+                    (this as any).addActionButton(`actNoDiscard_button`, _('No additional discard'), () => this.actDiscard([]), null, null, 'red');
                     this.onHandCardSelectionChange([]);
+                    ;
                     break;
                 case 'salvage':
                     this.onEnteringSalvage(args);
@@ -584,7 +586,7 @@ class Heat implements HeatGame {
                 return `
                     <strong>${_("Accelerate")}</strong>
                     <br>
-                    ${ _("You may increase your Speed by ${number} for every card flipped this turn (from Upgrades, Stress and Boost). If you do, you must increase it for all the flipped cards.").replace('${number}', number) }
+                    ${ _("You may increase your Speed by ${number} for every [+] symbol used by you this turn (from Upgrades, Stress, Boost, etc). If you do, you must increase it for all [+] symbols used and this counts for corner checks.").replace('${number}', number) }
                 `;
             case 'adjust':
                 return `
@@ -610,7 +612,7 @@ class Heat implements HeatGame {
                 return `
                     <strong>${_("Direct Play")}</strong>
                     <br>
-                    ${ _("You may play this card from your hand. If you do, it applies as if you played it normally, including Speed and mandatory/optional icons.") }
+                    ${ _("You may play this card from your hand in the React step. If you do, it applies as if you played it normally, including Speed value and mandatory/optional icons.") }
                 `;
             case 'heat':
                 return `
@@ -628,7 +630,7 @@ class Heat implements HeatGame {
                 return `
                     <strong>${_("Refresh")}</strong>
                     <br>
-                    ${ _("You may place this card back on top of your draw deck at the end of the React step.") }
+                    ${ _("You may place this card back on top of your draw deck instead of discarding it, when discarding cards.") }
                 `;
             case 'salvage':
                 return `
@@ -640,7 +642,7 @@ class Heat implements HeatGame {
                 return `
                     <strong>${_("Scrap")}</strong> <div class="mandatory icon"></div>
                     <br>
-                    ${ _("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number) }
+                    ${ _("Discard the top card of your draw deck ${number} times.").replace('${number}', number) }
                 `;
             case 'slipstream':
                 return `
@@ -861,17 +863,17 @@ class Heat implements HeatGame {
                 label = _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
             }
             
-                
-
             document.getElementById(`player-table-${table.playerId}-gear`).dataset.gear = `${allowed ? selection.length : gear}`;
 
             const button = document.getElementById('actPlanification_button');
-            button.innerHTML = label;
-            // we let the user able to click, so the back will explain in the error why he can't
-            /*if (allowed && useHeat && this.engineCounters[this.getConstructorId()].getValue() == 0) {
-                allowed = false;
-            }*/
-            button.classList.toggle('disabled', !allowed);
+            if (button) {
+                button.innerHTML = label;
+                // we let the user able to click, so the back will explain in the error why he can't
+                /*if (allowed && useHeat && this.engineCounters[this.getConstructorId()].getValue() == 0) {
+                    allowed = false;
+                }*/
+                button.classList.toggle('disabled', !allowed);
+            }
 
             this.circuit.removeMapIndicators();
             if (selection.length && privateArgs && !clutteredHand) {
@@ -881,12 +883,13 @@ class Heat implements HeatGame {
             }
 
         } else if (this.gamedatas.gamestate.name == 'discard') {
-            const label = selection.length ? 
-                _('Discard ${number} selected cards').replace('${number}', `${selection.length}`) :
-                _('No additional discard');
+            const label = _('Discard ${number} selected cards').replace('${number}', `${selection.length}`);
 
-            const button = document.getElementById('actDiscard_button');
-            button.innerHTML = label;
+            const buttonDiscard = document.getElementById('actDiscard_button');
+            const buttonNoDiscard = document.getElementById('actNoDiscard_button');
+            buttonDiscard.innerHTML = label;
+            buttonDiscard.classList.toggle('disabled', !selection.length);
+            buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
         } else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
             this.checkSwapUpgradeSelectionState();
         }
@@ -990,12 +993,10 @@ class Heat implements HeatGame {
         });
     }
   	
-    public actDiscard() {
+    public actDiscard(selectedCards: Card[]) {
         if(!(this as any).checkAction('actDiscard')) {
             return;
         }
-
-        const selectedCards = this.getCurrentPlayerTable().hand.getSelection();
 
         this.takeAction('actDiscard', {
             cardIds: JSON.stringify(selectedCards.map(card => card.id)),
