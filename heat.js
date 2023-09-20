@@ -2072,7 +2072,7 @@ var CardsManager = /** @class */ (function (_super) {
                 return "<strong>".concat(_(card.text), "</strong>\n                <br><br>\n                ").concat(Object.entries(card.symbols).map(function (_a) {
                     var symbol = _a[0], number = _a[1];
                     return "<div>".concat(_this.game.getGarageModuleIconTooltip(symbol, number), "</div>");
-                }).join('<br>'), "\n                <br>\n                <div>\n                    <strong>").concat(_("One-time use"), "</strong>\n                    <br>\n                    ").concat(_("During the discard step, this card is removed instead of going to the discard."), "\n                </div>");
+                }).join('<br>'), "\n                <br>\n                <div>\n                    <strong>").concat(_("One-time use"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("During the discard step, this card is removed instead of going to the discard."), "\n                </div>");
             default:
                 switch (card.type) {
                     case 101:
@@ -2516,7 +2516,7 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.getCellPosition = function (carCell) {
         if (carCell < 0) {
-            this.getPodiumPosition(-carCell);
+            return this.getPodiumPosition(-carCell);
         }
         return this.circuitDatas.cells[carCell];
     };
@@ -3437,13 +3437,13 @@ var Heat = /** @class */ (function () {
                             }
                         }
                         numbers.forEach(function (number) {
-                            var _a;
                             var label = "";
                             var tooltip = "";
                             switch (type) {
                                 case 'accelerate':
-                                    //label = `+1 [Speed]<br>${this.cardImageHtml(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number), { constructor_id: this.getConstructorId() })}`;
-                                    label = "+".concat(reactArgs_1.flippedCards, " [Speed]<br>(").concat(_(_this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; }).text), ")");
+                                    var accelerateCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
+                                    label = "+".concat(reactArgs_1.flippedCards, " [Speed]<br>").concat(_this.cardImageHtml(accelerateCard, { constructor_id: _this.getConstructorId() }));
+                                    //label = `+${reactArgs.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
                                     tooltip = _this.getGarageModuleIconTooltip('accelerate', reactArgs_1.flippedCards);
                                     break;
                                 case 'adjust':
@@ -3463,7 +3463,9 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                     break;
                                 case 'direct':
-                                    label = "<div class=\"icon direct\"></div><br>(".concat(_((_a = _this.getCurrentPlayerTable().hand.getCards().find(function (card) { return card.id == number; })) === null || _a === void 0 ? void 0 : _a.text), ")");
+                                    var directCard = _this.getCurrentPlayerTable().hand.getCards().find(function (card) { return card.id == number; });
+                                    label = "<div class=\"icon direct\"></div><br>".concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
+                                    //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = _this.getGarageModuleIconTooltip('direct', 1);
                                     break;
                                 case 'heat':
@@ -3579,7 +3581,7 @@ var Heat = /** @class */ (function () {
             case 'accelerate':
                 return "\n                    <strong>".concat(_("Accelerate"), "</strong>\n                    <br>\n                    ").concat(_("You may increase your Speed by ${number} for every card flipped this turn (from Upgrades, Stress and Boost). If you do, you must increase it for all the flipped cards.").replace('${number}', number), "\n                ");
             case 'adjust':
-                return "\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong>\n                    <br>\n                    ").concat((number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat((number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number), "\n                ");
             case 'boost':
                 return "\n                    <strong>".concat(_("Boost"), "</strong>\n                    <br>\n                    ").concat(_("Flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                    <br>\n                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>\n                ");
             case 'cooldown':
@@ -3587,7 +3589,7 @@ var Heat = /** @class */ (function () {
             case 'direct':
                 return "\n                    <strong>".concat(_("Direct Play"), "</strong>\n                    <br>\n                    ").concat(_("You may play this card from your hand. If you do, it applies as if you played it normally, including Speed and mandatory/optional icons."), "\n                ");
             case 'heat':
-                return "\n                    <strong>".concat(_("Heat"), "</strong>\n                    <br>\n                    ").concat(_("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_("Heat"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number), "\n                ");
             case 'reduce':
                 return "\n                    <strong>".concat(_("Reduce Stress"), "</strong>\n                    <br>\n                    ").concat(_("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number), "\n                ");
             case 'refresh':
@@ -3595,7 +3597,7 @@ var Heat = /** @class */ (function () {
             case 'salvage':
                 return "\n                    <strong>".concat(_("Salvage"), "</strong>\n                    <br>\n                    ").concat(_("You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.").replace('${number}', number), "\n                ");
             case 'scrap':
-                return "\n                    <strong>".concat(_("Scrap"), "</strong>\n                    <br>\n                    ").concat(_("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_("Scrap"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number), "\n                ");
             case 'slipstream':
                 return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number), "\n                ");
         }
@@ -4390,7 +4392,7 @@ var Heat = /** @class */ (function () {
         var _this = this;
         var _a, _b;
         var constructorId = (_a = args.constructor_id) !== null && _a !== void 0 ? _a : (_b = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); })) === null || _b === void 0 ? void 0 : _b.id;
-        return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat(constructorId * 100 / 6, "%;\">").concat(this.cardsManager.getHtml(card), "</div>");
+        return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat(constructorId * 100 / 6, "%;\" data-symbols=\"").concat(card.type < 100 ? Object.keys(card.symbols).length : 0, "\">").concat(this.cardsManager.getHtml(card), "</div>");
     };
     Heat.prototype.cardsImagesHtml = function (cards, args) {
         var _this = this;

@@ -144,7 +144,7 @@ class CardsManager extends CardManager<Card> {
                 ${Object.entries(card.symbols).map(([symbol, number]) => `<div>${this.game.getGarageModuleIconTooltip(symbol, number)}</div>`).join('<br>')}
                 <br>
                 <div>
-                    <strong>${_("One-time use")}</strong>
+                    <strong>${_("One-time use")}</strong> <div class="mandatory icon"></div>
                     <br>
                     ${ _("During the discard step, this card is removed instead of going to the discard.") }
                 </div>`;

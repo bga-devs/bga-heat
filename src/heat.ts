@@ -419,8 +419,9 @@ class Heat implements HeatGame {
                             let tooltip = ``;
                             switch (type) {
                                 case 'accelerate':
-                                    //label = `+1 [Speed]<br>${this.cardImageHtml(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number), { constructor_id: this.getConstructorId() })}`;
-                                    label = `+${reactArgs.flippedCards} [Speed]<br>(${_(this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number).text) })`;
+                                    const accelerateCard = this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number);
+                                    label = `+${reactArgs.flippedCards} [Speed]<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
+                                    //label = `+${reactArgs.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
                                     tooltip = this.getGarageModuleIconTooltip('accelerate', reactArgs.flippedCards);
                                     break;
                                 case 'adjust':
@@ -445,7 +446,9 @@ class Heat implements HeatGame {
                                     tooltip = this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                     break;
                                 case 'direct':
-                                    label = `<div class="icon direct"></div><br>(${_(this.getCurrentPlayerTable().hand.getCards().find(card => card.id == number)?.text) })`;
+                                    const directCard = this.getCurrentPlayerTable().hand.getCards().find(card => card.id == number);
+                                    label = `<div class="icon direct"></div><br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+                                    //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = this.getGarageModuleIconTooltip('direct', 1);
                                     break;
                                 case 'heat':
@@ -585,7 +588,7 @@ class Heat implements HeatGame {
                 `;
             case 'adjust':
                 return `
-                    <strong>${_("Adjust Speed Limit")}</strong>
+                    <strong>${_("Adjust Speed Limit")}</strong> <div class="mandatory icon"></div>
                     <br>
                     ${ (number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number) }
                 `;
@@ -611,7 +614,7 @@ class Heat implements HeatGame {
                 `;
             case 'heat':
                 return `
-                    <strong>${_("Heat")}</strong>
+                    <strong>${_("Heat")}</strong> <div class="mandatory icon"></div>
                     <br>
                     ${ _("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number) }
                 `;
@@ -635,7 +638,7 @@ class Heat implements HeatGame {
                 `;
             case 'scrap':
                 return `
-                    <strong>${_("Scrap")}</strong>
+                    <strong>${_("Scrap")}</strong> <div class="mandatory icon"></div>
                     <br>
                     ${ _("Take ${number} cards from the top of your draw deck and flip them into your discard pile.").replace('${number}', number) }
                 `;
@@ -1491,7 +1494,7 @@ class Heat implements HeatGame {
 
     private cardImageHtml(card: Card, args: any) {
         const constructorId = args.constructor_id ?? Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId())?.id;
-        return `<div class="log-card-image" style="--personal-card-background-y: ${constructorId * 100 / 6}%;">${this.cardsManager.getHtml(card)}</div>`;
+        return `<div class="log-card-image" style="--personal-card-background-y: ${constructorId * 100 / 6}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
     }
 
     private cardsImagesHtml(cards: Card[], args: any) {
