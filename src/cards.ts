@@ -72,7 +72,7 @@ class CardsManager extends CardManager<Card> {
             // 4 wheel drive
             case 1: case 2: case 3: case 47:
                 return `<strong>${_(card.text)}</strong><br>
-                ${_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they flip cards like Stress.")}`;
+                ${_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they add [+] symbols.")}`;
             // Body
             case 4: case 5: case 6: case 18: case 19: case 20:
                 return `<strong>${_(card.text)}</strong><br>
@@ -137,7 +137,7 @@ class CardsManager extends CardManager<Card> {
                 if (icons != '') {
                     tooltip += `<br><br>${icons}`;
                 }
-                return tooltip;
+                return formatTextIcons(tooltip);
             case 'sponsor': 
                 return `<strong>${_(card.text)}</strong>
                 <br><br>

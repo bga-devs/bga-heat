@@ -1978,7 +1978,7 @@ var CardsManager = /** @class */ (function (_super) {
             case 2:
             case 3:
             case 47:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they flip cards like Stress."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they add [+] symbols."));
             // Body
             case 4:
             case 5:
@@ -2067,7 +2067,7 @@ var CardsManager = /** @class */ (function (_super) {
                 if (icons != '') {
                     tooltip += "<br><br>".concat(icons);
                 }
-                return tooltip;
+                return formatTextIcons(tooltip);
             case 'sponsor':
                 return "<strong>".concat(_(card.text), "</strong>\n                <br><br>\n                ").concat(Object.entries(card.symbols).map(function (_a) {
                     var symbol = _a[0], number = _a[1];
@@ -3472,11 +3472,12 @@ var Heat = /** @class */ (function () {
                                     break;
                                 case 'boost':
                                 case 'heated-boost':
+                                    var paid = type == 'heated-boost';
                                     label = "[Boost] > [Speed]";
-                                    if (type == 'heated-boost') {
+                                    if (paid) {
                                         label += " (1[Heat])";
                                     }
-                                    tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>");
+                                    tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _("Regardless of which gear you are in you may pay 1 Heat to boost once per turn.") : '', "\n                                    ").concat(_("Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step."), "</i>");
                                     break;
                                 case 'reduce':
                                     label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
@@ -3505,7 +3506,7 @@ var Heat = /** @class */ (function () {
                                 }
                             }
                             _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
-                            _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), tooltip);
+                            _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(tooltip));
                             if (type == 'salvage' && _this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
                                 document.getElementById("actReact".concat(type, "_").concat(number, "_button")).classList.add('disabled');
                             }

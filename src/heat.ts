@@ -453,16 +453,18 @@ class Heat implements HeatGame {
                                     break;
                                 case 'boost':
                                 case 'heated-boost':
+                                    const paid = type == 'heated-boost';
                                     label = `[Boost] > [Speed]`;
-                                    if (type == 'heated-boost') {
+                                    if (paid) {
                                         label += ` (1[Heat])`;
                                     }
                                     tooltip = `
                                     <strong>${_("Boost")}</strong>
                                     <br><br>
-                                    ${_("You may boost once per turn to increase your speed. If you decide to Boost, pay 1 Heat to flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly.")}
+                                    ${paid ? _("Regardless of which gear you are in you may pay 1 Heat to boost once per turn.") : ''}
+                                    ${_("Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly.")}
                                     <br><br>
-                                    <i>${_("Note: Boost increases your Speed value for the purpose of the Check Corner step.")}</i>`;
+                                    <i>${_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.")}</i>`;
                                     break;
                                 case 'reduce':
                                     label = `<div class="icon reduce-stress">${number}</div>`;
@@ -495,7 +497,7 @@ class Heat implements HeatGame {
                             }
 
                             (this as any).addActionButton(`actReact${type}_${number}_button`, formatTextIcons(label), callback);
-                            this.setTooltip(`actReact${type}_${number}_button`, tooltip);
+                            this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
                             if (type == 'salvage' && this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
                                 document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');
                             }
