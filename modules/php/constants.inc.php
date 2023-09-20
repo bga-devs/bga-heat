@@ -128,8 +128,8 @@ const EVENTS = [
   EVENT_CORRUPTION => ['sponsors' => 1, 'press' => [2]],
   EVENT_TITLE_SPONSOR => ['sponsors' => 3, 'press' => [0]],
   EVENT_FIRST_LIVE_TV => ['sponsors' => 1, 'press' => [1, 3]],
-  EVENT_SAFETY_REGULATIONS => ['sponsors' => 1, 'press' => [4]],
-  EVENT_FUTURE_UNKNOWN => ['sponsors' => 1, 'press' => [4]],
+  EVENT_SAFETY_REGULATIONS => ['sponsors' => 1, 'press' => [3]],
+  EVENT_FUTURE_UNKNOWN => ['sponsors' => 1, 'press' => [3]],
 ];
 
 const CHAMPIONSHIP_SEASONS = [
