@@ -1478,10 +1478,10 @@ class Heat implements HeatGame {
     /**
     * Load production bug report handler
     */
-   notif_loadBug(n) {
+   notif_loadBug(args) {
      const that: any = this;
      function fetchNextUrl() {
-       var url = n.args.urls.shift();
+       var url = args.urls.shift();
        console.log('Fetching URL', url, '...');
        // all the calls have to be made with ajaxcall in order to add the csrf token, otherwise you'll get "Invalid session information for this action. Please try reloading the page or logging in again"
        that.ajaxcall(
@@ -1493,11 +1493,11 @@ class Heat implements HeatGame {
          function (success) {
            console.log('=> Success ', success);
 
-           if (n.args.urls.length > 1) {
+           if (args.urls.length > 1) {
              fetchNextUrl();
-           } else if (n.args.urls.length > 0) {
+           } else if (args.urls.length > 0) {
              //except the last one, clearing php cache
-             url = n.args.urls.shift();
+             url = args.urls.shift();
              (dojo as any).xhrGet({
                url: url,
                headers: {
@@ -1518,7 +1518,7 @@ class Heat implements HeatGame {
          },
        );
      }
-     console.log('Notif: load bug', n.args);
+     console.log('Notif: load bug', args);
      fetchNextUrl();
    }
 

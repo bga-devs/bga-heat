@@ -4390,22 +4390,22 @@ var Heat = /** @class */ (function () {
     /**
     * Load production bug report handler
     */
-    Heat.prototype.notif_loadBug = function (n) {
+    Heat.prototype.notif_loadBug = function (args) {
         var that = this;
         function fetchNextUrl() {
-            var url = n.args.urls.shift();
+            var url = args.urls.shift();
             console.log('Fetching URL', url, '...');
             // all the calls have to be made with ajaxcall in order to add the csrf token, otherwise you'll get "Invalid session information for this action. Please try reloading the page or logging in again"
             that.ajaxcall(url, {
                 lock: true,
             }, that, function (success) {
                 console.log('=> Success ', success);
-                if (n.args.urls.length > 1) {
+                if (args.urls.length > 1) {
                     fetchNextUrl();
                 }
-                else if (n.args.urls.length > 0) {
+                else if (args.urls.length > 0) {
                     //except the last one, clearing php cache
-                    url = n.args.urls.shift();
+                    url = args.urls.shift();
                     dojo.xhrGet({
                         url: url,
                         headers: {
@@ -4425,7 +4425,7 @@ var Heat = /** @class */ (function () {
                     console.log('=> Error ', error);
             });
         }
-        console.log('Notif: load bug', n.args);
+        console.log('Notif: load bug', args);
         fetchNextUrl();
     };
     Heat.prototype.coloredConstructorName = function (constructorName) {
