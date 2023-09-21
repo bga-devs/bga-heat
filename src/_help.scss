@@ -1,19 +1,5 @@
 #help-popin {
-    h1 {
-        color: #5890a9;
-        font-size: 18px;
-        margin: 8px 0;
-    }
-
-    .help-section {    
-        padding: 5px;
-        margin: 3px 0;
-
-        display: flex;
-
-        &>div:not(:first-child) {
-            margin-left: 5px;
-            flex: 1;
-        } 
+    h1, h2 {
+        color: #d61b1a;
     }
 }

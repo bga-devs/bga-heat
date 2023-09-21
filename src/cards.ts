@@ -133,21 +133,19 @@ class CardsManager extends CardManager<Card> {
             case 'stress': return `<strong>${_('Stress card')}</strong>`;
             case 'basic_upgrade': case 'advanced_upgrade': 
                 let tooltip = this.getGarageModuleTextTooltip(card);
-                const icons = Object.entries(card.symbols).map(([symbol, number]) => `<div>${this.game.getGarageModuleIconTooltip(symbol, number)}</div>`).join('<br>');
+                const icons = Object.entries(card.symbols).map(([symbol, number]) => this.game.getGarageModuleIconTooltipWithIcon(symbol, number)).join('<br>');
                 if (icons != '') {
                     tooltip += `<br><br>${icons}`;
                 }
                 return formatTextIcons(tooltip);
             case 'sponsor': 
+                const symbols = structuredClone(card.symbols);
+                symbols['one-time'] = 1;
+                
                 return `<strong>${_(card.text)}</strong>
                 <br><br>
-                ${Object.entries(card.symbols).map(([symbol, number]) => `<div>${this.game.getGarageModuleIconTooltip(symbol, number)}</div>`).join('<br>')}
-                <br>
-                <div>
-                    <strong>${_("One-time use")}</strong> <div class="mandatory icon"></div>
-                    <br>
-                    ${ _("During the discard step, this card is removed instead of going to the discard.") }
-                </div>`;
+                ${Object.entries(symbols).map(([symbol, number]) => this.game.getGarageModuleIconTooltipWithIcon(symbol, number)).join('<br>')}
+                `;
             default:
                 switch (card.type) {
                     case 101: case 102: case 103: case 104:

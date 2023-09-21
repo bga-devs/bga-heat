@@ -102,7 +102,10 @@ interface HeatGame extends Game {
     getPlayer(playerId: number): HeatPlayer;
     getGameStateName(): string;
     getCurrentPlayerTable(): PlayerTable | null;
-    getGarageModuleIconTooltip(symbol: string, number: number): string;
+    getGarageModuleIconTooltip(symbol: string, number: number | string): string;
+    getGarageModuleIconTooltipWithIcon(symbol: string, number: number | string): string;
+    getWeatherCardEffectTooltip(type: number): string;
+    getWeatherTokenTooltip(type: number, cardType: number): string;
     setTooltip(id: string, html: string): void;
     onHandCardSelectionChange(selection: Card[]): void;
     changePageTitle(suffix?: string, save?: boolean): void;

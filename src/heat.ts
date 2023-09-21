@@ -119,9 +119,9 @@ class Heat implements HeatGame {
         new HelpManager(this, { 
             buttons: [
                 new BgaHelpPopinButton({
-                    title: _("Card help").toUpperCase(),
+                    title: _("Help"),
                     html: this.getHelpHtml(),
-                    buttonBackground: '#341819',
+                    buttonBackground: '#d61b1a',
                 }),
             ]
         });
@@ -426,11 +426,11 @@ class Heat implements HeatGame {
                                     const accelerateCard = this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number);
                                     label = `+${reactArgs.flippedCards} [Speed]<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
                                     //label = `+${reactArgs.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
-                                    tooltip = this.getGarageModuleIconTooltip('accelerate', reactArgs.flippedCards);
+                                    tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', reactArgs.flippedCards);
                                     break;
                                 case 'adjust':
                                     label = `<div class="icon adjust" style="color: #${number > 0 ? '438741' : 'a93423'};">${number > 0 ? `+${number}` : number}</div>`;
-                                    tooltip = this.getGarageModuleIconTooltip('adjust', number);
+                                    tooltip = this.getGarageModuleIconTooltipWithIcon('adjust', number);
                                     break;
                                 case 'adrenaline':
                                     label = `+${number} [Speed]`;
@@ -447,17 +447,17 @@ class Heat implements HeatGame {
                                     if (heats < number) {
                                         label += `(- ${heats} [Heat])`;
                                     }
-                                    tooltip = this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
+                                    tooltip = this.getGarageModuleIconTooltipWithIcon('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                     break;
                                 case 'direct':
                                     const directCard = this.getCurrentPlayerTable().hand.getCards().find(card => card.id == number);
                                     label = `<div class="icon direct"></div><br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
                                     //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
-                                    tooltip = this.getGarageModuleIconTooltip('direct', 1);
+                                    tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
                                     break;
                                 case 'heat':
                                     label = `<div class="icon forced-heat">${number}</div> <div class="icon mandatory"></div>`;
-                                    tooltip = this.getGarageModuleIconTooltip('heat', number);
+                                    tooltip = this.getGarageModuleIconTooltipWithIcon('heat', number);
                                     break;
                                 case 'boost':
                                 case 'heated-boost':
@@ -476,15 +476,15 @@ class Heat implements HeatGame {
                                     break;
                                 case 'reduce':
                                     label = `<div class="icon reduce-stress">${number}</div>`;
-                                    tooltip = this.getGarageModuleIconTooltip('reduce', number);
+                                    tooltip = this.getGarageModuleIconTooltipWithIcon('reduce', number);
                                     break;
                                 case 'salvage':
                                     label = `<div class="icon salvage">${number}</div>`;
-                                    tooltip = this.getGarageModuleIconTooltip('salvage', number);
+                                    tooltip = this.getGarageModuleIconTooltipWithIcon('salvage', number);
                                     break;
                                 case 'scrap':
                                     label = `<div class="icon scrap">${number}</div> <div class="icon mandatory"></div>`;
-                                    tooltip = this.getGarageModuleIconTooltip('scrap', number);
+                                    tooltip = this.getGarageModuleIconTooltipWithIcon('scrap', number);
                                     break;
                             }
 
@@ -511,7 +511,7 @@ class Heat implements HeatGame {
                         args._private?.refreshedIds.forEach(number => {
                             const refreshCard = this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number);
                             const label = `<div class="icon refresh"></div><br>${this.cardImageHtml(refreshCard, { constructor_id: this.getConstructorId() })}`;
-                            const tooltip = this.getGarageModuleIconTooltip('refresh', 1);
+                            const tooltip = this.getGarageModuleIconTooltipWithIcon('refresh', 1);
 
                             (this as any).addActionButton(
                                 `actRefresh_${number}_button`, 
@@ -586,7 +586,17 @@ class Heat implements HeatGame {
         return this.gamedatas.gamestate.name;
     }
 
-    public getGarageModuleIconTooltip(symbol: string, number: number): string {
+    public getGarageModuleIconTooltipWithIcon(symbol: string, number: number | string): string {
+        return `
+            <div>
+                <div class="tooltip-symbol">
+                    <div class="${symbol == 'heat' ? 'forced-heat' : symbol} icon"></div>
+                </div>
+                ${formatTextIcons(this.getGarageModuleIconTooltip(symbol, number))}
+            </div>`;
+    }
+
+    public getGarageModuleIconTooltip(symbol: string, number: number | string): string {
         switch (symbol) {
             case 'accelerate':
                 return `
@@ -598,7 +608,9 @@ class Heat implements HeatGame {
                 return `
                     <strong>${_("Adjust Speed Limit")}</strong> <div class="mandatory icon"></div>
                     <br>
-                    ${ (number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number) }
+                    ${ isNaN(number as any) ?
+                        _("If you cross a corner this turn, your Speed Limit is modified by # for you; “+” means you can move faster, “-” means you must move slower.") :
+                        (Number(number) < 0 ? _("Speed limit is ${number} lower.") : _("Speed limit is ${number} higher.")).replace('${number}', Math.abs(Number(number))) }
                 `;
             case 'boost':
                 return `
@@ -625,6 +637,12 @@ class Heat implements HeatGame {
                     <strong>${_("Heat")}</strong> <div class="mandatory icon"></div>
                     <br>
                     ${ _("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number) }
+                `;
+            case 'one-time': 
+                return `
+                    <strong>${_("One-time use")}</strong> <div class="mandatory icon"></div>
+                    <br>
+                    ${ _("During the discard step, this card is removed instead of going to the discard.") }
                 `;
             case 'reduce':
                 return `
@@ -655,6 +673,68 @@ class Heat implements HeatGame {
                     <strong>${_("Slipstream boost")}</strong>
                     <br>
                     ${ _("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number) }
+                `;
+        }
+    }
+
+    public getWeatherCardEffectTooltip(type: number): string {
+        switch (type) {
+            case 0:
+                return `
+                    <strong>${_("No cooling")}</strong>
+                    <br>
+                    ${ _("No Cooldown allowed in this sector during the React step.") }
+                `;
+            case 1:
+                return `
+                    <strong>${_("No slipstream")}</strong>
+                    <br>
+                    ${ _("You cannot start slipstreaming from this sector (you may slipstream into it).") }
+                    `;
+            case 2: case 5:
+                return `<strong>${_("Slipstream boost")}</strong>
+                <br>
+                ${ _("If you choose to Slipstream, you may add 2 extra Spaces to the usual 2 Spaces. Your car must be located in this sector before you slipstream.") }
+                `;
+            case 3: case 4:
+                return `<strong>${_("Cooling Bonus")}</strong>
+                <br>
+                ${ _("+1 Cooldown in this sector during the React step.") }
+                `;
+        }
+    }
+
+    public getWeatherTokenTooltip(type: number, cardType: number | null): string {
+        switch (type) {
+            case 0:
+                return `
+                    <strong>${_("Weather")}</strong>
+                    <br>
+                    ${ _("Weather effect applies to this sector:") }
+                    <br>
+                    ${cardType === null ? _('See the Weather token for the effect.') : this.getWeatherCardEffectTooltip(cardType)}
+                `;
+            case 1:
+                return `
+                    <strong>${_("Overheat")}</strong> <div class="mandatory icon"></div>
+                    <br>
+                    ${ _("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one.") }
+                `;
+            case 2:
+                return this.getGarageModuleIconTooltip('adjust', -1);
+            case 3:
+                return this.getGarageModuleIconTooltip('adjust', 1);
+            case 4:
+                return `
+                    <strong>${_("Heat control")}</strong>
+                    <br>
+                    ${ _("Do not pay Heat to boost in this sector (still max one boost per turn). Your car must be in the sector when you boost.") }
+                `;
+            case 5:
+                return `
+                    <strong>${_("Slipstream boost")}</strong>
+                    <br>
+                    ${ _("If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream.") }
                 `;
         }
     }
@@ -820,7 +900,41 @@ class Heat implements HeatGame {
     private getHelpHtml() {
         let html = `
         <div id="help-popin">
-            <h1>${_("TODO")}</h2>
+            <h1>${_("Mandatory symbols")}</h1>
+            ${
+                ['heat', 'scrap', 'adjust', 'one-time']
+                .map(symbol => this.getGarageModuleIconTooltipWithIcon(symbol, '#')).join('<br><br>')
+            }
+
+            <h1>${_("Optional symbols")}</h1>
+            ${
+                ['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate']
+                .map(symbol => this.getGarageModuleIconTooltipWithIcon(symbol, '#')).join('<br><br>')
+            }
+
+            <h1>${_("Road Conditions Tokens")}</h1>
+            <h2>${_("Corner Effects")}</h2>
+            ${
+                [3, 2, 1].map(token => `
+                <div>
+                    <div class="tooltip-symbol">
+                        <div class="weather-token" data-token-type="${token}"></div>
+                    </div>
+                    ${this.getWeatherTokenTooltip(token, null)}
+                </div>
+                `).join('<br><br>')
+            }
+            <h2>${_("Sector Effects")}</h2>
+            ${
+                [4, 5, 0].map(token => `
+                <div>
+                    <div class="tooltip-symbol">
+                        <div class="weather-token" data-token-type="${token}"></div>
+                    </div>
+                    ${this.getWeatherTokenTooltip(token, null)}
+                </div>
+                `).join('<br><br>')
+            }
         </div>`;
 
         return html;
@@ -1119,10 +1233,8 @@ class Heat implements HeatGame {
 
                 // tell the UI notification ends, if the function returned a promise. 
                 if (this.animationManager.animationsActive()) {
-                    console.log('notif minDuration', minDuration);
                     Promise.all([...promises, sleep(minDuration)]).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
                 } else {
-                    console.log('!animationsActive');
                     (this as any).notifqueue.setSynchronousDuration(0);
                 }
             });

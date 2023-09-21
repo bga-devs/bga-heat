@@ -225,7 +225,7 @@ class Circuit {
         weatherCardDiv.style.setProperty('--x', `${wheatherCardPos.x}px`);
         weatherCardDiv.style.setProperty('--y', `${wheatherCardPos.y}px`);
         this.circuitDiv.insertAdjacentElement('beforeend', weatherCardDiv);
-        this.game.setTooltip(weatherCardDiv.id, `${this.getWeatherCardSetupTooltip(type)}<br><br>${this.getWeatherCardEffectTooltip(type)}`);
+        this.game.setTooltip(weatherCardDiv.id, `${this.getWeatherCardSetupTooltip(type)}<br><br>${this.game.getWeatherCardEffectTooltip(type)}`);
     }
 
     private getWeatherCardSetupTooltip(type: number): string {
@@ -242,33 +242,6 @@ class Circuit {
                 return _("Shuffle 3 of your Heat cards into your draw deck.");
             case 5:
                 return _("Place 3 of your Heat cards into your discard pile.");
-        }
-    }
-
-    private getWeatherCardEffectTooltip(type: number): string {
-        switch (type) {
-            case 0:
-                return `
-                    <strong>${_("No cooling")}</strong>
-                    <br>
-                    ${ _("No Cooldown allowed in this sector during the React step.") }
-                `;
-            case 1:
-                return `
-                    <strong>${_("No slipstream")}</strong>
-                    <br>
-                    ${ _("You cannot start slipstreaming from this sector (you may slipstream into it).") }
-                    `;
-            case 2: case 5:
-                return `<strong>${_("Slipstream boost")}</strong>
-                <br>
-                ${ _("If you choose to Slipstream, you may add 2 extra Spaces to the usual 2 Spaces. Your car must be located in this sector before you slipstream.") }
-                `;
-            case 3: case 4:
-                return `<strong>${_("Cooling Bonus")}</strong>
-                <br>
-                ${ _("+1 Cooldown in this sector during the React step.") }
-                `;
         }
     }
     
@@ -288,42 +261,7 @@ class Circuit {
         weatherTokenDiv.style.setProperty('--x', `${x}px`);
         weatherTokenDiv.style.setProperty('--y', `${y}px`);
         this.circuitDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
-        this.game.setTooltip(weatherTokenDiv.id, this.getWeatherTokenTooltip(type, cardType));
-    }
-
-    private getWeatherTokenTooltip(type: number, cardType: number): string {
-        switch (type) {
-            case 0:
-                return `
-                    <strong>${_("Weather")}</strong>
-                    <br>
-                    ${ _("Weather effect applies to this sector:") }
-                    <br>
-                    ${this.getWeatherCardEffectTooltip(cardType)}
-                `;
-            case 1:
-                return `
-                    <strong>${_("Overheat")}</strong> <div class="mandatory icon"></div>
-                    <br>
-                    ${ _("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one.") }
-                `;
-            case 2:
-                return this.game.getGarageModuleIconTooltip('adjust', -1);
-            case 3:
-                return this.game.getGarageModuleIconTooltip('adjust', 1);
-            case 4:
-                return `
-                    <strong>${_("Heat control")}</strong>
-                    <br>
-                    ${ _("Do not pay Heat to boost in this sector (still max one boost per turn). Your car must be in the sector when you boost.") }
-                `;
-            case 5:
-                return `
-                    <strong>${_("Slipstream boost")}</strong>
-                    <br>
-                    ${ _("If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream.") }
-                `;
-        }
+        this.game.setTooltip(weatherTokenDiv.id, this.game.getWeatherTokenTooltip(type, cardType));
     }
 
     private getPodiumPosition(pos: number) {

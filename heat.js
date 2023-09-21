@@ -2063,17 +2063,19 @@ var CardsManager = /** @class */ (function (_super) {
                 var tooltip = this.getGarageModuleTextTooltip(card);
                 var icons = Object.entries(card.symbols).map(function (_a) {
                     var symbol = _a[0], number = _a[1];
-                    return "<div>".concat(_this.game.getGarageModuleIconTooltip(symbol, number), "</div>");
+                    return _this.game.getGarageModuleIconTooltipWithIcon(symbol, number);
                 }).join('<br>');
                 if (icons != '') {
                     tooltip += "<br><br>".concat(icons);
                 }
                 return formatTextIcons(tooltip);
             case 'sponsor':
-                return "<strong>".concat(_(card.text), "</strong>\n                <br><br>\n                ").concat(Object.entries(card.symbols).map(function (_a) {
+                var symbols = structuredClone(card.symbols);
+                symbols['one-time'] = 1;
+                return "<strong>".concat(_(card.text), "</strong>\n                <br><br>\n                ").concat(Object.entries(symbols).map(function (_a) {
                     var symbol = _a[0], number = _a[1];
-                    return "<div>".concat(_this.game.getGarageModuleIconTooltip(symbol, number), "</div>");
-                }).join('<br>'), "\n                <br>\n                <div>\n                    <strong>").concat(_("One-time use"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("During the discard step, this card is removed instead of going to the discard."), "\n                </div>");
+                    return _this.game.getGarageModuleIconTooltipWithIcon(symbol, number);
+                }).join('<br>'), "\n                ");
             default:
                 switch (card.type) {
                     case 101:
@@ -2447,7 +2449,7 @@ var Circuit = /** @class */ (function () {
         weatherCardDiv.style.setProperty('--x', "".concat(wheatherCardPos.x, "px"));
         weatherCardDiv.style.setProperty('--y', "".concat(wheatherCardPos.y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', weatherCardDiv);
-        this.game.setTooltip(weatherCardDiv.id, "".concat(this.getWeatherCardSetupTooltip(type), "<br><br>").concat(this.getWeatherCardEffectTooltip(type)));
+        this.game.setTooltip(weatherCardDiv.id, "".concat(this.getWeatherCardSetupTooltip(type), "<br><br>").concat(this.game.getWeatherCardEffectTooltip(type)));
     };
     Circuit.prototype.getWeatherCardSetupTooltip = function (type) {
         switch (type) {
@@ -2463,20 +2465,6 @@ var Circuit = /** @class */ (function () {
                 return _("Shuffle 3 of your Heat cards into your draw deck.");
             case 5:
                 return _("Place 3 of your Heat cards into your discard pile.");
-        }
-    };
-    Circuit.prototype.getWeatherCardEffectTooltip = function (type) {
-        switch (type) {
-            case 0:
-                return "\n                    <strong>".concat(_("No cooling"), "</strong>\n                    <br>\n                    ").concat(_("No Cooldown allowed in this sector during the React step."), "\n                ");
-            case 1:
-                return "\n                    <strong>".concat(_("No slipstream"), "</strong>\n                    <br>\n                    ").concat(_("You cannot start slipstreaming from this sector (you may slipstream into it)."), "\n                    ");
-            case 2:
-            case 5:
-                return "<strong>".concat(_("Slipstream boost"), "</strong>\n                <br>\n                ").concat(_("If you choose to Slipstream, you may add 2 extra Spaces to the usual 2 Spaces. Your car must be located in this sector before you slipstream."), "\n                ");
-            case 3:
-            case 4:
-                return "<strong>".concat(_("Cooling Bonus"), "</strong>\n                <br>\n                ").concat(_("+1 Cooldown in this sector during the React step."), "\n                ");
         }
     };
     Circuit.prototype.createWeatherTokens = function (tokens, corners, cardType) {
@@ -2496,23 +2484,7 @@ var Circuit = /** @class */ (function () {
         weatherTokenDiv.style.setProperty('--x', "".concat(x, "px"));
         weatherTokenDiv.style.setProperty('--y', "".concat(y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
-        this.game.setTooltip(weatherTokenDiv.id, this.getWeatherTokenTooltip(type, cardType));
-    };
-    Circuit.prototype.getWeatherTokenTooltip = function (type, cardType) {
-        switch (type) {
-            case 0:
-                return "\n                    <strong>".concat(_("Weather"), "</strong>\n                    <br>\n                    ").concat(_("Weather effect applies to this sector:"), "\n                    <br>\n                    ").concat(this.getWeatherCardEffectTooltip(cardType), "\n                ");
-            case 1:
-                return "\n                    <strong>".concat(_("Overheat"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one."), "\n                ");
-            case 2:
-                return this.game.getGarageModuleIconTooltip('adjust', -1);
-            case 3:
-                return this.game.getGarageModuleIconTooltip('adjust', 1);
-            case 4:
-                return "\n                    <strong>".concat(_("Heat control"), "</strong>\n                    <br>\n                    ").concat(_("Do not pay Heat to boost in this sector (still max one boost per turn). Your car must be in the sector when you boost."), "\n                ");
-            case 5:
-                return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream."), "\n                ");
-        }
+        this.game.setTooltip(weatherTokenDiv.id, this.game.getWeatherTokenTooltip(type, cardType));
     };
     Circuit.prototype.getPodiumPosition = function (pos) {
         var cell = structuredClone(this.circuitDatas.podium);
@@ -3182,9 +3154,9 @@ var Heat = /** @class */ (function () {
         new HelpManager(this, {
             buttons: [
                 new BgaHelpPopinButton({
-                    title: _("Card help").toUpperCase(),
+                    title: _("Help"),
                     html: this.getHelpHtml(),
-                    buttonBackground: '#341819',
+                    buttonBackground: '#d61b1a',
                 }),
             ]
         });
@@ -3449,11 +3421,11 @@ var Heat = /** @class */ (function () {
                                     var accelerateCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
                                     label = "+".concat(reactArgs_1.flippedCards, " [Speed]<br>").concat(_this.cardImageHtml(accelerateCard, { constructor_id: _this.getConstructorId() }));
                                     //label = `+${reactArgs.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
-                                    tooltip = _this.getGarageModuleIconTooltip('accelerate', reactArgs_1.flippedCards);
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('accelerate', reactArgs_1.flippedCards);
                                     break;
                                 case 'adjust':
                                     label = "<div class=\"icon adjust\" style=\"color: #".concat(number > 0 ? '438741' : 'a93423', ";\">").concat(number > 0 ? "+".concat(number) : number, "</div>");
-                                    tooltip = _this.getGarageModuleIconTooltip('adjust', number);
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('adjust', number);
                                     break;
                                 case 'adrenaline':
                                     label = "+".concat(number, " [Speed]");
@@ -3465,17 +3437,17 @@ var Heat = /** @class */ (function () {
                                     if (heats < number) {
                                         label += "(- ".concat(heats, " [Heat])");
                                     }
-                                    tooltip = _this.getGarageModuleIconTooltip('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
                                     break;
                                 case 'direct':
                                     var directCard = _this.getCurrentPlayerTable().hand.getCards().find(function (card) { return card.id == number; });
                                     label = "<div class=\"icon direct\"></div><br>".concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
                                     //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
-                                    tooltip = _this.getGarageModuleIconTooltip('direct', 1);
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
                                     break;
                                 case 'heat':
                                     label = "<div class=\"icon forced-heat\">".concat(number, "</div> <div class=\"icon mandatory\"></div>");
-                                    tooltip = _this.getGarageModuleIconTooltip('heat', number);
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('heat', number);
                                     break;
                                 case 'boost':
                                 case 'heated-boost':
@@ -3488,15 +3460,15 @@ var Heat = /** @class */ (function () {
                                     break;
                                 case 'reduce':
                                     label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
-                                    tooltip = _this.getGarageModuleIconTooltip('reduce', number);
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('reduce', number);
                                     break;
                                 case 'salvage':
                                     label = "<div class=\"icon salvage\">".concat(number, "</div>");
-                                    tooltip = _this.getGarageModuleIconTooltip('salvage', number);
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('salvage', number);
                                     break;
                                 case 'scrap':
                                     label = "<div class=\"icon scrap\">".concat(number, "</div> <div class=\"icon mandatory\"></div>");
-                                    tooltip = _this.getGarageModuleIconTooltip('scrap', number);
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('scrap', number);
                                     break;
                             }
                             _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); });
@@ -3517,7 +3489,7 @@ var Heat = /** @class */ (function () {
                         (_c = args._private) === null || _c === void 0 ? void 0 : _c.refreshedIds.forEach(function (number) {
                             var refreshCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
                             var label = "<div class=\"icon refresh\"></div><br>".concat(_this.cardImageHtml(refreshCard, { constructor_id: _this.getConstructorId() }));
-                            var tooltip = _this.getGarageModuleIconTooltip('refresh', 1);
+                            var tooltip = _this.getGarageModuleIconTooltipWithIcon('refresh', 1);
                             _this.addActionButton("actRefresh_".concat(number, "_button"), formatTextIcons(label), function () { return _this.actRefresh(number); });
                             _this.setTooltip("actRefresh_".concat(number, "_button"), formatTextIcons(tooltip));
                         });
@@ -3579,12 +3551,17 @@ var Heat = /** @class */ (function () {
     Heat.prototype.getGameStateName = function () {
         return this.gamedatas.gamestate.name;
     };
+    Heat.prototype.getGarageModuleIconTooltipWithIcon = function (symbol, number) {
+        return "\n            <div>\n                <div class=\"tooltip-symbol\">\n                    <div class=\"".concat(symbol == 'heat' ? 'forced-heat' : symbol, " icon\"></div>\n                </div>\n                ").concat(formatTextIcons(this.getGarageModuleIconTooltip(symbol, number)), "\n            </div>");
+    };
     Heat.prototype.getGarageModuleIconTooltip = function (symbol, number) {
         switch (symbol) {
             case 'accelerate':
                 return "\n                    <strong>".concat(_("Accelerate"), "</strong>\n                    <br>\n                    ").concat(_("You may increase your Speed by ${number} for every [+] symbol used by you this turn (from Upgrades, Stress, Boost, etc). If you do, you must increase it for all [+] symbols used and this counts for corner checks.").replace('${number}', number), "\n                ");
             case 'adjust':
-                return "\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat((number > 0 ? _("Speed limit is ${number} higher.") : _("Speed limit is ${number} lower.")).replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(isNaN(number) ?
+                    _("If you cross a corner this turn, your Speed Limit is modified by # for you; “+” means you can move faster, “-” means you must move slower.") :
+                    (Number(number) < 0 ? _("Speed limit is ${number} lower.") : _("Speed limit is ${number} higher.")).replace('${number}', Math.abs(Number(number))), "\n                ");
             case 'boost':
                 return "\n                    <strong>".concat(_("Boost"), "</strong>\n                    <br>\n                    ").concat(_("Flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                    <br>\n                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>\n                ");
             case 'cooldown':
@@ -3593,6 +3570,8 @@ var Heat = /** @class */ (function () {
                 return "\n                    <strong>".concat(_("Direct Play"), "</strong>\n                    <br>\n                    ").concat(_("You may play this card from your hand in the React step. If you do, it applies as if you played it normally, including Speed value and mandatory/optional icons."), "\n                ");
             case 'heat':
                 return "\n                    <strong>".concat(_("Heat"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number), "\n                ");
+            case 'one-time':
+                return "\n                    <strong>".concat(_("One-time use"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("During the discard step, this card is removed instead of going to the discard."), "\n                ");
             case 'reduce':
                 return "\n                    <strong>".concat(_("Reduce Stress"), "</strong>\n                    <br>\n                    ").concat(_("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number), "\n                ");
             case 'refresh':
@@ -3603,6 +3582,36 @@ var Heat = /** @class */ (function () {
                 return "\n                    <strong>".concat(_("Scrap"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Discard the top card of your draw deck ${number} times.").replace('${number}', number), "\n                ");
             case 'slipstream':
                 return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number), "\n                ");
+        }
+    };
+    Heat.prototype.getWeatherCardEffectTooltip = function (type) {
+        switch (type) {
+            case 0:
+                return "\n                    <strong>".concat(_("No cooling"), "</strong>\n                    <br>\n                    ").concat(_("No Cooldown allowed in this sector during the React step."), "\n                ");
+            case 1:
+                return "\n                    <strong>".concat(_("No slipstream"), "</strong>\n                    <br>\n                    ").concat(_("You cannot start slipstreaming from this sector (you may slipstream into it)."), "\n                    ");
+            case 2:
+            case 5:
+                return "<strong>".concat(_("Slipstream boost"), "</strong>\n                <br>\n                ").concat(_("If you choose to Slipstream, you may add 2 extra Spaces to the usual 2 Spaces. Your car must be located in this sector before you slipstream."), "\n                ");
+            case 3:
+            case 4:
+                return "<strong>".concat(_("Cooling Bonus"), "</strong>\n                <br>\n                ").concat(_("+1 Cooldown in this sector during the React step."), "\n                ");
+        }
+    };
+    Heat.prototype.getWeatherTokenTooltip = function (type, cardType) {
+        switch (type) {
+            case 0:
+                return "\n                    <strong>".concat(_("Weather"), "</strong>\n                    <br>\n                    ").concat(_("Weather effect applies to this sector:"), "\n                    <br>\n                    ").concat(cardType === null ? _('See the Weather token for the effect.') : this.getWeatherCardEffectTooltip(cardType), "\n                ");
+            case 1:
+                return "\n                    <strong>".concat(_("Overheat"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one."), "\n                ");
+            case 2:
+                return this.getGarageModuleIconTooltip('adjust', -1);
+            case 3:
+                return this.getGarageModuleIconTooltip('adjust', 1);
+            case 4:
+                return "\n                    <strong>".concat(_("Heat control"), "</strong>\n                    <br>\n                    ").concat(_("Do not pay Heat to boost in this sector (still max one boost per turn). Your car must be in the sector when you boost."), "\n                ");
+            case 5:
+                return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream."), "\n                ");
         }
     };
     Heat.prototype.setupPreferences = function () {
@@ -3694,7 +3703,10 @@ var Heat = /** @class */ (function () {
         this.playersTables.push(table);
     };
     Heat.prototype.getHelpHtml = function () {
-        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("TODO"), "</h2>\n        </div>");
+        var _this = this;
+        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Mandatory symbols"), "</h1>\n            ").concat(['heat', 'scrap', 'adjust', 'one-time']
+            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Optional symbols"), "</h1>\n            ").concat(['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate']
+            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Road Conditions Tokens"), "</h1>\n            <h2>").concat(_("Corner Effects"), "</h2>\n            ").concat([3, 2, 1].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n            <h2>").concat(_("Sector Effects"), "</h2>\n            ").concat([4, 5, 0].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n        </div>");
         return html;
     };
     Heat.prototype.getPossibleSpeeds = function (selectedCards, args) {
@@ -3948,11 +3960,9 @@ var Heat = /** @class */ (function () {
                 }
                 // tell the UI notification ends, if the function returned a promise. 
                 if (_this.animationManager.animationsActive()) {
-                    console.log('notif minDuration', minDuration);
                     Promise.all(__spreadArray(__spreadArray([], promises, true), [sleep(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
                 }
                 else {
-                    console.log('!animationsActive');
                     _this.notifqueue.setSynchronousDuration(0);
                 }
             });
