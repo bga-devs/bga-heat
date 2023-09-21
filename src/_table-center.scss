@@ -97,6 +97,10 @@
   font-size: 32px;
   color: #116193;
   text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white, 0 0 4px white, 0 0 5px white;
+
+  &.left-side {
+    left: calc(var(--x) - 48px);
+  }
 }
 
 .press-token {

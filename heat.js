@@ -2420,9 +2420,13 @@ var Circuit = /** @class */ (function () {
     Circuit.prototype.createPressToken = function (cornerNumber) {
         var corners = Object.values(this.circuitDatas.corners);
         var corner = corners[cornerNumber % corners.length];
+        var closeCornerToTheRight = corners.find(function (otherCorner) { return (otherCorner.x != corner.x || otherCorner.y != corner.y) && Math.sqrt(Math.pow(corner.tentX - otherCorner.tentX, 2) + Math.pow(corner.tentY - otherCorner.tentY, 2)) < 100 && otherCorner.x > corner.x; });
         var pressIconDiv = document.createElement('div');
         pressIconDiv.id = "press-icon-".concat(cornerNumber);
         pressIconDiv.classList.add("press-icon");
+        if (closeCornerToTheRight) {
+            pressIconDiv.classList.add("left-side");
+        }
         pressIconDiv.style.setProperty('--x', "".concat(corner.tentX, "px"));
         pressIconDiv.style.setProperty('--y', "".concat(corner.tentY, "px"));
         pressIconDiv.innerHTML = "<i class=\"fa fa-camera\"></i>";

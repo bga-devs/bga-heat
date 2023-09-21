@@ -182,9 +182,13 @@ class Circuit {
     private createPressToken(cornerNumber: number): void {
         const corners = Object.values(this.circuitDatas.corners);
         const corner = corners[cornerNumber % corners.length];
+        const closeCornerToTheRight = corners.find(otherCorner => (otherCorner.x != corner.x || otherCorner.y != corner.y) && Math.sqrt(Math.pow(corner.tentX - otherCorner.tentX, 2) + Math.pow(corner.tentY - otherCorner.tentY, 2)) < 100 && otherCorner.x > corner.x);
         const pressIconDiv = document.createElement('div');
         pressIconDiv.id = `press-icon-${cornerNumber}`;
         pressIconDiv.classList.add(`press-icon`);
+        if (closeCornerToTheRight) {
+            pressIconDiv.classList.add(`left-side`);
+        }
         pressIconDiv.style.setProperty('--x', `${corner.tentX}px`);
         pressIconDiv.style.setProperty('--y', `${corner.tentY}px`);
         pressIconDiv.innerHTML = `<i class="fa fa-camera"></i>`
