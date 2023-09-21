@@ -1114,14 +1114,17 @@ class Heat implements HeatGame {
                     $('generalactions').innerHTML = '';
 
                     // If there is some text, we let the message some time, to be read 
-                    if (this.animationManager.animationsActive()) {
-                        minDuration = MIN_NOTIFICATION_MS;
-                    }
+                    minDuration = MIN_NOTIFICATION_MS;
                 }
 
                 // tell the UI notification ends, if the function returned a promise. 
-                console.log('notif minDuration', minDuration);
-                Promise.all([...promises, sleep(minDuration)]).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
+                if (this.animationManager.animationsActive()) {
+                    console.log('notif minDuration', minDuration);
+                    Promise.all([...promises, sleep(minDuration)]).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
+                } else {
+                    console.log('!animationsActive');
+                    (this as any).notifqueue.setSynchronousDuration(0);
+                }
             });
             (this as any).notifqueue.setSynchronous(notifName, undefined);
         });

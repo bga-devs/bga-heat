@@ -2555,7 +2555,7 @@ var Circuit = /** @class */ (function () {
         var _this = this;
         this.removeMapIndicators();
         var car = document.getElementById("car-".concat(constructorId));
-        if ((path === null || path === void 0 ? void 0 : path.length) > 1) {
+        if ((path === null || path === void 0 ? void 0 : path.length) > 1 && this.game.animationManager.animationsActive()) {
             try {
                 return this.moveCarWithAnimation(car, path).then(function () { return _this.moveCar(constructorId, carCell); });
             }
@@ -3940,13 +3940,17 @@ var Heat = /** @class */ (function () {
                     $('pagemaintitletext').innerHTML = msg;
                     $('generalactions').innerHTML = '';
                     // If there is some text, we let the message some time, to be read 
-                    if (_this.animationManager.animationsActive()) {
-                        minDuration = MIN_NOTIFICATION_MS;
-                    }
+                    minDuration = MIN_NOTIFICATION_MS;
                 }
                 // tell the UI notification ends, if the function returned a promise. 
-                console.log('notif minDuration', minDuration);
-                Promise.all(__spreadArray(__spreadArray([], promises, true), [sleep(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
+                if (_this.animationManager.animationsActive()) {
+                    console.log('notif minDuration', minDuration);
+                    Promise.all(__spreadArray(__spreadArray([], promises, true), [sleep(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
+                }
+                else {
+                    console.log('!animationsActive');
+                    _this.notifqueue.setSynchronousDuration(0);
+                }
             });
             _this.notifqueue.setSynchronous(notifName, undefined);
         });

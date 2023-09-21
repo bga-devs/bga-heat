@@ -370,7 +370,7 @@ class Circuit {
         this.removeMapIndicators();
 
         const car = document.getElementById(`car-${constructorId}`);
-        if (path?.length > 1) {
+        if (path?.length > 1 && this.game.animationManager.animationsActive()) {
             try {
                 return this.moveCarWithAnimation(car, path).then(() => this.moveCar(constructorId, carCell));
             } catch (e) {
