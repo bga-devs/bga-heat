@@ -40,6 +40,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
       'turn' => 0,
       'score' => 0,
       'gear' => 1,
+      'speed' => -1,
     ]);
     self::invalidate();
   }
@@ -64,6 +65,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
       'turn' => 0,
       'score' => 0,
       'gear' => 1,
+      'speed' => -1,
     ]);
     self::invalidate();
   }

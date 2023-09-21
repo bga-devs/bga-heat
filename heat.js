@@ -3649,7 +3649,7 @@ var Heat = /** @class */ (function () {
         constructors.forEach(function (constructor) {
             var _a;
             var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"gear-counter-wrapper-").concat(constructor.id, "\" class=\"gear-counter\">\n                    <div class=\"gear icon\"></div>\n                    <span id=\"gear-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
-            html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
+            html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter ").concat(constructor.speed >= 0 ? 'played' : '', "\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(constructor.pId));
             _this.setScore(constructor.pId, constructor.score);
             if (!constructor.ai) {
@@ -3665,9 +3665,7 @@ var Heat = /** @class */ (function () {
             }
             _this.speedCounters[constructor.id] = new ebg.counter();
             _this.speedCounters[constructor.id].create("speed-counter-".concat(constructor.id));
-            if (constructor.speed !== null && constructor.speed >= 0) {
-                _this.speedCounters[constructor.id].setValue(constructor.speed);
-            }
+            _this.setSpeedCounter(constructor.id, constructor.speed);
             _this.lapCounters[constructor.id] = new ebg.counter();
             _this.lapCounters[constructor.id].create("lap-counter-".concat(constructor.id));
             _this.lapCounters[constructor.id].setValue(Math.max(1, Math.min(gamedatas.nbrLaps, constructor.turn + 1)));
@@ -4063,14 +4061,35 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_moveCar = function (args) {
         var _a;
-        var constructor_id = args.constructor_id, cell = args.cell, path = args.path, totalSpeed = args.totalSpeed, progress = args.progress;
-        this.setSpeedCounter(constructor_id, totalSpeed);
-        (_a = this.championshipTable) === null || _a === void 0 ? void 0 : _a.setRaceProgress(progress);
-        return this.circuit.moveCar(constructor_id, cell, path);
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, cell, path, totalSpeed, progress, orderCounter;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, cell = args.cell, path = args.path, totalSpeed = args.totalSpeed, progress = args.progress;
+                        this.setSpeedCounter(constructor_id, totalSpeed);
+                        (_a = this.championshipTable) === null || _a === void 0 ? void 0 : _a.setRaceProgress(progress);
+                        return [4 /*yield*/, this.circuit.moveCar(constructor_id, cell, path)];
+                    case 1:
+                        _b.sent();
+                        if (this.gamedatas.constructors[constructor_id].ai) {
+                            orderCounter = document.getElementById("order-".concat(constructor_id));
+                            orderCounter.classList.add('played');
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     Heat.prototype.notif_updateTurnOrder = function (args) {
+        var _this = this;
         var constructor_ids = args.constructor_ids;
-        constructor_ids.forEach(function (constructorId, index) { return document.getElementById("order-".concat(constructorId)).innerHTML = "".concat(index + 1); });
+        constructor_ids.forEach(function (constructorId, index) {
+            var orderCounter = document.getElementById("order-".concat(constructorId));
+            orderCounter.innerHTML = "".concat(index + 1);
+            orderCounter.classList.remove('played');
+            _this.setSpeedCounter(constructorId, -1);
+        });
     };
     Heat.prototype.payHeats = function (constructorId, cards) {
         var _a;
@@ -4207,7 +4226,7 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_clearPlayedCards = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, cardIds, sponsorIds, playerId, playerTable;
+            var constructor_id, cardIds, sponsorIds, playerId, playerTable, orderCounter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -4217,7 +4236,8 @@ var Heat = /** @class */ (function () {
                         return [4 /*yield*/, playerTable.clearPlayedCards(cardIds, sponsorIds)];
                     case 1:
                         _a.sent();
-                        this.setSpeedCounter(constructor_id, null);
+                        orderCounter = document.getElementById("order-".concat(constructor_id));
+                        orderCounter.classList.add('played');
                         return [2 /*return*/];
                 }
             });
@@ -4278,11 +4298,11 @@ var Heat = /** @class */ (function () {
         }
     };
     Heat.prototype.setSpeedCounter = function (constructorId, speed) {
-        if (this.speedCounters[constructorId] && speed !== null) {
+        if (this.speedCounters[constructorId] && speed >= 0) {
             this.speedCounters[constructorId].toValue(speed);
         }
         else {
-            document.getElementById("speed-counter-".concat(constructorId)).innerText = "".concat(speed !== null ? speed : '-');
+            document.getElementById("speed-counter-".concat(constructorId)).innerText = "".concat(speed >= 0 ? speed : '-');
         }
     };
     Heat.prototype.notif_endOfRace = function (args) {

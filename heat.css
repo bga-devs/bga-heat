@@ -981,6 +981,9 @@ height: 241px; */
   justify-content: center;
   align-items: center;
 }
+.player-board .order-counter.played {
+  background-color: lightgray;
+}
 .player-board .podium-counter {
   display: none;
 }

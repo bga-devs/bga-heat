@@ -822,7 +822,7 @@ class Heat implements HeatGame {
             </div>
             <div class="counters">
                 <div>
-                    <div id="order-${constructor.id}" class="order-counter">
+                    <div id="order-${constructor.id}" class="order-counter ${constructor.speed >= 0 ? 'played' : ''}">
                         ${constructor.no + 1}
                     </div>
                 </div>
@@ -852,9 +852,7 @@ class Heat implements HeatGame {
 
             this.speedCounters[constructor.id] = new ebg.counter();
             this.speedCounters[constructor.id].create(`speed-counter-${constructor.id}`);
-            if (constructor.speed !== null && constructor.speed >= 0) {
-                this.speedCounters[constructor.id].setValue(constructor.speed);
-            }
+            this.setSpeedCounter(constructor.id, constructor.speed);
 
             this.lapCounters[constructor.id] = new ebg.counter();
             this.lapCounters[constructor.id].create(`lap-counter-${constructor.id}`);
@@ -1328,19 +1326,29 @@ class Heat implements HeatGame {
         await playerTable.setInplay(cards);
     }  
 
-    notif_moveCar(args: NotifMoveCarArgs) {
+    async notif_moveCar(args: NotifMoveCarArgs) {
         const { constructor_id, cell, path, totalSpeed, progress } = args;
 
         this.setSpeedCounter(constructor_id, totalSpeed);
 
         this.championshipTable?.setRaceProgress(progress);
 
-        return this.circuit.moveCar(constructor_id, cell, path);
+        await this.circuit.moveCar(constructor_id, cell, path);
+
+        if (this.gamedatas.constructors[constructor_id].ai) {
+            const orderCounter = document.getElementById(`order-${constructor_id}`);
+            orderCounter.classList.add('played');
+        }
     } 
 
     notif_updateTurnOrder(args: NotifUpdateTurnOrderArgs) {
         const { constructor_ids } = args;
-        constructor_ids.forEach((constructorId: number, index: number) => document.getElementById(`order-${constructorId}`).innerHTML = `${index + 1}`);
+        constructor_ids.forEach((constructorId: number, index: number) => {
+            const orderCounter = document.getElementById(`order-${constructorId}`);
+            orderCounter.innerHTML = `${index + 1}`;
+            orderCounter.classList.remove('played');
+            this.setSpeedCounter(constructorId, -1);
+        });
     }
 
     private async payHeats(constructorId: number, cards: Card[]) {
@@ -1444,7 +1452,8 @@ class Heat implements HeatGame {
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
         await playerTable.clearPlayedCards(cardIds, sponsorIds);
-        this.setSpeedCounter(constructor_id, null);
+        const orderCounter = document.getElementById(`order-${constructor_id}`);
+        orderCounter.classList.add('played');
     }
 
     notif_cooldown(args: NotifCooldownArgs) {
@@ -1484,11 +1493,11 @@ class Heat implements HeatGame {
         }
     }
 
-    private setSpeedCounter(constructorId: number, speed: number | null) {
-        if (this.speedCounters[constructorId] && speed !== null) {
+    private setSpeedCounter(constructorId: number, speed: number) {
+        if (this.speedCounters[constructorId] && speed >= 0) {
             this.speedCounters[constructorId].toValue(speed);
         } else {
-            document.getElementById(`speed-counter-${constructorId}`).innerText = `${speed !== null ? speed : '-'}`;
+            document.getElementById(`speed-counter-${constructorId}`).innerText = `${speed >= 0 ? speed : '-'}`;
         }
     }
     

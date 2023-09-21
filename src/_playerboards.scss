@@ -49,6 +49,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    &.played {
+      background-color: lightgray;
+    }
   }
 
   .podium-counter {

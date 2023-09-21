@@ -43,7 +43,7 @@ trait RaceTrait
       $constructor->setTurn(-1);
       // $constructor->setTurn($this->getNbrLaps());
       $constructor->setGear(1);
-      $constructor->setSpeed(null);
+      $constructor->setSpeed(-1);
       $positions[$cId] = $cell;
       $constructors[] = $constructor;
     }

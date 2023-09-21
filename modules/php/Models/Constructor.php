@@ -220,7 +220,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
     $podium = array_diff([-8, -7, -6, -5, -4, -3, -2, -1], $cells);
     $cell = array_shift($podium);
     $this->setCarCell($cell);
-    $this->setSpeed(0);
+    $this->setSpeed(-1);
     Notifications::eliminate($this, $cell);
   }
 }

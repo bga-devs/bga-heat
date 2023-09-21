@@ -80,6 +80,7 @@ trait RoundTrait
     foreach ($order as $i => $cId) {
       $constructor = Constructors::get($cId);
       $constructor->setNo($i);
+      $constructor->setSpeed(-1);
       $constructors[] = $constructor;
     }
     Notifications::updateTurnOrder($constructors);
@@ -1103,7 +1104,6 @@ trait RoundTrait
     Cards::move($cardIds, ['discard', $constructor->getId()]);
     Cards::move($sponsorIds, ['discard-sponsors']);
     Notifications::clearPlayedCards($constructor, $cardIds, $sponsorIds);
-    $constructor->setSpeed(null);
 
     // Replenish
     Cards::fillHand($constructor);
