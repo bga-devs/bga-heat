@@ -3397,8 +3397,10 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'slipstream':
                     var slipstreamArgs = args;
-                    this.onEnteringSlipstream(slipstreamArgs);
-                    this.createChooseSpeedButtons(slipstreamArgs, function (speed) { return _this.actSlipstream(speed); });
+                    if (args.speeds) {
+                        this.onEnteringSlipstream(slipstreamArgs);
+                        this.createChooseSpeedButtons(slipstreamArgs, function (speed) { return _this.actSlipstream(speed); });
+                    }
                     this.addActionButton("actPassSlipstream_button", _('Pass'), function () { return _this.actSlipstream(0); });
                     break;
                 case 'react':

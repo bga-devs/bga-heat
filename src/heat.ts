@@ -401,8 +401,10 @@ class Heat implements HeatGame {
                     break;
                 case 'slipstream':
                     const slipstreamArgs = args as EnteringSlipstreamArgs;
-                    this.onEnteringSlipstream(slipstreamArgs);
-                    this.createChooseSpeedButtons(slipstreamArgs, speed => this.actSlipstream(speed));
+                    if (args.speeds) {
+                        this.onEnteringSlipstream(slipstreamArgs);
+                        this.createChooseSpeedButtons(slipstreamArgs, speed => this.actSlipstream(speed));
+                    }
                     (this as any).addActionButton(`actPassSlipstream_button`, _('Pass'), () => this.actSlipstream(0));
                     break;
                 case 'react':
