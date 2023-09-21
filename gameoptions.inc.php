@@ -192,8 +192,8 @@ $game_options = [
         'tmdisplay' => clienttranslate('[France]'),
       ],
       //   OPTION_CIRCUIT_CUSTOM => [
-      //     'name' => clienttranslate('Custom'),
-      //     'tmdisplay' => clienttranslate('[Custom]'),
+      //     'name' => ('Custom'),
+      //     'tmdisplay' => ('[Custom]'),
       //     // 'description' => ('You need a .heat file to play with this option. You can create some by using the circuit editor available here : #URL#'),
       //   ],
     ],
@@ -358,10 +358,10 @@ $game_options = [
         'tmdisplay' => clienttranslate('[Random championship]'),
         'description' => clienttranslate('Play the 4 circuits in a random order with random events'),
       ],
-      OPTION_CHAMPIONSHIP_CUSTOM => [
-        'name' => clienttranslate('Custom championship'),
-        'tmdisplay' => clienttranslate('[Custom championship]'),
-      ],
+      // OPTION_CHAMPIONSHIP_CUSTOM => [
+      //   'name' => ('Custom championship'),
+      //   'tmdisplay' => ('[Custom championship]'),
+      // ],
     ],
     'displaycondition' => [
       [

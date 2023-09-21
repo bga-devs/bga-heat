@@ -193,7 +193,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     if (self::isChampionship()) {
       $championship = $options[\HEAT\OPTION_CHAMPIONSHIP];
       // Pre set seasons
-      if ($championship != \HEAT\OPTION_CHAMPIONSHIP_CUSTOM) {
+      if (!in_array($championship, [\HEAT\OPTION_CHAMPIONSHIP_CUSTOM, \HEAT\OPTION_CHAMPIONSHIP_RANDOM])) {
         $datas = CHAMPIONSHIP_SEASONS[$championship];
         $datas['index'] = 0;
         foreach ($datas['circuits'] as &$race) {
@@ -202,7 +202,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
         self::setChampionshipDatas($datas);
       }
       // Random championship
-      else {
+      elseif ($championship == \HEAT\OPTION_CHAMPIONSHIP_RANDOM) {
         $datas = ['name' => clienttranslate('Custom'), 'circuits' => [], 'index' => 0];
         $circuits = ['usa', 'italia', 'gb', 'france'];
         $events = array_keys(EVENTS);
