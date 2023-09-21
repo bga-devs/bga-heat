@@ -191,6 +191,11 @@ $game_options = [
         'name' => clienttranslate('France'),
         'tmdisplay' => clienttranslate('[France]'),
       ],
+      OPTION_CIRCUIT_RANDOM => [
+        'name' => clienttranslate('Random'),
+        'tmdisplay' => clienttranslate('[Random circuit]'),
+        'description' => clienttranslate('Random circuit among USA, Italia, Great-Britain and France'),
+      ],
       //   OPTION_CIRCUIT_CUSTOM => [
       //     'name' => ('Custom'),
       //     'tmdisplay' => ('[Custom]'),

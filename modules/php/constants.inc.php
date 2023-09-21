@@ -160,6 +160,8 @@ const CHAMPIONSHIP_SEASONS = [
   ],
 ];
 
+const CIRCUITS = ['usa', 'gb', 'italia', 'france'];
+
 /******************
  ****** STATS ******
  ******************/

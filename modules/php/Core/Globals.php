@@ -204,7 +204,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
       // Random championship
       elseif ($championship == \HEAT\OPTION_CHAMPIONSHIP_RANDOM) {
         $datas = ['name' => clienttranslate('Custom'), 'circuits' => [], 'index' => 0];
-        $circuits = ['usa', 'italia', 'gb', 'france'];
+        $circuits = CIRCUITS;
         $events = array_keys(EVENTS);
         shuffle($circuits);
         shuffle($events);
@@ -220,15 +220,19 @@ class Globals extends \HEAT\Helpers\DB_Manager
     }
     // Single circuit
     else {
-      $circuits = [
+      $circuits = CIRCUITS;
+      shuffle($circuits);
+
+      $map = [
         \HEAT\OPTION_CIRCUIT_USA => 'usa',
         \HEAT\OPTION_CIRCUIT_ITALIA => 'italia',
         \HEAT\OPTION_CIRCUIT_GB => 'gb',
         \HEAT\OPTION_CIRCUIT_FRANCE => 'france',
 
+        \HEAT\OPTION_CIRCUIT_RANDOM => $circuits[0],
         \HEAT\OPTION_CIRCUIT_CUSTOM => 'custom',
       ];
-      $circuit = $circuits[$options[\HEAT\OPTION_CIRCUIT]];
+      $circuit = $map[$options[\HEAT\OPTION_CIRCUIT]];
       self::setCircuit($circuit);
       if ($circuit != 'custom') {
         self::loadCircuitDatas();
