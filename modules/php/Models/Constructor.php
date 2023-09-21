@@ -86,6 +86,9 @@ class Constructor extends \HEAT\Helpers\DB_Model
 
     $position = $this->getPosition();
     $turn = $this->getTurn();
+    if ($turn < 0) {
+      return 0;
+    }
     $length = $circuit->getLength();
     $nLaps = $circuit->getNbrLaps();
 

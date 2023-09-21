@@ -107,8 +107,8 @@ class Heat extends Table
       $raceIndex = 0;
       $raceNumber = 1;
     }
-    $totalProgress = ($raceIndex * 100) / $raceNumber;
 
+    $totalProgress = $raceIndex / $raceNumber;
     $inRaceProgress = $this->getRaceProgress();
     return 100 * ($totalProgress + $inRaceProgress / $raceNumber);
   }
