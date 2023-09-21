@@ -59,7 +59,7 @@ class CardsManager extends CardManager<Card> {
                 div.style.backgroundPositionX = `-${xBackgroundPercent}%`;
             }
 
-            div.innerHTML = `<div class="text">${_(card.text)}</div>`
+            div.innerHTML = `<div class="text">${_(card.text) ?? ''}</div>`
         }
 
         if (!ignoreTooltip) {            
@@ -204,7 +204,7 @@ class CardsManager extends CardManager<Card> {
 
         let html = `<div class="card personal-card" data-side="front">
             <div class="card-sides">
-                <div class="card-side front ${className}" ${col !== null ? `data-col="${col}"` : ''} style="${style}">${type < 100 ? `<div class="text">${_(card.text)}</div>` : ''}
+                <div class="card-side front ${className}" ${col !== null ? `data-col="${col}"` : ''} style="${style}">${type < 100 ? `<div class="text">${_(card.text) ?? ''}</div>` : ''}
                 </div>
             </div>
         </div>`;

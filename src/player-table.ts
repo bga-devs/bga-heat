@@ -238,10 +238,9 @@ class PlayerTable {
                 await this.moveDiscardToDeckAndShuffle();
             }
             
-            this.deck.addCard(card, undefined, <AddCardToDeckSettings>{
+            this.deck.addCard({id: card.id } as Card, undefined, <AddCardToDeckSettings>{
                 autoUpdateCardNumber: false,
                 autoRemovePreviousCards: false,
-                visible: false,
             });
             await this.discard.addCard(card);
         }
@@ -256,10 +255,9 @@ class PlayerTable {
             await this.moveDiscardToDeckAndShuffle();
         }
 
-        this.deck.addCard(card, undefined, <AddCardToDeckSettings>{
+        this.deck.addCard({id: card.id } as Card, undefined, <AddCardToDeckSettings>{
             autoUpdateCardNumber: false,
             autoRemovePreviousCards: false,
-            visible: false,
         });
         await this.inplay.addCard(card);
 
@@ -273,7 +271,7 @@ class PlayerTable {
             autoRemovePreviousCards: false,
         }));
 
-        await this.deck.addCards(cards, undefined, { visible: false, }, true);
+        await this.deck.addCards(cards.map(card => ({id: card.id }) as Card), undefined, undefined, true);
 
         this.deck.setCardNumber(this.deck.getCardNumber());
 
@@ -305,10 +303,9 @@ class PlayerTable {
 
             await this.moveDiscardToDeckAndShuffle();
 
-            this.deck.addCards(cardsAfter, undefined, <AddCardToDeckSettings>{
+            this.deck.addCards(cardsAfter.map(card => ({id: card.id }) as Card), undefined, <AddCardToDeckSettings>{
                 autoUpdateCardNumber: false,
                 autoRemovePreviousCards: false,
-                visible: false,
             });
             await to.addCards(cardsAfter, { fromStock: this.deck, }, undefined, 250);
         }

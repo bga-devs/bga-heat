@@ -478,10 +478,6 @@ class Heat implements HeatGame {
                                     label = `<div class="icon reduce-stress">${number}</div>`;
                                     tooltip = this.getGarageModuleIconTooltip('reduce', number);
                                     break;
-                                case 'refresh':
-                                    label = `<div class="icon refresh"></div>`;
-                                    tooltip = this.getGarageModuleIconTooltip('refresh', 1);
-                                    break;
                                 case 'salvage':
                                     label = `<div class="icon salvage">${number}</div>`;
                                     tooltip = this.getGarageModuleIconTooltip('salvage', number);
@@ -492,19 +488,11 @@ class Heat implements HeatGame {
                                     break;
                             }
 
-                            let callback = () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined);
-                            if (type == 'refresh') {
-                                if (!reactArgs.canPass) {
-                                    callback = () => (this as any).showMessage(_("You must resolve the mandatory reactions before Refresh !"), 'error');
-                                } else if (Object.keys(reactArgs.symbols).some(t => t != 'refresh')) {
-                                    callback = () => (this as any).confirmationDialog(
-                                        _("If you use Refresh now, it will skip the other optional reactions."),
-                                        () => this.actReact(type, Array.isArray(entry[1]) ? number : undefined)
-                                    );
-                                }
-                            }
-
-                            (this as any).addActionButton(`actReact${type}_${number}_button`, formatTextIcons(label), callback);
+                            (this as any).addActionButton(
+                                `actReact${type}_${number}_button`, 
+                                formatTextIcons(label), 
+                                () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined)
+                            );
                             this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
                             if (type == 'salvage' && this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
                                 document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');
@@ -519,6 +507,20 @@ class Heat implements HeatGame {
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
+                    if (args._private?.refreshedIds?.length) {
+                        args._private?.refreshedIds.forEach(number => {
+                            const refreshCard = this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number);
+                            const label = `<div class="icon refresh"></div><br>${this.cardImageHtml(refreshCard, { constructor_id: this.getConstructorId() })}`;
+                            const tooltip = this.getGarageModuleIconTooltip('refresh', 1);
+
+                            (this as any).addActionButton(
+                                `actRefresh_${number}_button`, 
+                                formatTextIcons(label), 
+                                () => this.actRefresh(number)
+                            );
+                            this.setTooltip(`actRefresh_${number}_button`, formatTextIcons(tooltip));
+                        });
+                    }
                     (this as any).addActionButton(`actDiscard_button`, '', () => this.actDiscard(this.getCurrentPlayerTable().hand.getSelection()));
                     (this as any).addActionButton(`actNoDiscard_button`, _('No additional discard'), () => this.actDiscard([]), null, null, 'red');
                     this.onHandCardSelectionChange([]);
@@ -997,6 +999,16 @@ class Heat implements HeatGame {
         });
     }
   	
+    public actRefresh(cardId: number) {
+        if(!(this as any).checkAction('actRefresh')) {
+            return;
+        }
+
+        this.takeAction('actRefresh', {
+            cardId,
+        });
+    }
+  	
     public actDiscard(selectedCards: Card[]) {
         if(!(this as any).checkAction('actDiscard')) {
             return;
@@ -1063,6 +1075,7 @@ class Heat implements HeatGame {
             'payHeats',
             'adrenaline',
             'spinOut',
+            'refresh',
             'discard',
             'pDiscard',
             'draw',
@@ -1271,6 +1284,19 @@ class Heat implements HeatGame {
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
         playerTable.drawCardsPublic(n, areSponsors);
+    }
+
+    async notif_refresh(args: NotifRefreshArgs) {
+        const { constructor_id, card } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        const playerTable = this.getPlayerTable(playerId);
+        await playerTable.deck.addCard({ id: card.id } as Card, undefined, { 
+            autoRemovePreviousCards: false, 
+        });
+        await playerTable.deck.removeCard(card, { 
+            autoUpdateCardNumber: false,
+        });
+        playerTable.deck.setCardNumber(playerTable.deck.getCardNumber()); // to make sure fake card is set
     }
 
     notif_discard(args: NotifDiscardCardsArgs) {

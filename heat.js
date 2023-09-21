@@ -1933,6 +1933,7 @@ var CardsManager = /** @class */ (function (_super) {
         return _this;
     }
     CardsManager.prototype.setupFrontDiv = function (card, div, ignoreTooltip) {
+        var _a;
         if (ignoreTooltip === void 0) { ignoreTooltip = false; }
         var type = card.type;
         div.dataset.type = '' + type; // for debug purpose only
@@ -1965,7 +1966,7 @@ var CardsManager = /** @class */ (function (_super) {
                 var xBackgroundPercent = imagePosition * 100;
                 div.style.backgroundPositionX = "-".concat(xBackgroundPercent, "%");
             }
-            div.innerHTML = "<div class=\"text\">".concat(_(card.text), "</div>");
+            div.innerHTML = "<div class=\"text\">".concat((_a = _(card.text)) !== null && _a !== void 0 ? _a : '', "</div>");
         }
         if (!ignoreTooltip) {
             this.game.setTooltip(div.id, this.getTooltip(card));
@@ -2087,6 +2088,7 @@ var CardsManager = /** @class */ (function (_super) {
         }
     };
     CardsManager.prototype.getHtml = function (card) {
+        var _a;
         var type = Number(card.type);
         var className = '';
         var style = '';
@@ -2121,7 +2123,7 @@ var CardsManager = /** @class */ (function (_super) {
                 style = "background-position-x: -".concat(xBackgroundPercent, "%");
             }
         }
-        var html = "<div class=\"card personal-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front ".concat(className, "\" ").concat(col !== null ? "data-col=\"".concat(col, "\"") : '', " style=\"").concat(style, "\">").concat(type < 100 ? "<div class=\"text\">".concat(_(card.text), "</div>") : '', "\n                </div>\n            </div>\n        </div>");
+        var html = "<div class=\"card personal-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front ".concat(className, "\" ").concat(col !== null ? "data-col=\"".concat(col, "\"") : '', " style=\"").concat(style, "\">").concat(type < 100 ? "<div class=\"text\">".concat((_a = _(card.text)) !== null && _a !== void 0 ? _a : '', "</div>") : '', "\n                </div>\n            </div>\n        </div>");
         return html;
     };
     return CardsManager;
@@ -2907,10 +2909,9 @@ var PlayerTable = /** @class */ (function () {
                         _a.sent();
                         _a.label = 3;
                     case 3:
-                        this.deck.addCard(card, undefined, {
+                        this.deck.addCard({ id: card.id }, undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
-                            visible: false,
                         });
                         return [4 /*yield*/, this.discard.addCard(card)];
                     case 4:
@@ -2937,10 +2938,9 @@ var PlayerTable = /** @class */ (function () {
                         _a.sent();
                         _a.label = 3;
                     case 3:
-                        this.deck.addCard(card, undefined, {
+                        this.deck.addCard({ id: card.id }, undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
-                            visible: false,
                         });
                         return [4 /*yield*/, this.inplay.addCard(card)];
                     case 4:
@@ -2961,7 +2961,7 @@ var PlayerTable = /** @class */ (function () {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
                         }); });
-                        return [4 /*yield*/, this.deck.addCards(cards, undefined, { visible: false, }, true)];
+                        return [4 /*yield*/, this.deck.addCards(cards.map(function (card) { return ({ id: card.id }); }), undefined, undefined, true)];
                     case 1:
                         _a.sent();
                         this.deck.setCardNumber(this.deck.getCardNumber());
@@ -3015,10 +3015,9 @@ var PlayerTable = /** @class */ (function () {
                         return [4 /*yield*/, this.moveDiscardToDeckAndShuffle()];
                     case 4:
                         _a.sent();
-                        this.deck.addCards(cardsAfter, undefined, {
+                        this.deck.addCards(cardsAfter.map(function (card) { return ({ id: card.id }); }), undefined, {
                             autoUpdateCardNumber: false,
                             autoRemovePreviousCards: false,
-                            visible: false,
                         });
                         return [4 /*yield*/, to.addCards(cardsAfter, { fromStock: this.deck, }, undefined, 250)];
                     case 5:
@@ -3394,6 +3393,7 @@ var Heat = /** @class */ (function () {
     //
     Heat.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
+        var _a, _b, _c;
         switch (stateName) {
             case 'planification':
                 this.onEnteringPlanification(args);
@@ -3486,10 +3486,6 @@ var Heat = /** @class */ (function () {
                                     label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
                                     tooltip = _this.getGarageModuleIconTooltip('reduce', number);
                                     break;
-                                case 'refresh':
-                                    label = "<div class=\"icon refresh\"></div>";
-                                    tooltip = _this.getGarageModuleIconTooltip('refresh', 1);
-                                    break;
                                 case 'salvage':
                                     label = "<div class=\"icon salvage\">".concat(number, "</div>");
                                     tooltip = _this.getGarageModuleIconTooltip('salvage', number);
@@ -3499,16 +3495,7 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltip('scrap', number);
                                     break;
                             }
-                            var callback = function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); };
-                            if (type == 'refresh') {
-                                if (!reactArgs_1.canPass) {
-                                    callback = function () { return _this.showMessage(_("You must resolve the mandatory reactions before Refresh !"), 'error'); };
-                                }
-                                else if (Object.keys(reactArgs_1.symbols).some(function (t) { return t != 'refresh'; })) {
-                                    callback = function () { return _this.confirmationDialog(_("If you use Refresh now, it will skip the other optional reactions."), function () { return _this.actReact(type, Array.isArray(entry[1]) ? number : undefined); }); };
-                                }
-                            }
-                            _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
+                            _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); });
                             _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(tooltip));
                             if (type == 'salvage' && _this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
                                 document.getElementById("actReact".concat(type, "_").concat(number, "_button")).classList.add('disabled');
@@ -3522,6 +3509,15 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
+                    if ((_b = (_a = args._private) === null || _a === void 0 ? void 0 : _a.refreshedIds) === null || _b === void 0 ? void 0 : _b.length) {
+                        (_c = args._private) === null || _c === void 0 ? void 0 : _c.refreshedIds.forEach(function (number) {
+                            var refreshCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
+                            var label = "<div class=\"icon refresh\"></div><br>".concat(_this.cardImageHtml(refreshCard, { constructor_id: _this.getConstructorId() }));
+                            var tooltip = _this.getGarageModuleIconTooltip('refresh', 1);
+                            _this.addActionButton("actRefresh_".concat(number, "_button"), formatTextIcons(label), function () { return _this.actRefresh(number); });
+                            _this.setTooltip("actRefresh_".concat(number, "_button"), formatTextIcons(tooltip));
+                        });
+                    }
                     this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); });
                     this.addActionButton("actNoDiscard_button", _('No additional discard'), function () { return _this.actDiscard([]); }, null, null, 'red');
                     this.onHandCardSelectionChange([]);
@@ -3844,6 +3840,14 @@ var Heat = /** @class */ (function () {
             arg: arg
         });
     };
+    Heat.prototype.actRefresh = function (cardId) {
+        if (!this.checkAction('actRefresh')) {
+            return;
+        }
+        this.takeAction('actRefresh', {
+            cardId: cardId,
+        });
+    };
     Heat.prototype.actDiscard = function (selectedCards) {
         if (!this.checkAction('actDiscard')) {
             return;
@@ -3901,6 +3905,7 @@ var Heat = /** @class */ (function () {
             'payHeats',
             'adrenaline',
             'spinOut',
+            'refresh',
             'discard',
             'pDiscard',
             'draw',
@@ -4131,6 +4136,31 @@ var Heat = /** @class */ (function () {
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
         playerTable.drawCardsPublic(n, areSponsors);
+    };
+    Heat.prototype.notif_refresh = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, card, playerId, playerTable;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, card = args.card;
+                        playerId = this.getPlayerIdFromConstructorId(constructor_id);
+                        playerTable = this.getPlayerTable(playerId);
+                        return [4 /*yield*/, playerTable.deck.addCard({ id: card.id }, undefined, {
+                                autoRemovePreviousCards: false,
+                            })];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, playerTable.deck.removeCard(card, {
+                                autoUpdateCardNumber: false,
+                            })];
+                    case 2:
+                        _a.sent();
+                        playerTable.deck.setCardNumber(playerTable.deck.getCardNumber()); // to make sure fake card is set
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     Heat.prototype.notif_discard = function (args) {
         var _a;

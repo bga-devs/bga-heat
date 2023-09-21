@@ -1018,37 +1018,45 @@ trait RoundTrait
     $args = $this->argsDiscard()['_private']['active'];
     $cardIds = $args['cardIds'];
     if (empty($cardIds) && empty($args['refreshedIds'])) {
-      $this->actDiscard([], []);
+      $this->actDiscard([]);
       return;
     }
 
     // Autoskip if race is over (no point in discarding more card)
     $constructor = Constructors::getActive();
     if ($constructor->getTurn() >= $this->getNbrLaps()) {
-      $this->actDiscard([], []);
+      $this->actDiscard([]);
       return;
     }
   }
 
-  public function actDiscard($cardIds, $refreshedIds)
+  public function actRefresh($cardId)
+  {
+    self::checkAction('actRefresh');
+    $constructor = Constructors::getActive();
+    $args = $this->argsDiscard()['_private']['active'];
+
+    // Refresh card
+    if (!in_array($cardId, $args['refreshedIds'])) {
+      throw new \BgaVisibleSystemException('Invalid card to refresh. Should not happen');
+    }
+
+    $symbols = Globals::getSymbols();
+    $symbols[REFRESH] = array_values(array_diff($symbols[REFRESH], [$cardId]));
+    Globals::setSymbols($symbols);
+
+    $card = Cards::getSingle($cardId);
+    Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
+    Notifications::refresh($constructor, $card);
+
+    $this->gamestate->jumpToState(ST_DISCARD);
+  }
+
+  public function actDiscard($cardIds)
   {
     self::checkAction('actDiscard');
     $constructor = Constructors::getActive();
     $args = $this->argsDiscard()['_private']['active'];
-
-    // Refresh cards
-    if (count($refreshedIds) > 0) {
-      $ids = $args['refreshedIds'];
-      if (!empty(array_diff($refreshedIds, $ids))) {
-        throw new \BgaVisibleSystemException('Invalid cards to refresh. Should not happen');
-      }
-
-      foreach ($refreshedIds as $cardId) {
-        $card = Cards::getSingle($cardId);
-        Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
-        Notifications::refresh($constructor, $card);
-      }
-    }
 
     // Discard cards
     if (count($cardIds) > 0) {

@@ -116,12 +116,20 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actRefresh()
+  {
+    self::setAjaxMode();
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->actRefresh($cardId);
+    self::ajaxResponse();
+  }
+
   public function actDiscard()
   {
     self::setAjaxMode();
     $cardIds = self::getArg('cardIds', AT_json, true);
     $this->validateJSonAlphaNum($cardIds, 'cardIds');
-    $this->game->actDiscard($cardIds, []);
+    $this->game->actDiscard($cardIds);
     self::ajaxResponse();
   }
 

@@ -218,6 +218,12 @@ interface NotifCardsArgs {
     areSponsors: boolean;
 }
 
+// refresh
+interface NotifRefreshArgs {
+    constructor_id: number;
+    card: Card;
+}
+
 // discard
 interface NotifDiscardCardsArgs extends NotifCardsArgs {
     cards?: { [id: number]: Card};

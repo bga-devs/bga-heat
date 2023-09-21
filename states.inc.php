@@ -210,7 +210,7 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsDiscard',
     'action' => 'stDiscard',
-    'possibleactions' => ['actDiscard'],
+    'possibleactions' => ['actDiscard', 'actRefresh'],
   ],
 
   //////////////////////////////////////////////////////////////////
