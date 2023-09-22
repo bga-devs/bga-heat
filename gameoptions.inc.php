@@ -47,10 +47,10 @@ $game_options = [
         'name' => clienttranslate('Standard'),
         'description' => clienttranslate('Customize the race by choosing the circuit and additional modules'),
       ],
-      OPTION_SETUP_CHAMPIONSHIP => [
-        'name' => clienttranslate('Championship'),
-        'tmdisplay' => clienttranslate('[Championship]'),
-      ],
+      // OPTION_SETUP_CHAMPIONSHIP => [
+      //   'name' => clienttranslate('Championship'),
+      //   'tmdisplay' => clienttranslate('[Championship]'),
+      // ],
     ],
   ],
 
@@ -58,30 +58,36 @@ $game_options = [
     'name' => totranslate('Legends'),
     'values' => [
       0 => [
-        'name' => clienttranslate('0'),
+        'name' => clienttranslate('No legend'),
         'description' => clienttranslate('Only human players'),
       ],
-      1 => [
-        'name' => clienttranslate('1 legend'),
-        'tmdisplay' => clienttranslate('[1 legend]'),
-      ],
       2 => [
-        'name' => clienttranslate('2 legends'),
-        'tmdisplay' => clienttranslate('[2 legends]'),
+        'name' => clienttranslate('Fill to 2 cars'),
+        'tmdisplay' => clienttranslate('[legends: fill to 2]'),
+        'description' => clienttranslate('Add legends up to 2 cars in total'),
       ],
       3 => [
-        'name' => clienttranslate('3 legends'),
-        'tmdisplay' => clienttranslate('[3 legends]'),
+        'name' => clienttranslate('Fill to 3 cars'),
+        'tmdisplay' => clienttranslate('[legends: fill to 3]'),
+        'description' => clienttranslate('Add legends up to 3 cars in total'),
       ],
       4 => [
-        'name' => clienttranslate('4 legends'),
-        'tmdisplay' => clienttranslate('[4 legends]'),
+        'name' => clienttranslate('Fill to 4 cars'),
+        'tmdisplay' => clienttranslate('[legends: fill to 4]'),
+        'description' => clienttranslate('Add legends up to 4 cars in total'),
       ],
       5 => [
-        'name' => clienttranslate('5 legends'),
-        'tmdisplay' => clienttranslate('[5 legends]'),
+        'name' => clienttranslate('Fill to 5 cars'),
+        'tmdisplay' => clienttranslate('[legends: fill to 5]'),
+        'description' => clienttranslate('Add legends up to 5 cars in total'),
+      ],
+      6 => [
+        'name' => clienttranslate('Fill to 6 cars'),
+        'tmdisplay' => clienttranslate('[legends: fill to 6]'),
+        'description' => clienttranslate('Add legends up to 6 cars in total'),
       ],
     ],
+    'default' => 6,
     // 'displaycondition' => [
     //   [
     //     'type' => 'otheroptionisnot',
@@ -97,64 +103,41 @@ $game_options = [
           'message' => clienttranslate('You can\'t play solo without a legend'),
         ],
       ],
-      1 => [
-        [
-          'type' => 'maxplayers',
-          'value' => 5,
-          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
-        ],
-      ],
-      2 => [
-        [
-          'type' => 'maxplayers',
-          'value' => 4,
-          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
-        ],
-      ],
-      3 => [
-        [
-          'type' => 'maxplayers',
-          'value' => 3,
-          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
-        ],
-      ],
-      4 => [
-        [
-          'type' => 'maxplayers',
-          'value' => 2,
-          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
-        ],
-      ],
-      5 => [
-        [
-          'type' => 'maxplayers',
-          'value' => 1,
-          'message' => clienttranslate('Number of legends + players can\'t exceed 6'),
-        ],
-      ],
     ],
   ],
 
   OPTION_LEGEND_PRO => [
-    'name' => totranslate('Pro Legends'),
+    'name' => totranslate('Pro Legends (faster legends)'),
     'values' => [
       0 => [
         'name' => clienttranslate('Disabled'),
       ],
       1 => [
         'name' => clienttranslate('+1'),
+        'description' => clienttranslate(
+          'Top speed of legend cars is increased by 1. (The value shown on the Legend Cards will be the increased value)'
+        ),
         'tmdisplay' => clienttranslate('[Legend:+1]'),
       ],
       2 => [
         'name' => clienttranslate('+2'),
+        'description' => clienttranslate(
+          'Top speed of legend cars is increased by 2. (The value shown on the Legend Cards will be the increased value)'
+        ),
         'tmdisplay' => clienttranslate('[Legend:+2]'),
       ],
       3 => [
         'name' => clienttranslate('+3'),
+        'description' => clienttranslate(
+          'Top speed of legend cars is increased by 3. (The value shown on the Legend Cards will be the increased value)'
+        ),
         'tmdisplay' => clienttranslate('[Legend:+3]'),
       ],
       4 => [
         'name' => clienttranslate('+4'),
+        'description' => clienttranslate(
+          'Top speed of legend cars is increased by 4. (The value shown on the Legend Cards will be the increased value)'
+        ),
         'tmdisplay' => clienttranslate('[Legend:+4]'),
       ],
     ],
@@ -252,14 +235,17 @@ $game_options = [
       OPTION_GARAGE_BASIC => [
         'name' => clienttranslate('Basic upgrades only'),
         'tmdisplay' => clienttranslate('[Garage: basic]'),
+        'alpha' => true,
       ],
       OPTION_GARAGE_ADVANCED => [
         'name' => clienttranslate('Advanced upgrades only'),
         'tmdisplay' => clienttranslate('[Garage: advanced]'),
+        'alpha' => true,
       ],
       OPTION_GARAGE_MIXED => [
         'name' => clienttranslate('All upgrades'),
         'tmdisplay' => clienttranslate('[Garage]'),
+        'alpha' => true,
       ],
     ],
     'displaycondition' => [
@@ -332,6 +318,7 @@ $game_options = [
       OPTION_WEATHER_ENABLED => [
         'name' => clienttranslate('Enabled'),
         'tmdisplay' => clienttranslate('[Weather]'),
+        'alpha' => true,
       ],
     ],
     'displaycondition' => [

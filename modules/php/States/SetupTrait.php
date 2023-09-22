@@ -27,6 +27,7 @@ trait SetupTrait
       $options[\HEAT\OPTION_GARAGE_MODULE] = \HEAT\OPTION_DISABLED;
       $options[\HEAT\OPTION_GARAGE_CHOICE] = \HEAT\OPTION_DISABLED;
       $options[\HEAT\OPTION_WEATHER_MODULE] = \HEAT\OPTION_DISABLED;
+      $options[\HEAT\OPTION_LEGEND_PRO] = 0;
     }
     // Beginner: default number of laps + no garage + no weather
     elseif ($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_BEGINNER) {
@@ -34,6 +35,7 @@ trait SetupTrait
       $options[\HEAT\OPTION_GARAGE_MODULE] = \HEAT\OPTION_DISABLED;
       $options[\HEAT\OPTION_GARAGE_CHOICE] = \HEAT\OPTION_DISABLED;
       $options[\HEAT\OPTION_WEATHER_MODULE] = \HEAT\OPTION_DISABLED;
+      $options[\HEAT\OPTION_LEGEND_PRO] = 0;
     }
     // Championship
     elseif ($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP) {

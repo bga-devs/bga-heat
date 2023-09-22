@@ -181,7 +181,8 @@ class Globals extends \HEAT\Helpers\DB_Manager
    */
   public static function setupNewGame($players, $options)
   {
-    $nLegends = $options[\HEAT\OPTION_LEGEND] ?? 0;
+    $legendFill = $options[\HEAT\OPTION_LEGEND] ?? 0;
+    $nLegends = $legendFill == 0 ? 0 : max(0, $legendFill - count($players));
     self::setCountConstructors(count($players) + $nLegends);
     self::setLegend($nLegends > 0);
     self::setLegendPro($options[\HEAT\OPTION_LEGEND_PRO] ?? 0);
