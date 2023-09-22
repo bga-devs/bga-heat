@@ -29,6 +29,10 @@ trait RoundTrait
       $this->gamestate->nextState('planification');
       $this->stEndOfPlanification();
     } else {
+      foreach ($pIds as $pId) {
+        self::giveExtraTime($pId);
+      }
+
       $this->gamestate->setPlayersMultiactive($pIds, '', true);
       $this->gamestate->nextState('planification');
     }
