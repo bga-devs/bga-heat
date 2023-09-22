@@ -3099,7 +3099,7 @@ function sleep(ms) {
 var Heat = /** @class */ (function () {
     function Heat() {
         this.playersTables = [];
-        this.handCounters = [];
+        this.cornerCounters = [];
         this.gearCounters = [];
         this.engineCounters = [];
         this.speedCounters = [];
@@ -3664,14 +3664,11 @@ var Heat = /** @class */ (function () {
         });
         constructors.forEach(function (constructor) {
             var _a;
-            var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(constructor.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"gear-counter-wrapper-").concat(constructor.id, "\" class=\"gear-counter\">\n                    <div class=\"gear icon\"></div>\n                    <span id=\"gear-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
-            html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter ").concat(constructor.speed >= 0 ? 'played' : '', "\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
+            var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"gear-counter-wrapper-".concat(constructor.id, "\" class=\"gear-counter\">\n                    <div class=\"gear icon\"></div>\n                    <span id=\"gear-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
+            html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"corner-counter-wrapper-").concat(constructor.id, "\" class=\"corner-counter\">\n                    <div class=\"corner icon\"></div> \n                    <span id=\"corner-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter ").concat(constructor.speed >= 0 ? 'played' : '', "\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(constructor.pId));
             _this.setScore(constructor.pId, constructor.score);
             if (!constructor.ai) {
-                _this.handCounters[constructor.id] = new ebg.counter();
-                _this.handCounters[constructor.id].create("playerhand-counter-".concat(constructor.id));
-                _this.handCounters[constructor.id].setValue(constructor.handCount);
                 _this.gearCounters[constructor.id] = new ebg.counter();
                 _this.gearCounters[constructor.id].create("gear-counter-".concat(constructor.id));
                 _this.gearCounters[constructor.id].setValue(constructor.gear);
@@ -3682,6 +3679,9 @@ var Heat = /** @class */ (function () {
             _this.speedCounters[constructor.id] = new ebg.counter();
             _this.speedCounters[constructor.id].create("speed-counter-".concat(constructor.id));
             _this.setSpeedCounter(constructor.id, constructor.speed);
+            _this.cornerCounters[constructor.id] = new ebg.counter();
+            _this.cornerCounters[constructor.id].create("corner-counter-".concat(constructor.id));
+            _this.cornerCounters[constructor.id].setValue(constructor.distanceToCorner);
             _this.lapCounters[constructor.id] = new ebg.counter();
             _this.lapCounters[constructor.id].create("lap-counter-".concat(constructor.id));
             _this.lapCounters[constructor.id].setValue(Math.max(1, Math.min(gamedatas.nbrLaps, constructor.turn + 1)));
@@ -3693,7 +3693,7 @@ var Heat = /** @class */ (function () {
                 }
             }
         });
-        this.setTooltipToClass('playerhand-counter', _('Hand cards count'));
+        this.setTooltipToClass('corner-counter', _('Distance to the next corner'));
         this.setTooltipToClass('gear-counter', _('Gear'));
         this.setTooltipToClass('engine-counter', _('Engine cards count'));
         this.setTooltipToClass('speed-counter', _('Speed'));
@@ -4048,11 +4048,10 @@ var Heat = /** @class */ (function () {
         this.updatePlannedCards(args.args._private.selection, 'notif_updatePlanification');
     };
     Heat.prototype.notif_reveal = function (args) {
-        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var constructor_id, gear, heat, playerId, playerTable, cards;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
                         playerId = this.getPlayerIdFromConstructorId(constructor_id);
@@ -4062,33 +4061,33 @@ var Heat = /** @class */ (function () {
                         if (!heat) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.payHeats(constructor_id, [heat])];
                     case 1:
-                        _b.sent();
-                        _b.label = 2;
+                        _a.sent();
+                        _a.label = 2;
                     case 2:
                         cards = Object.values(args.cards);
-                        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
                         return [4 /*yield*/, playerTable.setInplay(cards)];
                     case 3:
-                        _b.sent();
+                        _a.sent();
                         return [2 /*return*/];
                 }
             });
         });
     };
     Heat.prototype.notif_moveCar = function (args) {
-        var _a;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, cell, path, totalSpeed, progress, isAi, orderCounter;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var constructor_id, cell, path, totalSpeed, progress, distanceToCorner, isAi, orderCounter;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        constructor_id = args.constructor_id, cell = args.cell, path = args.path, totalSpeed = args.totalSpeed, progress = args.progress;
+                        constructor_id = args.constructor_id, cell = args.cell, path = args.path, totalSpeed = args.totalSpeed, progress = args.progress, distanceToCorner = args.distanceToCorner;
                         isAi = this.gamedatas.constructors[constructor_id].ai;
                         this.setSpeedCounter(constructor_id, totalSpeed);
                         (_a = this.championshipTable) === null || _a === void 0 ? void 0 : _a.setRaceProgress(progress);
                         return [4 /*yield*/, this.circuit.moveCar(constructor_id, cell, path, isAi ? path.length : totalSpeed)];
                     case 1:
-                        _b.sent();
+                        _c.sent();
+                        (_b = this.cornerCounters[constructor_id]) === null || _b === void 0 ? void 0 : _b.setValue(distanceToCorner);
                         if (isAi) {
                             orderCounter = document.getElementById("order-".concat(constructor_id));
                             orderCounter.classList.add('played');
@@ -4147,34 +4146,32 @@ var Heat = /** @class */ (function () {
         this.speedCounters[constructor_id].incValue(1);
     };
     Heat.prototype.notif_spinOut = function (args) {
-        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var constructor_id, cards, corner, cell, stresses, nCellsBack, playerId, playerTable;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         constructor_id = args.constructor_id, cards = args.cards, corner = args.corner, cell = args.cell, stresses = args.stresses, nCellsBack = args.nCellsBack;
                         this.circuit.showCorner(corner, 'red');
                         return [4 /*yield*/, this.payHeats(constructor_id, Object.values(cards))];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         if (!this.animationManager.animationsActive()) return [3 /*break*/, 3];
                         return [4 /*yield*/, this.circuit.spinOutWithAnimation(constructor_id, cell, nCellsBack)];
                     case 2:
-                        _b.sent();
+                        _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
                         this.circuit.moveCar(constructor_id, cell);
-                        _b.label = 4;
+                        _a.label = 4;
                     case 4:
                         this.gearCounters[constructor_id].toValue(1);
                         playerId = this.getPlayerIdFromConstructorId(constructor_id);
                         playerTable = this.getPlayerTable(playerId);
                         this.getPlayerTable(playerId).setCurrentGear(1);
-                        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(stresses.length);
                         return [4 /*yield*/, playerTable.spinOut(stresses)];
                     case 5:
-                        _b.sent();
+                        _a.sent();
                         return [2 /*return*/, true];
                 }
             });
@@ -4185,10 +4182,8 @@ var Heat = /** @class */ (function () {
         return (_a = this.gamedatas.constructors[constructorId]) === null || _a === void 0 ? void 0 : _a.pId;
     };
     Heat.prototype.notif_draw = function (args) {
-        var _a;
         var constructor_id = args.constructor_id, areSponsors = args.areSponsors;
         var n = Number(args.n);
-        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(n);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
         playerTable.drawCardsPublic(n, areSponsors);
@@ -4219,26 +4214,20 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.notif_discard = function (args) {
-        var _a;
         var constructor_id = args.constructor_id, cards = args.cards;
-        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-args.n);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
         playerTable.discard.addCards(Object.values(cards));
     };
     Heat.prototype.notif_pDraw = function (args) {
-        var _a;
         var constructor_id = args.constructor_id, areSponsors = args.areSponsors;
         var cards = Object.values(args.cards);
-        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(cards.length);
         var playerTable = this.getCurrentPlayerTable();
         playerTable.drawCardsPrivate(cards, areSponsors);
     };
     Heat.prototype.notif_pDiscard = function (args) {
-        var _a;
         var constructor_id = args.constructor_id;
         var cards = Object.values(args.cards);
-        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
         this.getCurrentPlayerTable().discard.addCards(cards);
     };
     Heat.prototype.notif_clearPlayedCards = function (args) {
@@ -4261,13 +4250,12 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.notif_cooldown = function (args) {
-        var _a, _b;
+        var _a;
         var constructor_id = args.constructor_id, cards = args.cards;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
-        (_a = this.handCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(-cards.length);
         playerTable.cooldown(cards);
-        (_b = this.engineCounters[constructor_id]) === null || _b === void 0 ? void 0 : _b.incValue(cards.length);
+        (_a = this.engineCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(cards.length);
     };
     Heat.prototype.notif_finishTurn = function (args) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4352,7 +4340,6 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_directPlay = function (args) {
         var constructor_id = args.constructor_id, card = args.card;
-        this.handCounters[constructor_id].incValue(-1);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).inplay.addCard(card);
     };
@@ -4399,12 +4386,11 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.notif_setupRace = function (args) {
-        var _a, _b;
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            return __generator(this, function (_c) {
+            return __generator(this, function (_b) {
                 (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.hand.removeAll();
-                (_b = this.handCounters[this.getConstructorId()]) === null || _b === void 0 ? void 0 : _b.setValue(0);
                 Object.entries(args.counters).forEach(function (_a) {
                     var constructor_id = _a[0], counters = _a[1];
                     var table = _this.getPlayerTable(_this.getPlayerIdFromConstructorId(Number(constructor_id)));

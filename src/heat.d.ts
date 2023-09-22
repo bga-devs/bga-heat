@@ -24,6 +24,7 @@ interface Constructor {
     inplay?: { [id: number]: Card};
     discard: { [id: number]: Card};
     deckCount: number;
+    distanceToCorner: number;
 }
 
 interface Cell {
@@ -196,6 +197,7 @@ interface NotifMoveCarArgs {
     path: number[];
     progress: number;
     totalSpeed: number;
+    distanceToCorner: number;
 }
 
 // payHeats

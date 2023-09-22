@@ -62,6 +62,7 @@ class Notifications
     $speed,
     $nSpacesForward,
     $extraTurns,
+    $distanceToCorner,
     $path,
     $slipstream = false,
     $legendSlot = null
@@ -93,6 +94,7 @@ class Notifications
       'cell' => $newCell,
       'speed' => $speed,
       'nForward' => $nSpacesForward,
+      'distanceToCorner' => $distanceToCorner,
       'path' => $path,
       'progress' => Game::get()->getRaceProgress(),
       'preserve' => ['path', 'slot'],

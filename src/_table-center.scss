@@ -20,6 +20,17 @@
       box-shadow: 0 0 5px 5px white;
     }
   }
+
+  .corner {
+    --color: transparent;
+    position: absolute;
+    left: calc(var(--x) - 24px);
+    top: calc(var(--y) - 24px);
+    width: 48px;
+    height: 48px;
+    box-shadow: 0 0 5px 5px var(--color);
+    border-radius: 50%;
+  }
 }
 
 .car {
@@ -82,17 +93,6 @@
     background: #6766a7;
     box-shadow: 0 0 5px 5px #6766a7;
   }
-}
-
-.corner {
-  --color: transparent;
-  position: absolute;
-  left: calc(var(--x) - 24px);
-  top: calc(var(--y) - 24px);
-  width: 48px;
-  height: 48px;
-  box-shadow: 0 0 5px 5px var(--color);
-  border-radius: 50%;
 }
 
 .press-icon {

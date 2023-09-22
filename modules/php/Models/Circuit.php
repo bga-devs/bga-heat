@@ -552,4 +552,22 @@ class Circuit
 
     return $cars;
   }
+  
+  public function getDistanceToCorner($constructor)
+  {
+    $currentPosition = $this->getPosition($constructor);
+
+    $cornerPositions = array_keys($this->getCorners());
+    if ($currentPosition > max($cornerPositions)) {
+      $currentPosition -= $this->getLength();
+    }
+
+    return min(array_filter($cornerPositions, fn($p) => $p >= $currentPosition)) - $currentPosition - 1;
+  }
+
+  function debug($debugData) {
+      /*if ($this->getBgaEnvironment() != 'studio') { 
+          return;
+      }*/die('debug data : '.json_encode($debugData));
+  }
 }

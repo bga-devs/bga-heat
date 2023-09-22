@@ -41,6 +41,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
       'discard' => $this->getDiscard(),
       'deckCount' => $this->getDeck()->count(),
       'inplay' => $this->getPlayedCards(),
+      'distanceToCorner' => Game::get()->getCircuit()->getDistanceToCorner($this),
     ]);
   }
 
