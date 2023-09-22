@@ -1328,14 +1328,15 @@ class Heat implements HeatGame {
 
     async notif_moveCar(args: NotifMoveCarArgs) {
         const { constructor_id, cell, path, totalSpeed, progress } = args;
+        const isAi = this.gamedatas.constructors[constructor_id].ai;
 
         this.setSpeedCounter(constructor_id, totalSpeed);
 
         this.championshipTable?.setRaceProgress(progress);
 
-        await this.circuit.moveCar(constructor_id, cell, path);
+        await this.circuit.moveCar(constructor_id, cell, path, isAi ? path.length : totalSpeed);
 
-        if (this.gamedatas.constructors[constructor_id].ai) {
+        if (isAi) {
             const orderCounter = document.getElementById(`order-${constructor_id}`);
             orderCounter.classList.add('played');
         }

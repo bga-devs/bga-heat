@@ -291,7 +291,7 @@ class Circuit
   public function getReachedCell($constructor, $speed, $computePath = false, $computeHeatCost = false, $isSlipstream = false)
   {
     if ($speed == 0) {
-      return [$constructor->getCarCell(), 0, 0, []];
+      return [$constructor->getCarCell(), 0, 0, [], 0, 0];
     }
 
     $cId = $constructor->getId();

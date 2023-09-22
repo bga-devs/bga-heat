@@ -27,6 +27,10 @@ const EVENTS_PRESS_CORNERS = {
     10: [4],
 };
 
+function moveCarAnimationDuration(cells: number, totalSpeed: number) {
+    return totalSpeed <= 0 || cells <+ 0 ? 0 : Math.round(5500 / (20 + totalSpeed) * cells);
+}
+
 // Wrapper for the animation that use requestAnimationFrame
 class CarAnimation {
     private newpath: SVGPathElement;
@@ -34,7 +38,7 @@ class CarAnimation {
     private resolve: any;
     private tZero: number;
 
-    constructor(private car: HTMLElement, private pathCells: { x: number; y: number; a: number; }[]) {
+    constructor(private car: HTMLElement, private pathCells: { x: number; y: number; a: number; }[], private totalSpeed: number) {
         // Control strength is how far the control point are from the center of the cell
         //  => it should probably be something related/proportional to scale of current board
         let controlStrength = 20;
@@ -63,7 +67,7 @@ class CarAnimation {
     }
 
     start() {
-        this.duration = this.pathCells.length * 250;
+        this.duration = moveCarAnimationDuration(this.pathCells.length, this.totalSpeed);
         this.resolve = null;
         this.move(0);
     
@@ -308,13 +312,14 @@ class Circuit {
         }
     }
 
-    public moveCar(constructorId: number, carCell: number, path?: number[]): Promise<any> {
+    public async moveCar(constructorId: number, carCell: number, path?: number[], totalSpeed?: number): Promise<any> {
         this.removeMapIndicators();
 
         const car = document.getElementById(`car-${constructorId}`);
         if (path?.length > 1 && this.game.animationManager.animationsActive()) {
             try {
-                return this.moveCarWithAnimation(car, path).then(() => this.moveCar(constructorId, carCell));
+                await this.moveCarWithAnimation(car, path, totalSpeed);
+                return await this.moveCar(constructorId, carCell);
             } catch (e) {
                 return this.moveCar(constructorId, carCell);
             }
@@ -336,7 +341,7 @@ class Circuit {
         
         return new Promise((resolve) => {
             const car = document.getElementById(`car-${constructorId}`);
-            const time = cellsDiff * 250;
+            const time = moveCarAnimationDuration(cellsDiff, cellsDiff);
             car.style.setProperty('--transition-time', `${time}ms`);
             car.classList.add('with-transition');
             car.clientWidth;
@@ -425,10 +430,10 @@ class Circuit {
         return pathCellIds.map(cellId => this.getCellInfos(cellId));
     }
 
-    private moveCarWithAnimation(car: HTMLElement, pathCellIds: number[]): Promise<any> {        
+    private moveCarWithAnimation(car: HTMLElement, pathCellIds: number[], totalSpeed: number): Promise<any> {        
         const pathCells = this.getCellsInfos(pathCellIds);
         
-        const animation = new CarAnimation(car, pathCells);        
+        const animation = new CarAnimation(car, pathCells, totalSpeed);        
         return animation.start();
     }
     

@@ -2283,11 +2283,15 @@ var EVENTS_PRESS_CORNERS = {
     9: [4],
     10: [4],
 };
+function moveCarAnimationDuration(cells, totalSpeed) {
+    return totalSpeed <= 0 || cells < +0 ? 0 : Math.round(5500 / (20 + totalSpeed) * cells);
+}
 // Wrapper for the animation that use requestAnimationFrame
 var CarAnimation = /** @class */ (function () {
-    function CarAnimation(car, pathCells) {
+    function CarAnimation(car, pathCells, totalSpeed) {
         this.car = car;
         this.pathCells = pathCells;
+        this.totalSpeed = totalSpeed;
         // Control strength is how far the control point are from the center of the cell
         //  => it should probably be something related/proportional to scale of current board
         var controlStrength = 20;
@@ -2315,7 +2319,7 @@ var CarAnimation = /** @class */ (function () {
     }
     CarAnimation.prototype.start = function () {
         var _this = this;
-        this.duration = this.pathCells.length * 250;
+        this.duration = moveCarAnimationDuration(this.pathCells.length, this.totalSpeed);
         this.resolve = null;
         this.move(0);
         setTimeout(function () {
@@ -2527,35 +2531,47 @@ var Circuit = /** @class */ (function () {
             car.style.setProperty('--r', "".concat(cell.a, "deg"));
         }
     };
-    Circuit.prototype.moveCar = function (constructorId, carCell, path) {
-        var _this = this;
-        this.removeMapIndicators();
-        var car = document.getElementById("car-".concat(constructorId));
-        if ((path === null || path === void 0 ? void 0 : path.length) > 1 && this.game.animationManager.animationsActive()) {
-            try {
-                return this.moveCarWithAnimation(car, path).then(function () { return _this.moveCar(constructorId, carCell); });
-            }
-            catch (e) {
-                return this.moveCar(constructorId, carCell);
-            }
-        }
-        else {
-            var cell = this.getCellPosition(carCell);
-            if (!cell) {
-                console.warn('Cell not found (moveCar) : cell ', carCell, 'constructorId', constructorId);
-            }
-            car.style.setProperty('--x', "".concat(cell.x, "px"));
-            car.style.setProperty('--y', "".concat(cell.y, "px"));
-            car.style.setProperty('--r', "".concat(cell.a, "deg"));
-            return Promise.resolve(true);
-        }
+    Circuit.prototype.moveCar = function (constructorId, carCell, path, totalSpeed) {
+        return __awaiter(this, void 0, void 0, function () {
+            var car, e_1, cell;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.removeMapIndicators();
+                        car = document.getElementById("car-".concat(constructorId));
+                        if (!((path === null || path === void 0 ? void 0 : path.length) > 1 && this.game.animationManager.animationsActive())) return [3 /*break*/, 6];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 4, , 5]);
+                        return [4 /*yield*/, this.moveCarWithAnimation(car, path, totalSpeed)];
+                    case 2:
+                        _a.sent();
+                        return [4 /*yield*/, this.moveCar(constructorId, carCell)];
+                    case 3: return [2 /*return*/, _a.sent()];
+                    case 4:
+                        e_1 = _a.sent();
+                        return [2 /*return*/, this.moveCar(constructorId, carCell)];
+                    case 5: return [3 /*break*/, 7];
+                    case 6:
+                        cell = this.getCellPosition(carCell);
+                        if (!cell) {
+                            console.warn('Cell not found (moveCar) : cell ', carCell, 'constructorId', constructorId);
+                        }
+                        car.style.setProperty('--x', "".concat(cell.x, "px"));
+                        car.style.setProperty('--y', "".concat(cell.y, "px"));
+                        car.style.setProperty('--r', "".concat(cell.a, "deg"));
+                        return [2 /*return*/, Promise.resolve(true)];
+                    case 7: return [2 /*return*/];
+                }
+            });
+        });
     };
     Circuit.prototype.spinOutWithAnimation = function (constructorId, carCell, cellsDiff) {
         var _this = this;
         this.removeMapIndicators();
         return new Promise(function (resolve) {
             var car = document.getElementById("car-".concat(constructorId));
-            var time = cellsDiff * 250;
+            var time = moveCarAnimationDuration(cellsDiff, cellsDiff);
             car.style.setProperty('--transition-time', "".concat(time, "ms"));
             car.classList.add('with-transition');
             car.clientWidth;
@@ -2639,9 +2655,9 @@ var Circuit = /** @class */ (function () {
         var _this = this;
         return pathCellIds.map(function (cellId) { return _this.getCellInfos(cellId); });
     };
-    Circuit.prototype.moveCarWithAnimation = function (car, pathCellIds) {
+    Circuit.prototype.moveCarWithAnimation = function (car, pathCellIds, totalSpeed) {
         var pathCells = this.getCellsInfos(pathCellIds);
-        var animation = new CarAnimation(car, pathCells);
+        var animation = new CarAnimation(car, pathCells, totalSpeed);
         return animation.start();
     };
     Circuit.prototype.showCorner = function (id, color) {
@@ -4062,17 +4078,18 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_moveCar = function (args) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, cell, path, totalSpeed, progress, orderCounter;
+            var constructor_id, cell, path, totalSpeed, progress, isAi, orderCounter;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         constructor_id = args.constructor_id, cell = args.cell, path = args.path, totalSpeed = args.totalSpeed, progress = args.progress;
+                        isAi = this.gamedatas.constructors[constructor_id].ai;
                         this.setSpeedCounter(constructor_id, totalSpeed);
                         (_a = this.championshipTable) === null || _a === void 0 ? void 0 : _a.setRaceProgress(progress);
-                        return [4 /*yield*/, this.circuit.moveCar(constructor_id, cell, path)];
+                        return [4 /*yield*/, this.circuit.moveCar(constructor_id, cell, path, isAi ? path.length : totalSpeed)];
                     case 1:
                         _b.sent();
-                        if (this.gamedatas.constructors[constructor_id].ai) {
+                        if (isAi) {
                             orderCounter = document.getElementById("order-".concat(constructor_id));
                             orderCounter.classList.add('played');
                         }
