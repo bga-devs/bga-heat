@@ -285,7 +285,7 @@ class Heat implements HeatGame {
 
     private onEnteringSlipstream(args: EnteringSlipstreamArgs) {
         Object.entries(args.speeds).forEach(entry => 
-            this.circuit.addMapIndicator(entry[1], () => this.actSlipstream(Number(entry[0])))
+            this.circuit.addMapIndicator(entry[1], () => this.actSlipstream(Number(entry[0])), this.speedCounters[this.getConstructorId()].getValue(), false)
         );
     }
 
@@ -782,7 +782,7 @@ class Heat implements HeatGame {
                     </div>
                                                
                     <div class="player-name" id="player_name_${constructor.id}">
-                        ${constructor.name}
+                        ${_(constructor.name)}
                     </div>
                     <div id="player_board_${constructor.pId}" class="player_board_content">
                         <div class="player_score">
@@ -1340,6 +1340,7 @@ class Heat implements HeatGame {
         if (isAi) {
             const orderCounter = document.getElementById(`order-${constructor_id}`);
             orderCounter.classList.add('played');
+            this.circuit.removeMapPaths();
         }
     } 
 
@@ -1450,6 +1451,7 @@ class Heat implements HeatGame {
         await playerTable.clearPlayedCards(cardIds, sponsorIds);
         const orderCounter = document.getElementById(`order-${constructor_id}`);
         orderCounter.classList.add('played');
+        this.circuit.removeMapPaths();
     }
 
     notif_cooldown(args: NotifCooldownArgs) {

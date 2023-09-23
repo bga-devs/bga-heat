@@ -2286,36 +2286,40 @@ var EVENTS_PRESS_CORNERS = {
 function moveCarAnimationDuration(cells, totalSpeed) {
     return totalSpeed <= 0 || cells < +0 ? 0 : Math.round(5500 / (20 + totalSpeed) * cells);
 }
+function getSvgPathElement(pathCells) {
+    // Control strength is how far the control point are from the center of the cell
+    //  => it should probably be something related/proportional to scale of current board
+    var controlStrength = 20;
+    var path = "";
+    pathCells.forEach(function (data, i) {
+        // We compute the control point based on angle
+        //  => we have a special case for i = 0 since it's the only one with a "positive control point" (ie that goes in the same direction as arrow)
+        var cp = {
+            x: data.x + Math.cos((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
+            y: data.y + Math.sin((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
+        };
+        // See "Shortand curve to" on https://developer.mozilla.org/fr/docs/Web/SVG/Tutorial/Paths
+        if (i == 0) {
+            path += "M ".concat(data.x, " ").concat(data.y, " C ").concat(cp.x, " ").concat(cp.y, ", ");
+        }
+        else if (i == 1) {
+            path += "".concat(cp.x, " ").concat(cp.y, ", ").concat(data.x, " ").concat(data.y, " ");
+        }
+        else {
+            path += "S ".concat(cp.x, " ").concat(cp.y, ", ").concat(data.x, " ").concat(data.y);
+        }
+    });
+    var newpath = document.createElementNS('http://www.w3.org/2000/svg', "path");
+    newpath.setAttributeNS(null, "d", path);
+    return newpath;
+}
 // Wrapper for the animation that use requestAnimationFrame
 var CarAnimation = /** @class */ (function () {
     function CarAnimation(car, pathCells, totalSpeed) {
         this.car = car;
         this.pathCells = pathCells;
         this.totalSpeed = totalSpeed;
-        // Control strength is how far the control point are from the center of the cell
-        //  => it should probably be something related/proportional to scale of current board
-        var controlStrength = 20;
-        var path = "";
-        pathCells.forEach(function (data, i) {
-            // We compute the control point based on angle
-            //  => we have a special case for i = 0 since it's the only one with a "positive control point" (ie that goes in the same direction as arrow)
-            var cp = {
-                x: data.x + Math.cos((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
-                y: data.y + Math.sin((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
-            };
-            // See "Shortand curve to" on https://developer.mozilla.org/fr/docs/Web/SVG/Tutorial/Paths
-            if (i == 0) {
-                path += "M ".concat(data.x, " ").concat(data.y, " C ").concat(cp.x, " ").concat(cp.y, ", ");
-            }
-            else if (i == 1) {
-                path += "".concat(cp.x, " ").concat(cp.y, ", ").concat(data.x, " ").concat(data.y, " ");
-            }
-            else {
-                path += "S ".concat(cp.x, " ").concat(cp.y, ", ").concat(data.x, " ").concat(data.y);
-            }
-        });
-        this.newpath = document.createElementNS('http://www.w3.org/2000/svg', "path");
-        this.newpath.setAttributeNS(null, "d", path);
+        this.newpath = getSvgPathElement(pathCells);
     }
     CarAnimation.prototype.start = function () {
         var _this = this;
@@ -2376,6 +2380,9 @@ var Circuit = /** @class */ (function () {
                 var pressCorners = EVENTS_PRESS_CORNERS[event_1];
                 pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
             }
+            Object.values(this.gamedatas.constructors).filter(function (constructor) { var _a; return ((_a = constructor.path) === null || _a === void 0 ? void 0 : _a.length) > 1; }).forEach(function (constructor) {
+                _this.addMapPath(constructor.path, false);
+            });
         }
     }
     Circuit.prototype.loadCircuit = function (circuitDatas) {
@@ -2540,6 +2547,7 @@ var Circuit = /** @class */ (function () {
                         this.removeMapIndicators();
                         car = document.getElementById("car-".concat(constructorId));
                         if (!((path === null || path === void 0 ? void 0 : path.length) > 1 && this.game.animationManager.animationsActive())) return [3 /*break*/, 6];
+                        this.addMapPath(path, true, totalSpeed);
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 4, , 5]);
@@ -2553,6 +2561,9 @@ var Circuit = /** @class */ (function () {
                         return [2 /*return*/, this.moveCar(constructorId, carCell)];
                     case 5: return [3 /*break*/, 7];
                     case 6:
+                        if ((path === null || path === void 0 ? void 0 : path.length) > 1) {
+                            this.addMapPath(path, false);
+                        }
                         cell = this.getCellPosition(carCell);
                         if (!cell) {
                             console.warn('Cell not found (moveCar) : cell ', carCell, 'constructorId', constructorId);
@@ -2634,6 +2645,30 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.removeMapIndicators = function () {
         this.circuitDiv.querySelectorAll('.map-indicator').forEach(function (elem) { return elem.remove(); });
+    };
+    Circuit.prototype.addMapPath = function (pathCellIds, animated, totalSpeed) {
+        var pathCells = this.getCellsInfos(pathCellIds);
+        var path = getSvgPathElement(pathCells);
+        //let cell = this.circuitDatas.cells[cellId];
+        //mapPath.style.setProperty('--x', `${cell.x}px`);
+        //mapPath.style.setProperty('--y', `${cell.y}px`);
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', "svg");
+        svg.appendChild(path);
+        svg.id = "car-path-".concat(this.circuitDiv.querySelectorAll('.car-path').length);
+        svg.setAttribute('width', '1650');
+        svg.setAttribute('height', '1100');
+        svg.classList.add('car-path');
+        if (animated) {
+            var animationDuration = moveCarAnimationDuration(pathCellIds.length, totalSpeed);
+            var pathLength = Math.round(path.getTotalLength());
+            svg.style.setProperty('--animation-duration', "".concat(animationDuration, "ms"));
+            svg.style.setProperty('--path-length', "".concat(pathLength));
+            svg.classList.add('animated');
+        }
+        this.circuitDiv.insertAdjacentElement('afterbegin', svg);
+    };
+    Circuit.prototype.removeMapPaths = function () {
+        this.circuitDiv.querySelectorAll('.car-path').forEach(function (elem) { return elem.remove(); });
     };
     Circuit.prototype.getCellInfos = function (cellId) {
         // This is just a wrapper to either return the datas about the cell (center x, center y, angle)
@@ -3309,7 +3344,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onEnteringSlipstream = function (args) {
         var _this = this;
         Object.entries(args.speeds).forEach(function (entry) {
-            return _this.circuit.addMapIndicator(entry[1], function () { return _this.actSlipstream(Number(entry[0])); });
+            return _this.circuit.addMapIndicator(entry[1], function () { return _this.actSlipstream(Number(entry[0])); }, _this.speedCounters[_this.getConstructorId()].getValue(), false);
         });
     };
     Heat.prototype.onEnteringDiscard = function (args) {
@@ -3660,7 +3695,7 @@ var Heat = /** @class */ (function () {
         var _this = this;
         var constructors = Object.values(gamedatas.constructors);
         constructors.filter(function (constructor) { return constructor.ai; }).forEach(function (constructor) {
-            document.getElementById('player_boards').insertAdjacentHTML('beforeend', "\n            <div id=\"overall_player_board_".concat(constructor.pId, "\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n                    \n                    <div class=\"emblemwrap\" id=\"avatar_active_wrap_").concat(constructor.id, "\">\n                        <div src=\"img/gear.png\" alt=\"\" class=\"avatar avatar_active legend_avatar\" id=\"avatar_active_").concat(constructor.id, "\" style=\"--constructor-id: ").concat(constructor.id, "\"></div>\n                    </div>\n                                               \n                    <div class=\"player-name\" id=\"player_name_").concat(constructor.id, "\">\n                        ").concat(constructor.name, "\n                    </div>\n                    <div id=\"player_board_").concat(constructor.pId, "\" class=\"player_board_content\">\n                        <div class=\"player_score\">\n                            <span id=\"player_score_").concat(constructor.pId, "\" class=\"player_score_value\">-</span> <i class=\"fa fa-star\" id=\"icon_point_").concat(constructor.id, "\"></i>           \n                        </div>\n                    </div>\n                </div>\n            </div>"));
+            document.getElementById('player_boards').insertAdjacentHTML('beforeend', "\n            <div id=\"overall_player_board_".concat(constructor.pId, "\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n                    \n                    <div class=\"emblemwrap\" id=\"avatar_active_wrap_").concat(constructor.id, "\">\n                        <div src=\"img/gear.png\" alt=\"\" class=\"avatar avatar_active legend_avatar\" id=\"avatar_active_").concat(constructor.id, "\" style=\"--constructor-id: ").concat(constructor.id, "\"></div>\n                    </div>\n                                               \n                    <div class=\"player-name\" id=\"player_name_").concat(constructor.id, "\">\n                        ").concat(_(constructor.name), "\n                    </div>\n                    <div id=\"player_board_").concat(constructor.pId, "\" class=\"player_board_content\">\n                        <div class=\"player_score\">\n                            <span id=\"player_score_").concat(constructor.pId, "\" class=\"player_score_value\">-</span> <i class=\"fa fa-star\" id=\"icon_point_").concat(constructor.id, "\"></i>           \n                        </div>\n                    </div>\n                </div>\n            </div>"));
         });
         constructors.forEach(function (constructor) {
             var _a;
@@ -4091,6 +4126,7 @@ var Heat = /** @class */ (function () {
                         if (isAi) {
                             orderCounter = document.getElementById("order-".concat(constructor_id));
                             orderCounter.classList.add('played');
+                            this.circuit.removeMapPaths();
                         }
                         return [2 /*return*/];
                 }
@@ -4244,6 +4280,7 @@ var Heat = /** @class */ (function () {
                         _a.sent();
                         orderCounter = document.getElementById("order-".concat(constructor_id));
                         orderCounter.classList.add('played');
+                        this.circuit.removeMapPaths();
                         return [2 /*return*/];
                 }
             });

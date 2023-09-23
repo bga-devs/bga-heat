@@ -935,6 +935,28 @@ height: 241px; */
   background-position-y: 100%;
 }
 
+.car-path {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+.car-path path {
+  stroke: orange;
+  stroke-width: 3;
+  fill: none;
+}
+.car-path.animated path {
+  stroke-dasharray: var(--path-length);
+  stroke-dashoffset: var(--path-length);
+  animation: car-path-dash-animation var(--animation-duration) linear forwards;
+}
+
+@keyframes car-path-dash-animation {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
 .player-board {
   background-color: white;
 }

@@ -31,6 +31,35 @@ function moveCarAnimationDuration(cells: number, totalSpeed: number) {
     return totalSpeed <= 0 || cells <+ 0 ? 0 : Math.round(5500 / (20 + totalSpeed) * cells);
 }
 
+function getSvgPathElement(pathCells: { x: number; y: number; a: number; }[]) {
+    // Control strength is how far the control point are from the center of the cell
+    //  => it should probably be something related/proportional to scale of current board
+    let controlStrength = 20;
+
+    let path = ``;
+    pathCells.forEach((data, i) => {
+        // We compute the control point based on angle
+        //  => we have a special case for i = 0 since it's the only one with a "positive control point" (ie that goes in the same direction as arrow)
+        let cp = {
+            x: data.x + Math.cos((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
+            y: data.y + Math.sin((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
+        };
+    
+        // See "Shortand curve to" on https://developer.mozilla.org/fr/docs/Web/SVG/Tutorial/Paths
+        if (i == 0) {
+            path += `M ${data.x} ${data.y} C ${cp.x} ${cp.y}, `;
+        } else if (i == 1) {
+            path += `${cp.x} ${cp.y}, ${data.x} ${data.y} `;
+        } else {
+            path += `S ${cp.x} ${cp.y}, ${data.x} ${data.y}`;
+        }
+    });
+
+    const newpath = document.createElementNS('http://www.w3.org/2000/svg', "path") as SVGPathElement;
+    newpath.setAttributeNS(null, "d", path);
+    return newpath;
+}
+
 // Wrapper for the animation that use requestAnimationFrame
 class CarAnimation {
     private newpath: SVGPathElement;
@@ -39,31 +68,7 @@ class CarAnimation {
     private tZero: number;
 
     constructor(private car: HTMLElement, private pathCells: { x: number; y: number; a: number; }[], private totalSpeed: number) {
-        // Control strength is how far the control point are from the center of the cell
-        //  => it should probably be something related/proportional to scale of current board
-        let controlStrength = 20;
-
-        let path = "";
-        pathCells.forEach((data, i) => {
-            // We compute the control point based on angle
-            //  => we have a special case for i = 0 since it's the only one with a "positive control point" (ie that goes in the same direction as arrow)
-            let cp = {
-                x: data.x + Math.cos((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
-                y: data.y + Math.sin((data.a * Math.PI) / 180) * (i == 0 ? 1 : -1) * controlStrength,
-            };
-        
-            // See "Shortand curve to" on https://developer.mozilla.org/fr/docs/Web/SVG/Tutorial/Paths
-            if (i == 0) {
-                path += `M ${data.x} ${data.y} C ${cp.x} ${cp.y}, `;
-            } else if (i == 1) {
-                path += `${cp.x} ${cp.y}, ${data.x} ${data.y} `;
-            } else {
-                path += `S ${cp.x} ${cp.y}, ${data.x} ${data.y}`;
-            }
-        });
-
-        this.newpath = document.createElementNS('http://www.w3.org/2000/svg', "path") as SVGPathElement;
-        this.newpath.setAttributeNS(null, "d", path);
+        this.newpath = getSvgPathElement(pathCells);
     }
 
     start() {
@@ -130,6 +135,10 @@ class Circuit {
                 const pressCorners = EVENTS_PRESS_CORNERS[event];
                 pressCorners.forEach((cornerId: number) => this.createPressToken(cornerId));
             }
+
+            Object.values(this.gamedatas.constructors).filter(constructor => constructor.path?.length > 1).forEach((constructor) => {
+                this.addMapPath(constructor.path, false)
+            });
         }
     }
     
@@ -317,6 +326,7 @@ class Circuit {
 
         const car = document.getElementById(`car-${constructorId}`);
         if (path?.length > 1 && this.game.animationManager.animationsActive()) {
+            this.addMapPath(path, true, totalSpeed);
             try {
                 await this.moveCarWithAnimation(car, path, totalSpeed);
                 return await this.moveCar(constructorId, carCell);
@@ -324,6 +334,10 @@ class Circuit {
                 return this.moveCar(constructorId, carCell);
             }
         } else {
+            if (path?.length > 1) {
+                this.addMapPath(path, false);
+            }
+
             const cell = this.getCellPosition(carCell);
             if (!cell) {
                 console.warn('Cell not found (moveCar) : cell ', carCell, 'constructorId', constructorId);
@@ -408,6 +422,32 @@ class Circuit {
     
     public removeMapIndicators(): void {
         this.circuitDiv.querySelectorAll('.map-indicator').forEach(elem => elem.remove());
+    }
+    
+    public addMapPath(pathCellIds: number[], animated: boolean, totalSpeed?: number): void {  
+        const pathCells = this.getCellsInfos(pathCellIds);
+        const path = getSvgPathElement(pathCells);
+        //let cell = this.circuitDatas.cells[cellId];
+        //mapPath.style.setProperty('--x', `${cell.x}px`);
+        //mapPath.style.setProperty('--y', `${cell.y}px`);
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', "svg") as SVGElement;
+        svg.appendChild(path);
+        svg.id = `car-path-${this.circuitDiv.querySelectorAll('.car-path').length}`;
+        svg.setAttribute('width', '1650');
+        svg.setAttribute('height', '1100');
+        svg.classList.add('car-path');
+        if (animated) {
+            const animationDuration = moveCarAnimationDuration(pathCellIds.length, totalSpeed);
+            const pathLength = Math.round(path.getTotalLength());
+            svg.style.setProperty('--animation-duration', `${animationDuration}ms`);
+            svg.style.setProperty('--path-length', `${pathLength}`);
+            svg.classList.add('animated');
+        }
+        this.circuitDiv.insertAdjacentElement('afterbegin', svg);
+    }
+
+    public removeMapPaths() {
+        this.circuitDiv.querySelectorAll('.car-path').forEach(elem => elem.remove());
     }
 
     private getCellInfos(cellId: number | number[]) {
