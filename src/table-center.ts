@@ -136,9 +136,9 @@ class Circuit {
                 pressCorners.forEach((cornerId: number) => this.createPressToken(cornerId));
             }
 
-            Object.values(this.gamedatas.constructors).filter(constructor => constructor.path?.length > 1).forEach((constructor) => {
-                this.addMapPath(constructor.path, false)
-            });
+            Object.values(this.gamedatas.constructors).filter(constructor => constructor.paths?.length > 0).forEach(constructor => 
+                constructor.paths.filter(path => path?.length > 1).forEach(path => this.addMapPath(path, false))
+            );
         }
     }
     
