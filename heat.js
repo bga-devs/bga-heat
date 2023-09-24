@@ -4201,6 +4201,7 @@ var Heat = /** @class */ (function () {
                         this.circuit.moveCar(constructor_id, cell);
                         _a.label = 4;
                     case 4:
+                        this.cornerCounters[constructor_id].toValue(0);
                         this.gearCounters[constructor_id].toValue(1);
                         playerId = this.getPlayerIdFromConstructorId(constructor_id);
                         playerTable = this.getPlayerTable(playerId);
@@ -4386,7 +4387,7 @@ var Heat = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        cell = args.pos;
+                        cell = args.cell;
                         return [4 /*yield*/, this.notif_finishRace(__assign(__assign({}, args), { pos: -cell }), true)];
                     case 1:
                         _a.sent();
@@ -4501,7 +4502,7 @@ var Heat = /** @class */ (function () {
         fetchNextUrl();
     };
     Heat.prototype.coloredConstructorName = function (constructorName) {
-        return "<span style=\"font-weight: bold; color: #".concat(CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.name == constructorName; }).id], "\">").concat(constructorName, "</span>");
+        return "<span style=\"font-weight: bold; color: #".concat(CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.name == constructorName; }).id], "\">").concat(_(constructorName), "</span>");
     };
     Heat.prototype.cardImageHtml = function (card, args) {
         var _this = this;

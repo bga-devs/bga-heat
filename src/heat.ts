@@ -1389,6 +1389,7 @@ class Heat implements HeatGame {
             this.circuit.moveCar(constructor_id, cell);
         }
 
+        this.cornerCounters[constructor_id].toValue(0);
         this.gearCounters[constructor_id].toValue(1);
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
@@ -1538,7 +1539,7 @@ class Heat implements HeatGame {
     }
 
     async notif_eliminate(args: NotifEliminateArgs) {
-        const { pos: cell } = args;
+        const { cell } = args;
         await this.notif_finishRace({
             ...args,
             pos: -cell
@@ -1641,7 +1642,7 @@ class Heat implements HeatGame {
    }
 
     private coloredConstructorName(constructorName: string): string {
-        return `<span style="font-weight: bold; color: #${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == constructorName).id]}">${constructorName}</span>`;
+        return `<span style="font-weight: bold; color: #${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == constructorName).id]}">${_(constructorName)}</span>`;
     }
 
     private cardImageHtml(card: Card, args: any) {
