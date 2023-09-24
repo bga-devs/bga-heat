@@ -42,6 +42,7 @@ trait LegendTrait
         $speed = ($cornerPos - 1 - $pos + $length) % $length;
         $this->moveCar($constructor, $speed);
       }
+      $constructor->setSpeed($speed);
     }
     // B => approaching the corner
     else {
@@ -49,11 +50,13 @@ trait LegendTrait
       // Check if that makes the car cross the corner
       if ($number < $deltaCorner || $turn == $this->getNbrLaps()) {
         $this->moveCar($constructor, $number);
+        $constructor->setSpeed($number);
       }
       // If yes, then go to the "slot cell" instead
       else {
         $speed = ($cornerPos - 1 - $slot - $pos + $length) % $length;
         $this->moveCar($constructor, $speed, false, $slot);
+        $constructor->setSpeed($speed);
       }
     }
 
