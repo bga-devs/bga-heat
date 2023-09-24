@@ -27,6 +27,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
     'turn' => ['turn', 'int'],
     'gear' => ['gear', 'int'],
     'speed' => ['speed', 'int'],
+    'paths' => ['paths', 'obj'],
   ];
 
   public function getUiData($currentPlayerId = null)

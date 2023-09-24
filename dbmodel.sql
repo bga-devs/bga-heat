@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS `constructors` (
   `car_cell` varchar(32),
   `speed` int(10),
   `turn` int(10),
+  `paths` JSON,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

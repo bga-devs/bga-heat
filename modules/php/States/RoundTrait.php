@@ -437,6 +437,10 @@ trait RoundTrait
       $slipstream,
       $legendSlot
     );
+
+    $paths = $constructor->getPaths() ?? [];
+    $paths[] = $path;
+    $constructor->setPaths($paths);
   }
 
   //////////////////////////////////////////////////////////////////
@@ -1140,6 +1144,7 @@ trait RoundTrait
 
     // Replenish
     Cards::fillHand($constructor);
+    $constructor->setPaths([]);
 
     $this->nextPlayerCustomOrder('reveal');
   }

@@ -268,10 +268,10 @@ class Heat extends Table
    */
   public function upgradeTableDb($from_version)
   {
-    // if ($from_version <= 2107011810) {
-    //   $sql = 'ALTER TABLE `DBPREFIX_player` ADD `new_score` INT(10) NOT NULL DEFAULT 0';
-    //   self::applyDbUpgradeToAllDB($sql);
-    // }
+    if ($from_version <= 2309242157) {
+      $sql = 'ALTER TABLE `DBPREFIX_constructors` ADD `paths` JSON';
+      self::applyDbUpgradeToAllDB($sql);
+    }
   }
 
   /////////////////////////////////////////////////////////////
