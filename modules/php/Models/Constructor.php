@@ -41,8 +41,15 @@ class Constructor extends \HEAT\Helpers\DB_Model
       'discard' => $this->getDiscard(),
       'deckCount' => $this->getDeck()->count(),
       'inplay' => $this->getPlayedCards(),
-      'distanceToCorner' => Game::get()->getCircuit()->getDistanceToCorner($this),
+      'distanceToCorner' => $this->getDistanceToCorner(),
     ]);
+  }
+
+  public function getDistanceToCorner()
+  {
+    return Game::get()
+      ->getCircuit()
+      ->getDistanceToCorner($this->getPosition());
   }
 
   public function isAI()

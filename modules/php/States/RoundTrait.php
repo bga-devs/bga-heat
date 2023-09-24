@@ -350,7 +350,6 @@ trait RoundTrait
   // |____(_) |_|  |_|\___/ \_/ \___|
   ///////////////////////////////////////
 
-
   public function argsChooseSpeed()
   {
     $constructor = Constructors::getActive();
@@ -426,8 +425,18 @@ trait RoundTrait
     list($newCell, $nSpacesForward, $extraTurns, $path, ,) = $circuit->getReachedCell($constructor, $n, true, false);
     $constructor->setCarCell($newCell);
     $constructor->incTurn($extraTurns);
-    $distanceToCorner = $circuit->getDistanceToCorner($constructor);
-    Notifications::moveCar($constructor, $newCell, $n, $nSpacesForward, $extraTurns, $distanceToCorner, $path, $slipstream, $legendSlot);
+    $distanceToCorner = $constructor->getDistanceToCorner();
+    Notifications::moveCar(
+      $constructor,
+      $newCell,
+      $n,
+      $nSpacesForward,
+      $extraTurns,
+      $distanceToCorner,
+      $path,
+      $slipstream,
+      $legendSlot
+    );
   }
 
   //////////////////////////////////////////////////////////////////
