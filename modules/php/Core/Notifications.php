@@ -602,11 +602,17 @@ class Notifications
     if (isset($data['constructor'])) {
       $data['constructor_name'] = $data['constructor']->getName();
       $data['constructor_id'] = $data['constructor']->getId();
+      if ($data['constructor']->isAI()) {
+        $data['i18n'][] = 'constructor_name';
+      }
       unset($data['constructor']);
     }
     if (isset($data['constructor2'])) {
       $data['constructor_name2'] = $data['constructor2']->getName();
       $data['constructor_id2'] = $data['constructor2']->getId();
+      if ($data['constructor2']->isAI()) {
+        $data['i18n'][] = 'constructor_name2';
+      }
       unset($data['constructor2']);
     }
 
@@ -619,6 +625,9 @@ class Notifications
         $args['constructor_name' . $i] = $constructor->getName();
         $args['constructor_id' . $i] = $constructor->getId();
         $data['constructor_ids'][] = $constructor->getId();
+        if ($constructor->isAI()) {
+          $args['i18n'][] = 'constructor_name' . $i;
+        }
       }
       $data['constructors_names'] = [
         'log' => join(', ', $logs),
