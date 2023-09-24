@@ -1642,7 +1642,7 @@ class Heat implements HeatGame {
    }
 
     private coloredConstructorName(constructorName: string): string {
-        return `<span style="font-weight: bold; color: #${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == constructorName).id]}">${constructorName}</span>`;
+        return `<span style="font-weight: bold; color: #${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(constructor => constructor.name == constructorName).id]}">${_(constructorName)}</span>`;
     }
 
     private cardImageHtml(card: Card, args: any) {

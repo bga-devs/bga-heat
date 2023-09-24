@@ -4502,7 +4502,7 @@ var Heat = /** @class */ (function () {
         fetchNextUrl();
     };
     Heat.prototype.coloredConstructorName = function (constructorName) {
-        return "<span style=\"font-weight: bold; color: #".concat(CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.name == constructorName; }).id], "\">").concat(constructorName, "</span>");
+        return "<span style=\"font-weight: bold; color: #".concat(CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.name == constructorName; }).id], "\">").concat(_(constructorName), "</span>");
     };
     Heat.prototype.cardImageHtml = function (card, args) {
         var _this = this;
