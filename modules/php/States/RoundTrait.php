@@ -795,6 +795,22 @@ trait RoundTrait
       $slipstreams = $t;
     }
 
+    // Previous heat cost
+    $prevPosition = Globals::getPreviousPosition();
+    $prevTurn = Globals::getPreviousTurn();
+    $position = $constructor->getPosition();
+    $turn = $constructor->getTurn();
+    $speed = $constructor->getSpeed();
+    list($previousHeatCost) = $this->getCircuit()->getCrossedCornersTotalHeatCost(
+      $constructor,
+      $speed,
+      $prevTurn,
+      $prevPosition,
+      $turn,
+      $position
+    );
+
+    // Reached cells and heat costs
     $speeds = [];
     $heatCosts = [];
     foreach ($slipstreams as $n) {
@@ -802,13 +818,14 @@ trait RoundTrait
       if ($res !== false) {
         list($cell, $path, $heatCost, $spinOut) = $res;
         $speeds[$n] = $cell;
-        $heatCosts[$n] = $heatCost;
+        $heatCosts[$n] = $heatCost + $previousHeatCost;
       }
     }
 
     return [
       'speeds' => $speeds,
       'heatCosts' => $heatCosts,
+      'previousHeatCost' => $previousHeatCost,
     ];
   }
 
