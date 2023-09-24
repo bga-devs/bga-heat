@@ -317,7 +317,7 @@ interface NotifDirectPlayArgs {
 // eliminate
 interface NotifEliminateArgs {
     constructor_id: number;
-    pos: number;
+    cell: number;
 }
 
 // newChampionshipRace
