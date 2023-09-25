@@ -2380,8 +2380,8 @@ var Circuit = /** @class */ (function () {
                 var pressCorners = EVENTS_PRESS_CORNERS[event_1];
                 pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
             }
-            Object.values(this.gamedatas.constructors).filter(function (constructor) { var _a; return ((_a = constructor.path) === null || _a === void 0 ? void 0 : _a.length) > 1; }).forEach(function (constructor) {
-                _this.addMapPath(constructor.path, false);
+            Object.values(this.gamedatas.constructors).filter(function (constructor) { var _a; return ((_a = constructor.paths) === null || _a === void 0 ? void 0 : _a.length) > 0; }).forEach(function (constructor) {
+                return constructor.paths.filter(function (path) { return (path === null || path === void 0 ? void 0 : path.length) > 1; }).forEach(function (path) { return _this.addMapPath(path, false); });
             });
         }
     }

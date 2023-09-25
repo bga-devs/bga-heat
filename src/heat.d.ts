@@ -25,7 +25,7 @@ interface Constructor {
     discard: { [id: number]: Card};
     deckCount: number;
     distanceToCorner: number;
-    path?: number[];
+    paths?: number[][];
 }
 
 interface Cell {
