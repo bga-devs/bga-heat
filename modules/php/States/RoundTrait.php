@@ -166,7 +166,7 @@ trait RoundTrait
 
       // Can we give up ?
       $canSkipEndRace =
-        // !empty(Globals::getFinishedConstructors()) &&
+        !empty(Globals::getFinishedConstructors()) &&
         $constructor->getTurn() < $this->getNbrLaps() || $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4;
 
       $args['_private'][$pId] = [
