@@ -80,7 +80,7 @@ trait SetupTrait
       Constructors::assignConstructorAutoma($fakePId, $cId, $no);
       $nAutoma++;
     }
-
+    ksort($constructors);
     Globals::setTurnOrder($constructors);
     Cards::setupNewGame($options);
     LegendCards::setupNewGame();
