@@ -128,10 +128,12 @@ interface EnteringPlanificationPrivateArgs {
     speeds: { [cardId: number]: number | number[]};
     boostingCardIds: number[];
     clutteredHand: boolean;
+    canSkipEndRace: boolean;
 }
 
 interface EnteringPlanificationArgs {    
     _private?: EnteringPlanificationPrivateArgs;
+    nPlayersLeft: number;
 }
 
 interface EnteringChooseSpeedArgs {
@@ -320,6 +322,7 @@ interface NotifEliminateArgs {
     constructor_id: number;
     cell: number;
     canLeave: boolean;
+    giveUp: boolean;
 }
 
 // newChampionshipRace

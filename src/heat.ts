@@ -391,8 +391,20 @@ class Heat implements HeatGame {
                     break;
 
                 case 'planification':
+                    const planificationArgs = args as EnteringPlanificationArgs;
                     (this as any).addActionButton(`actPlanification_button`, '', () => this.actPlanification());
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
+                    if (planificationArgs._private?.canSkipEndRace) {
+                        let giveUpMessage = _("If you give up, you will be ranked last.");
+                        if (planificationArgs.nPlayersLeft > 1) {
+                            giveUpMessage += '<br><br>' + _("You are not the only player remaining, so there is still hope!");
+                        }
+
+                        (this as any).addActionButton(`actGiveUp_button`, _('I want to give up this race'), () => (this as any).confirmationDialog(
+                            giveUpMessage,
+                            () => this.actGiveUp()
+                        ), null, null, 'gray');
+                    }
                     break;
                 case 'chooseSpeed':
                     const chooseSpeedArgs = args as EnteringChooseSpeedArgs;
@@ -1188,6 +1200,14 @@ class Heat implements HeatGame {
     public actQuitGame() {
         this.takeAction('actQuitGame');
     }
+  	
+    public actGiveUp() {
+        if(!(this as any).checkAction('actGiveUp')) {
+            return;
+        }
+
+        this.takeAction('actGiveUp');
+    }
 
     public takeAction(action: string, data?: any) {
         data = data || {};
@@ -1580,11 +1600,11 @@ class Heat implements HeatGame {
     }
 
     async notif_eliminate(args: NotifEliminateArgs) {
-        const { cell, canLeave } = args;
+        const { cell, giveUp } = args;
         await this.notif_finishRace({
             ...args,
             pos: -cell
-        }, true);
+        }, !giveUp);
     }  
 
     async notif_newChampionshipRace(args: NotifNewChampionshipRaceArgs) {

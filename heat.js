@@ -3420,7 +3420,7 @@ var Heat = /** @class */ (function () {
     //
     Heat.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         switch (stateName) {
             case 'planification':
                 this.onEnteringPlanification(args);
@@ -3438,8 +3438,16 @@ var Heat = /** @class */ (function () {
                     this.addActionButton("actPassSwapUpgrade_button", _('Pass'), function () { return _this.actPassSwapUpgrade(); }, null, null, 'red');
                     break;
                 case 'planification':
+                    var planificationArgs = args;
                     this.addActionButton("actPlanification_button", '', function () { return _this.actPlanification(); });
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
+                    if ((_a = planificationArgs._private) === null || _a === void 0 ? void 0 : _a.canSkipEndRace) {
+                        var giveUpMessage_1 = _("If you give up, you will be ranked last.");
+                        if (planificationArgs.nPlayersLeft > 1) {
+                            giveUpMessage_1 += '<br><br>' + _("You are not the only player remaining, so there is still hope!");
+                        }
+                        this.addActionButton("actGiveUp_button", _('I want to give up this race'), function () { return _this.confirmationDialog(giveUpMessage_1, function () { return _this.actGiveUp(); }); }, null, null, 'gray');
+                    }
                     break;
                 case 'chooseSpeed':
                     var chooseSpeedArgs = args;
@@ -3538,8 +3546,8 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
-                    if ((_b = (_a = args._private) === null || _a === void 0 ? void 0 : _a.refreshedIds) === null || _b === void 0 ? void 0 : _b.length) {
-                        (_c = args._private) === null || _c === void 0 ? void 0 : _c.refreshedIds.forEach(function (number) {
+                    if ((_c = (_b = args._private) === null || _b === void 0 ? void 0 : _b.refreshedIds) === null || _c === void 0 ? void 0 : _c.length) {
+                        (_d = args._private) === null || _d === void 0 ? void 0 : _d.refreshedIds.forEach(function (number) {
                             var refreshCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
                             var label = "<div class=\"icon refresh\"></div><br>".concat(_this.cardImageHtml(refreshCard, { constructor_id: _this.getConstructorId() }));
                             var tooltip = _this.getGarageModuleIconTooltipWithIcon('refresh', 1);
@@ -3960,6 +3968,12 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.actQuitGame = function () {
         this.takeAction('actQuitGame');
+    };
+    Heat.prototype.actGiveUp = function () {
+        if (!this.checkAction('actGiveUp')) {
+            return;
+        }
+        this.takeAction('actGiveUp');
     };
     Heat.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -4410,12 +4424,12 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_eliminate = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var cell, canLeave;
+            var cell, giveUp;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        cell = args.cell, canLeave = args.canLeave;
-                        return [4 /*yield*/, this.notif_finishRace(__assign(__assign({}, args), { pos: -cell }), true)];
+                        cell = args.cell, giveUp = args.giveUp;
+                        return [4 /*yield*/, this.notif_finishRace(__assign(__assign({}, args), { pos: -cell }), !giveUp)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
