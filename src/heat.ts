@@ -549,6 +549,7 @@ class Heat implements HeatGame {
                     this.onEnteringSalvage(args);
                     (this as any).addActionButton(`actSalvage_button`, _('Salvage selected cards'), () => this.actSalvage());
                     document.getElementById(`actSalvage_button`).classList.add('disabled');
+                    break;
                 case 'confirmEndOfRace':
                     (this as any).addActionButton(`seen_button`, _("Seen"), () => this.actConfirmResults());
                     break;

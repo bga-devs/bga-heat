@@ -3567,6 +3567,7 @@ var Heat = /** @class */ (function () {
                     this.onEnteringSalvage(args);
                     this.addActionButton("actSalvage_button", _('Salvage selected cards'), function () { return _this.actSalvage(); });
                     document.getElementById("actSalvage_button").classList.add('disabled');
+                    break;
                 case 'confirmEndOfRace':
                     this.addActionButton("seen_button", _("Seen"), function () { return _this.actConfirmResults(); });
                     break;
