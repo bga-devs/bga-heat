@@ -3197,7 +3197,7 @@ var Heat = /** @class */ (function () {
             zoomControls: {
                 color: 'black',
             },
-            defaultZoom: 0.75,
+            defaultZoom: 0.625,
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
         });
         new HelpManager(this, {
@@ -3211,7 +3211,12 @@ var Heat = /** @class */ (function () {
         });
         this.setupNotifications();
         this.setupPreferences();
-        this.onScreenWidthChange = function () { return _this.circuit.setAutoZoom(); };
+        this.onScreenWidthChange = function () {
+            _this.circuit.setAutoZoom();
+            while (_this.zoomManager.zoom > 0.5 && document.getElementById('tables').clientWidth < 1200) {
+                _this.zoomManager.zoomOut();
+            }
+        };
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////

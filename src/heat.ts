@@ -112,7 +112,7 @@ class Heat implements HeatGame {
             zoomControls: {
                 color: 'black',
             },
-            defaultZoom: 0.75,
+            defaultZoom: 0.625,
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
         });
 
@@ -127,7 +127,12 @@ class Heat implements HeatGame {
         });
         this.setupNotifications();
         this.setupPreferences();
-        (this as any).onScreenWidthChange = () => this.circuit.setAutoZoom();
+        (this as any).onScreenWidthChange = () => {
+            this.circuit.setAutoZoom();
+            while (this.zoomManager.zoom > 0.5 && document.getElementById('tables').clientWidth < 1200) {
+                this.zoomManager.zoomOut();   
+            }
+        }
 
         log( "Ending game setup" );
     }
