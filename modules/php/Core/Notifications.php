@@ -326,11 +326,12 @@ class Notifications
     self::resolveBoost($constructor, $cards, $card, 1, 1);
   }
 
-  public function finishRace($constructor, $podium)
+  public function finishRace($constructor, $podium, $canLeave)
   {
     self::notifyAll('finishRace', clienttranslate('${constructor_name} finishes the race at position ${pos}'), [
       'constructor' => $constructor,
       'pos' => $podium,
+      'canLeave' => $canLeave,
     ]);
   }
 
@@ -577,11 +578,12 @@ class Notifications
     }
   }
 
-  public function eliminate($constructor, $cell)
+  public function eliminate($constructor, $cell, $canLeave)
   {
     self::notifyAll('eliminate', clienttranslate('${constructor_name} is eliminated from the race and will score 0 points'), [
       'constructor' => $constructor,
       'cell' => $cell,
+      'canLeave' => $canLeave,
     ]);
   }
 

@@ -148,6 +148,13 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actQuitGame()
+  {
+    self::setAjaxMode();
+    $this->game->actQuitGame();
+    self::ajaxResponse();
+  }
+
   //////////////////
   ///// UTILS  /////
   //////////////////

@@ -43,7 +43,25 @@ class Constructor extends \HEAT\Helpers\DB_Model
       'deckCount' => $this->getDeck()->count(),
       'inplay' => $this->getPlayedCards(),
       'distanceToCorner' => $this->getDistanceToCorner(),
+      'canLeave' => $this->canLeave(),
     ]);
+  }
+
+  public function canLeave()
+  {
+    // Constructor must be finished to quit
+    if (!$this->isFinished() || $this->isAI()) {
+      return false;
+    }
+
+    // And it must be a single race or the last one in the championship
+    if (!Globals::isChampionship()) {
+      return true;
+    } else {
+      // End of championship
+      $datas = Globals::getChampionshipDatas();
+      return $datas['index'] + 1 == count($datas['circuits']);
+    }
   }
 
   public function getDistanceToCorner()
@@ -230,6 +248,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
     $cell = array_shift($podium);
     $this->setCarCell($cell);
     $this->setSpeed(-1);
-    Notifications::eliminate($this, $cell);
+    $canLeave = $this->canLeave();
+    Notifications::eliminate($this, $cell, $canLeave);
   }
 }

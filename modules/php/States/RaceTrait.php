@@ -195,6 +195,18 @@ trait RaceTrait
     $this->gamestate->nextState();
   }
 
+  function actQuitGame()
+  {
+    $pId = (int) $this->getCurrentPId();
+    $constructor = Constructors::getOfPlayer($pId);
+    if (!$constructor->canLeave()) {
+      throw new \BgaVisibleSystemException('You cant leave the game. Should not happen');
+    }
+    $constructor->setSpeed(-1);
+    $constructor->setPaths([]);
+    $this->eliminatePlayer($pId);
+  }
+
   ///////////////////////////////////
   //   ____ _                _ _
   //  / ___(_)_ __ ___ _   _(_) |_

@@ -66,7 +66,8 @@ trait RoundTrait
         $finished[] = $cId;
         $podium = count($finished);
         $constructor->setCarCell(-$podium);
-        Notifications::finishRace($constructor, $podium);
+        $canLeave = $constructor->canLeave();
+        Notifications::finishRace($constructor, $podium, $canLeave);
       }
       // Otherwise, keep it for next turn
       else {
