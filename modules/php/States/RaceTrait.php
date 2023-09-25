@@ -44,6 +44,7 @@ trait RaceTrait
       // $constructor->setTurn($this->getNbrLaps());
       $constructor->setGear(1);
       $constructor->setSpeed(-1);
+      $constructor->incStat('position', $i + 1);
       $positions[$cId] = $cell;
       $constructors[] = $constructor;
     }
@@ -114,6 +115,9 @@ trait RaceTrait
     $skippedPlayers = Globals::getSkippedPlayers();
     foreach (Constructors::getAll() as $cId => $constructor) {
       $podiumPos = -$constructor->getCarCell() - 1;
+      $constructor->incStat('endPosition', $podiumPos + 1);
+      $constructor->incStat('heatLeft', $constructor->getEngine()->count());
+
       $score[$cId] = $podium[$podiumPos] ?? 0;
       if (!$constructor->isAI() && in_array($constructor->getPId(), $skippedPlayers)) {
         $score[$cId] = 0;

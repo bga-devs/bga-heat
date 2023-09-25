@@ -48,6 +48,7 @@ trait SetupTrait
 
     Globals::setupNewGame($players, $options);
     Players::setupNewGame($players, $options);
+    Stats::checkExistence();
     // Preferences::setupNewGame($players, $this->player_preferences);
 
     // Setup constructors

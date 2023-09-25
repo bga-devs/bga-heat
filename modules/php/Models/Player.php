@@ -43,4 +43,16 @@ class Player extends \HEAT\Helpers\DB_Model
     $name = 'get' . \ucfirst($name);
     return Stats::$name($this->id);
   }
+
+  public function setStat($name, $val)
+  {
+    $name = 'set' . \ucfirst($name);
+    return Stats::$name($this->id, $val);
+  }
+
+  public function incStat($name, $val = 1)
+  {
+    $name = 'inc' . \ucfirst($name);
+    return Stats::$name($this->id, $val);
+  }
 }

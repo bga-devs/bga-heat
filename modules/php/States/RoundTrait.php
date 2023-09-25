@@ -295,6 +295,7 @@ trait RoundTrait
 
     $planification = Globals::getPlanification();
     $cardIds = $planification[$constructor->getPId()];
+    $constructor->incStat('rounds');
 
     // Setup gear and reveal cards
     $newGear = count($cardIds);
@@ -309,9 +310,18 @@ trait RoundTrait
         throw new \BgaVisibleSystemException('You dont have enough heat to pay for the change of gear of 2. Should not happen');
       }
       Cards::move($heat['id'], ['discard', $constructor->getId()]);
+      if ($newGear > $constructor->getGear()) {
+        $constructor->incStat('heatPayedGearUp');
+      } else {
+        $constructor->incStat('heatPayedGearDown');
+      }
     }
 
     $constructor->setGear($newGear);
+    $constructor->incStat('roundsSpeed' . $newGear);
+    if ($constructor->getNo() == 0) {
+      $constructor->incStat('roundsFirst');
+    }
     Cards::move($cardIds, ['inplay', $constructor->getId()]);
     $cards = Cards::getMany($cardIds);
     Notifications::reveal($constructor, $newGear, $cards, $heat);
@@ -344,6 +354,9 @@ trait RoundTrait
         } else {
           $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
         }
+      }
+      if ($card['type'] == 110) {
+        $constructor->incStat('stressPlayed');
       }
     }
 
@@ -469,6 +482,7 @@ trait RoundTrait
     $paths = $constructor->getPaths() ?? [];
     $paths[] = $path;
     $constructor->setPaths($paths);
+    return $nSpacesForward;
   }
 
   //////////////////////////////////////////////////////////////////
@@ -493,6 +507,7 @@ trait RoundTrait
       $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
       $symbols[ADRENALINE] = 1;
       Notifications::gainAdrenaline($constructor, $no == $maxNo - 1);
+      $constructor->incStat('roundsAdrenaline');
     }
 
     // Additional cooldown from gear
@@ -609,11 +624,13 @@ trait RoundTrait
       $constructor->incSpeed(1);
       Notifications::adrenaline($constructor);
       // Move car 1 cell (if possible)
-      $this->moveCar($constructor, 1);
+      $nForward = $this->moveCar($constructor, 1);
+      $constructor->incStat('adrenalineGains', $nForward);
     }
     // HEATED BOOST
     elseif ($symbol == HEATED_BOOST || $symbol == BOOST) {
       Globals::setUsedBoost(true);
+      $constructor->incStat('boost');
       if ($symbol == HEATED_BOOST) {
         if ($constructor->hasNoHeat()) {
           throw new UserException(clienttranslate('You dont have enough heat to pay for the boost.'));
@@ -882,7 +899,8 @@ trait RoundTrait
       }
 
       // Compute the new cell
-      $this->moveCar($constructor, $n, true);
+      $nForward = $this->moveCar($constructor, $n, true);
+      $constructor->incStat('slipstreamGains', $nForward);
     }
 
     $this->stCheckCorner();
@@ -934,6 +952,7 @@ trait RoundTrait
     if (!empty($corners)) {
       foreach ($corners as $cornerPos => $nHeatsToPay) {
         if ($nHeatsToPay > 0) {
+          $constructor->incStat('overspeedCorners');
           $roadCondition = $this->getCircuit()->getCornerWeather($cornerPos);
           $limit = $limits[$cornerPos];
           $available = $constructor->getEngine()->count();
@@ -953,6 +972,9 @@ trait RoundTrait
               $constructor->incTurn(-1);
               $turn--;
             }
+
+            $constructor->incStat('spinOuts');
+            $constructor->incStat('stressSpinOuts', count($stresses));
 
             // prettier-ignore
             Notifications::spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $turn, $roadCondition);
@@ -1134,6 +1156,7 @@ trait RoundTrait
       Cards::move($cardIds, ['discard', $constructor->getId()]);
       Notifications::discard($constructor, Cards::getMany($cardIds));
     }
+    $constructor->incStat('extraDiscard', count($cardIds));
 
     $this->stReplenish();
   }

@@ -168,6 +168,27 @@ class Constructor extends \HEAT\Helpers\DB_Model
     return Cards::getDiscard($this->id);
   }
 
+  public function getStat($name)
+  {
+    if (!$this->isAI()) {
+      return Players::get($this->pId)->getStat($name);
+    }
+  }
+
+  public function setStat($name, $val)
+  {
+    if (!$this->isAI()) {
+      return Players::get($this->pId)->setStat($name, $val);
+    }
+  }
+
+  public function incStat($name, $val = 1)
+  {
+    if (!$this->isAI()) {
+      return Players::get($this->pId)->incStat($name, $val);
+    }
+  }
+
   public function resolveBoost()
   {
     $cards = [];
@@ -185,6 +206,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
   {
     $cards = $this->getEngine()->limit($n);
     Cards::move($cards->getIds(), ['discard', $this->id]);
+    $this->incStat('heatPayed', $n);
     return $cards;
   }
 

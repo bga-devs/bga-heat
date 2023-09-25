@@ -5,10 +5,11 @@ use HEAT\Managers\Players;
 /*
  * Statistics
  */
-class Stats extends \HEAT\Helpers\DB_Manager
+class Stats extends \HEAT\Helpers\CachedDB_Manager
 {
   protected static $table = 'stats';
   protected static $primary = 'stats_id';
+  protected static $datas = null;
   protected static function cast($row)
   {
     return [
@@ -34,8 +35,7 @@ class Stats extends \HEAT\Helpers\DB_Manager
 
     // Fetch existing stats, all stats
     $stats = Game::get()->getStatTypes();
-    $existingStats = self::DB()
-      ->get()
+    $existingStats = self::getAll()
       ->map(function ($stat) {
         return $stat['type'] . ',' . ($stat['pId'] == null ? 'table' : 'player');
       })
@@ -65,10 +65,6 @@ class Stats extends \HEAT\Helpers\DB_Manager
       if (!in_array($stat['id'] . ',player', $existingStats)) {
         foreach ($playerIds as $i => $pId) {
           $value = $default[$stat['type']];
-          if ($stat['id'] == STAT_POSITION) {
-            $value = $i + 1;
-          }
-
           $values[] = [
             'stats_type' => $stat['id'],
             'stats_player_id' => $pId,
@@ -83,7 +79,18 @@ class Stats extends \HEAT\Helpers\DB_Manager
       self::DB()
         ->multipleInsert(['stats_type', 'stats_player_id', 'stats_value'])
         ->values($values);
+      self::invalidate();
     }
+  }
+
+  protected static function getValue($id, $pId)
+  {
+    return self::getAll()
+      ->filter(function ($stat) use ($id, $pId) {
+        return $stat['type'] == $id &&
+          ((is_null($pId) && is_null($stat['pId'])) || (!is_null($pId) && $stat['pId'] == (is_int($pId) ? $pId : $pId->getId())));
+      })
+      ->first()['value'];
   }
 
   protected static function getFilteredQuery($id, $pId)
@@ -127,8 +134,7 @@ class Stats extends \HEAT\Helpers\DB_Manager
           $pId = $args[0];
         }
 
-        $row = self::getFilteredQuery($id, $pId)->get(true);
-        return $row['value'];
+        return self::getValue($id, $pId);
       } elseif ($match[1] == 'set') {
         // Setters in DB and update cache
         $id = null;
@@ -150,6 +156,7 @@ class Stats extends \HEAT\Helpers\DB_Manager
         self::getFilteredQuery($id, $pId)
           ->update(['stats_value' => $value])
           ->run();
+        self::invalidate();
         return $value;
       } elseif ($match[1] == 'inc') {
         $id = null;
@@ -171,18 +178,11 @@ class Stats extends \HEAT\Helpers\DB_Manager
         self::getFilteredQuery($id, $pId)
           ->inc(['stats_value' => $value])
           ->run();
+        self::invalidate();
         return $value;
       }
     }
     return null;
-  }
-
-  /**
-   * Useless function whole sole purpose is to have stat labels translatable because BGA script dont capture them
-   */
-  protected function getLabels()
-  {
-    $labels = [];
   }
 }
 

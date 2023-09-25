@@ -167,3 +167,23 @@ const CIRCUITS = ['usa', 'gb', 'italia', 'france'];
  ******************/
 
 const STAT_POSITION = 11;
+const STAT_POSITION_END = 12;
+const STAT_ROUNDS = 13;
+const STAT_ROUNDS_FIRST = 14;
+const STAT_ROUNDS_1 = 15;
+const STAT_ROUNDS_2 = 16;
+const STAT_ROUNDS_3 = 17;
+const STAT_ROUNDS_4 = 18;
+const STAT_ROUNDS_ADRENALINE = 19;
+const STAT_ADRENALINE_GAIN = 20;
+const STAT_SPINOUT = 21;
+const STAT_SPINOUT_STRESS = 22;
+const STAT_HEAT_LEFT = 23;
+const STAT_HEAT_PAYED = 24;
+const STAT_HEAT_PAYED_GEAR_UP = 25;
+const STAT_HEAT_PAYED_GEAR_DOWN = 26;
+const STAT_BOOST = 27;
+const STAT_OVERSPEED_CORNERS = 28;
+const STAT_SLIPSTREAM_GAINS = 29;
+const STAT_EXTRA_DISCARD = 30;
+const STAT_STRESS_PLAYED = 31;
