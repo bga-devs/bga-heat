@@ -100,11 +100,11 @@ class Heat implements HeatGame {
         });
 
         this.circuit = new Circuit(this, gamedatas);
-        this.createPlayerPanels(gamedatas);
-        this.createPlayerTables(gamedatas);
         if (gamedatas.championship) {
             this.championshipTable = new ChampionshipTable(this, gamedatas);
         }
+        this.createPlayerPanels(gamedatas);
+        this.createPlayerTables(gamedatas);
         
         this.zoomManager = new ZoomManager({
             element: document.getElementById('tables'),
@@ -865,6 +865,10 @@ class Heat implements HeatGame {
                     this.circuit.setEliminatedPodium(-constructor.carCell);
                 }
             }
+
+            if (constructor.canLeave && constructor.id == this.getConstructorId()) {
+                this.addLeaveText();
+            }
         });
 
         this.setTooltipToClass('corner-counter', _('Distance to the next corner'));
@@ -874,6 +878,34 @@ class Heat implements HeatGame {
         this.setTooltipToClass('lap-counter', _('Laps'));
         this.setTooltipToClass('order-counter', _('Player order'));
         this.setTooltipToClass('podium-counter', _('Rank'));
+    }
+    
+    private addLeaveText() {
+        if (document.getElementById('leave-text')) {
+            return;
+        }
+
+        const withAction = !this.gamedatas.players[this.getPlayerId()].eliminated;
+
+        let html = `
+        <div id="leave-text"><i class="fa fa-info-circle" aria-hidden="true"></i>
+            ${_("You have finished the race.")}`;
+        if (withAction) {
+            html += `
+                <span id="leave-text-action">
+                ${_("You can stay to see the end, or you can <leave-button> to start a new one!")
+                    .replace('<leave-button>', `<button id="leave-button" class="bgabutton bgabutton_blue">${_('Leave the game')}</button>`)}
+                </span>`;
+        }
+        html += `
+        </div>
+        `;
+
+        document.getElementById('table-center').insertAdjacentHTML('beforebegin', html);
+
+        if (withAction) {
+            document.getElementById('leave-button').addEventListener('click', () => this.actQuitGame());
+        }
     }
 
     private createPlayerTables(gamedatas: HeatGamedatas) {
@@ -1152,6 +1184,10 @@ class Heat implements HeatGame {
 
         this.takeAction('actConfirmResults');
     }
+  	
+    public actQuitGame() {
+        this.takeAction('actQuitGame');
+    }
 
     public takeAction(action: string, data?: any) {
         data = data || {};
@@ -1210,6 +1246,7 @@ class Heat implements HeatGame {
             'startRace',
             'setupRace',
             'clutteredHand',
+            'playerEliminated',
             'loadBug',
         ];
         
@@ -1469,7 +1506,7 @@ class Heat implements HeatGame {
 }
 
     async notif_finishRace(args: NotifFinishRaceArgs, eliminated: boolean = false) {
-        const { constructor_id, pos } = args;
+        const { constructor_id, pos, canLeave } = args;
         if (this.animationManager.animationsActive()) {
             await this.circuit.finishRace(constructor_id, pos);
         } else {
@@ -1480,6 +1517,10 @@ class Heat implements HeatGame {
         this.setRank(constructor_id, pos, eliminated);
         if (eliminated) {
             this.circuit.setEliminatedPodium(pos);
+        }
+
+        if (canLeave && constructor_id == this.getConstructorId()) {
+            this.addLeaveText();
         }
     }
 
@@ -1539,7 +1580,7 @@ class Heat implements HeatGame {
     }
 
     async notif_eliminate(args: NotifEliminateArgs) {
-        const { cell } = args;
+        const { cell, canLeave } = args;
         await this.notif_finishRace({
             ...args,
             pos: -cell
@@ -1585,6 +1626,14 @@ class Heat implements HeatGame {
         this.gearCounters[constructor_id].toValue(1);
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         this.getPlayerTable(playerId).setCurrentGear(1);
+    }
+    
+    notif_playerEliminated(args: { who_quits: number }) {
+        const { who_quits } = args;
+
+        if (who_quits == this.getPlayerId()) {
+            document.getElementById('leave-text-action')?.remove();
+        }
     }
 
     private setRank(constructorId: number, pos: number, eliminated: boolean) {

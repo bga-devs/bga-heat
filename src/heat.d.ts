@@ -16,7 +16,6 @@ interface Constructor {
     carCell: number;
     turn: number;
     score: number;
-    lvl; // TODO
     engine?: { [id: number]: Card};
     hand?: Card[];
     handCount: number;
@@ -26,6 +25,7 @@ interface Constructor {
     deckCount: number;
     distanceToCorner: number;
     paths?: number[][];
+    canLeave: boolean;
 }
 
 interface Cell {
@@ -271,6 +271,7 @@ interface NotifFinishTurnArgs {
 interface NotifFinishRaceArgs {
     constructor_id: number;
     pos: number; // this time positive, not like carCell !
+    canLeave: boolean;
 }
 
 // endOfRace
@@ -318,6 +319,7 @@ interface NotifDirectPlayArgs {
 interface NotifEliminateArgs {
     constructor_id: number;
     cell: number;
+    canLeave: boolean;
 }
 
 // newChampionshipRace

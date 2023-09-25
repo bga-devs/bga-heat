@@ -3188,11 +3188,11 @@ var Heat = /** @class */ (function () {
             defaultFolded: true,
         });
         this.circuit = new Circuit(this, gamedatas);
-        this.createPlayerPanels(gamedatas);
-        this.createPlayerTables(gamedatas);
         if (gamedatas.championship) {
             this.championshipTable = new ChampionshipTable(this, gamedatas);
         }
+        this.createPlayerPanels(gamedatas);
+        this.createPlayerTables(gamedatas);
         this.zoomManager = new ZoomManager({
             element: document.getElementById('tables'),
             smooth: false,
@@ -3727,6 +3727,9 @@ var Heat = /** @class */ (function () {
                     _this.circuit.setEliminatedPodium(-constructor.carCell);
                 }
             }
+            if (constructor.canLeave && constructor.id == _this.getConstructorId()) {
+                _this.addLeaveText();
+            }
         });
         this.setTooltipToClass('corner-counter', _('Distance to the next corner'));
         this.setTooltipToClass('gear-counter', _('Gear'));
@@ -3735,6 +3738,23 @@ var Heat = /** @class */ (function () {
         this.setTooltipToClass('lap-counter', _('Laps'));
         this.setTooltipToClass('order-counter', _('Player order'));
         this.setTooltipToClass('podium-counter', _('Rank'));
+    };
+    Heat.prototype.addLeaveText = function () {
+        var _this = this;
+        if (document.getElementById('leave-text')) {
+            return;
+        }
+        var withAction = !this.gamedatas.players[this.getPlayerId()].eliminated;
+        var html = "\n        <div id=\"leave-text\"><i class=\"fa fa-info-circle\" aria-hidden=\"true\"></i>\n            ".concat(_("You have finished the race."));
+        if (withAction) {
+            html += "\n                <span id=\"leave-text-action\">\n                ".concat(_("You can stay to see the end, or you can <leave-button> to start a new one!")
+                .replace('<leave-button>', "<button id=\"leave-button\" class=\"bgabutton bgabutton_blue\">".concat(_('Leave the game'), "</button>")), "\n                </span>");
+        }
+        html += "\n        </div>\n        ";
+        document.getElementById('table-center').insertAdjacentHTML('beforebegin', html);
+        if (withAction) {
+            document.getElementById('leave-button').addEventListener('click', function () { return _this.actQuitGame(); });
+        }
     };
     Heat.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;
@@ -3938,6 +3958,9 @@ var Heat = /** @class */ (function () {
         }
         this.takeAction('actConfirmResults');
     };
+    Heat.prototype.actQuitGame = function () {
+        this.takeAction('actQuitGame');
+    };
     Heat.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -3993,6 +4016,7 @@ var Heat = /** @class */ (function () {
             'startRace',
             'setupRace',
             'clutteredHand',
+            'playerEliminated',
             'loadBug',
         ];
         notifs.forEach(function (notifName) {
@@ -4308,11 +4332,11 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_finishRace = function (args, eliminated) {
         if (eliminated === void 0) { eliminated = false; }
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, pos, carCell;
+            var constructor_id, pos, canLeave, carCell;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        constructor_id = args.constructor_id, pos = args.pos;
+                        constructor_id = args.constructor_id, pos = args.pos, canLeave = args.canLeave;
                         if (!this.animationManager.animationsActive()) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.circuit.finishRace(constructor_id, pos)];
                     case 1:
@@ -4326,6 +4350,9 @@ var Heat = /** @class */ (function () {
                         this.setRank(constructor_id, pos, eliminated);
                         if (eliminated) {
                             this.circuit.setEliminatedPodium(pos);
+                        }
+                        if (canLeave && constructor_id == this.getConstructorId()) {
+                            this.addLeaveText();
                         }
                         return [2 /*return*/];
                 }
@@ -4383,11 +4410,11 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_eliminate = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var cell;
+            var cell, canLeave;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        cell = args.cell;
+                        cell = args.cell, canLeave = args.canLeave;
                         return [4 /*yield*/, this.notif_finishRace(__assign(__assign({}, args), { pos: -cell }), true)];
                     case 1:
                         _a.sent();
@@ -4453,6 +4480,13 @@ var Heat = /** @class */ (function () {
         this.gearCounters[constructor_id].toValue(1);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         this.getPlayerTable(playerId).setCurrentGear(1);
+    };
+    Heat.prototype.notif_playerEliminated = function (args) {
+        var _a;
+        var who_quits = args.who_quits;
+        if (who_quits == this.getPlayerId()) {
+            (_a = document.getElementById('leave-text-action')) === null || _a === void 0 ? void 0 : _a.remove();
+        }
     };
     Heat.prototype.setRank = function (constructorId, pos, eliminated) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);
