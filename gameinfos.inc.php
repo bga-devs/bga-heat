@@ -23,6 +23,9 @@ $gameinfos = [
   // Year of FIRST publication of this game. Can be negative.
   'year' => 2022,
 
+  // Game publisher (use empty string if there is no publisher)
+  'publisher' => 'Days of Wonder',
+
   // Url of game publisher website
   'publisher_website' => 'daysofwonder.com/',
 

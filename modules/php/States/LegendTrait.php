@@ -60,6 +60,7 @@ trait LegendTrait
       }
     }
 
+    $constructor->setPaths([]);
     $this->nextPlayerCustomOrder('reveal');
   }
 }
