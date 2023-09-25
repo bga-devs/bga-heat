@@ -164,6 +164,11 @@ trait RoundTrait
         }
       }
 
+      // Can we give up ?
+      $canSkipEndRace =
+        !empty(Globals::getFinishedConstructors()) &&
+        ($constructor->getTurn() < $this->getNbrLaps() || $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4);
+
       $args['_private'][$pId] = [
         'cards' => $hand->getIds(),
         'speeds' => $speeds,
@@ -171,9 +176,11 @@ trait RoundTrait
         'selection' => $planification[$pId] ?? null,
         'boostingCardIds' => $boostingCardIds ?? [],
         'clutteredHand' => $clutteredHand,
+        'canSkipEndRace' => $canSkipEndRace,
       ];
     }
 
+    $args['nPlayersLeft'] = count($args['_private']);
     return $args;
   }
 
@@ -251,6 +258,20 @@ trait RoundTrait
     $this->initCustomTurnOrder('reveal', null, 'stReveal', 'stEndRound');
   }
 
+  public function actGiveUp()
+  {
+    self::checkAction('actPlan');
+    $player = Players::getCurrent();
+    $constructor = Constructors::getOfPlayer($player->getId());
+    $args = $this->argsPlanification()['_private'][$player->getId()];
+    if (!$args['canSkipEndRace']) {
+      throw new UserException('You cant skip the end of the race. Should not happen');
+    }
+
+    $constructor->giveUp();
+    $this->updateActivePlayersInitialSelection();
+  }
+
   ////////////////////////////////////////////
   //  _____    ____                      _
   // |___ /   |  _ \ _____   _____  __ _| |
@@ -266,6 +287,12 @@ trait RoundTrait
       $this->stLegendTurn();
       return;
     }
+    // Might happens if player give up
+    if ($constructor->isFinished()) {
+      $this->nextPlayerCustomOrder('reveal');
+      return;
+    }
+
     $planification = Globals::getPlanification();
     $cardIds = $planification[$constructor->getPId()];
 

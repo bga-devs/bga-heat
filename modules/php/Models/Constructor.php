@@ -251,4 +251,14 @@ class Constructor extends \HEAT\Helpers\DB_Model
     $canLeave = $this->canLeave();
     Notifications::eliminate($this, $cell, $canLeave);
   }
+
+  public function giveUp()
+  {
+    $cell = -Constructors::count() + count(Globals::getSkippedPlayers());
+    $this->setCarCell($cell);
+    $this->setTurn(Game::get()->getNbrLaps());
+    $this->setSpeed(-1);
+    $canLeave = $this->canLeave();
+    Notifications::giveUp($this, $cell, $canLeave);
+  }
 }

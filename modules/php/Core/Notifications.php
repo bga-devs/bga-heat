@@ -587,6 +587,20 @@ class Notifications
     ]);
   }
 
+  public function giveUp($constructor, $cell, $canLeave)
+  {
+    self::notifyAll(
+      'eliminate',
+      clienttranslate('${constructor_name} gives up the race and takes the last remaining spot on the podium'),
+      [
+        'constructor' => $constructor,
+        'cell' => $cell,
+        'canLeave' => $canLeave,
+        'giveUp' => true,
+      ]
+    );
+  }
+
   ///////////////////////////////////////////////////////////////
   //  _   _           _       _            _
   // | | | |_ __   __| | __ _| |_ ___     / \   _ __ __ _ ___

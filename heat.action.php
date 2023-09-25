@@ -155,6 +155,13 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actGiveUp()
+  {
+    self::setAjaxMode();
+    $this->game->actGiveUp();
+    self::ajaxResponse();
+  }
+
   //////////////////
   ///// UTILS  /////
   //////////////////
