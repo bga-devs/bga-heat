@@ -34,6 +34,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'usedBoost' => 'bool',
 
     'skippedPlayers' => 'obj',
+    'giveUpPlayers' => 'obj',
 
     'legend' => 'bool',
     'legendCards' => 'obj',

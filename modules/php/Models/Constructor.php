@@ -276,7 +276,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
 
   public function giveUp()
   {
-    $cell = -Constructors::count() + count(Globals::getSkippedPlayers());
+    $cell = -Constructors::count() + count(Globals::getSkippedPlayers()) + count(Globals::getGiveUpPlayers());
     $this->setCarCell($cell);
     $this->setTurn(Game::get()->getNbrLaps());
     $this->setSpeed(-1);

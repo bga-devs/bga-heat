@@ -166,8 +166,8 @@ trait RoundTrait
 
       // Can we give up ?
       $canSkipEndRace =
-        !empty(Globals::getFinishedConstructors()) &&
-        ($constructor->getTurn() < $this->getNbrLaps() || $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4);
+        // !empty(Globals::getFinishedConstructors()) &&
+        $constructor->getTurn() < $this->getNbrLaps() || $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4;
 
       $args['_private'][$pId] = [
         'cards' => $hand->getIds(),
@@ -269,6 +269,9 @@ trait RoundTrait
     }
 
     $constructor->giveUp();
+    $cIds = Globals::getGiveUpPlayers();
+    $cIds[] = $constructor->getId();
+    Globals::setGiveUpPlayers($cIds);
     $this->updateActivePlayersInitialSelection();
   }
 

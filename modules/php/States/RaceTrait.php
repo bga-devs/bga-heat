@@ -73,6 +73,7 @@ trait RaceTrait
 
     Globals::setFinishedConstructors([]);
     Globals::setSkippedPlayers([]);
+    Globals::setGiveUpPlayers([]);
     if (Globals::getGarageModuleMode() == \HEAT\OPTION_GARAGE_DRAFT) {
       Globals::setDraftRound(1);
       $this->gamestate->nextState('draft');
