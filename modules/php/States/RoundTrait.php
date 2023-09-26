@@ -594,12 +594,19 @@ trait RoundTrait
     }
 
     // Boost bonus
+    $boostInfos = [];
     if (!Globals::isUsedBoost()) {
       // Add the boost symbol
       if ($roadCondition == ROAD_CONDITION_FREE_BOOST) {
         $symbols[BOOST] = 1;
       } else {
         $symbols[HEATED_BOOST] = 1;
+      }
+
+      // Get some infos
+      for ($i = 1; $i <= 4; $i++) {
+        list(, , , , , , $boostHeatCosts) = $this->getCircuit()->getReachedCell($constructor, $i, true, true);
+        $boostInfos[$i] = $boostHeatCosts;
       }
     }
 
@@ -646,6 +653,7 @@ trait RoundTrait
       'spinOut' => $spinOut,
       'nextCornerSpeedLimit' => $speedLimit,
       'nextCornerExtraHeatCost' => $nextCornerExtraHeatCost,
+      'boostInfos' => $boostInfos,
     ];
   }
 
@@ -909,7 +917,7 @@ trait RoundTrait
     }
 
     // Current heat costs
-    list($currentHeatCost, $heatCosts, $spinOut) = $this->getCurrentHeatCosts($constructor);
+    list($currentHeatCost, $currentHeatCosts, $spinOut) = $this->getCurrentHeatCosts($constructor);
     // Next corner infos
     list($speedLimit, $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
 
@@ -920,10 +928,10 @@ trait RoundTrait
     foreach ($slipstreams as $n) {
       $res = $this->getCircuit()->getSlipstreamResult($constructor, $n);
       if ($res !== false) {
-        list($cell, $path, $heatCost, $spinOut, $heatCosts) = $res;
+        list($cell, $path, $heatCost, , $costs) = $res;
         $speeds[$n] = $cell;
         $heatCosts[$n] = $heatCost;
-        $slipstreamWillCrossNextCorner[$n] = count($heatCosts) > 0;
+        $slipstreamWillCrossNextCorner[$n] = count($costs) > 0;
       }
     }
 
@@ -933,7 +941,7 @@ trait RoundTrait
       'slipstreamWillCrossNextCorner' => $slipstreamWillCrossNextCorner,
 
       'currentHeatCost' => $currentHeatCost,
-      'currentHeatCosts' => $heatCosts,
+      'currentHeatCosts' => $currentHeatCosts,
       'spinOut' => $spinOut,
       'nextCornerSpeedLimit' => $speedLimit,
       'nextCornerExtraHeatCost' => $nextCornerExtraHeatCost,

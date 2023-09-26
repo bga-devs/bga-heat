@@ -339,12 +339,16 @@ class Circuit
     // Compute the heat cost
     if ($isSlipstream) {
       $speed = $constructor->getSpeed();
+    } else {
+      $speed += $constructor->getSpeed();
     }
+    $prevPosition = Globals::getPreviousPosition();
+    $prevTurn = Globals::getPreviousTurn();
     list($heatCosts, $spinOut) = $this->getCrossedCornersHeatCosts(
       $constructor,
       $speed,
-      $currentTurn,
-      $currentPosition,
+      $prevTurn,
+      $prevPosition,
       $currentTurn + $extraTurn,
       $newPosition
     );
