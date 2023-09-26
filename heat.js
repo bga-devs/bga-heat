@@ -3376,6 +3376,13 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.onEnteringSlipstream = function (args) {
         var _this = this;
+        this.circuit.removeCornerHeatIndicators();
+        if (args.currentHeatCosts) {
+            Object.entries(args.currentHeatCosts).forEach(function (_a) {
+                var cornerId = _a[0], heat = _a[1];
+                return _this.circuit.addCornerHeatIndicator(Number(cornerId), heat);
+            });
+        }
         Object.entries(args.speeds).forEach(function (entry) {
             return _this.circuit.addMapIndicator(entry[1], function () { return _this.actSlipstream(Number(entry[0])); }, _this.speedCounters[_this.getConstructorId()].getValue(), false);
         });
@@ -3441,7 +3448,7 @@ var Heat = /** @class */ (function () {
         (_a = document.getElementById('market')) === null || _a === void 0 ? void 0 : _a.remove();
         this.market = null;
     };
-    Heat.prototype.createChooseSpeedButtons = function (args, clickAction) {
+    Heat.prototype.createChooseSpeedButtons = function (args) {
         var _this = this;
         Object.entries(args.speeds).forEach(function (entry) {
             var speed = Number(entry[0]);
@@ -3449,7 +3456,22 @@ var Heat = /** @class */ (function () {
             if (args.heatCosts[speed]) {
                 label += " (".concat(args.heatCosts[speed], "[Heat])");
             }
-            _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), formatTextIcons(label), function () { return clickAction(speed); });
+            _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), formatTextIcons(label), function () { return _this.actChooseSpeed(speed); });
+            _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
+        });
+    };
+    Heat.prototype.createSlipstreamButtons = function (args) {
+        var _this = this;
+        Object.entries(args.speeds).forEach(function (entry) {
+            var speed = Number(entry[0]);
+            var label = _('Move ${cell} cell(s)').replace('${cell}', "".concat(speed));
+            /*if (args.heatCosts[speed]) {
+                label += ` (${args.heatCosts[speed]}[Heat])`;
+            }*/
+            var confirmationMessage = _this.getSlipstreamConfirmation(args, speed);
+            var finalAction = function () { return _this.actSlipstream(speed); };
+            var callback = confirmationMessage ? function () { return _this.confirmationDialog(confirmationMessage, finalAction); } : finalAction;
+            _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), formatTextIcons(label), callback);
             _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
         });
     };
@@ -3468,8 +3490,11 @@ var Heat = /** @class */ (function () {
             }
             if (newHeatCost > 0) {
                 if (reactArgs.adrenalineWillCrossNextCorner) {
-                    confirmationMessage = _("The Adrenaline reaction will make you cross a corner at speed ${speed}.").replace('${speed}', "<strong>".concat(newSpeed, "</strong>"))
+                    confirmationMessage = _("The Adrenaline reaction will make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeed, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
                         + "<br>";
+                }
+                else {
+                    confirmationMessage = '';
                 }
                 if (reactArgs.currentHeatCost > 0) {
                     confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
@@ -3501,8 +3526,11 @@ var Heat = /** @class */ (function () {
             }
             if (newHeatCostMax > 0) {
                 if (mayCrossCorner) {
-                    confirmationMessage = _("The Boost reaction may make you cross a corner at speed ${speed}.").replace('${speed}', "<strong>".concat(newSpeedMax, "</strong>"))
+                    confirmationMessage = _("The Boost reaction may make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeedMax, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
                         + "<br>";
+                }
+                else {
+                    confirmationMessage = '';
                 }
                 if (reactArgs.currentHeatCost > 0) {
                     confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change up to ${newHeat} Heat(s).")
@@ -3514,6 +3542,31 @@ var Heat = /** @class */ (function () {
                         .replace('${newHeat}', "<strong>".concat(newHeatCostMax, "</strong>"));
                 }
                 confirmationMessage += "<br><br>\n                ".concat(_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
+            }
+        }
+        return confirmationMessage;
+    };
+    Heat.prototype.getSlipstreamConfirmation = function (reactArgs, speed) {
+        var confirmationMessage = null;
+        if (reactArgs.slipstreamWillCrossNextCorner[speed]) {
+            var speed_1 = this.speedCounters[this.getConstructorId()].getValue();
+            var newHeatCost = Math.max(0, speed_1 - reactArgs.nextCornerSpeedLimit);
+            if (newHeatCost > 0 && reactArgs.nextCornerExtraHeatCost) {
+                newHeatCost++;
+            }
+            if (newHeatCost > 0) {
+                confirmationMessage = _("The Slipstream move will make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(speed_1, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
+                    + "<br>";
+                if (reactArgs.currentHeatCost > 0) {
+                    confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
+                        .replace('${heat}', "<strong>".concat(reactArgs.currentHeatCost, "</strong>"))
+                        .replace('${newHeat}', "<strong>".concat(reactArgs.currentHeatCost + newHeatCost, "</strong>"));
+                }
+                else {
+                    confirmationMessage += _("You will have to pay ${newHeat} Heat(s).")
+                        .replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
+                }
+                confirmationMessage += "<br><br>\n                    ".concat(_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
             }
         }
         return confirmationMessage;
@@ -3555,13 +3608,13 @@ var Heat = /** @class */ (function () {
                 case 'chooseSpeed':
                     var chooseSpeedArgs = args;
                     this.onEnteringChooseSpeed(chooseSpeedArgs);
-                    this.createChooseSpeedButtons(chooseSpeedArgs, function (speed) { return _this.actChooseSpeed(speed); });
+                    this.createChooseSpeedButtons(chooseSpeedArgs);
                     break;
                 case 'slipstream':
                     var slipstreamArgs = args;
                     if (args.speeds) {
                         this.onEnteringSlipstream(slipstreamArgs);
-                        this.createChooseSpeedButtons(slipstreamArgs, function (speed) { return _this.actSlipstream(speed); });
+                        this.createSlipstreamButtons(slipstreamArgs);
                     }
                     this.addActionButton("actPassSlipstream_button", _('Pass'), function () { return _this.actSlipstream(0); });
                     break;

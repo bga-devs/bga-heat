@@ -320,6 +320,11 @@ class Heat implements HeatGame {
     }
 
     private onEnteringSlipstream(args: EnteringSlipstreamArgs) {
+        this.circuit.removeCornerHeatIndicators();
+        if (args.currentHeatCosts) {
+            Object.entries(args.currentHeatCosts).forEach(([cornerId, heat]) => this.circuit.addCornerHeatIndicator(Number(cornerId), heat));
+        }
+
         Object.entries(args.speeds).forEach(entry => 
             this.circuit.addMapIndicator(entry[1], () => this.actSlipstream(Number(entry[0])), this.speedCounters[this.getConstructorId()].getValue(), false)
         );
@@ -395,14 +400,34 @@ class Heat implements HeatGame {
         this.market = null;
     }
 
-    private createChooseSpeedButtons(args: EnteringChooseSpeedArgs, clickAction: (speed) => void) {
+    private createChooseSpeedButtons(args: EnteringChooseSpeedArgs) {
         Object.entries(args.speeds).forEach(entry => {
             const speed = Number(entry[0]);
             let label = _('Move ${cell} cell(s)').replace('${cell}', `${speed}`);
             if (args.heatCosts[speed]) {
                 label += ` (${args.heatCosts[speed]}[Heat])`;
             }
-            (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, formatTextIcons(label), () => clickAction(speed));
+            (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, formatTextIcons(label), () => this.actChooseSpeed(speed));
+            this.linkButtonHoverToMapIndicator(
+                document.getElementById(`chooseSpeed${entry[0]}_button`),
+                entry[1],
+            );
+        });
+    }
+
+    private createSlipstreamButtons(args: EnteringSlipstreamArgs) {
+        Object.entries(args.speeds).forEach(entry => {
+            const speed = Number(entry[0]);
+            let label = _('Move ${cell} cell(s)').replace('${cell}', `${speed}`);
+            /*if (args.heatCosts[speed]) {
+                label += ` (${args.heatCosts[speed]}[Heat])`;
+            }*/
+            const confirmationMessage = this.getSlipstreamConfirmation(args, speed);
+
+            const finalAction = () => this.actSlipstream(speed);
+            const callback = confirmationMessage ? () => (this as any).confirmationDialog(confirmationMessage, finalAction) : finalAction;
+
+            (this as any).addActionButton(`chooseSpeed${entry[0]}_button`, formatTextIcons(label), callback);
             this.linkButtonHoverToMapIndicator(
                 document.getElementById(`chooseSpeed${entry[0]}_button`),
                 entry[1],
@@ -427,8 +452,10 @@ class Heat implements HeatGame {
 
             if (newHeatCost > 0) {
                 if (reactArgs.adrenalineWillCrossNextCorner) {
-                    confirmationMessage = _("The Adrenaline reaction will make you cross a corner at speed ${speed}.").replace('${speed}', `<strong>${newSpeed}</strong>`)
+                    confirmationMessage = _("The Adrenaline reaction will make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', `<strong>${newSpeed}</strong>`).replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`)
                     + `<br>`;
+                } else {
+                    confirmationMessage = '';
                 }
 
                 if (reactArgs.currentHeatCost > 0) {
@@ -466,8 +493,10 @@ class Heat implements HeatGame {
 
             if (newHeatCostMax > 0) {
                 if (mayCrossCorner) {
-                    confirmationMessage = _("The Boost reaction may make you cross a corner at speed ${speed}.").replace('${speed}', `<strong>${newSpeedMax}</strong>`)
+                    confirmationMessage = _("The Boost reaction may make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', `<strong>${newSpeedMax}</strong>`).replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`)
                     + `<br>`;
+                } else {
+                    confirmationMessage = '';
                 }
 
                 if (reactArgs.currentHeatCost > 0) {
@@ -481,6 +510,36 @@ class Heat implements HeatGame {
 
                 confirmationMessage += `<br><br>
                 ${_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', `<strong>${this.engineCounters[this.getConstructorId()].getValue()}</strong>`)}`;
+            }
+        }
+        return confirmationMessage;
+    }
+
+    private getSlipstreamConfirmation(reactArgs: EnteringSlipstreamArgs, speed: number) {
+        let confirmationMessage = null;
+        if (reactArgs.slipstreamWillCrossNextCorner[speed]) {
+            const speed = this.speedCounters[this.getConstructorId()].getValue();
+
+            let newHeatCost = Math.max(0, speed - reactArgs.nextCornerSpeedLimit);
+            if (newHeatCost > 0 && reactArgs.nextCornerExtraHeatCost) {
+                newHeatCost++;
+            }
+
+            if (newHeatCost > 0) {
+                confirmationMessage = _("The Slipstream move will make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', `<strong>${speed}</strong>`).replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`)
+                    + `<br>`;
+                    
+                if (reactArgs.currentHeatCost > 0) {
+                    confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
+                        .replace('${heat}', `<strong>${reactArgs.currentHeatCost}</strong>`)
+                        .replace('${newHeat}', `<strong>${reactArgs.currentHeatCost + newHeatCost}</strong>`);
+                } else {
+                    confirmationMessage += _("You will have to pay ${newHeat} Heat(s).")
+                        .replace('${newHeat}', `<strong>${newHeatCost}</strong>`);
+                }
+                
+                confirmationMessage += `<br><br>
+                    ${_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', `<strong>${this.engineCounters[this.getConstructorId()].getValue()}</strong>`)}`;
             }
         }
         return confirmationMessage;
@@ -527,13 +586,13 @@ class Heat implements HeatGame {
                 case 'chooseSpeed':
                     const chooseSpeedArgs = args as EnteringChooseSpeedArgs;
                     this.onEnteringChooseSpeed(chooseSpeedArgs);
-                    this.createChooseSpeedButtons(chooseSpeedArgs, speed => this.actChooseSpeed(speed));
+                    this.createChooseSpeedButtons(chooseSpeedArgs);
                     break;
                 case 'slipstream':
                     const slipstreamArgs = args as EnteringSlipstreamArgs;
                     if (args.speeds) {
                         this.onEnteringSlipstream(slipstreamArgs);
-                        this.createChooseSpeedButtons(slipstreamArgs, speed => this.actSlipstream(speed));
+                        this.createSlipstreamButtons(slipstreamArgs);
                     }
                     (this as any).addActionButton(`actPassSlipstream_button`, _('Pass'), () => this.actSlipstream(0));
                     break;
