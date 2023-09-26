@@ -148,6 +148,14 @@ interface EnteringReactArgs {
     canPass: boolean;
     symbols: { [symbol: string]: number | number[] };
     flippedCards: number;
+    doable: string[];
+
+    adrenalineWillCrossNextCorner: boolean;
+    currentHeatCost: number;
+    heatCosts: { [cornerId: number]: number };
+    spinOut: boolean;
+    nextCornerSpeedLimit: number;
+    nextCornerExtraHeatCost: boolean;
 }
 
 interface EnteringDiscardArgs {    

@@ -521,7 +521,7 @@ trait RoundTrait
     foreach ($constructor->getPlayedCards() as $card) {
       $speedLimitModifier += $card['symbols'][ADJUST] ?? 0;
     }
-    $rawLimit = $this->getCornerMaxSpeed($cornerPos);
+    $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
     $limit = $rawLimit + $speedLimitModifier;
 
     return [$limit, $extraHeat];
@@ -617,6 +617,7 @@ trait RoundTrait
     }
 
     // Adrenaline extra info
+    $adrenalineWillCrossNextCorner = false;
     if (in_array(ADRENALINE, $doableSymbols)) {
       list(, $nSpacesForward, , , , , $heatCosts) = $this->getCircuit()->getReachedCell($constructor, 1, true, true);
       if ($nSpacesForward == 0) {

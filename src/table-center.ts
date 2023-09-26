@@ -374,7 +374,7 @@ class Circuit {
     
     public addMapIndicator(cellId: number, clickCallback?: () => void, speed: number = 0, stress: boolean = false): void {
         const mapIndicator = document.createElement('div');
-        mapIndicator.id = `map-indicator-${cellId}`,
+        mapIndicator.id = `map-indicator-${cellId}`;
         mapIndicator.classList.add('map-indicator');
         let cell = this.circuitDatas.cells[cellId];
         mapIndicator.style.setProperty('--x', `${cell.x}px`);
@@ -394,8 +394,25 @@ class Circuit {
         }
     }
     
+    public addCornerHeatIndicator(cornerId: number, heat: number): void {
+        const cornerHeatIndicator = document.createElement('div');
+        cornerHeatIndicator.id = `corner-heat-indicator-${cornerId}`;
+        cornerHeatIndicator.innerHTML = `${heat}`;
+        cornerHeatIndicator.classList.add('corner-heat-indicator', 'icon', 'heat');
+        let corner = this.circuitDatas.corners[cornerId];
+        cornerHeatIndicator.style.setProperty('--x', `${corner.x}px`);
+        cornerHeatIndicator.style.setProperty('--y', `${corner.y}px`);
+        this.circuitDiv.insertAdjacentElement('beforeend', cornerHeatIndicator);
+        document.getElementById(`corner-${cornerId}`).style.setProperty('--color', 'red');
+    }
+    
     public removeMapIndicators(): void {
         this.circuitDiv.querySelectorAll('.map-indicator').forEach(elem => elem.remove());
+    }
+    
+    public removeCornerHeatIndicators(): void {
+        this.circuitDiv.querySelectorAll('.corner').forEach((elem: HTMLElement) => elem.style.removeProperty('--color'));
+        this.circuitDiv.querySelectorAll('.corner-heat-indicator').forEach(elem => elem.remove());
     }
     
     public addMapPath(pathCellIds: number[], animated: boolean, totalSpeed?: number): void {  

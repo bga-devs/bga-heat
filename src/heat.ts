@@ -184,6 +184,9 @@ class Heat implements HeatGame {
             case 'planification':            
                 this.updatePlannedCards(args.args._private?.selection ?? []);
                 break;
+            case 'react':
+                this.onEnteringReact(args.args);
+                break;
             }
     }
     
@@ -284,6 +287,13 @@ class Heat implements HeatGame {
             this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
         }
     }
+    
+    private onEnteringReact(args: EnteringReactArgs) {
+        this.circuit.removeCornerHeatIndicators();
+        if (args.heatCosts) {
+            Object.entries(args.heatCosts).forEach(([cornerId, heat]) => this.circuit.addCornerHeatIndicator(Number(cornerId), heat));
+        }
+    }
 
     public updatePlannedCards(plannedCardsIds: number[]) {
         document.querySelectorAll(`.planned-card`).forEach(elem => elem.classList.remove('planned-card'));
@@ -348,8 +358,10 @@ class Heat implements HeatGame {
                 this.onLeavingPlanification();
                 break;
             case 'chooseSpeed':
-            case 'slipstream':
                 this.onLeavingChooseSpeed();
+                break;
+            case 'slipstream':
+                this.onLeavingSlipstream();
                 break;
             case 'discard':
                 this.onLeavingHandSelection();
@@ -362,6 +374,11 @@ class Heat implements HeatGame {
 
     private onLeavingChooseSpeed() {
         this.circuit.removeMapIndicators();
+    }
+
+    private onLeavingSlipstream() {
+        this.circuit.removeMapIndicators();
+        this.circuit.removeCornerHeatIndicators();
     }
 
     private onLeavingPlanification() {
@@ -391,6 +408,82 @@ class Heat implements HeatGame {
                 entry[1],
             );
         });
+    }
+
+    private getAdrenalineConfirmation(reactArgs: EnteringReactArgs) {
+        let confirmationMessage = null;
+        if (reactArgs.adrenalineWillCrossNextCorner || reactArgs.currentHeatCost > 0) {
+            const newSpeed = this.speedCounters[this.getConstructorId()].getValue() + 1;
+
+            let newHeatCost = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 1 : 0;
+            let newCornerCost = 0;
+            if (reactArgs.adrenalineWillCrossNextCorner) {
+                newCornerCost = Math.max(0, newSpeed - reactArgs.nextCornerSpeedLimit);
+                if (newCornerCost > 0 && reactArgs.nextCornerExtraHeatCost) {
+                    newCornerCost++;
+                }
+                newHeatCost += newCornerCost;
+            }
+
+            if (newHeatCost > 0) {
+                if (reactArgs.adrenalineWillCrossNextCorner) {
+                    confirmationMessage = _("The Adrenaline reaction will make you cross a corner at speed ${speed}.").replace('${speed}', `<strong>${newSpeed}</strong>`)
+                    + `<br>`;
+                }
+
+                if (reactArgs.currentHeatCost > 0) {
+                    confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
+                        .replace('${heat}', `<strong>${reactArgs.currentHeatCost}</strong>`)
+                        .replace('${newHeat}', `<strong>${newHeatCost}</strong>`);
+                } else {
+                    confirmationMessage += _("You will have to pay ${newHeat} Heat(s).")
+                        .replace('${newHeat}', `<strong>${newHeatCost}</strong>`);
+                }
+
+                confirmationMessage += `<br><br>
+                ${_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', `<strong>${this.engineCounters[this.getConstructorId()].getValue()}</strong>`)}`;
+            }
+        }
+        return confirmationMessage;
+    }
+
+    private getBoostConfirmation(reactArgs: EnteringReactArgs, paid: boolean) {
+        const mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
+
+        let confirmationMessage = null;
+        if (mayCrossCorner || reactArgs.currentHeatCost > 0) {
+            const newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
+
+            let newHeatCostMax = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 4 : (paid ? 1 : 0);
+            let newCornerCostMax = 0;
+            if (mayCrossCorner) {
+                newCornerCostMax = Math.max(0, newSpeedMax - reactArgs.nextCornerSpeedLimit);
+                if (newCornerCostMax > 0 && reactArgs.nextCornerExtraHeatCost) {
+                    newCornerCostMax++;
+                }
+                newHeatCostMax += newCornerCostMax;
+            }
+
+            if (newHeatCostMax > 0) {
+                if (mayCrossCorner) {
+                    confirmationMessage = _("The Boost reaction may make you cross a corner at speed ${speed}.").replace('${speed}', `<strong>${newSpeedMax}</strong>`)
+                    + `<br>`;
+                }
+
+                if (reactArgs.currentHeatCost > 0) {
+                    confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change up to ${newHeat} Heat(s).")
+                        .replace('${heat}', `<strong>${reactArgs.currentHeatCost}</strong>`)
+                        .replace('${newHeat}', `<strong>${newHeatCostMax}</strong>`);
+                } else {
+                    confirmationMessage += _("You will have to pay up to ${newHeat} Heat(s).")
+                        .replace('${newHeat}', `<strong>${newHeatCostMax}</strong>`);
+                }
+
+                confirmationMessage += `<br><br>
+                ${_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', `<strong>${this.engineCounters[this.getConstructorId()].getValue()}</strong>`)}`;
+            }
+        }
+        return confirmationMessage;
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -461,6 +554,7 @@ class Heat implements HeatGame {
                             let label = ``;
                             let tooltip = ``;
                             let confirmationMessage = null;
+                            let enabled = true;
                             switch (type) {
                                 case 'accelerate':
                                     const accelerateCard = this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number);
@@ -481,10 +575,9 @@ class Heat implements HeatGame {
                                     <br><br>
                                     <i>${_("Note: Adrenaline cannot be saved for future rounds")}</i>`;
 
-                                    if (this.cornerCounters[this.getConstructorId()].getValue() == 0) {
-                                        confirmationMessage = `${_("The Adrenaline reaction will make you cross a corner at speed ${speed}.").replace('${speed}', `<strong>${this.speedCounters[this.getConstructorId()].getValue() + 1}</strong>`)}
-                                        <br><br>
-                                        ${_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', `<strong>${this.engineCounters[this.getConstructorId()].getValue()}</strong>`)}`;
+                                    confirmationMessage = this.getAdrenalineConfirmation(reactArgs);
+                                    if (!reactArgs.doable.includes('adrenaline')) {
+                                        enabled = false;
                                     }
                                     break;
                                 case 'cooldown':
@@ -520,11 +613,9 @@ class Heat implements HeatGame {
                                     <br><br>
                                     <i>${_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.")}</i>`;
 
-                                    const mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
-                                    if (mayCrossCorner) {
-                                        confirmationMessage = `${_("The Boost reaction may make you cross a corner at a speed up to ${speed}.").replace('${speed}', `<strong>${this.speedCounters[this.getConstructorId()].getValue() + 4}</strong>`)}
-                                        <br><br>
-                                        ${_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', `<strong>${this.engineCounters[this.getConstructorId()].getValue()}</strong>`)}`;
+                                    confirmationMessage = this.getBoostConfirmation(reactArgs, paid);
+                                    if (paid && !reactArgs.doable.includes('heated-boost')) {
+                                        enabled = false;
                                     }
                                     break;
                                 case 'reduce':
@@ -534,6 +625,8 @@ class Heat implements HeatGame {
                                 case 'salvage':
                                     label = `<div class="icon salvage">${number}</div>`;
                                     tooltip = this.getGarageModuleIconTooltipWithIcon('salvage', number);
+
+                                    enabled = this.getCurrentPlayerTable().discard.getCardNumber() > 0;
                                     break;
                                 case 'scrap':
                                     label = `<div class="icon scrap">${number}</div> <div class="icon mandatory"></div>`;
@@ -550,7 +643,7 @@ class Heat implements HeatGame {
                                 callback
                             );
                             this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
-                            if (type == 'salvage' && this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
+                            if (!enabled) {
                                 document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');
                             }
                         });
