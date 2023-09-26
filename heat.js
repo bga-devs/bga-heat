@@ -3155,7 +3155,7 @@ var Heat = /** @class */ (function () {
     */
     Heat.prototype.setup = function (gamedatas) {
         var _this = this;
-        var _a;
+        var _a, _b;
         log("Starting game setup");
         this.gamedatas = gamedatas;
         if (((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
@@ -3191,6 +3191,11 @@ var Heat = /** @class */ (function () {
         }
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
+        var constructorId = this.getConstructorId();
+        var constructor = this.gamedatas.constructors[constructorId];
+        if (constructorId !== null && ((_b = constructor === null || constructor === void 0 ? void 0 : constructor.planification) === null || _b === void 0 ? void 0 : _b.length) && constructor.speed < 0) {
+            this.updatePlannedCards(constructor.planification);
+        }
         this.zoomManager = new ZoomManager({
             element: document.getElementById('tables'),
             smooth: false,
@@ -3245,7 +3250,7 @@ var Heat = /** @class */ (function () {
                 this.onEnteringSwapUpgrade(args.args);
                 break;
             case 'planification':
-                this.updatePlannedCards((_d = (_c = args.args._private) === null || _c === void 0 ? void 0 : _c.selection) !== null && _d !== void 0 ? _d : [], 'onEnteringState onEnteringPlanification');
+                this.updatePlannedCards((_d = (_c = args.args._private) === null || _c === void 0 ? void 0 : _c.selection) !== null && _d !== void 0 ? _d : []);
                 break;
         }
     };
@@ -3328,13 +3333,21 @@ var Heat = /** @class */ (function () {
             this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
         }
     };
-    Heat.prototype.updatePlannedCards = function (plannedCardsIds, from) {
-        console.log('updatePlannedCards', plannedCardsIds, from);
+    Heat.prototype.updatePlannedCards = function (plannedCardsIds) {
+        var _a;
         document.querySelectorAll(".planned-card").forEach(function (elem) { return elem.classList.remove('planned-card'); });
         if (plannedCardsIds === null || plannedCardsIds === void 0 ? void 0 : plannedCardsIds.length) {
-            var playerTable_1 = this.getCurrentPlayerTable();
-            var cards_1 = playerTable_1.hand.getCards();
-            plannedCardsIds === null || plannedCardsIds === void 0 ? void 0 : plannedCardsIds.forEach(function (id) { return playerTable_1.hand.getCardElement(cards_1.find(function (card) { return Number(card.id) == id; })).classList.add('planned-card'); });
+            var hand_1 = (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.hand;
+            if (hand_1) {
+                var cards_1 = hand_1.getCards();
+                plannedCardsIds === null || plannedCardsIds === void 0 ? void 0 : plannedCardsIds.forEach(function (id) {
+                    var _a;
+                    var card = cards_1.find(function (card) { return Number(card.id) == id; });
+                    if (card) {
+                        (_a = hand_1.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('planned-card');
+                    }
+                });
+            }
         }
     };
     Heat.prototype.onEnteringChooseSpeed = function (args) {
@@ -3395,7 +3408,6 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onLeavingPlanification = function () {
         this.onLeavingHandSelection();
         this.circuit.removeMapIndicators();
-        this.updatePlannedCards([], 'onLeavingPlanification');
     };
     Heat.prototype.onLeavingHandSelection = function () {
         var _a;
@@ -3600,8 +3612,8 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.getConstructorId = function () {
         var _this = this;
-        var _a;
-        return Number((_a = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); })) === null || _a === void 0 ? void 0 : _a.id);
+        var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
+        return constructor !== undefined ? Number(constructor === null || constructor === void 0 ? void 0 : constructor.id) : null;
     };
     Heat.prototype.getPlayer = function (playerId) {
         return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
@@ -4122,7 +4134,7 @@ var Heat = /** @class */ (function () {
         this.market = null;
     };
     Heat.prototype.notif_updatePlanification = function (args) {
-        this.updatePlannedCards(args.args._private.selection, 'notif_updatePlanification');
+        this.updatePlannedCards(args.args._private.selection);
     };
     Heat.prototype.notif_reveal = function (args) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4131,6 +4143,9 @@ var Heat = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
+                        if (constructor_id === this.getConstructorId()) {
+                            this.updatePlannedCards([]);
+                        }
                         playerId = this.getPlayerIdFromConstructorId(constructor_id);
                         playerTable = this.getPlayerTable(playerId);
                         playerTable.setCurrentGear(gear);

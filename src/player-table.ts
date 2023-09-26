@@ -138,7 +138,7 @@ class PlayerTable {
             }
         });
 
-        this.inplay = new InPlayStock(this.game, constructor); 
+        this.inplay = new InPlayStock(this.game, constructor);
     }
 
     public setHandSelectable(selectionMode: CardSelectionMode, selectableCardsIds: number[] | null = null, selectedCardsIds: number[] | null = null) {

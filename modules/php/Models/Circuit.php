@@ -559,11 +559,4 @@ class Circuit
     $length = $this->getLength();
     return ($cornerPos - $position - 1 + $length) % $length;
   }
-
-  function debug($debugData)
-  {
-    /*if ($this->getBgaEnvironment() != 'studio') { 
-          return;
-      }*/ die('debug data : ' . json_encode($debugData));
-  }
 }

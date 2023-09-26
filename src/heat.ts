@@ -105,6 +105,12 @@ class Heat implements HeatGame {
         }
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
+
+        const constructorId = this.getConstructorId();
+        const constructor = this.gamedatas.constructors[constructorId];
+        if (constructorId !== null && constructor?.planification?.length && constructor.speed < 0) {
+            this.updatePlannedCards(constructor.planification);
+        }
         
         this.zoomManager = new ZoomManager({
             element: document.getElementById('tables'),
@@ -166,7 +172,7 @@ class Heat implements HeatGame {
                 this.onEnteringSwapUpgrade(args.args);
                 break;
             case 'planification':            
-                this.updatePlannedCards(args.args._private?.selection ?? [], 'onEnteringState onEnteringPlanification');
+                this.updatePlannedCards(args.args._private?.selection ?? []);
                 break;
             }
     }
@@ -269,15 +275,20 @@ class Heat implements HeatGame {
         }
     }
 
-    private updatePlannedCards(plannedCardsIds: number[], from: string) {
-        console.log('updatePlannedCards', plannedCardsIds, from);
-
+    public updatePlannedCards(plannedCardsIds: number[]) {
         document.querySelectorAll(`.planned-card`).forEach(elem => elem.classList.remove('planned-card'));
 
         if (plannedCardsIds?.length) {
-            const playerTable = this.getCurrentPlayerTable();        
-            const cards = playerTable.hand.getCards();
-            plannedCardsIds?.forEach(id => playerTable.hand.getCardElement(cards.find(card => Number(card.id) == id)).classList.add('planned-card'));
+            const hand = this.getCurrentPlayerTable()?.hand; 
+            if (hand) {
+                const cards = hand.getCards();
+                plannedCardsIds?.forEach(id => {
+                    const card = cards.find(card => Number(card.id) == id);
+                    if (card) {
+                        hand.getCardElement(card)?.classList.add('planned-card');
+                    }
+                });
+            }
         }
     }
 
@@ -346,7 +357,6 @@ class Heat implements HeatGame {
     private onLeavingPlanification() {
         this.onLeavingHandSelection();
         this.circuit.removeMapIndicators();
-        this.updatePlannedCards([], 'onLeavingPlanification');
     }
 
     private onLeavingHandSelection() {
@@ -586,8 +596,9 @@ class Heat implements HeatGame {
         return Number((this as any).player_id);
     }
 
-    private getConstructorId(): number {
-        return Number(Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId())?.id);
+    private getConstructorId(): number | null {
+        const constructor = Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId());
+        return constructor !== undefined ? Number(constructor?.id) : null;
     }
 
     public getPlayer(playerId: number): HeatPlayer {
@@ -1370,11 +1381,15 @@ class Heat implements HeatGame {
     } 
     
     notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
-        this.updatePlannedCards(args.args._private.selection, 'notif_updatePlanification');
+        this.updatePlannedCards(args.args._private.selection);
     }  
 
     async notif_reveal(args: NotifRevealArgs) {
         const { constructor_id, gear, heat } = args;
+        if (constructor_id === this.getConstructorId()) {
+            this.updatePlannedCards([]);
+        }
+
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
         playerTable.setCurrentGear(gear);
