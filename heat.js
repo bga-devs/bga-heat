@@ -2625,15 +2625,17 @@ var Circuit = /** @class */ (function () {
         }
     };
     Circuit.prototype.addCornerHeatIndicator = function (cornerId, heat) {
-        var cornerHeatIndicator = document.createElement('div');
-        cornerHeatIndicator.id = "corner-heat-indicator-".concat(cornerId);
-        cornerHeatIndicator.innerHTML = "".concat(heat);
-        cornerHeatIndicator.classList.add('corner-heat-indicator', 'icon', 'heat');
-        var corner = this.circuitDatas.corners[cornerId];
-        cornerHeatIndicator.style.setProperty('--x', "".concat(corner.x, "px"));
-        cornerHeatIndicator.style.setProperty('--y', "".concat(corner.y, "px"));
-        this.circuitDiv.insertAdjacentElement('beforeend', cornerHeatIndicator);
-        document.getElementById("corner-".concat(cornerId)).style.setProperty('--color', 'red');
+        if (heat > 0) {
+            var cornerHeatIndicator = document.createElement('div');
+            cornerHeatIndicator.id = "corner-heat-indicator-".concat(cornerId);
+            cornerHeatIndicator.innerHTML = "".concat(heat);
+            cornerHeatIndicator.classList.add('corner-heat-indicator', 'icon', 'heat');
+            var corner = this.circuitDatas.corners[cornerId];
+            cornerHeatIndicator.style.setProperty('--x', "".concat(corner.x, "px"));
+            cornerHeatIndicator.style.setProperty('--y', "".concat(corner.y, "px"));
+            this.circuitDiv.insertAdjacentElement('beforeend', cornerHeatIndicator);
+            document.getElementById("corner-".concat(cornerId)).style.setProperty('--color', 'red');
+        }
     };
     Circuit.prototype.removeMapIndicators = function () {
         this.circuitDiv.querySelectorAll('.map-indicator').forEach(function (elem) { return elem.remove(); });
