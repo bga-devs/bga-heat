@@ -340,7 +340,7 @@ class Circuit
     if ($isSlipstream) {
       $speed = $constructor->getSpeed();
     }
-    list($heatCost, $spinOut) = $this->getCrossedCornersTotalHeatCost(
+    list($heatCosts, $spinOut) = $this->getCrossedCornersHeatCosts(
       $constructor,
       $speed,
       $currentTurn,
@@ -348,6 +348,7 @@ class Circuit
       $currentTurn + $extraTurn,
       $newPosition
     );
+    $heatCost = array_sum($heatCosts);
 
     return [
       $cellId,
@@ -356,6 +357,7 @@ class Circuit
       $computePath ? $path : null,
       $computeHeatCost ? $heatCost : null,
       $computeHeatCost ? $spinOut : null,
+      $computeHeatCost ? $heatCosts : null,
     ];
   }
 
@@ -415,12 +417,6 @@ class Circuit
     return $limit;
   }
 
-  public function getCrossedCornersTotalHeatCost($constructor, $speed, $turn1, $pos1, $turn2, $pos2)
-  {
-    list($costs, $spinOut) = $this->getCrossedCornersHeatCosts($constructor, $speed, $turn1, $pos1, $turn2, $pos2);
-    return [array_sum($costs), $spinOut];
-  }
-
   public function getCrossedCornersHeatCosts($constructor, $speed, $turn1, $pos1, $turn2, $pos2)
   {
     $corners = $this->getCornersInBetween($turn1, $pos1, $turn2, $pos2);
@@ -440,6 +436,7 @@ class Circuit
     if (!empty($corners)) {
       foreach ($corners as $infos) {
         list($cornerPos, $cornerTurn) = $infos;
+        $costs[$cornerPos] = 0;
         $rawLimit = $this->getCornerMaxSpeed($cornerPos);
         $limit = $rawLimit + $speedLimitModifier;
         $limits[$cornerPos] = $limit;

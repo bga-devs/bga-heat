@@ -4,6 +4,7 @@ use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
 use HEAT\Core\Stats;
 use HEAT\Helpers\Log;
+use HEAT\Helpers\Utils;
 use HEAT\Helpers\UserException;
 use HEAT\Managers\Constructors;
 use HEAT\Managers\Players;
@@ -490,6 +491,42 @@ trait RoundTrait
     return $nSpacesForward;
   }
 
+  public function getCurrentHeatCosts($constructor)
+  {
+    $prevPosition = Globals::getPreviousPosition();
+    $prevTurn = Globals::getPreviousTurn();
+    $position = $constructor->getPosition();
+    $turn = $constructor->getTurn();
+    $speed = $constructor->getSpeed();
+    list($heatCosts, $spinOut) = $this->getCircuit()->getCrossedCornersHeatCosts(
+      $constructor,
+      $speed,
+      $prevTurn,
+      $prevPosition,
+      $turn,
+      $position
+    );
+    $previousHeatCost = array_sum($heatCosts);
+    return [$previousHeatCost, $heatCosts, $spinOut];
+  }
+
+  public function getNextCornerInfos($constructor)
+  {
+    $position = $constructor->getPosition();
+    $cornerPos = $his->getCircuit()->getNextCorner($position);
+    $extraHeat = $this->getCircuit()->getCornerWeather($cornerPos) == \ROAD_CONDITION_MORE_HEAT;
+
+    // Max speed modificator
+    $speedLimitModifier = 0;
+    foreach ($constructor->getPlayedCards() as $card) {
+      $speedLimitModifier += $card['symbols'][ADJUST] ?? 0;
+    }
+    $rawLimit = $this->getCornerMaxSpeed($cornerPos);
+    $limit = $rawLimit + $speedLimitModifier;
+
+    return [$limit, $extraHeat];
+  }
+
   //////////////////////////////////////////////////////////////////
   //  _  _         _       _                      _ _
   // | || |       / \   __| |_ __ ___ _ __   __ _| (_)_ __   ___
@@ -579,7 +616,21 @@ trait RoundTrait
       }
     }
 
+    // Adrenaline extra info
+    if (in_array(ADRENALINE, $doableSymbols)) {
+      list(, $nSpacesForward, , , $heatCosts) = $this->getCircuit()->getReachedCell($constructor, 1, true, false);
+      if ($nSpacesForward == 0) {
+        Utils::filter($doableSymbols, fn($symbol) => $symbol != ADRENALINE);
+      }
+      $adrenalineWillCrossNextCorner = count($heatCosts) > 0;
+    }
+
     $canPass = $this->canPassReact($symbols);
+
+    // Current heat costs
+    list($currentHeatCost, $heatCosts, $spinOut) = $this->getCurrentHeatCosts($constructor);
+    // Next corner infos
+    list($speedLimit, $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
 
     return [
       'symbols' => $symbols,
@@ -587,6 +638,13 @@ trait RoundTrait
       'canPass' => $canPass,
       'descSuffix' => $canPass ? '' : 'Must',
       'flippedCards' => Globals::getFlippedCards(),
+
+      'adrenalineWillCrossNextCorner' => $adrenalineWillCrossNextCorner,
+      'currentHeatCost' => $currentHeatCost,
+      'heatCosts' => $heatCosts,
+      'spinOut' => $spinOut,
+      'nextCornerSpeedLimit' => $speedLimit,
+      'nextCornerExtraHeatCost' => $nextCornerExtraHeatCost,
     ];
   }
 
@@ -850,19 +908,6 @@ trait RoundTrait
     }
 
     // Previous heat cost
-    $prevPosition = Globals::getPreviousPosition();
-    $prevTurn = Globals::getPreviousTurn();
-    $position = $constructor->getPosition();
-    $turn = $constructor->getTurn();
-    $speed = $constructor->getSpeed();
-    list($previousHeatCost) = $this->getCircuit()->getCrossedCornersTotalHeatCost(
-      $constructor,
-      $speed,
-      $prevTurn,
-      $prevPosition,
-      $turn,
-      $position
-    );
 
     // Reached cells and heat costs
     $speeds = [];
