@@ -907,24 +907,35 @@ trait RoundTrait
       $slipstreams = $t;
     }
 
-    // Previous heat cost
+    // Current heat costs
+    list($currentHeatCost, $heatCosts, $spinOut) = $this->getCurrentHeatCosts($constructor);
+    // Next corner infos
+    list($speedLimit, $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
 
     // Reached cells and heat costs
     $speeds = [];
     $heatCosts = [];
+    $slipstreamWillCrossNextCorner = [];
     foreach ($slipstreams as $n) {
       $res = $this->getCircuit()->getSlipstreamResult($constructor, $n);
       if ($res !== false) {
-        list($cell, $path, $heatCost, $spinOut) = $res;
+        list($cell, $path, $heatCost, $spinOut, $heatCosts) = $res;
         $speeds[$n] = $cell;
-        $heatCosts[$n] = $heatCost + $previousHeatCost;
+        $heatCosts[$n] = $heatCost;
+        $slipstreamWillCrossNextCorner[$n] = count($heatCosts) > 0;
       }
     }
 
     return [
       'speeds' => $speeds,
       'heatCosts' => $heatCosts,
-      'previousHeatCost' => $previousHeatCost,
+      'slipstreamWillCrossNextCorner' => $slipstreamWillCrossNextCorner,
+
+      'currentHeatCost' => $currentHeatCost,
+      'currentHeatCosts' => $heatCosts,
+      'spinOut' => $spinOut,
+      'nextCornerSpeedLimit' => $speedLimit,
+      'nextCornerExtraHeatCost' => $nextCornerExtraHeatCost,
     ];
   }
 

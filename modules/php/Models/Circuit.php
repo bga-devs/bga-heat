@@ -380,12 +380,18 @@ class Circuit
     }
 
     // Check that you move at least one cell forward
-    list($cell, $nSpacesForward, , $path, $heatCost, $spinOut) = $this->getReachedCell($constructor, $n, true, true, true);
+    list($cell, $nSpacesForward, , $path, $heatCost, $spinOut, $heatCosts) = $this->getReachedCell(
+      $constructor,
+      $n,
+      true,
+      true,
+      true
+    );
     if ($nSpacesForward == 0) {
       return false;
     }
 
-    return [$cell, $path, $heatCost, $spinOut];
+    return [$cell, $path, $heatCost, $spinOut, $heatCosts];
   }
 
   public function getCornersInBetween($turn1, $pos1, $turn2, $pos2)
