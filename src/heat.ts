@@ -437,21 +437,25 @@ class Heat implements HeatGame {
 
     private getAdrenalineConfirmation(reactArgs: EnteringReactArgs) {
         let confirmationMessage = null;
-        if (reactArgs.adrenalineWillCrossNextCorner || reactArgs.currentHeatCost > 0) {
+        const adrenalineWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() == 0 && reactArgs.adrenalineWillCrossNextCorner;
+        const adrenalineCostOnCurrentCorner = Object.values(reactArgs.boostInfos[1]).reduce((a, b) => a + b, 0);
+        if (adrenalineWillCrossNextCorner || reactArgs.currentHeatCost > 0 || adrenalineCostOnCurrentCorner > 0) {
             const newSpeed = this.speedCounters[this.getConstructorId()].getValue() + 1;
 
             let newHeatCost = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 1 : 0;
             let newCornerCost = 0;
-            if (reactArgs.adrenalineWillCrossNextCorner) {
+            if (adrenalineWillCrossNextCorner) {
                 newCornerCost = Math.max(0, newSpeed - reactArgs.nextCornerSpeedLimit);
                 if (newCornerCost > 0 && reactArgs.nextCornerExtraHeatCost) {
                     newCornerCost++;
                 }
                 newHeatCost += newCornerCost;
+            } else if (adrenalineCostOnCurrentCorner) {
+                newHeatCost = adrenalineCostOnCurrentCorner;
             }
 
             if (newHeatCost > 0) {
-                if (reactArgs.adrenalineWillCrossNextCorner) {
+                if (adrenalineWillCrossNextCorner) {
                     confirmationMessage = _("The Adrenaline reaction will make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', `<strong>${newSpeed}</strong>`).replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`)
                     + `<br>`;
                 } else {
@@ -478,7 +482,8 @@ class Heat implements HeatGame {
         const mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
 
         let confirmationMessage = null;
-        if (mayCrossCorner || reactArgs.currentHeatCost > 0) {
+        const boostCostOnCurrentCorner = Object.values(reactArgs.boostInfos[4]).reduce((a, b) => a + b, 0);
+        if (mayCrossCorner || reactArgs.currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
             const newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
 
             let newHeatCostMax = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 4 : (paid ? 1 : 0);
@@ -489,6 +494,8 @@ class Heat implements HeatGame {
                     newCornerCostMax++;
                 }
                 newHeatCostMax += newCornerCostMax;
+            } else if (boostCostOnCurrentCorner) {
+                newHeatCostMax = boostCostOnCurrentCorner + (paid ? 1 : 0);
             }
 
             if (newHeatCostMax > 0) {

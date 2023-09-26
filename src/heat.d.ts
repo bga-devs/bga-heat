@@ -163,6 +163,7 @@ interface EnteringReactArgs {
     spinOut: boolean;
     nextCornerSpeedLimit: number;
     nextCornerExtraHeatCost: boolean;
+    boostInfos: { [boostSpeed: number]: { [cornerId: number]: number }; };
 }
 
 interface EnteringDiscardArgs {    
