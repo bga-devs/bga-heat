@@ -167,7 +167,7 @@ trait RoundTrait
 
       // Can we give up ?
       $canSkipEndRace =
-        !empty(Globals::getFinishedConstructors()) && 
+        !empty(Globals::getFinishedConstructors()) &&
         ($constructor->getTurn() < $this->getNbrLaps() || $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4);
 
       $args['_private'][$pId] = [
@@ -513,7 +513,7 @@ trait RoundTrait
   public function getNextCornerInfos($constructor)
   {
     $position = $constructor->getPosition();
-    $cornerPos = $his->getCircuit()->getNextCorner($position);
+    $cornerPos = $this->getCircuit()->getNextCorner($position);
     $extraHeat = $this->getCircuit()->getCornerWeather($cornerPos) == \ROAD_CONDITION_MORE_HEAT;
 
     // Max speed modificator
@@ -618,7 +618,7 @@ trait RoundTrait
 
     // Adrenaline extra info
     if (in_array(ADRENALINE, $doableSymbols)) {
-      list(, $nSpacesForward, , , $heatCosts) = $this->getCircuit()->getReachedCell($constructor, 1, true, false);
+      list(, $nSpacesForward, , , , , $heatCosts) = $this->getCircuit()->getReachedCell($constructor, 1, true, true);
       if ($nSpacesForward == 0) {
         Utils::filter($doableSymbols, fn($symbol) => $symbol != ADRENALINE);
       }
