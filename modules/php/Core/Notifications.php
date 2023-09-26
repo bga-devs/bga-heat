@@ -618,6 +618,7 @@ class Notifications
     if (isset($data['constructor'])) {
       $data['constructor_name'] = $data['constructor']->getName();
       $data['constructor_id'] = $data['constructor']->getId();
+      $data['preserve'][] = 'constructor_id';
       if ($data['constructor']->isAI()) {
         $data['i18n'][] = 'constructor_name';
       }
@@ -626,6 +627,7 @@ class Notifications
     if (isset($data['constructor2'])) {
       $data['constructor_name2'] = $data['constructor2']->getName();
       $data['constructor_id2'] = $data['constructor2']->getId();
+      $data['preserve'][] = 'constructor_id2';
       if ($data['constructor2']->isAI()) {
         $data['i18n'][] = 'constructor_name2';
       }
