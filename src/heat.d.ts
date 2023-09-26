@@ -142,7 +142,14 @@ interface EnteringChooseSpeedArgs {
     speeds: { [speed: number]: number /*destination cell*/ };
 }
 
-type EnteringSlipstreamArgs = EnteringChooseSpeedArgs;
+interface EnteringSlipstreamArgs extends EnteringChooseSpeedArgs {
+    currentHeatCost: number;
+    currentHeatCosts: { [cornerId: number]: number };
+    spinOut: boolean;
+    nextCornerSpeedLimit: number;
+    nextCornerExtraHeatCost: boolean;
+    slipstreamWillCrossNextCorner: { [cornerId: number]: boolean };
+}
 
 interface EnteringReactArgs {
     canPass: boolean;

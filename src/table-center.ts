@@ -395,15 +395,17 @@ class Circuit {
     }
     
     public addCornerHeatIndicator(cornerId: number, heat: number): void {
-        const cornerHeatIndicator = document.createElement('div');
-        cornerHeatIndicator.id = `corner-heat-indicator-${cornerId}`;
-        cornerHeatIndicator.innerHTML = `${heat}`;
-        cornerHeatIndicator.classList.add('corner-heat-indicator', 'icon', 'heat');
-        let corner = this.circuitDatas.corners[cornerId];
-        cornerHeatIndicator.style.setProperty('--x', `${corner.x}px`);
-        cornerHeatIndicator.style.setProperty('--y', `${corner.y}px`);
-        this.circuitDiv.insertAdjacentElement('beforeend', cornerHeatIndicator);
-        document.getElementById(`corner-${cornerId}`).style.setProperty('--color', 'red');
+        if (heat > 0) {
+            const cornerHeatIndicator = document.createElement('div');
+            cornerHeatIndicator.id = `corner-heat-indicator-${cornerId}`;
+            cornerHeatIndicator.innerHTML = `${heat}`;
+            cornerHeatIndicator.classList.add('corner-heat-indicator', 'icon', 'heat');
+            let corner = this.circuitDatas.corners[cornerId];
+            cornerHeatIndicator.style.setProperty('--x', `${corner.x}px`);
+            cornerHeatIndicator.style.setProperty('--y', `${corner.y}px`);
+            this.circuitDiv.insertAdjacentElement('beforeend', cornerHeatIndicator);
+            document.getElementById(`corner-${cornerId}`).style.setProperty('--color', 'red');
+        }
     }
     
     public removeMapIndicators(): void {
