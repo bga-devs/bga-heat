@@ -12,6 +12,7 @@ const MIN_NOTIFICATION_MS = 1200;
 const ACTION_TIMER_DURATION = 5;
 
 const LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
+const LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
 const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
@@ -26,7 +27,8 @@ class Heat implements HeatGame {
     public legendCardsManager: LegendCardsManager;
     public eventCardsManager: EventCardsManager;
 
-    private zoomManager: ZoomManager;
+    private circuitZoomManager: ZoomManager;
+    private tablesZoomManager: ZoomManager;
     private gamedatas: HeatGamedatas;
     private circuit: Circuit;
     private playersTables: PlayerTable[] = [];
@@ -40,10 +42,6 @@ class Heat implements HeatGame {
     private market?: LineStock<Card>;
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
-
-    private _notif_uid_to_log_id = [];
-    private _notif_uid_to_mobile_log_id = [];
-    private _last_notif;
 
     constructor() {
     }
@@ -112,14 +110,24 @@ class Heat implements HeatGame {
             this.updatePlannedCards(constructor.planification);
         }
         
-        this.zoomManager = new ZoomManager({
-            element: document.getElementById('tables'),
+        this.circuitZoomManager = new ZoomManager({
+            element: document.getElementById('table-center'),
             smooth: false,
             zoomControls: {
                 color: 'black',
             },
             defaultZoom: 0.625,
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
+        });
+        
+        this.tablesZoomManager = new ZoomManager({
+            element: document.getElementById('tables'),
+            smooth: false,
+            zoomControls: {
+                color: 'black',
+            },
+            defaultZoom: 1,
+            localStorageZoomKey: LOCAL_STORAGE_CIRCUIT_ZOOM_KEY,
         });
 
         new HelpManager(this, { 
@@ -134,9 +142,11 @@ class Heat implements HeatGame {
         this.setupNotifications();
         this.setupPreferences();
         (this as any).onScreenWidthChange = () => {
-            this.circuit.setAutoZoom();
-            while (this.zoomManager.zoom > 0.5 && document.getElementById('tables').clientWidth < 1200) {
-                this.zoomManager.zoomOut();   
+            while (this.circuitZoomManager.zoom > 0.25 && document.getElementById('table-center').clientWidth < 1650) {
+                this.circuitZoomManager.zoomOut();   
+            }
+            while (this.tablesZoomManager.zoom > 0.5 && document.getElementById('tables').clientWidth < 1200) {
+                this.tablesZoomManager.zoomOut();   
             }
         }
 
@@ -241,7 +251,7 @@ class Heat implements HeatGame {
     private initMarketStock() {
         if (!this.market) {
             const constructor = Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId());
-            document.getElementById('table-center').insertAdjacentHTML('beforebegin', `
+            document.getElementById('top').insertAdjacentHTML('afterbegin', `
                 <div id="market" style="--personal-card-background-y: ${(constructor?.id ?? 0) * 100 / 6}%;"></div>
             `);
             this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
@@ -312,7 +322,7 @@ class Heat implements HeatGame {
     private onEnteringSalvage(args: EnteringSalvageArgs) {
         if (!this.market) {
             const constructor = Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId());
-            document.getElementById('table-center').insertAdjacentHTML('beforebegin', `
+            document.getElementById('top').insertAdjacentHTML('afterbegin', `
                 <div id="market" style="--personal-card-background-y: ${(constructor?.id ?? 0) * 100 / 6}%;"></div>
             `);
             this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
@@ -450,6 +460,7 @@ class Heat implements HeatGame {
                         numbers.forEach(number => {
                             let label = ``;
                             let tooltip = ``;
+                            let confirmationMessage = null;
                             switch (type) {
                                 case 'accelerate':
                                     const accelerateCard = this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number);
@@ -469,6 +480,12 @@ class Heat implements HeatGame {
                                     ${_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).")}
                                     <br><br>
                                     <i>${_("Note: Adrenaline cannot be saved for future rounds")}</i>`;
+
+                                    if (this.cornerCounters[this.getConstructorId()].getValue() == 0) {
+                                        confirmationMessage = `${_("The Adrenaline reaction will make you cross a corner at speed ${speed}.").replace('${speed}', `<strong>${this.speedCounters[this.getConstructorId()].getValue() + 1}</strong>`)}
+                                        <br><br>
+                                        ${_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', `<strong>${this.engineCounters[this.getConstructorId()].getValue()}</strong>`)}`;
+                                    }
                                     break;
                                 case 'cooldown':
                                     label = `${number} [Cooldown]`;
@@ -502,6 +519,13 @@ class Heat implements HeatGame {
                                     ${_("Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly.")}
                                     <br><br>
                                     <i>${_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.")}</i>`;
+
+                                    const mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
+                                    if (mayCrossCorner) {
+                                        confirmationMessage = `${_("The Boost reaction may make you cross a corner at a speed up to ${speed}.").replace('${speed}', `<strong>${this.speedCounters[this.getConstructorId()].getValue() + 4}</strong>`)}
+                                        <br><br>
+                                        ${_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', `<strong>${this.engineCounters[this.getConstructorId()].getValue()}</strong>`)}`;
+                                    }
                                     break;
                                 case 'reduce':
                                     label = `<div class="icon reduce-stress">${number}</div>`;
@@ -517,10 +541,13 @@ class Heat implements HeatGame {
                                     break;
                             }
 
+                            const finalAction = () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined);
+                            const callback = confirmationMessage ? () => (this as any).confirmationDialog(confirmationMessage, finalAction) : finalAction;
+
                             (this as any).addActionButton(
                                 `actReact${type}_${number}_button`, 
                                 formatTextIcons(label), 
-                                () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined)
+                                callback
                             );
                             this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
                             if (type == 'salvage' && this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
@@ -930,7 +957,7 @@ class Heat implements HeatGame {
         </div>
         `;
 
-        document.getElementById('table-center').insertAdjacentHTML('beforebegin', html);
+        document.getElementById('top').insertAdjacentHTML('afterbegin', html);
 
         if (withAction) {
             document.getElementById('leave-button').addEventListener('click', () => this.actQuitGame());
