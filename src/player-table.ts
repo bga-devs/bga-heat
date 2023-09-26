@@ -3,17 +3,17 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 
 const PERSONAL_CARDS_SORTING = (a: Card, b: Card) => Number(a.type) - Number(b.type);
 
-/*
 
-function manualPositionFitUpdateDisplay(element, cards, lastCard, stock) {
-    const halfClientWidth = element.clientWidth / 2;
+
+function manualPositionFitUpdateDisplay(element: HTMLElement, cards: Card[], lastCard: Card, stock: ManualPositionStock<Card>) {
     const MARGIN = 8;
-    const CARD_WIDTH = 100;
+    element.style.setProperty('--width', `${CARD_WIDTH * cards.length + MARGIN * (cards.length - 1)}px`);
+    const halfClientWidth = element.clientWidth / 2;
     let cardDistance = CARD_WIDTH + MARGIN;
     const containerWidth = element.clientWidth;
     const uncompressedWidth = (cards.length * CARD_WIDTH) + ((cards.length - 1) * MARGIN);
     if (uncompressedWidth > containerWidth) {
-        cardDistance = Math.floor(CARD_WIDTH * containerWidth / (cards.length * CARD_WIDTH));
+        cardDistance = cardDistance * containerWidth / uncompressedWidth;
     }
 
     cards.forEach((card, index) => {
@@ -22,16 +22,16 @@ function manualPositionFitUpdateDisplay(element, cards, lastCard, stock) {
 
         cardDiv.style.left = `${ cardLeft - CARD_WIDTH / 2 }px`;
     });
-}*/
+}
 
 // new ManualPositionStock(cardsManager, document.getElementById('manual-position-fit-stock'), undefined, manualPositionFitUpdateDisplay);
-class InPlayStock extends /*ManualPositionStock*/LineStock<Card> {
+class InPlayStock extends ManualPositionStock<Card> {
     private playerId: number;
 
     constructor(game: HeatGame, constructor: Constructor, ) {
         super(game.cardsManager, document.getElementById(`player-table-${constructor.pId}-inplay`), {
             sort: PERSONAL_CARDS_SORTING,
-        }/*, manualPositionFitUpdateDisplay*/);
+        }, manualPositionFitUpdateDisplay);
         this.playerId = constructor.pId;
         this.addCards(Object.values(constructor.inplay));
         this.toggleInPlay(); // in case inplay is empty, addCard is not called
@@ -48,7 +48,7 @@ class InPlayStock extends /*ManualPositionStock*/LineStock<Card> {
     }
 
     public cardRemoved(card: Card, settings?: RemoveCardSettings) {
-        super.cardRemoved(card, settings);
+        super.cardRemoved(card,/* settings*/);
         this.toggleInPlay();
     }
 }

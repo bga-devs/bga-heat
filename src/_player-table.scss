@@ -113,14 +113,24 @@
   .inplay-wrapper {
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
+    left: 5%;
+    right: 5%;
     bottom: 0;
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    max-width: 90%;
+
+    .inplay {
+      width: var(--width);
+      max-width: 90%;
+      position: relative;
+      left: 5%;
+      height: 362px;
+    }
 
     .hand-wrapper {
+      max-width: 100%;
       align-self: unset;
       padding: 0 10px 10px 10px;
     }

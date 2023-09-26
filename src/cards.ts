@@ -10,6 +10,9 @@ interface Card {
     isReshuffled?: boolean;
 }
 
+const CARD_WIDTH = 225;
+const CARD_HEIGHT = 362;
+
 //console.log(Object.values(CARDS_DATA).map(card => card.startingSpace));
 
 class CardsManager extends CardManager<Card> {
@@ -22,8 +25,8 @@ class CardsManager extends CardManager<Card> {
             },
             setupFrontDiv: (card: Card, div: HTMLElement) => this.setupFrontDiv(card, div),
             isCardVisible: card => Boolean(card.type),
-            cardWidth: 225,
-            cardHeight: 362,
+            cardWidth: CARD_WIDTH,
+            cardHeight: CARD_HEIGHT,
             animationManager: game.animationManager,
         });
     }

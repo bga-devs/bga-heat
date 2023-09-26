@@ -1913,6 +1913,8 @@ function formatTextIcons(rawText) {
         .replace(/\[Boost\]/ig, '<div class="boost icon"></div>')
         .replace(/\[\+\]/ig, '<div class="boost icon"></div>');
 }
+var CARD_WIDTH = 225;
+var CARD_HEIGHT = 362;
 //console.log(Object.values(CARDS_DATA).map(card => card.startingSpace));
 var CardsManager = /** @class */ (function (_super) {
     __extends(CardsManager, _super);
@@ -1925,8 +1927,8 @@ var CardsManager = /** @class */ (function (_super) {
             },
             setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
             isCardVisible: function (card) { return Boolean(card.type); },
-            cardWidth: 225,
-            cardHeight: 362,
+            cardWidth: CARD_WIDTH,
+            cardHeight: CARD_HEIGHT,
             animationManager: game.animationManager,
         }) || this;
         _this.game = game;
@@ -2712,33 +2714,29 @@ var Circuit = /** @class */ (function () {
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 var log = isDebug ? console.log.bind(window.console) : function () { };
 var PERSONAL_CARDS_SORTING = function (a, b) { return Number(a.type) - Number(b.type); };
-/*
-
 function manualPositionFitUpdateDisplay(element, cards, lastCard, stock) {
-    const halfClientWidth = element.clientWidth / 2;
-    const MARGIN = 8;
-    const CARD_WIDTH = 100;
-    let cardDistance = CARD_WIDTH + MARGIN;
-    const containerWidth = element.clientWidth;
-    const uncompressedWidth = (cards.length * CARD_WIDTH) + ((cards.length - 1) * MARGIN);
+    var MARGIN = 8;
+    element.style.setProperty('--width', "".concat(CARD_WIDTH * cards.length + MARGIN * (cards.length - 1), "px"));
+    var halfClientWidth = element.clientWidth / 2;
+    var cardDistance = CARD_WIDTH + MARGIN;
+    var containerWidth = element.clientWidth;
+    var uncompressedWidth = (cards.length * CARD_WIDTH) + ((cards.length - 1) * MARGIN);
     if (uncompressedWidth > containerWidth) {
-        cardDistance = Math.floor(CARD_WIDTH * containerWidth / (cards.length * CARD_WIDTH));
+        cardDistance = cardDistance * containerWidth / uncompressedWidth;
     }
-
-    cards.forEach((card, index) => {
-        const cardDiv = stock.getCardElement(card);
-        const cardLeft = halfClientWidth + cardDistance * (index - (cards.length - 1) / 2);
-
-        cardDiv.style.left = `${ cardLeft - CARD_WIDTH / 2 }px`;
+    cards.forEach(function (card, index) {
+        var cardDiv = stock.getCardElement(card);
+        var cardLeft = halfClientWidth + cardDistance * (index - (cards.length - 1) / 2);
+        cardDiv.style.left = "".concat(cardLeft - CARD_WIDTH / 2, "px");
     });
-}*/
+}
 // new ManualPositionStock(cardsManager, document.getElementById('manual-position-fit-stock'), undefined, manualPositionFitUpdateDisplay);
 var InPlayStock = /** @class */ (function (_super) {
     __extends(InPlayStock, _super);
     function InPlayStock(game, constructor) {
         var _this = _super.call(this, game.cardsManager, document.getElementById("player-table-".concat(constructor.pId, "-inplay")), {
             sort: PERSONAL_CARDS_SORTING,
-        } /*, manualPositionFitUpdateDisplay*/) || this;
+        }, manualPositionFitUpdateDisplay) || this;
         _this.playerId = constructor.pId;
         _this.addCards(Object.values(constructor.inplay));
         _this.toggleInPlay(); // in case inplay is empty, addCard is not called
@@ -2753,11 +2751,11 @@ var InPlayStock = /** @class */ (function (_super) {
         return promise;
     };
     InPlayStock.prototype.cardRemoved = function (card, settings) {
-        _super.prototype.cardRemoved.call(this, card, settings);
+        _super.prototype.cardRemoved.call(this, card);
         this.toggleInPlay();
     };
     return InPlayStock;
-}(/*ManualPositionStock*/ LineStock));
+}(ManualPositionStock));
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player, constructor) {
         var _this = this;
@@ -3199,7 +3197,7 @@ var Heat = /** @class */ (function () {
             zoomControls: {
                 color: 'black',
             },
-            defaultZoom: 0.75,
+            defaultZoom: 0.625,
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
         });
         new HelpManager(this, {
@@ -3213,7 +3211,12 @@ var Heat = /** @class */ (function () {
         });
         this.setupNotifications();
         this.setupPreferences();
-        this.onScreenWidthChange = function () { return _this.circuit.setAutoZoom(); };
+        this.onScreenWidthChange = function () {
+            _this.circuit.setAutoZoom();
+            while (_this.zoomManager.zoom > 0.5 && document.getElementById('tables').clientWidth < 1200) {
+                _this.zoomManager.zoomOut();
+            }
+        };
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -3564,6 +3567,7 @@ var Heat = /** @class */ (function () {
                     this.onEnteringSalvage(args);
                     this.addActionButton("actSalvage_button", _('Salvage selected cards'), function () { return _this.actSalvage(); });
                     document.getElementById("actSalvage_button").classList.add('disabled');
+                    break;
                 case 'confirmEndOfRace':
                     this.addActionButton("seen_button", _("Seen"), function () { return _this.actConfirmResults(); });
                     break;
