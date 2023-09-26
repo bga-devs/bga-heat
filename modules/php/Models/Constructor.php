@@ -44,6 +44,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
       'inplay' => $this->getPlayedCards(),
       'distanceToCorner' => $this->getDistanceToCorner(),
       'canLeave' => $this->canLeave(),
+      'planification' => $current ? Globals::getPlanification()[$this->pId] ?? [] : [],
     ]);
   }
 
