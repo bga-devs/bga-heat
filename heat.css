@@ -857,6 +857,24 @@ height: 241px; */
   box-shadow: 0 0 5px 5px #6766a7;
 }
 
+.corner-heat-indicator {
+  position: absolute;
+  left: 10px;
+  top: -5px;
+  width: 40px !important;
+  height: 40px !important;
+  transform: translateX(var(--x)) translateY(var(--y));
+  transform-origin: top left;
+  color: white;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  line-height: 48px !important;
+  user-select: none;
+  pointer-events: none;
+  text-shadow: 0 0 1px red, 0 0 2px red, 0 0 3px red;
+}
+
 .press-icon {
   position: absolute;
   left: calc(var(--x) + 16px);
