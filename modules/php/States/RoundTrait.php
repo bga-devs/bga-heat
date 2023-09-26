@@ -167,8 +167,8 @@ trait RoundTrait
 
       // Can we give up ?
       $canSkipEndRace =
-        (!empty(Globals::getFinishedConstructors()) && $constructor->getTurn() < $this->getNbrLaps()) ||
-        $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4;
+        !empty(Globals::getFinishedConstructors()) && 
+        ($constructor->getTurn() < $this->getNbrLaps() || $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4);
 
       $args['_private'][$pId] = [
         'cards' => $hand->getIds(),
@@ -300,7 +300,7 @@ trait RoundTrait
     $planification = Globals::getPlanification();
     $cardIds = $planification[$constructor->getPId()];
     $constructor->incStat('rounds');
-    unset($planification[$constructor - getPIds()]);
+    unset($planification[$constructor->getPId()]);
     Globals::setPlanification($planification);
 
     // Setup gear and reveal cards

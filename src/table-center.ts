@@ -116,14 +116,10 @@ class CarAnimation {
 }
 
 class Circuit {
-    private tableCenterDiv: HTMLDivElement;
     private circuitDiv: HTMLDivElement;
-    private scale: number = 1;
-
     private circuitDatas: CircuitDatas;
         
     constructor(private game: HeatGame, private gamedatas: HeatGamedatas) {
-        this.tableCenterDiv = document.getElementById('table-center') as HTMLDivElement;
         this.circuitDiv = document.getElementById('circuit') as HTMLDivElement;
 
         if (gamedatas.circuitDatas?.jpgUrl) {
@@ -155,28 +151,6 @@ class Circuit {
         this.circuitDiv.innerHTML = '';
         
         this.loadCircuit(circuitDatas);
-    }
-
-    /** 
-     * Set map size, depending on available screen size.
-     * Player table will be placed left or bottom, depending on window ratio.
-     */ 
-    public setAutoZoom() {
-
-        if (!this.tableCenterDiv.clientWidth) {
-            setTimeout(() => this.setAutoZoom(), 200);
-            return;
-        }
-
-        const horizontalScale = document.getElementById('game_play_area').clientWidth / MAP_WIDTH;
-        const verticalScale = (window.innerHeight - 80) / MAP_HEIGHT;
-        this.scale = Math.min(1, horizontalScale, verticalScale);
-
-        this.tableCenterDiv.style.transform = this.scale === 1 ? '' : `scale(${this.scale})`;
-        const maxHeight = this.scale === 1 ? '' : `${MAP_HEIGHT * this.scale}px`;
-        //this.mapDiv.style.maxHeight = maxHeight;
-        this.tableCenterDiv.style.maxHeight = maxHeight;
-        //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     }
     
     private createCorners(corners: { [id: number]: Corner }): void {

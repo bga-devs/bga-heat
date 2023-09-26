@@ -26,6 +26,7 @@ interface Constructor {
     distanceToCorner: number;
     paths?: number[][];
     canLeave: boolean;
+    planification: number[];
 }
 
 interface Cell {

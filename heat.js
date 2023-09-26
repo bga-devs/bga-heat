@@ -2371,8 +2371,6 @@ var Circuit = /** @class */ (function () {
         var _a, _b;
         this.game = game;
         this.gamedatas = gamedatas;
-        this.scale = 1;
-        this.tableCenterDiv = document.getElementById('table-center');
         this.circuitDiv = document.getElementById('circuit');
         if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
             this.loadCircuit(gamedatas.circuitDatas);
@@ -2397,25 +2395,6 @@ var Circuit = /** @class */ (function () {
     Circuit.prototype.newCircuit = function (circuitDatas) {
         this.circuitDiv.innerHTML = '';
         this.loadCircuit(circuitDatas);
-    };
-    /**
-     * Set map size, depending on available screen size.
-     * Player table will be placed left or bottom, depending on window ratio.
-     */
-    Circuit.prototype.setAutoZoom = function () {
-        var _this = this;
-        if (!this.tableCenterDiv.clientWidth) {
-            setTimeout(function () { return _this.setAutoZoom(); }, 200);
-            return;
-        }
-        var horizontalScale = document.getElementById('game_play_area').clientWidth / MAP_WIDTH;
-        var verticalScale = (window.innerHeight - 80) / MAP_HEIGHT;
-        this.scale = Math.min(1, horizontalScale, verticalScale);
-        this.tableCenterDiv.style.transform = this.scale === 1 ? '' : "scale(".concat(this.scale, ")");
-        var maxHeight = this.scale === 1 ? '' : "".concat(MAP_HEIGHT * this.scale, "px");
-        //this.mapDiv.style.maxHeight = maxHeight;
-        this.tableCenterDiv.style.maxHeight = maxHeight;
-        //this.mapDiv.style.marginBottom = `-${(1 - this.scale) * gameHeight}px`;
     };
     Circuit.prototype.createCorners = function (corners) {
         var _this = this;
@@ -3100,7 +3079,7 @@ var ChampionshipTable = /** @class */ (function () {
             return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                <span class=\"circuit-name\">").concat(circuit.name, "</span>\n                ").concat(_this.game.eventCardsManager.getHtml(circuit.event), "\n            </div>\n            ");
         });
         html += "\n            </div>\n        </div>\n        ";
-        document.getElementById('table-center').insertAdjacentHTML('beforebegin', html);
+        document.getElementById('top').insertAdjacentHTML('afterbegin', html);
         var championshipCircuits = document.getElementById('championship-circuits');
         championshipCircuits.addEventListener('click', function () {
             championshipCircuits.dataset.folded = (championshipCircuits.dataset.folded == 'false').toString();
@@ -3124,6 +3103,7 @@ var ANIMATION_MS = 500;
 var MIN_NOTIFICATION_MS = 1200;
 var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
+var LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
 function sleep(ms) {
@@ -3138,8 +3118,6 @@ var Heat = /** @class */ (function () {
         this.speedCounters = [];
         this.lapCounters = [];
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
-        this._notif_uid_to_log_id = [];
-        this._notif_uid_to_mobile_log_id = [];
     }
     /*
         setup:
@@ -3155,7 +3133,7 @@ var Heat = /** @class */ (function () {
     */
     Heat.prototype.setup = function (gamedatas) {
         var _this = this;
-        var _a;
+        var _a, _b;
         log("Starting game setup");
         this.gamedatas = gamedatas;
         if (((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
@@ -3191,14 +3169,28 @@ var Heat = /** @class */ (function () {
         }
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
-        this.zoomManager = new ZoomManager({
-            element: document.getElementById('tables'),
+        var constructorId = this.getConstructorId();
+        var constructor = this.gamedatas.constructors[constructorId];
+        if (constructorId !== null && ((_b = constructor === null || constructor === void 0 ? void 0 : constructor.planification) === null || _b === void 0 ? void 0 : _b.length) && constructor.speed < 0) {
+            this.updatePlannedCards(constructor.planification);
+        }
+        this.circuitZoomManager = new ZoomManager({
+            element: document.getElementById('table-center'),
             smooth: false,
             zoomControls: {
                 color: 'black',
             },
             defaultZoom: 0.625,
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
+        });
+        this.tablesZoomManager = new ZoomManager({
+            element: document.getElementById('tables'),
+            smooth: false,
+            zoomControls: {
+                color: 'black',
+            },
+            defaultZoom: 1,
+            localStorageZoomKey: LOCAL_STORAGE_CIRCUIT_ZOOM_KEY,
         });
         new HelpManager(this, {
             buttons: [
@@ -3212,9 +3204,11 @@ var Heat = /** @class */ (function () {
         this.setupNotifications();
         this.setupPreferences();
         this.onScreenWidthChange = function () {
-            _this.circuit.setAutoZoom();
-            while (_this.zoomManager.zoom > 0.5 && document.getElementById('tables').clientWidth < 1200) {
-                _this.zoomManager.zoomOut();
+            while (_this.circuitZoomManager.zoom > 0.25 && document.getElementById('table-center').clientWidth < 1650) {
+                _this.circuitZoomManager.zoomOut();
+            }
+            while (_this.tablesZoomManager.zoom > 0.5 && document.getElementById('tables').clientWidth < 1200) {
+                _this.tablesZoomManager.zoomOut();
             }
         };
         log("Ending game setup");
@@ -3245,7 +3239,7 @@ var Heat = /** @class */ (function () {
                 this.onEnteringSwapUpgrade(args.args);
                 break;
             case 'planification':
-                this.updatePlannedCards((_d = (_c = args.args._private) === null || _c === void 0 ? void 0 : _c.selection) !== null && _d !== void 0 ? _d : [], 'onEnteringState onEnteringPlanification');
+                this.updatePlannedCards((_d = (_c = args.args._private) === null || _c === void 0 ? void 0 : _c.selection) !== null && _d !== void 0 ? _d : []);
                 break;
         }
     };
@@ -3302,7 +3296,7 @@ var Heat = /** @class */ (function () {
         var _a;
         if (!this.market) {
             var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
-            document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
+            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
             this.market.onSelectionChange = function (selection) { return _this.onMarketSelectionChange(selection); };
         }
@@ -3328,13 +3322,21 @@ var Heat = /** @class */ (function () {
             this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
         }
     };
-    Heat.prototype.updatePlannedCards = function (plannedCardsIds, from) {
-        console.log('updatePlannedCards', plannedCardsIds, from);
+    Heat.prototype.updatePlannedCards = function (plannedCardsIds) {
+        var _a;
         document.querySelectorAll(".planned-card").forEach(function (elem) { return elem.classList.remove('planned-card'); });
         if (plannedCardsIds === null || plannedCardsIds === void 0 ? void 0 : plannedCardsIds.length) {
-            var playerTable_1 = this.getCurrentPlayerTable();
-            var cards_1 = playerTable_1.hand.getCards();
-            plannedCardsIds === null || plannedCardsIds === void 0 ? void 0 : plannedCardsIds.forEach(function (id) { return playerTable_1.hand.getCardElement(cards_1.find(function (card) { return Number(card.id) == id; })).classList.add('planned-card'); });
+            var hand_1 = (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.hand;
+            if (hand_1) {
+                var cards_1 = hand_1.getCards();
+                plannedCardsIds === null || plannedCardsIds === void 0 ? void 0 : plannedCardsIds.forEach(function (id) {
+                    var _a;
+                    var card = cards_1.find(function (card) { return Number(card.id) == id; });
+                    if (card) {
+                        (_a = hand_1.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.add('planned-card');
+                    }
+                });
+            }
         }
     };
     Heat.prototype.onEnteringChooseSpeed = function (args) {
@@ -3358,7 +3360,7 @@ var Heat = /** @class */ (function () {
         var _a;
         if (!this.market) {
             var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
-            document.getElementById('table-center').insertAdjacentHTML('beforebegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
+            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
             this.market.onSelectionChange = function (selection) {
                 document.getElementById("actSalvage_button").classList.toggle('disabled', selection.length > args.n);
@@ -3395,7 +3397,6 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onLeavingPlanification = function () {
         this.onLeavingHandSelection();
         this.circuit.removeMapIndicators();
-        this.updatePlannedCards([], 'onLeavingPlanification');
     };
     Heat.prototype.onLeavingHandSelection = function () {
         var _a;
@@ -3480,6 +3481,7 @@ var Heat = /** @class */ (function () {
                         numbers.forEach(function (number) {
                             var label = "";
                             var tooltip = "";
+                            var confirmationMessage = null;
                             switch (type) {
                                 case 'accelerate':
                                     var accelerateCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
@@ -3494,6 +3496,9 @@ var Heat = /** @class */ (function () {
                                 case 'adrenaline':
                                     label = "+".concat(number, " [Speed]");
                                     tooltip = "\n                                    <strong>".concat(_("Adrenaline"), "</strong>\n                                    <br><br>\n                                    ").concat(_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space)."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Adrenaline cannot be saved for future rounds"), "</i>");
+                                    if (_this.cornerCounters[_this.getConstructorId()].getValue() == 0) {
+                                        confirmationMessage = "".concat(_("The Adrenaline reaction will make you cross a corner at speed ${speed}.").replace('${speed}', "<strong>".concat(_this.speedCounters[_this.getConstructorId()].getValue() + 1, "</strong>")), "\n                                        <br><br>\n                                        ").concat(_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', "<strong>".concat(_this.engineCounters[_this.getConstructorId()].getValue(), "</strong>")));
+                                    }
                                     break;
                                 case 'cooldown':
                                     label = "".concat(number, " [Cooldown]");
@@ -3521,6 +3526,10 @@ var Heat = /** @class */ (function () {
                                         label += " (1[Heat])";
                                     }
                                     tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _("Regardless of which gear you are in you may pay 1 Heat to boost once per turn.") : '', "\n                                    ").concat(_("Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step."), "</i>");
+                                    var mayCrossCorner = _this.cornerCounters[_this.getConstructorId()].getValue() < 4;
+                                    if (mayCrossCorner) {
+                                        confirmationMessage = "".concat(_("The Boost reaction may make you cross a corner at a speed up to ${speed}.").replace('${speed}', "<strong>".concat(_this.speedCounters[_this.getConstructorId()].getValue() + 4, "</strong>")), "\n                                        <br><br>\n                                        ").concat(_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', "<strong>".concat(_this.engineCounters[_this.getConstructorId()].getValue(), "</strong>")));
+                                    }
                                     break;
                                 case 'reduce':
                                     label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
@@ -3535,7 +3544,9 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('scrap', number);
                                     break;
                             }
-                            _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); });
+                            var finalAction = function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); };
+                            var callback = confirmationMessage ? function () { return _this.confirmationDialog(confirmationMessage, finalAction); } : finalAction;
+                            _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
                             _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(tooltip));
                             if (type == 'salvage' && _this.getCurrentPlayerTable().discard.getCardNumber() == 0) {
                                 document.getElementById("actReact".concat(type, "_").concat(number, "_button")).classList.add('disabled');
@@ -3600,8 +3611,8 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.getConstructorId = function () {
         var _this = this;
-        var _a;
-        return Number((_a = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); })) === null || _a === void 0 ? void 0 : _a.id);
+        var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
+        return constructor !== undefined ? Number(constructor === null || constructor === void 0 ? void 0 : constructor.id) : null;
     };
     Heat.prototype.getPlayer = function (playerId) {
         return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
@@ -3763,7 +3774,7 @@ var Heat = /** @class */ (function () {
                 .replace('<leave-button>', "<button id=\"leave-button\" class=\"bgabutton bgabutton_blue\">".concat(_('Leave the game'), "</button>")), "\n                </span>");
         }
         html += "\n        </div>\n        ";
-        document.getElementById('table-center').insertAdjacentHTML('beforebegin', html);
+        document.getElementById('top').insertAdjacentHTML('afterbegin', html);
         if (withAction) {
             document.getElementById('leave-button').addEventListener('click', function () { return _this.actQuitGame(); });
         }
@@ -4122,7 +4133,7 @@ var Heat = /** @class */ (function () {
         this.market = null;
     };
     Heat.prototype.notif_updatePlanification = function (args) {
-        this.updatePlannedCards(args.args._private.selection, 'notif_updatePlanification');
+        this.updatePlannedCards(args.args._private.selection);
     };
     Heat.prototype.notif_reveal = function (args) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4131,6 +4142,9 @@ var Heat = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
+                        if (constructor_id === this.getConstructorId()) {
+                            this.updatePlannedCards([]);
+                        }
                         playerId = this.getPlayerIdFromConstructorId(constructor_id);
                         playerTable = this.getPlayerTable(playerId);
                         playerTable.setCurrentGear(gear);

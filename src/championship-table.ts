@@ -31,7 +31,7 @@ class ChampionshipTable {
         </div>
         `;
 
-        document.getElementById('table-center').insertAdjacentHTML('beforebegin', html);
+        document.getElementById('top').insertAdjacentHTML('afterbegin', html);
 
         const championshipCircuits = document.getElementById('championship-circuits');
         championshipCircuits.addEventListener('click', () => {

@@ -77,6 +77,23 @@ trait DebugTrait
     $this->DbQuery("UPDATE `cards` SET `type` = 111 WHERE card_location = 'hand-$constructorId'");
   }
 
+  // discardAll(11, 1)
+  /*function discardAll($n = 11, $constructorId = null)
+  {
+    $constructor = $constructorId === null ? Constructors::getActive() : Constructors::get($constructorId);
+    $cards = $constructor->scrapCards($n);
+    Notifications::scrapCards($constructor, $cards);
+  }*/
+  function drefill($constructorId)
+  {
+    $constructor = Constructors::get($constructorId);
+    $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'deck', 'discard')");
+    $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'inplay', 'discard')");
+    $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'hand', 'discard')");
+    // Replenish
+    Cards::fillHand($constructor);
+  }
+
   /*
    * loadBug: in studio, type loadBug(20762) into the table chat to load a bug report from production
    * client side JavaScript will fetch each URL below in sequence, then refresh the page
