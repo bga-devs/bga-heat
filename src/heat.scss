@@ -60,64 +60,67 @@ html, .mode_3d #game_play_area_background {
   text-align: center;
   
   &.flag {
-    background-position-x: #{0 * 100% / 19};
+    background-position-x: #{0 * 100% / 20};
   }
   &.engine {
-    background-position-x: #{1 * 100% / 19};
+    background-position-x: #{1 * 100% / 20};
   }
   &.heat {
-    background-position-x: #{2 * 100% / 19};
+    background-position-x: #{2 * 100% / 20};
   }
   &.cooldown {
-    background-position-x: #{3 * 100% / 19};
+    background-position-x: #{3 * 100% / 20};
   }
   &.stress {
-    background-position-x: #{4 * 100% / 19};
+    background-position-x: #{4 * 100% / 20};
   }
   &.boost {
-    background-position-x: #{5 * 100% / 19};
+    background-position-x: #{5 * 100% / 20};
   }
   &.speed {
-    background-position-x: #{6 * 100% / 19};
+    background-position-x: #{6 * 100% / 20};
   }
   &.podium {
-    background-position-x: #{7 * 100% / 19};
+    background-position-x: #{7 * 100% / 20};
   }
-  &.reduce-stress {
-    background-position-x: #{8 * 100% / 19};
+  &.reduce-stress, &.reduce {
+    background-position-x: #{8 * 100% / 20};
   }
   &.scrap {
-    background-position-x: #{9 * 100% / 19};
+    background-position-x: #{9 * 100% / 20};
   }
   &.direct {
-    background-position-x: #{10 * 100% / 19};
+    background-position-x: #{10 * 100% / 20};
   }
   &.adjust {
-    background-position-x: #{11 * 100% / 19};
+    background-position-x: #{11 * 100% / 20};
   }
   &.forced-heat {
-    background-position-x: #{12 * 100% / 19};
+    background-position-x: #{12 * 100% / 20};
   }
   &.refresh {
-    background-position-x: #{13 * 100% / 19};
+    background-position-x: #{13 * 100% / 20};
   }
   &.salvage {
-    background-position-x: #{14 * 100% / 19};
+    background-position-x: #{14 * 100% / 20};
   }
   &.gear {
-    background-position-x: #{15 * 100% / 19};
+    background-position-x: #{15 * 100% / 20};
   }
   &.mandatory {
-    background-position-x: #{16 * 100% / 19};
+    background-position-x: #{16 * 100% / 20};
   }
   &.slipstream {
-    background-position-x: #{17 * 100% / 19};
+    background-position-x: #{17 * 100% / 20};
   }
   &.one-time {
-    background-position-x: #{18 * 100% / 19};
+    background-position-x: #{18 * 100% / 20};
   }
   &.corner {
-    background-position-x: #{19 * 100% / 19};
+    background-position-x: #{19 * 100% / 20};
+  }
+  &.accelerate {
+    background-position-x: #{20 * 100% / 20};
   }
 }
 
