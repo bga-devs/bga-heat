@@ -43,22 +43,22 @@ $stats_type = [
     ],
     'roundsSpeed1' => [
       'id' => STAT_ROUNDS_1,
-      'name' => totranslate('Rounds played in speed 1'),
+      'name' => totranslate('Rounds played in gear 1'),
       'type' => 'float',
     ],
     'roundsSpeed2' => [
       'id' => STAT_ROUNDS_2,
-      'name' => totranslate('Rounds played in speed2'),
+      'name' => totranslate('Rounds played in gear 2'),
       'type' => 'float',
     ],
     'roundsSpeed3' => [
       'id' => STAT_ROUNDS_3,
-      'name' => totranslate('Rounds played in speed 3'),
+      'name' => totranslate('Rounds played in gear 3'),
       'type' => 'float',
     ],
     'roundsSpeed4' => [
       'id' => STAT_ROUNDS_4,
-      'name' => totranslate('Rounds played in speed 4'),
+      'name' => totranslate('Rounds played in gear 4'),
       'type' => 'float',
     ],
 

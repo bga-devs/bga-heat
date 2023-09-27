@@ -623,6 +623,11 @@ trait RoundTrait
       }
     }
 
+    // Current heat costs
+    list($currentHeatCost, $currentHeatCosts, $spinOut) = $this->getCurrentHeatCosts($constructor);
+    // Next corner infos
+    list($speedLimit, $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
+
     // Adrenaline extra info
     $adrenalineWillCrossNextCorner = false;
     if (in_array(ADRENALINE, $doableSymbols)) {
@@ -630,15 +635,10 @@ trait RoundTrait
       if ($nSpacesForward == 0) {
         Utils::filter($doableSymbols, fn($symbol) => $symbol != ADRENALINE);
       }
-      $adrenalineWillCrossNextCorner = count($heatCosts) > 0;
+      $adrenalineWillCrossNextCorner = count($heatCosts) > count($currentHeatCosts);
     }
 
     $canPass = $this->canPassReact($symbols);
-
-    // Current heat costs
-    list($currentHeatCost, $heatCosts, $spinOut) = $this->getCurrentHeatCosts($constructor);
-    // Next corner infos
-    list($speedLimit, $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
 
     return [
       'symbols' => $symbols,
@@ -649,7 +649,7 @@ trait RoundTrait
 
       'adrenalineWillCrossNextCorner' => $adrenalineWillCrossNextCorner,
       'currentHeatCost' => $currentHeatCost,
-      'heatCosts' => $heatCosts,
+      'heatCosts' => $currentHeatCosts,
       'spinOut' => $spinOut,
       'nextCornerSpeedLimit' => $speedLimit,
       'nextCornerExtraHeatCost' => $nextCornerExtraHeatCost,
@@ -931,7 +931,7 @@ trait RoundTrait
         list($cell, $path, $heatCost, , $costs) = $res;
         $speeds[$n] = $cell;
         $heatCosts[$n] = $heatCost;
-        $slipstreamWillCrossNextCorner[$n] = count($costs) > 0;
+        $slipstreamWillCrossNextCorner[$n] = count($costs) > count($currentHeatCosts);
       }
     }
 
