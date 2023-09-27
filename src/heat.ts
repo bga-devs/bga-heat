@@ -438,7 +438,7 @@ class Heat implements HeatGame {
     private getAdrenalineConfirmation(reactArgs: EnteringReactArgs) {
         let confirmationMessage = null;
         const adrenalineWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() == 0 && reactArgs.adrenalineWillCrossNextCorner;
-        const adrenalineCostOnCurrentCorner = Object.values(reactArgs.boostInfos[1]).reduce((a, b) => a + b, 0);
+        const adrenalineCostOnCurrentCorner = reactArgs.boostInfos?.[1] ? Object.values(reactArgs.boostInfos[1]).reduce((a, b) => a + b, 0) : 0;
         if (adrenalineWillCrossNextCorner || reactArgs.currentHeatCost > 0 || adrenalineCostOnCurrentCorner > 0) {
             const newSpeed = this.speedCounters[this.getConstructorId()].getValue() + 1;
 
@@ -482,7 +482,7 @@ class Heat implements HeatGame {
         const mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
 
         let confirmationMessage = null;
-        const boostCostOnCurrentCorner = Object.values(reactArgs.boostInfos[4]).reduce((a, b) => a + b, 0);
+        const boostCostOnCurrentCorner = reactArgs.boostInfos?.[4] ? Object.values(reactArgs.boostInfos[4]).reduce((a, b) => a + b, 0) : 0;
         if (mayCrossCorner || reactArgs.currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
             const newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
 

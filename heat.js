@@ -3478,9 +3478,10 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.getAdrenalineConfirmation = function (reactArgs) {
+        var _a;
         var confirmationMessage = null;
         var adrenalineWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() == 0 && reactArgs.adrenalineWillCrossNextCorner;
-        var adrenalineCostOnCurrentCorner = Object.values(reactArgs.boostInfos[1]).reduce(function (a, b) { return a + b; }, 0);
+        var adrenalineCostOnCurrentCorner = ((_a = reactArgs.boostInfos) === null || _a === void 0 ? void 0 : _a[1]) ? Object.values(reactArgs.boostInfos[1]).reduce(function (a, b) { return a + b; }, 0) : 0;
         if (adrenalineWillCrossNextCorner || reactArgs.currentHeatCost > 0 || adrenalineCostOnCurrentCorner > 0) {
             var newSpeed = this.speedCounters[this.getConstructorId()].getValue() + 1;
             var newHeatCost = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 1 : 0;
@@ -3518,9 +3519,10 @@ var Heat = /** @class */ (function () {
         return confirmationMessage;
     };
     Heat.prototype.getBoostConfirmation = function (reactArgs, paid) {
+        var _a;
         var mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
         var confirmationMessage = null;
-        var boostCostOnCurrentCorner = Object.values(reactArgs.boostInfos[4]).reduce(function (a, b) { return a + b; }, 0);
+        var boostCostOnCurrentCorner = ((_a = reactArgs.boostInfos) === null || _a === void 0 ? void 0 : _a[4]) ? Object.values(reactArgs.boostInfos[4]).reduce(function (a, b) { return a + b; }, 0) : 0;
         if (mayCrossCorner || reactArgs.currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
             var newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
             var newHeatCostMax = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 4 : (paid ? 1 : 0);
