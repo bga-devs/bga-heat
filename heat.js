@@ -3561,7 +3561,8 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.getSlipstreamConfirmation = function (reactArgs, speed) {
         var confirmationMessage = null;
-        if (reactArgs.slipstreamWillCrossNextCorner[speed]) {
+        var slipstreamWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() < speed && reactArgs.slipstreamWillCrossNextCorner[speed];
+        if (slipstreamWillCrossNextCorner) {
             var speed_1 = this.speedCounters[this.getConstructorId()].getValue();
             var newHeatCost = Math.max(0, speed_1 - reactArgs.nextCornerSpeedLimit);
             if (newHeatCost > 0 && reactArgs.nextCornerExtraHeatCost) {

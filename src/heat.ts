@@ -524,7 +524,8 @@ class Heat implements HeatGame {
 
     private getSlipstreamConfirmation(reactArgs: EnteringSlipstreamArgs, speed: number) {
         let confirmationMessage = null;
-        if (reactArgs.slipstreamWillCrossNextCorner[speed]) {
+        const slipstreamWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() < speed && reactArgs.slipstreamWillCrossNextCorner[speed];
+        if (slipstreamWillCrossNextCorner) {
             const speed = this.speedCounters[this.getConstructorId()].getValue();
 
             let newHeatCost = Math.max(0, speed - reactArgs.nextCornerSpeedLimit);
