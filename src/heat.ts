@@ -187,6 +187,9 @@ class Heat implements HeatGame {
             case 'react':
                 this.onEnteringReact(args.args);
                 break;
+            case 'gameEnd':
+                document.getElementById('leave-text-action')?.remove();
+                break;
             }
     }
     
@@ -283,6 +286,8 @@ class Heat implements HeatGame {
     }
 
     private onEnteringPlanification(args: EnteringPlanificationArgs) {
+        this.circuit.removeMapPaths();
+        
         if (args._private) {
             this.getCurrentPlayerTable().setHandSelectable((this as any).isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
         }
@@ -313,6 +318,8 @@ class Heat implements HeatGame {
     }
 
     private onEnteringChooseSpeed(args: EnteringChooseSpeedArgs) {
+        this.circuit.removeMapPaths();
+
         Object.entries(args.speeds).forEach(entry => {
             const speed = Number(entry[0]);
             this.circuit.addMapIndicator(entry[1], () => this.actChooseSpeed(speed), speed);
@@ -1478,6 +1485,11 @@ class Heat implements HeatGame {
         notifs.forEach((notifName) => {
             dojo.subscribe(notifName, this, (notifDetails: Notif<any>) => {
                 log(`notif_${notifName}`, notifDetails.args);
+
+                if (notifName === 'playerEliminated') {
+                    (this as any).notifqueue.setSynchronousDuration(0);
+                    return;
+                }
 
                 const promise = this[`notif_${notifName}`](notifDetails.args);
                 const promises = promise ? [promise] : [];

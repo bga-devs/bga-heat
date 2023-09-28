@@ -3274,7 +3274,7 @@ var Heat = /** @class */ (function () {
     //                  You can use this method to perform some user interface changes at this moment.
     //
     Heat.prototype.onEnteringState = function (stateName, args) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         log('Entering state: ' + stateName, args.args);
         if ((_a = args.args) === null || _a === void 0 ? void 0 : _a.descSuffix) {
             this.changePageTitle(args.args.descSuffix);
@@ -3298,6 +3298,9 @@ var Heat = /** @class */ (function () {
                 break;
             case 'react':
                 this.onEnteringReact(args.args);
+                break;
+            case 'gameEnd':
+                (_e = document.getElementById('leave-text-action')) === null || _e === void 0 ? void 0 : _e.remove();
                 break;
         }
     };
@@ -3376,6 +3379,7 @@ var Heat = /** @class */ (function () {
         }
     };
     Heat.prototype.onEnteringPlanification = function (args) {
+        this.circuit.removeMapPaths();
         if (args._private) {
             this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
         }
@@ -3409,6 +3413,7 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.onEnteringChooseSpeed = function (args) {
         var _this = this;
+        this.circuit.removeMapPaths();
         Object.entries(args.speeds).forEach(function (entry) {
             var speed = Number(entry[0]);
             _this.circuit.addMapIndicator(entry[1], function () { return _this.actChooseSpeed(speed); }, speed);
@@ -4258,6 +4263,10 @@ var Heat = /** @class */ (function () {
         notifs.forEach(function (notifName) {
             dojo.subscribe(notifName, _this, function (notifDetails) {
                 log("notif_".concat(notifName), notifDetails.args);
+                if (notifName === 'playerEliminated') {
+                    _this.notifqueue.setSynchronousDuration(0);
+                    return;
+                }
                 var promise = _this["notif_".concat(notifName)](notifDetails.args);
                 var promises = promise ? [promise] : [];
                 var minDuration = 1;
