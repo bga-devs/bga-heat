@@ -214,7 +214,7 @@ class PlayerTable {
             this.deck.setCardNumber(this.discard.getCardNumber());
             this.discard.setCardNumber(0);
 
-            await this.deck.shuffle(10, (card: Card, index: number) => card.id = -1000 - index);
+            await this.deck.shuffle();
 
             this.deck.setCardNumber(after);
 
@@ -275,7 +275,7 @@ class PlayerTable {
 
         this.deck.setCardNumber(this.deck.getCardNumber());
 
-        await this.deck.shuffle(10, (card: Card, index: number) => card.id = -1000 - index);
+        await this.deck.shuffle();
 
         return true;
     }
@@ -288,7 +288,7 @@ class PlayerTable {
 
         this.discard.setCardNumber(0);
         this.deck.setCardNumber(cardNumber);
-        await this.deck.shuffle(10, (card: Card, index: number) => card.id = -1000 - index);
+        await this.deck.shuffle();
     }
 
     public async addCardsFromDeck(cards: Card[], to: CardStock<Card>): Promise<any> {

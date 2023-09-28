@@ -15,6 +15,8 @@ class LegendTable {
         dojo.place(html, document.getElementById('tables'));
         
         this.deck = new Deck<LegendCard>(this.game.legendCardsManager, document.getElementById(`legend-deck`), {
+            cardNumber: 10,
+            autoUpdateCardNumber: false,
             topCard: [],
             fakeCardGenerator: () => [],
         });
