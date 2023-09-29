@@ -118,6 +118,9 @@ class Heat implements HeatGame {
             },
             defaultZoom: 0.625,
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
+            autoZoom: {
+                expectedWidth: 1550,
+            },
         });
         
         this.tablesZoomManager = new ZoomManager({
@@ -128,6 +131,9 @@ class Heat implements HeatGame {
             },
             defaultZoom: 1,
             localStorageZoomKey: LOCAL_STORAGE_CIRCUIT_ZOOM_KEY,
+            autoZoom: {
+                expectedWidth: 1200,
+            },
         });
 
         new HelpManager(this, { 
@@ -141,14 +147,6 @@ class Heat implements HeatGame {
         });
         this.setupNotifications();
         this.setupPreferences();
-        (this as any).onScreenWidthChange = () => {
-            while (this.circuitZoomManager.zoom > 0.25 && document.getElementById('table-center').clientWidth < 1650) {
-                this.circuitZoomManager.zoomOut();   
-            }
-            while (this.tablesZoomManager.zoom > 0.5 && document.getElementById('tables').clientWidth < 1200) {
-                this.tablesZoomManager.zoomOut();   
-            }
-        }
 
         log( "Ending game setup" );
     }

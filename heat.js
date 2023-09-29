@@ -1,4 +1,24 @@
 var DEFAULT_ZOOM_LEVELS = [0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1];
+function throttle(callback, delay) {
+    var last;
+    var timer;
+    return function () {
+        var context = this;
+        var now = +new Date();
+        var args = arguments;
+        if (last && now < last + delay) {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                last = now;
+                callback.apply(context, args);
+            }, delay);
+        }
+        else {
+            last = now;
+            callback.apply(context, args);
+        }
+    };
+}
 var ZoomManager = /** @class */ (function () {
     /**
      * Place the settings.element in a zoom wrapper and init zoomControls.
@@ -7,12 +27,12 @@ var ZoomManager = /** @class */ (function () {
      */
     function ZoomManager(settings) {
         var _this = this;
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d, _e, _f, _g;
         this.settings = settings;
         if (!settings.element) {
             throw new DOMException('You need to set the element to wrap in the zoom element');
         }
-        this.zoomLevels = (_a = settings.zoomLevels) !== null && _a !== void 0 ? _a : DEFAULT_ZOOM_LEVELS;
+        this._zoomLevels = (_a = settings.zoomLevels) !== null && _a !== void 0 ? _a : DEFAULT_ZOOM_LEVELS;
         this._zoom = this.settings.defaultZoom || 1;
         if (this.settings.localStorageZoomKey) {
             var zoomStr = localStorage.getItem(this.settings.localStorageZoomKey);
@@ -35,17 +55,29 @@ var ZoomManager = /** @class */ (function () {
         if (this._zoom !== 1) {
             this.setZoom(this._zoom);
         }
+        this.throttleTime = (_e = settings.throttleTime) !== null && _e !== void 0 ? _e : 100;
+        this.windowSizeChangeEvents = (_f = settings.windowSizeChangeEvents) !== null && _f !== void 0 ? _f : 'horizontal';
+        this.windowInnerWidth = window.innerWidth;
+        this.windowInnerHeight = window.innerHeight;
         window.addEventListener('resize', function () {
             var _a;
-            _this.zoomOrDimensionChanged();
-            if ((_a = _this.settings.autoZoom) === null || _a === void 0 ? void 0 : _a.expectedWidth) {
-                _this.setAutoZoom();
+            var widthChanged = _this.windowInnerWidth != window.innerWidth;
+            var heightChanged = _this.windowInnerHeight != window.innerWidth;
+            _this.windowInnerWidth = window.innerWidth;
+            _this.windowInnerHeight = window.innerHeight;
+            if (_this.windowSizeChangeEvents == 'both' ||
+                (_this.windowSizeChangeEvents == 'horizontal' && widthChanged) ||
+                (_this.windowSizeChangeEvents == 'vertical' && heightChanged)) {
+                _this.zoomOrDimensionChanged();
+                if ((_a = _this.settings.autoZoom) === null || _a === void 0 ? void 0 : _a.expectedWidth) {
+                    _this.setAutoZoom();
+                }
             }
         });
         if (window.ResizeObserver) {
             new ResizeObserver(function () { return _this.zoomOrDimensionChanged(); }).observe(settings.element);
         }
-        if ((_e = this.settings.autoZoom) === null || _e === void 0 ? void 0 : _e.expectedWidth) {
+        if ((_g = this.settings.autoZoom) === null || _g === void 0 ? void 0 : _g.expectedWidth) {
             this.setAutoZoom();
         }
     }
@@ -55,6 +87,16 @@ var ZoomManager = /** @class */ (function () {
          */
         get: function () {
             return this._zoom;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ZoomManager.prototype, "zoomLevels", {
+        /**
+         * Returns the zoom levels
+         */
+        get: function () {
+            return this._zoomLevels;
         },
         enumerable: false,
         configurable: true
@@ -69,8 +111,8 @@ var ZoomManager = /** @class */ (function () {
         }
         var expectedWidth = (_a = this.settings.autoZoom) === null || _a === void 0 ? void 0 : _a.expectedWidth;
         var newZoom = this.zoom;
-        while (newZoom > this.zoomLevels[0] && newZoom > ((_c = (_b = this.settings.autoZoom) === null || _b === void 0 ? void 0 : _b.minZoomLevel) !== null && _c !== void 0 ? _c : 0) && zoomWrapperWidth / newZoom < expectedWidth) {
-            newZoom = this.zoomLevels[this.zoomLevels.indexOf(newZoom) - 1];
+        while (newZoom > this._zoomLevels[0] && newZoom > ((_c = (_b = this.settings.autoZoom) === null || _b === void 0 ? void 0 : _b.minZoomLevel) !== null && _c !== void 0 ? _c : 0) && zoomWrapperWidth / newZoom < expectedWidth) {
+            newZoom = this._zoomLevels[this._zoomLevels.indexOf(newZoom) - 1];
         }
         if (this._zoom == newZoom) {
             if (this.settings.localStorageZoomKey) {
@@ -80,6 +122,19 @@ var ZoomManager = /** @class */ (function () {
         else {
             this.setZoom(newZoom);
         }
+    };
+    /**
+     * Sets the available zoomLevels and new zoom to the provided values.
+     * @param zoomLevels the new array of zoomLevels that can be used.
+     * @param newZoom if provided the zoom will be set to this value, if not the last element of the zoomLevels array will be set as the new zoom
+     */
+    ZoomManager.prototype.setZoomLevels = function (zoomLevels, newZoom) {
+        if (!zoomLevels || zoomLevels.length <= 0) {
+            return;
+        }
+        this._zoomLevels = zoomLevels;
+        var zoomIndex = newZoom && zoomLevels.includes(newZoom) ? this._zoomLevels.indexOf(newZoom) : this._zoomLevels.length - 1;
+        this.setZoom(this._zoomLevels[zoomIndex]);
     };
     /**
      * Set the zoom level. Ideally, use a zoom level in the zoomLevels range.
@@ -92,12 +147,12 @@ var ZoomManager = /** @class */ (function () {
         if (this.settings.localStorageZoomKey) {
             localStorage.setItem(this.settings.localStorageZoomKey, '' + this._zoom);
         }
-        var newIndex = this.zoomLevels.indexOf(this._zoom);
-        (_a = this.zoomInButton) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', newIndex === this.zoomLevels.length - 1);
+        var newIndex = this._zoomLevels.indexOf(this._zoom);
+        (_a = this.zoomInButton) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', newIndex === this._zoomLevels.length - 1);
         (_b = this.zoomOutButton) === null || _b === void 0 ? void 0 : _b.classList.toggle('disabled', newIndex === 0);
         this.settings.element.style.transform = zoom === 1 ? '' : "scale(".concat(zoom, ")");
         (_d = (_c = this.settings).onZoomChange) === null || _d === void 0 ? void 0 : _d.call(_c, this._zoom);
-        this.zoomOrDimensionChanged();
+        this.zoomOrDimensionChangedUnsafe();
     };
     /**
      * Call this method for the browsers not supporting ResizeObserver, everytime the table height changes, if you know it.
@@ -110,8 +165,17 @@ var ZoomManager = /** @class */ (function () {
     };
     /**
      * Everytime the element dimensions changes, we update the style. And call the optional callback.
+     * To avoid spamming, a throttle is applied to the method.
      */
     ZoomManager.prototype.zoomOrDimensionChanged = function () {
+        var _this = this;
+        throttle(function () { return _this.zoomOrDimensionChangedUnsafe(); }, this.throttleTime);
+    };
+    /**
+     * Everytime the element dimensions changes, we update the style. And call the optional callback.
+     * Unsafe method as this is not protected by throttle. Call `zoomOrDimensionChanged` instead.
+     */
+    ZoomManager.prototype.zoomOrDimensionChangedUnsafe = function () {
         var _a, _b;
         this.settings.element.style.width = "".concat(this.wrapper.getBoundingClientRect().width / this._zoom, "px");
         this.wrapper.style.height = "".concat(this.settings.element.getBoundingClientRect().height, "px");
@@ -121,21 +185,21 @@ var ZoomManager = /** @class */ (function () {
      * Simulates a click on the Zoom-in button.
      */
     ZoomManager.prototype.zoomIn = function () {
-        if (this._zoom === this.zoomLevels[this.zoomLevels.length - 1]) {
+        if (this._zoom === this._zoomLevels[this._zoomLevels.length - 1]) {
             return;
         }
-        var newIndex = this.zoomLevels.indexOf(this._zoom) + 1;
-        this.setZoom(newIndex === -1 ? 1 : this.zoomLevels[newIndex]);
+        var newIndex = this._zoomLevels.indexOf(this._zoom) + 1;
+        this.setZoom(newIndex === -1 ? 1 : this._zoomLevels[newIndex]);
     };
     /**
      * Simulates a click on the Zoom-out button.
      */
     ZoomManager.prototype.zoomOut = function () {
-        if (this._zoom === this.zoomLevels[0]) {
+        if (this._zoom === this._zoomLevels[0]) {
             return;
         }
-        var newIndex = this.zoomLevels.indexOf(this._zoom) - 1;
-        this.setZoom(newIndex === -1 ? 1 : this.zoomLevels[newIndex]);
+        var newIndex = this._zoomLevels.indexOf(this._zoom) - 1;
+        this.setZoom(newIndex === -1 ? 1 : this._zoomLevels[newIndex]);
     };
     /**
      * Changes the color of the zoom controls.
@@ -3187,7 +3251,6 @@ var Heat = /** @class */ (function () {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
     Heat.prototype.setup = function (gamedatas) {
-        var _this = this;
         var _a, _b;
         log("Starting game setup");
         this.gamedatas = gamedatas;
@@ -3237,6 +3300,9 @@ var Heat = /** @class */ (function () {
             },
             defaultZoom: 0.625,
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
+            autoZoom: {
+                expectedWidth: 1550,
+            },
         });
         this.tablesZoomManager = new ZoomManager({
             element: document.getElementById('tables'),
@@ -3246,6 +3312,9 @@ var Heat = /** @class */ (function () {
             },
             defaultZoom: 1,
             localStorageZoomKey: LOCAL_STORAGE_CIRCUIT_ZOOM_KEY,
+            autoZoom: {
+                expectedWidth: 1200,
+            },
         });
         new HelpManager(this, {
             buttons: [
@@ -3258,14 +3327,6 @@ var Heat = /** @class */ (function () {
         });
         this.setupNotifications();
         this.setupPreferences();
-        this.onScreenWidthChange = function () {
-            while (_this.circuitZoomManager.zoom > 0.25 && document.getElementById('table-center').clientWidth < 1650) {
-                _this.circuitZoomManager.zoomOut();
-            }
-            while (_this.tablesZoomManager.zoom > 0.5 && document.getElementById('tables').clientWidth < 1200) {
-                _this.tablesZoomManager.zoomOut();
-            }
-        };
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
