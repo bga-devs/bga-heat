@@ -900,6 +900,23 @@ class Heat implements HeatGame {
         }
     }
 
+    public getWeatherCardSetupTooltip(type: number): string {
+        switch (type) {
+            case 0:
+                return _("Remove 1 Stress card from your deck.");
+            case 1:
+                return _("Place 1 extra Heat card in your Engine.");
+            case 2:
+                return _("Shuffle 1 extra Stress card into your deck.");
+            case 3:
+                return _("Remove 1 Heat card from your Engine.");
+            case 4:
+                return _("Shuffle 3 of your Heat cards into your draw deck.");
+            case 5:
+                return _("Place 3 of your Heat cards into your discard pile.");
+        }
+    }
+
     public getWeatherCardEffectTooltip(type: number): string {
         switch (type) {
             case 0:
@@ -1185,6 +1202,20 @@ class Heat implements HeatGame {
                         <div class="weather-token" data-token-type="${token}"></div>
                     </div>
                     ${this.getWeatherTokenTooltip(token, null)}
+                </div>
+                `).join('<br><br>')
+            }
+
+            <h1>${_("Weather Tokens")}</h1>
+
+            ${
+                [0, 1, 2, 3, 4, 5].map(type => `
+                <div>
+                    <div class="tooltip-symbol">
+                        <div class="weather-card" data-card-type="${type}"></div>
+                    </div>
+                    ${this.getWeatherCardSetupTooltip(type)}<br><br>
+                    ${this.getWeatherCardEffectTooltip(type)}
                 </div>
                 `).join('<br><br>')
             }

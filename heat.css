@@ -1319,6 +1319,9 @@ height: 241px; */
 #help-popin h1, #help-popin h2 {
   color: #d61b1a;
 }
+#help-popin .weather-card {
+  position: unset;
+}
 
 #circuit-dropzone-container {
   position: absolute;

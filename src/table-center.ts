@@ -212,24 +212,7 @@ class Circuit {
         weatherCardDiv.style.setProperty('--x', `${wheatherCardPos.x}px`);
         weatherCardDiv.style.setProperty('--y', `${wheatherCardPos.y}px`);
         this.circuitDiv.insertAdjacentElement('beforeend', weatherCardDiv);
-        this.game.setTooltip(weatherCardDiv.id, `${this.getWeatherCardSetupTooltip(type)}<br><br>${this.game.getWeatherCardEffectTooltip(type)}`);
-    }
-
-    private getWeatherCardSetupTooltip(type: number): string {
-        switch (type) {
-            case 0:
-                return _("Remove 1 Stress card from your deck.");
-            case 1:
-                return _("Place 1 extra Heat card in your Engine.");
-            case 2:
-                return _("Shuffle 1 extra Stress card into your deck.");
-            case 3:
-                return _("Remove 1 Heat card from your Engine.");
-            case 4:
-                return _("Shuffle 3 of your Heat cards into your draw deck.");
-            case 5:
-                return _("Place 3 of your Heat cards into your discard pile.");
-        }
+        this.game.setTooltip(weatherCardDiv.id, `${this.game.getWeatherCardSetupTooltip(type)}<br><br>${this.game.getWeatherCardEffectTooltip(type)}`);
     }
     
     private createWeatherTokens(tokens: { [id: number]: number }, corners: { [id: number]: Corner }, cardType: number): void {

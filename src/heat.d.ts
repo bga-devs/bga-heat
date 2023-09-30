@@ -107,6 +107,7 @@ interface HeatGame extends Game {
     getCurrentPlayerTable(): PlayerTable | null;
     getGarageModuleIconTooltip(symbol: string, number: number | string): string;
     getGarageModuleIconTooltipWithIcon(symbol: string, number: number | string): string;
+    getWeatherCardSetupTooltip(type: number): string;
     getWeatherCardEffectTooltip(type: number): string;
     getWeatherTokenTooltip(type: number, cardType: number): string;
     setTooltip(id: string, html: string): void;

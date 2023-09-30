@@ -2541,23 +2541,7 @@ var Circuit = /** @class */ (function () {
         weatherCardDiv.style.setProperty('--x', "".concat(wheatherCardPos.x, "px"));
         weatherCardDiv.style.setProperty('--y', "".concat(wheatherCardPos.y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', weatherCardDiv);
-        this.game.setTooltip(weatherCardDiv.id, "".concat(this.getWeatherCardSetupTooltip(type), "<br><br>").concat(this.game.getWeatherCardEffectTooltip(type)));
-    };
-    Circuit.prototype.getWeatherCardSetupTooltip = function (type) {
-        switch (type) {
-            case 0:
-                return _("Remove 1 Stress card from your deck.");
-            case 1:
-                return _("Place 1 extra Heat card in your Engine.");
-            case 2:
-                return _("Shuffle 1 extra Stress card into your deck.");
-            case 3:
-                return _("Remove 1 Heat card from your Engine.");
-            case 4:
-                return _("Shuffle 3 of your Heat cards into your draw deck.");
-            case 5:
-                return _("Place 3 of your Heat cards into your discard pile.");
-        }
+        this.game.setTooltip(weatherCardDiv.id, "".concat(this.game.getWeatherCardSetupTooltip(type), "<br><br>").concat(this.game.getWeatherCardEffectTooltip(type)));
     };
     Circuit.prototype.createWeatherTokens = function (tokens, corners, cardType) {
         var _this = this;
@@ -3933,6 +3917,22 @@ var Heat = /** @class */ (function () {
                 return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number), "\n                ");
         }
     };
+    Heat.prototype.getWeatherCardSetupTooltip = function (type) {
+        switch (type) {
+            case 0:
+                return _("Remove 1 Stress card from your deck.");
+            case 1:
+                return _("Place 1 extra Heat card in your Engine.");
+            case 2:
+                return _("Shuffle 1 extra Stress card into your deck.");
+            case 3:
+                return _("Remove 1 Heat card from your Engine.");
+            case 4:
+                return _("Shuffle 3 of your Heat cards into your draw deck.");
+            case 5:
+                return _("Place 3 of your Heat cards into your discard pile.");
+        }
+    };
     Heat.prototype.getWeatherCardEffectTooltip = function (type) {
         switch (type) {
             case 0:
@@ -4073,7 +4073,7 @@ var Heat = /** @class */ (function () {
         var _this = this;
         var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Mandatory symbols"), "</h1>\n            ").concat(['heat', 'scrap', 'adjust', 'one-time']
             .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Optional symbols"), "</h1>\n            ").concat(['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate']
-            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Road Conditions Tokens"), "</h1>\n            <h2>").concat(_("Corner Effects"), "</h2>\n            ").concat([3, 2, 1].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n            <h2>").concat(_("Sector Effects"), "</h2>\n            ").concat([4, 5, 0].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n        </div>");
+            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Road Conditions Tokens"), "</h1>\n            <h2>").concat(_("Corner Effects"), "</h2>\n            ").concat([3, 2, 1].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n            <h2>").concat(_("Sector Effects"), "</h2>\n            ").concat([4, 5, 0].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n\n            <h1>").concat(_("Weather Tokens"), "</h1>\n\n            ").concat([0, 1, 2, 3, 4, 5].map(function (type) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-card\" data-card-type=\"".concat(type, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherCardSetupTooltip(type), "<br><br>\n                    ").concat(_this.getWeatherCardEffectTooltip(type), "\n                </div>\n                "); }).join('<br><br>'), "\n        </div>");
         return html;
     };
     Heat.prototype.getPossibleSpeeds = function (selectedCards, args) {
