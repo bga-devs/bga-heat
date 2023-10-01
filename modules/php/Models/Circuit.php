@@ -338,9 +338,9 @@ class Circuit
 
     // Compute the heat cost
     if ($isSlipstream) {
-      $speed = $constructor->getSpeed();
+      $speed = max(0, $constructor->getSpeed());
     } else {
-      $speed += $constructor->getSpeed();
+      $speed += max(0, $constructor->getSpeed());
     }
     $prevPosition = Globals::getPreviousPosition();
     $prevTurn = Globals::getPreviousTurn();
