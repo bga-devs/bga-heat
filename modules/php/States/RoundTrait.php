@@ -1182,7 +1182,8 @@ trait RoundTrait
 
     // Autoskip if race is over (no point in discarding more card)
     $constructor = Constructors::getActive();
-    if ($constructor->getTurn() >= $this->getNbrLaps()) {
+    if ($constructor->getTurn() >= $this->getNbrLaps()) {      
+      $constructor->setPaths([]);
       $this->actDiscard([]);
       return;
     }
