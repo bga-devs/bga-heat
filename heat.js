@@ -3756,7 +3756,7 @@ var Heat = /** @class */ (function () {
                                 case 'adrenaline':
                                     label = "+".concat(number, " [Speed]");
                                     tooltip = "\n                                    <strong>".concat(_("Adrenaline"), "</strong>\n                                    <br><br>\n                                    ").concat(_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space)."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Adrenaline cannot be saved for future rounds"), "</i>");
-                                    confirmationMessage = _this.getAdrenalineConfirmation(reactArgs_1);
+                                    confirmationMessage = reactArgs_1.crossedFinishLine ? null : _this.getAdrenalineConfirmation(reactArgs_1);
                                     if (!reactArgs_1.doable.includes('adrenaline')) {
                                         enabled = false;
                                     }
@@ -3787,7 +3787,7 @@ var Heat = /** @class */ (function () {
                                         label += " (1[Heat])";
                                     }
                                     tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _("Regardless of which gear you are in you may pay 1 Heat to boost once per turn.") : '', "\n                                    ").concat(_("Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step."), "</i>");
-                                    confirmationMessage = _this.getBoostConfirmation(reactArgs_1, paid);
+                                    confirmationMessage = reactArgs_1.crossedFinishLine ? null : _this.getBoostConfirmation(reactArgs_1, paid);
                                     if (paid && !reactArgs_1.doable.includes('heated-boost')) {
                                         enabled = false;
                                     }

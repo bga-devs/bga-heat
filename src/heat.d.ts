@@ -165,6 +165,7 @@ interface EnteringReactArgs {
     nextCornerSpeedLimit: number;
     nextCornerExtraHeatCost: boolean;
     boostInfos: { [boostSpeed: number]: { [cornerId: number]: number }; };
+    crossedFinishLine: boolean;
 }
 
 interface EnteringDiscardArgs {    

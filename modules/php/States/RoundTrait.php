@@ -654,6 +654,7 @@ trait RoundTrait
       'nextCornerSpeedLimit' => $speedLimit,
       'nextCornerExtraHeatCost' => $nextCornerExtraHeatCost,
       'boostInfos' => $boostInfos,
+      'crossedFinishLine' => $constructor->getTurn() >= $this->getCircuit()->getNbrLaps(),
     ];
   }
 

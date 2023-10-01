@@ -647,7 +647,7 @@ class Heat implements HeatGame {
                                     <br><br>
                                     <i>${_("Note: Adrenaline cannot be saved for future rounds")}</i>`;
 
-                                    confirmationMessage = this.getAdrenalineConfirmation(reactArgs);
+                                    confirmationMessage = reactArgs.crossedFinishLine ? null : this.getAdrenalineConfirmation(reactArgs);
                                     if (!reactArgs.doable.includes('adrenaline')) {
                                         enabled = false;
                                     }
@@ -685,7 +685,7 @@ class Heat implements HeatGame {
                                     <br><br>
                                     <i>${_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.")}</i>`;
 
-                                    confirmationMessage = this.getBoostConfirmation(reactArgs, paid);
+                                    confirmationMessage = reactArgs.crossedFinishLine ? null : this.getBoostConfirmation(reactArgs, paid);
                                     if (paid && !reactArgs.doable.includes('heated-boost')) {
                                         enabled = false;
                                     }
