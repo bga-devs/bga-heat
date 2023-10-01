@@ -401,25 +401,27 @@ class Circuit {
     }
     
     public addMapPath(pathCellIds: number[], animated: boolean, totalSpeed?: number): void {  
-        const pathCells = this.getCellsInfos(pathCellIds);
-        const path = getSvgPathElement(pathCells);
-        //let cell = this.circuitDatas.cells[cellId];
-        //mapPath.style.setProperty('--x', `${cell.x}px`);
-        //mapPath.style.setProperty('--y', `${cell.y}px`);
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', "svg") as SVGElement;
-        svg.appendChild(path);
-        svg.id = `car-path-${this.circuitDiv.querySelectorAll('.car-path').length}`;
-        svg.setAttribute('width', '1650');
-        svg.setAttribute('height', '1100');
-        svg.classList.add('car-path');
-        if (animated) {
-            const animationDuration = moveCarAnimationDuration(pathCellIds.length, totalSpeed);
-            const pathLength = Math.round(path.getTotalLength());
-            svg.style.setProperty('--animation-duration', `${animationDuration}ms`);
-            svg.style.setProperty('--path-length', `${pathLength}`);
-            svg.classList.add('animated');
-        }
-        this.circuitDiv.insertAdjacentElement('afterbegin', svg);
+        try {
+            const pathCells = this.getCellsInfos(pathCellIds);
+            const path = getSvgPathElement(pathCells);
+            //let cell = this.circuitDatas.cells[cellId];
+            //mapPath.style.setProperty('--x', `${cell.x}px`);
+            //mapPath.style.setProperty('--y', `${cell.y}px`);
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', "svg") as SVGElement;
+            svg.appendChild(path);
+            svg.id = `car-path-${this.circuitDiv.querySelectorAll('.car-path').length}`;
+            svg.setAttribute('width', '1650');
+            svg.setAttribute('height', '1100');
+            svg.classList.add('car-path');
+            if (animated) {
+                const animationDuration = moveCarAnimationDuration(pathCellIds.length, totalSpeed);
+                const pathLength = Math.round(path.getTotalLength());
+                svg.style.setProperty('--animation-duration', `${animationDuration}ms`);
+                svg.style.setProperty('--path-length', `${pathLength}`);
+                svg.classList.add('animated');
+            }
+            this.circuitDiv.insertAdjacentElement('afterbegin', svg);
+        } catch (e) { console.warn('Impossible to load map path'); }
     }
 
     public removeMapPaths() {

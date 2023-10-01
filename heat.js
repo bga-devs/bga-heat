@@ -2729,25 +2729,30 @@ var Circuit = /** @class */ (function () {
         this.circuitDiv.querySelectorAll('.corner-heat-indicator').forEach(function (elem) { return elem.remove(); });
     };
     Circuit.prototype.addMapPath = function (pathCellIds, animated, totalSpeed) {
-        var pathCells = this.getCellsInfos(pathCellIds);
-        var path = getSvgPathElement(pathCells);
-        //let cell = this.circuitDatas.cells[cellId];
-        //mapPath.style.setProperty('--x', `${cell.x}px`);
-        //mapPath.style.setProperty('--y', `${cell.y}px`);
-        var svg = document.createElementNS('http://www.w3.org/2000/svg', "svg");
-        svg.appendChild(path);
-        svg.id = "car-path-".concat(this.circuitDiv.querySelectorAll('.car-path').length);
-        svg.setAttribute('width', '1650');
-        svg.setAttribute('height', '1100');
-        svg.classList.add('car-path');
-        if (animated) {
-            var animationDuration = moveCarAnimationDuration(pathCellIds.length, totalSpeed);
-            var pathLength = Math.round(path.getTotalLength());
-            svg.style.setProperty('--animation-duration', "".concat(animationDuration, "ms"));
-            svg.style.setProperty('--path-length', "".concat(pathLength));
-            svg.classList.add('animated');
+        try {
+            var pathCells = this.getCellsInfos(pathCellIds);
+            var path = getSvgPathElement(pathCells);
+            //let cell = this.circuitDatas.cells[cellId];
+            //mapPath.style.setProperty('--x', `${cell.x}px`);
+            //mapPath.style.setProperty('--y', `${cell.y}px`);
+            var svg = document.createElementNS('http://www.w3.org/2000/svg', "svg");
+            svg.appendChild(path);
+            svg.id = "car-path-".concat(this.circuitDiv.querySelectorAll('.car-path').length);
+            svg.setAttribute('width', '1650');
+            svg.setAttribute('height', '1100');
+            svg.classList.add('car-path');
+            if (animated) {
+                var animationDuration = moveCarAnimationDuration(pathCellIds.length, totalSpeed);
+                var pathLength = Math.round(path.getTotalLength());
+                svg.style.setProperty('--animation-duration', "".concat(animationDuration, "ms"));
+                svg.style.setProperty('--path-length', "".concat(pathLength));
+                svg.classList.add('animated');
+            }
+            this.circuitDiv.insertAdjacentElement('afterbegin', svg);
         }
-        this.circuitDiv.insertAdjacentElement('afterbegin', svg);
+        catch (e) {
+            console.warn('Impossible to load map path');
+        }
     };
     Circuit.prototype.removeMapPaths = function () {
         this.circuitDiv.querySelectorAll('.car-path').forEach(function (elem) { return elem.remove(); });
