@@ -47,11 +47,11 @@ $game_options = [
         'name' => clienttranslate('Standard'),
         'description' => clienttranslate('Customize the race by choosing the circuit and additional modules'),
       ],
-      // OPTION_SETUP_CHAMPIONSHIP => [
-      //   'name' => clienttranslate('Championship'),
-      //   'tmdisplay' => clienttranslate('[Championship]'),
-      //   'nobeginner' => true,
-      // ],
+      OPTION_SETUP_CHAMPIONSHIP => [
+        'name' => clienttranslate('Championship'),
+        'tmdisplay' => clienttranslate('[Championship]'),
+        'nobeginner' => true,
+      ],
     ],
   ],
 
