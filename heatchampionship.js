@@ -4430,7 +4430,7 @@ var Heat = /** @class */ (function () {
         data = data || {};
         data.lock = true;
         var method = data.method === undefined ? 'get' : data.method;
-        this.ajaxcall("/heat/heat/".concat(action, ".html"), data, this, function () { }, undefined, method);
+        this.ajaxcall("/heatchampionship/heatchampionship/".concat(action, ".html"), data, this, function () { }, undefined, method);
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
@@ -5143,5 +5143,5 @@ define([
     "ebg/counter",
     "ebg/stock"
 ], function (dojo, declare) {
-    return declare("bgagame.heat", ebg.core.gamegui, new Heat());
+    return declare("bgagame.heatchampionship", ebg.core.gamegui, new Heat());
 });

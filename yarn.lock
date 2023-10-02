@@ -437,9 +437,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"heat@workspace:.":
+"heatchampionship@workspace:.":
   version: 0.0.0-use.local
-  resolution: "heat@workspace:."
+  resolution: "heatchampionship@workspace:."
   dependencies:
     bga-animations: "thoun/bga-animations#1.0.2"
     bga-cards: "thoun/bga-cards#3.1.2"

@@ -1510,7 +1510,7 @@ class Heat implements HeatGame {
         data = data || {};
         data.lock = true;
         const method = data.method === undefined ? 'get' : data.method;
-        (this as any).ajaxcall(`/heat/heat/${action}.html`, data, this, () => {}, undefined, method);
+        (this as any).ajaxcall(`/heatchampionship/heatchampionship/${action}.html`, data, this, () => {}, undefined, method);
     }
 
     ///////////////////////////////////////////////////

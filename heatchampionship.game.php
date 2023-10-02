@@ -2,7 +2,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * Heat implementation : © Timothée Pecatte <tim.pecatte@gmail.com>, Guy Baudin <guy.thoun@gmail.com>
+ * HeatChampionship implementation : © Timothée Pecatte <tim.pecatte@gmail.com>, Guy Baudin <guy.thoun@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -41,7 +41,7 @@ use HEAT\Core\Globals;
 use HEAT\Core\Preferences;
 use HEAT\Core\Stats;
 
-class Heat extends Table
+class HeatChampionship extends Table
 {
   use HEAT\DebugTrait;
   use HEAT\States\SetupTrait;
@@ -68,7 +68,7 @@ class Heat extends Table
 
   protected function getGameName()
   {
-    return 'heat';
+    return 'heatchampionship';
   }
 
   public function shouldHide()

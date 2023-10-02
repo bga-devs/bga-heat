@@ -1,11 +1,11 @@
 {
-  "name": "heat",
+  "name": "heatchampionship",
   "version": "1.0.0",
   "description": "",
-  "main": "heat.js",
+  "main": "heatchampionship.js",
   "scripts": {
     "build:ts": "tsc",
-    "build:scss": "sass --no-source-map src/heat.scss heat.css"
+    "build:scss": "sass --no-source-map src/heat.scss heatchampionship.css"
   },
   "author": "",
   "license": "ISC",
