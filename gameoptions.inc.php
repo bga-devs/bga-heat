@@ -3,7 +3,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * Heat implementation : © Timothée Pecatte <tim.pecatte@gmail.com>, Guy Baudin <guy.thoun@gmail.com>
+ * HeatChampionship implementation : © Timothée Pecatte <tim.pecatte@gmail.com>, Guy Baudin <guy.thoun@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -11,14 +11,14 @@
  *
  * gameoptions.inc.php
  *
- * Heat game options description
+ * HeatChampionship game options description
  *
  * In this file, you can define your game options (= game variants).
  *
  * Note: If your game has no variant, you don't have to modify this file.
  *
  * Note²: All options defined in this file should have a corresponding "game state labels"
- *        with the same ID (see "initGameStateLabels" in heat.game.php)
+ *        with the same ID (see "initGameStateLabels" in heatchampionship.game.php)
  *
  * !! It is not a good idea to modify this file when a game is running !!
  *
@@ -276,7 +276,7 @@ $game_options = [
       //   OPTION_CIRCUIT_CUSTOM => [
       //     'name' => ('Custom'),
       //     'tmdisplay' => ('[Custom]'),
-      //     // 'description' => ('You need a .heat file to play with this option. You can create some by using the circuit editor available here : #URL#'),
+      //     // 'description' => ('You need a .heatchampionship file to play with this option. You can create some by using the circuit editor available here : #URL#'),
       //   ],
     ],
     'displaycondition' => [

@@ -5497,5 +5497,5 @@ define([
     "ebg/counter",
     "ebg/stock"
 ], function (dojo, declare) {
-    return declare("bgagame.heat", ebg.core.gamegui, new Heat());
+    return declare("bgagame.heatchampionship", ebg.core.gamegui, new Heat());
 });
