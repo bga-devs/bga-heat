@@ -662,7 +662,8 @@ class Heat implements HeatGame {
                                     break;
                                 case 'direct':
                                     const directCard = this.getCurrentPlayerTable().hand.getCards().find(card => card.id == number);
-                                    label = `<div class="icon direct"></div><br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+                                    label = `<div class="icon direct"></div>${_("Play from hand")}
+                                    <br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
                                     //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
                                     break;
@@ -731,7 +732,8 @@ class Heat implements HeatGame {
                     if (args._private?.refreshedIds?.length) {
                         args._private?.refreshedIds.forEach(number => {
                             const refreshCard = this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number);
-                            const label = `<div class="icon refresh"></div><br>${this.cardImageHtml(refreshCard, { constructor_id: this.getConstructorId() })}`;
+                            const label = `<div class="icon refresh"></div>${_("Place back on deck")}<br>
+                            ${this.cardImageHtml(refreshCard, { constructor_id: this.getConstructorId() })}`;
                             const tooltip = this.getGarageModuleIconTooltipWithIcon('refresh', 1);
 
                             (this as any).addActionButton(

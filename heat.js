@@ -3771,7 +3771,7 @@ var Heat = /** @class */ (function () {
                                     break;
                                 case 'direct':
                                     var directCard = _this.getCurrentPlayerTable().hand.getCards().find(function (card) { return card.id == number; });
-                                    label = "<div class=\"icon direct\"></div><br>".concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
+                                    label = "<div class=\"icon direct\"></div>".concat(_("Play from hand"), "\n                                    <br>").concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
                                     //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
                                     break;
@@ -3825,7 +3825,7 @@ var Heat = /** @class */ (function () {
                     if ((_c = (_b = args._private) === null || _b === void 0 ? void 0 : _b.refreshedIds) === null || _c === void 0 ? void 0 : _c.length) {
                         (_d = args._private) === null || _d === void 0 ? void 0 : _d.refreshedIds.forEach(function (number) {
                             var refreshCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
-                            var label = "<div class=\"icon refresh\"></div><br>".concat(_this.cardImageHtml(refreshCard, { constructor_id: _this.getConstructorId() }));
+                            var label = "<div class=\"icon refresh\"></div>".concat(_("Place back on deck"), "<br>\n                            ").concat(_this.cardImageHtml(refreshCard, { constructor_id: _this.getConstructorId() }));
                             var tooltip = _this.getGarageModuleIconTooltipWithIcon('refresh', 1);
                             _this.addActionButton("actRefresh_".concat(number, "_button"), formatTextIcons(label), function () { return _this.actRefresh(number); });
                             _this.setTooltip("actRefresh_".concat(number, "_button"), formatTextIcons(tooltip));
