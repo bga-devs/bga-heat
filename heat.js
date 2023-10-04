@@ -27,7 +27,7 @@ var ZoomManager = /** @class */ (function () {
      */
     function ZoomManager(settings) {
         var _this = this;
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e, _f;
         this.settings = settings;
         if (!settings.element) {
             throw new DOMException('You need to set the element to wrap in the zoom element');
@@ -56,28 +56,17 @@ var ZoomManager = /** @class */ (function () {
             this.setZoom(this._zoom);
         }
         this.throttleTime = (_e = settings.throttleTime) !== null && _e !== void 0 ? _e : 100;
-        this.windowSizeChangeEvents = (_f = settings.windowSizeChangeEvents) !== null && _f !== void 0 ? _f : 'horizontal';
-        this.windowInnerWidth = window.innerWidth;
-        this.windowInnerHeight = window.innerHeight;
         window.addEventListener('resize', function () {
             var _a;
-            var widthChanged = _this.windowInnerWidth != window.innerWidth;
-            var heightChanged = _this.windowInnerHeight != window.innerWidth;
-            _this.windowInnerWidth = window.innerWidth;
-            _this.windowInnerHeight = window.innerHeight;
-            if (_this.windowSizeChangeEvents == 'both' ||
-                (_this.windowSizeChangeEvents == 'horizontal' && widthChanged) ||
-                (_this.windowSizeChangeEvents == 'vertical' && heightChanged)) {
-                _this.zoomOrDimensionChanged();
-                if ((_a = _this.settings.autoZoom) === null || _a === void 0 ? void 0 : _a.expectedWidth) {
-                    _this.setAutoZoom();
-                }
+            _this.zoomOrDimensionChanged();
+            if ((_a = _this.settings.autoZoom) === null || _a === void 0 ? void 0 : _a.expectedWidth) {
+                _this.setAutoZoom();
             }
         });
         if (window.ResizeObserver) {
             new ResizeObserver(function () { return _this.zoomOrDimensionChanged(); }).observe(settings.element);
         }
-        if ((_g = this.settings.autoZoom) === null || _g === void 0 ? void 0 : _g.expectedWidth) {
+        if ((_f = this.settings.autoZoom) === null || _f === void 0 ? void 0 : _f.expectedWidth) {
             this.setAutoZoom();
         }
     }
@@ -3570,6 +3559,10 @@ var Heat = /** @class */ (function () {
             _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
         });
     };
+    Heat.prototype.showHeatCostConfirmations = function () {
+        var _a;
+        return !((_a = this.prefs[201]) === null || _a === void 0 ? void 0 : _a.value);
+    };
     Heat.prototype.getAdrenalineConfirmation = function (reactArgs) {
         var _a;
         var confirmationMessage = null;
@@ -3807,7 +3800,7 @@ var Heat = /** @class */ (function () {
                                     break;
                             }
                             var finalAction = function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); };
-                            var callback = confirmationMessage ? function () { return _this.confirmationDialog(confirmationMessage, finalAction); } : finalAction;
+                            var callback = confirmationMessage ? (function () { return _this.showHeatCostConfirmations() ? _this.confirmationDialog(confirmationMessage, finalAction) : finalAction(); }) : finalAction;
                             _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
                             _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(tooltip));
                             if (!enabled) {

@@ -440,6 +440,10 @@ class Heat implements HeatGame {
         });
     }
 
+    private showHeatCostConfirmations() {
+        return !(this as any).prefs[201]?.value;
+    }
+
     private getAdrenalineConfirmation(reactArgs: EnteringReactArgs) {
         let confirmationMessage = null;
         const adrenalineWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() == 0 && reactArgs.adrenalineWillCrossNextCorner;
@@ -708,7 +712,7 @@ class Heat implements HeatGame {
                             }
 
                             const finalAction = () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined);
-                            const callback = confirmationMessage ? () => (this as any).confirmationDialog(confirmationMessage, finalAction) : finalAction;
+                            const callback = confirmationMessage ? (() => this.showHeatCostConfirmations() ? (this as any).confirmationDialog(confirmationMessage, finalAction) : finalAction()) : finalAction;
 
                             (this as any).addActionButton(
                                 `actReact${type}_${number}_button`, 

@@ -50,6 +50,7 @@ $game_options = [
       // OPTION_SETUP_CHAMPIONSHIP => [
       //   'name' => clienttranslate('Championship'),
       //   'tmdisplay' => clienttranslate('[Championship]'),
+      //   'nobeginner' => true,
       // ],
     ],
   ],
@@ -236,16 +237,19 @@ $game_options = [
         'name' => clienttranslate('Basic upgrades only'),
         'tmdisplay' => clienttranslate('[Garage: basic]'),
         'alpha' => true,
+        'nobeginner' => true,
       ],
       OPTION_GARAGE_ADVANCED => [
         'name' => clienttranslate('Advanced upgrades only'),
         'tmdisplay' => clienttranslate('[Garage: advanced]'),
         'alpha' => true,
+        'nobeginner' => true,
       ],
       OPTION_GARAGE_MIXED => [
         'name' => clienttranslate('All upgrades'),
         'tmdisplay' => clienttranslate('[Garage]'),
         'alpha' => true,
+        'nobeginner' => true,
       ],
     ],
     'displaycondition' => [
@@ -318,7 +322,7 @@ $game_options = [
       OPTION_WEATHER_ENABLED => [
         'name' => clienttranslate('Enabled'),
         'tmdisplay' => clienttranslate('[Weather]'),
-        'alpha' => true,
+        'nobeginner' => true,
       ],
     ],
     'displaycondition' => [
@@ -365,4 +369,14 @@ $game_options = [
   ],
 ];
 
-$game_preferences = [];
+$game_preferences = [
+  OPTION_CONFIRM_HEAT_COST => [
+    'name' => totranslate('Confirmation when heat cost increases'),
+    'needReload' => false,
+    'default' => OPTION_CONFIRM_HEAT_COST,
+    'values' => [
+      OPTION_CONFIRM_HEAT_COST_ENABLED => ['name' => totranslate('Enabled')],
+      OPTION_CONFIRM_HEAT_COST_DISABLED => ['name' => totranslate('Disabled')],
+    ],
+  ],
+];
