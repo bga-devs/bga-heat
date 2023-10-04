@@ -3584,7 +3584,7 @@ var Heat = /** @class */ (function () {
             }
             if (newHeatCost > 0) {
                 if (adrenalineWillCrossNextCorner) {
-                    confirmationMessage = _("The Adrenaline reaction will make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeed, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
+                    confirmationMessage = _("The Adrenaline reaction will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeed, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
                         + "<br>";
                 }
                 else {
@@ -3625,7 +3625,7 @@ var Heat = /** @class */ (function () {
             }
             if (newHeatCostMax > 0) {
                 if (mayCrossCorner) {
-                    confirmationMessage = _("The Boost reaction may make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeedMax, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
+                    confirmationMessage = _("The Boost reaction may make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeedMax, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
                         + "<br>";
                 }
                 else {
@@ -3655,7 +3655,7 @@ var Heat = /** @class */ (function () {
                 newHeatCost++;
             }
             if (newHeatCost > 0) {
-                confirmationMessage = _("The Slipstream move will make you cross a corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(speed_1, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
+                confirmationMessage = _("The Slipstream move will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(speed_1, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
                     + "<br>";
                 if (reactArgs.currentHeatCost > 0) {
                     confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
