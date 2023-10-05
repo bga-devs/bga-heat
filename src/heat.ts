@@ -509,7 +509,7 @@ class Heat implements HeatGame {
 
             if (newHeatCostMax > 0) {
                 if (mayCrossCorner) {
-                    confirmationMessage = _("The Boost reaction may make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', `<strong>${newSpeedMax}</strong>`).replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`)
+                    confirmationMessage = _("The Boost reaction may make you cross a <strong>new</strong> corner at a speed up to ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', `<strong>${newSpeedMax}</strong>`).replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`)
                     + `<br>`;
                 } else {
                     confirmationMessage = '';

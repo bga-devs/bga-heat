@@ -3625,7 +3625,7 @@ var Heat = /** @class */ (function () {
             }
             if (newHeatCostMax > 0) {
                 if (mayCrossCorner) {
-                    confirmationMessage = _("The Boost reaction may make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeedMax, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
+                    confirmationMessage = _("The Boost reaction may make you cross a <strong>new</strong> corner at a speed up to ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeedMax, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
                         + "<br>";
                 }
                 else {

@@ -3,7 +3,7 @@ namespace HEAT\Circuits;
 
 $circuitDatas = [
   'id' => 'GB',
-  'name' => clienttranslate('Great-Britain'),
+  'name' => clienttranslate('Great Britain'),
   'jpgUrl' => 'circuits/gb.jpg',
   'nbrLaps' => 2,
   'stressCards' => 3,

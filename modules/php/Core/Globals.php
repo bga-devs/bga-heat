@@ -246,7 +246,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
   {
     $map = [
       'usa' => clienttranslate('USA'),
-      'gb' => clienttranslate('Great-Britain'),
+      'gb' => clienttranslate('Great Britain'),
       'france' => clienttranslate('France'),
       'italia' => clienttranslate('Italia'),
     ];
