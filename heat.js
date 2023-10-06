@@ -936,6 +936,8 @@ var AnimationManager = /** @class */ (function () {
  */
 var CardStock = /** @class */ (function () {
     /**
+     * Creates the stock and register it on the manager.
+     *
      * @param manager the card manager
      * @param element the stock element (should be an empty HTML Element)
      */
@@ -951,6 +953,14 @@ var CardStock = /** @class */ (function () {
         this.bindClick();
         this.sort = settings === null || settings === void 0 ? void 0 : settings.sort;
     }
+    /**
+     * Removes the stock and unregister it on the manager.
+     */
+    CardStock.prototype.remove = function () {
+        var _a;
+        this.manager.removeStock(this);
+        (_a = this.element) === null || _a === void 0 ? void 0 : _a.remove();
+    };
     /**
      * @returns the cards on the stock
      */
@@ -1816,6 +1826,12 @@ var CardManager = /** @class */ (function () {
     };
     CardManager.prototype.addStock = function (stock) {
         this.stocks.push(stock);
+    };
+    CardManager.prototype.removeStock = function (stock) {
+        var index = this.stocks.indexOf(stock);
+        if (index !== -1) {
+            this.stocks.splice(index, 1);
+        }
     };
     /**
      * @param card the card informations
@@ -3557,7 +3573,7 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.onLeavingSalvage = function () {
         var _a;
-        (_a = document.getElementById('market')) === null || _a === void 0 ? void 0 : _a.remove();
+        (_a = this.market) === null || _a === void 0 ? void 0 : _a.remove();
         this.market = null;
     };
     Heat.prototype.createChooseSpeedButtons = function (args) {
@@ -4431,9 +4447,9 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_reformingDeckWithUpgrades = function () {
         var _a, _b;
-        (_a = document.getElementById('market')) === null || _a === void 0 ? void 0 : _a.remove();
-        (_b = this.getCurrentPlayerTable()) === null || _b === void 0 ? void 0 : _b.hand.removeAll();
+        (_a = this.market) === null || _a === void 0 ? void 0 : _a.remove();
         this.market = null;
+        (_b = this.getCurrentPlayerTable()) === null || _b === void 0 ? void 0 : _b.hand.removeAll();
     };
     Heat.prototype.notif_updatePlanification = function (args) {
         this.updatePlannedCards(args.args._private.selection);

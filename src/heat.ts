@@ -401,7 +401,7 @@ class Heat implements HeatGame {
     }
 
     private onLeavingSalvage() {
-        document.getElementById('market')?.remove();
+        this.market?.remove();
         this.market = null;
     }
 
@@ -1609,9 +1609,9 @@ class Heat implements HeatGame {
     }  
     
     notif_reformingDeckWithUpgrades() {
-        document.getElementById('market')?.remove();
-        this.getCurrentPlayerTable()?.hand.removeAll();
+        this.market?.remove();
         this.market = null;
+        this.getCurrentPlayerTable()?.hand.removeAll();
     } 
     
     notif_updatePlanification(args: NotifUpdatePlanificationArgs) {

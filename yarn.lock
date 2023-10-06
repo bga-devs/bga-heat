@@ -124,12 +124,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bga-cards@thoun/bga-cards#3.0.0":
-  version: 3.0.0
-  resolution: "bga-cards@https://github.com/thoun/bga-cards.git#commit=ec4bfc34ee804623b8e7cf825bb4ba3f684315fe"
+"bga-cards@thoun/bga-cards#3.1.1":
+  version: 3.1.1
+  resolution: "bga-cards@https://github.com/thoun/bga-cards.git#commit=89dd4845df599d16e1b84fbbd1832a082cfba8a5"
   peerDependencies:
     bga-animations: "*"
-  checksum: 9bc64d3195fa7dcabe4581e06e1bdd3cc762dc6eeddd0965b4c515871019cde375b67f1dadde2502a5ab5b56e90122eb35b57f0a9fb0e87581f7bc3d94ca4e58
+  checksum: 770ed43df8ab9f9da8b665d18c131c178384dcf521c45bffa9ceb7db252bc9a2bdbc0c26b90ff0f1f0e3063b74ee3e6d133b5a20e3c45b5aa32050e00c4b9af3
   languageName: node
   linkType: hard
 
@@ -442,7 +442,7 @@ __metadata:
   resolution: "heat@workspace:."
   dependencies:
     bga-animations: "thoun/bga-animations#1.0.2"
-    bga-cards: "thoun/bga-cards#3.0.0"
+    bga-cards: "thoun/bga-cards#3.1.1"
     bga-help: "thoun/bga-help#1.0.0"
     bga-jump-to: "thoun/bga-jump-to#1.0.0"
     bga-zoom: "thoun/bga-zoom#1.0.2"
