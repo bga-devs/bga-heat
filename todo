@@ -3,18 +3,17 @@ Other :
     How can we compute "valid cards to play" ? Should we take into account the cooldown the the car may get if it lands in a sector with a weather token ?
     Can a player make a bet using stress by hoping to land in such sector ?
 
+Backend :
+ - check path cleaning between championship races
+ - beewee_bgaTiens, je viens de réaliser…       17:21
+normalement on ne connait pas les conditions météo et de piste au moment du draft des améliorations       17:21
+beewee_bgaIl faut faire les étapes dans l’ordre haut --> bas sur la carte événement       17:22
+
+ - beewee_bgalà le message devrait être «one of the Upgrades they picked» je pense -> probablement à l'étape ST_DRAFT_GARAGE_SWAP
+
+ - add an error message if a player sends a Heat card during planification && !args.clutteredHand
+
 Frontend :
- - rethink inPLay deck position. place it where the market is? Or Force it to 1 line only ?
-  - planification : highlight already selected cards (also on refresh), you have a parameter in the args :       
-      'selection' => $planification[$pId] ?? null,
-
-  - upload form: only allow .heat files
-
-  - refresh : display the name of the card (only if several refresh ?) => maybe with the same formatting as accelerate
-  - for accelerate/refresh => make the card clickable ?
-  
-  - move car animation : => a reaaaaaally cool plus would be to have the log entries hoverable and you would get the path drawing display on hover (like the white path I had on my little animation test)
-
-  - user pref : voir seulement le haut des cartes en main => garder environ 1/6 de la hauteur et mettre le plateau joueur par dessus, permet d'avoir une vue globale plus complète
-
-  - zoom icons are gone => No they are just under the map, as the map now autoscale like in TTR
+ - fix previous upgrade cards & press corner not shoing when changing circuit in championship
+ - Heat Bug.png
+ - upload form: only allow .heat files

@@ -268,7 +268,7 @@ class Circuit {
                 //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
                 html += `background-image: url('${(document.getElementById(`avatar_${constructor.pId}`) as HTMLImageElement).src}');`;
             }
-            this.game.setTooltip(car.id, `${html}"></div> <strong style="color: #${CONSTRUCTORS_COLORS[constructor.id]};">${constructor.name}</strong>`);
+            this.game.setTooltip(car.id, `${html}"></div> <strong style="color: #${CONSTRUCTORS_COLORS[constructor.id]};">${_(constructor.name)}</strong>`);
         }
         const cell = this.getCellPosition(constructor.carCell);
         if (cell) {

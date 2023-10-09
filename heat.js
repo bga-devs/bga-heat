@@ -2627,7 +2627,7 @@ var Circuit = /** @class */ (function () {
                 //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
                 html += "background-image: url('".concat(document.getElementById("avatar_".concat(constructor.pId)).src, "');");
             }
-            this.game.setTooltip(car.id, "".concat(html, "\"></div> <strong style=\"color: #").concat(CONSTRUCTORS_COLORS[constructor.id], ";\">").concat(constructor.name, "</strong>"));
+            this.game.setTooltip(car.id, "".concat(html, "\"></div> <strong style=\"color: #").concat(CONSTRUCTORS_COLORS[constructor.id], ";\">").concat(_(constructor.name), "</strong>"));
         }
         var cell = this.getCellPosition(constructor.carCell);
         if (cell) {
