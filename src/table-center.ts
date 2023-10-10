@@ -22,9 +22,9 @@ const EVENTS_PRESS_CORNERS = {
     5: [2, 4],
     6: [2],
     7: [0],
-    8: [1, 4],
-    9: [4],
-    10: [4],
+    8: [1, 3],
+    9: [3],
+    10: [3],
 };
 
 function moveCarAnimationDuration(cells: number, totalSpeed: number) {

@@ -2414,9 +2414,9 @@ var EVENTS_PRESS_CORNERS = {
     5: [2, 4],
     6: [2],
     7: [0],
-    8: [1, 4],
-    9: [4],
-    10: [4],
+    8: [1, 3],
+    9: [3],
+    10: [3],
 };
 function moveCarAnimationDuration(cells, totalSpeed) {
     return totalSpeed <= 0 || cells < +0 ? 0 : Math.round(5500 / (20 + totalSpeed) * cells);
