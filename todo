@@ -5,15 +5,18 @@ Other :
 
 Backend :
  - check path cleaning between championship races
- - beewee_bgaTiens, je viens de réaliser…       17:21
-normalement on ne connait pas les conditions météo et de piste au moment du draft des améliorations       17:21
-beewee_bgaIl faut faire les étapes dans l’ordre haut --> bas sur la carte événement       17:22
+ - zombie during draft
+ - beewee_bgaTiens, je viens de réaliser… 
+normalement on ne connait pas les conditions météo et de piste au moment du draft des améliorations
+beewee_bgaIl faut faire les étapes dans l’ordre haut --> bas sur la carte événement
 
  - beewee_bgalà le message devrait être «one of the Upgrades they picked» je pense -> probablement à l'étape ST_DRAFT_GARAGE_SWAP
 
  - add an error message if a player sends a Heat card during planification && !args.clutteredHand
 
+ - react sometimes not autopassing. Example  => https://boardgamearena.com/bug?id=100829
+
 Frontend :
- - fix previous upgrade cards & press corner not shoing when changing circuit in championship
+ - fix previous upgrade cards & press corner not showing when changing circuit in championship
  - Heat Bug.png
  - upload form: only allow .heat files
