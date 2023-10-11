@@ -4367,7 +4367,6 @@ var Heat = /** @class */ (function () {
             dojo.subscribe(notifName, _this, function (notifDetails) {
                 log("notif_".concat(notifName), notifDetails.args);
                 if (notifName === 'playerEliminated') {
-                    _this.notifqueue.setSynchronousDuration(0);
                     return;
                 }
                 var promise = _this["notif_".concat(notifName)](notifDetails.args);
@@ -4389,7 +4388,9 @@ var Heat = /** @class */ (function () {
                     _this.notifqueue.setSynchronousDuration(0);
                 }
             });
-            _this.notifqueue.setSynchronous(notifName, undefined);
+            if (notifName !== 'playerEliminated') {
+                _this.notifqueue.setSynchronous(notifName, undefined);
+            }
         });
         if (isDebug) {
             notifs.forEach(function (notifName) {

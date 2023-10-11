@@ -62,9 +62,13 @@ trait DebugTrait
   }
 
   // endRace()
-  function endRace()
+  function endRace($constructorId = null)
   {
-    $this->DbQuery('UPDATE constructors SET `turn` = 2');
+    $sql = 'UPDATE constructors SET `turn` = 2';
+    if ($constructorId !== null) {
+      $sql .= " WHERE `id` = $constructorId";
+    }
+    $this->DbQuery($sql);
   }
 
   function clutterHand($constructorId = null)

@@ -1522,7 +1522,6 @@ class Heat implements HeatGame {
                 log(`notif_${notifName}`, notifDetails.args);
 
                 if (notifName === 'playerEliminated') {
-                    (this as any).notifqueue.setSynchronousDuration(0);
                     return;
                 }
 
@@ -1546,7 +1545,9 @@ class Heat implements HeatGame {
                     (this as any).notifqueue.setSynchronousDuration(0);
                 }
             });
-            (this as any).notifqueue.setSynchronous(notifName, undefined);
+            if (notifName !== 'playerEliminated') {
+                (this as any).notifqueue.setSynchronous(notifName, undefined);
+            }
         });
 
         if (isDebug) {
