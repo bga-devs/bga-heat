@@ -1613,6 +1613,7 @@ class Heat implements HeatGame {
         this.market?.remove();
         this.market = null;
         this.getCurrentPlayerTable()?.hand.removeAll();
+        this.playersTables.forEach(playerTable => playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + 3));
     } 
     
     notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
