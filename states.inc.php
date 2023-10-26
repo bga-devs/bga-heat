@@ -203,6 +203,7 @@ $machinestates = [
     ),
     'type' => 'activeplayer',
     'args' => 'argsPayHeats',
+    'action' => 'stPayHeats',
     'possibleactions' => ['actPayHeats'],
   ],
 
