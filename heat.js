@@ -2858,6 +2858,7 @@ var InPlayStock = /** @class */ (function (_super) {
         _this.playerId = constructor.pId;
         _this.addCards(Object.values(constructor.inplay));
         _this.toggleInPlay(); // in case inplay is empty, addCard is not called
+        _this.onSelectionChange = function (selection) { return game.onInPlayCardSelectionChange(selection); };
         return _this;
     }
     InPlayStock.prototype.toggleInPlay = function () {
@@ -3515,6 +3516,11 @@ var Heat = /** @class */ (function () {
             return _this.circuit.addMapIndicator(entry[1], function () { return _this.actSlipstream(Number(entry[0])); }, _this.speedCounters[_this.getConstructorId()].getValue(), false);
         });
     };
+    Heat.prototype.onEnteringPayHeats = function (args) {
+        var inplay = this.getCurrentPlayerTable().inplay;
+        var ids = Object.keys(args.payingCards).map(Number);
+        inplay.setSelectionMode('multiple', inplay.getCards().filter(function (card) { return ids.includes(card.id); }));
+    };
     Heat.prototype.onEnteringDiscard = function (args) {
         this.getCurrentPlayerTable().setHandSelectable('multiple', args._private.cardIds);
     };
@@ -3548,6 +3554,9 @@ var Heat = /** @class */ (function () {
             case 'slipstream':
                 this.onLeavingSlipstream();
                 break;
+            case 'payHeats':
+                this.onLeavingPayHeats();
+                break;
             case 'discard':
                 this.onLeavingHandSelection();
                 break;
@@ -3570,6 +3579,10 @@ var Heat = /** @class */ (function () {
     Heat.prototype.onLeavingHandSelection = function () {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setHandSelectable('none');
+    };
+    Heat.prototype.onLeavingPayHeats = function () {
+        var _a;
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.inplay.setSelectionMode('none');
     };
     Heat.prototype.onLeavingSalvage = function () {
         var _a;
@@ -3778,7 +3791,7 @@ var Heat = /** @class */ (function () {
                             var label = "";
                             var tooltip = "";
                             var confirmationMessage = null;
-                            var enabled = true;
+                            var enabled = reactArgs_1.doable.includes(type);
                             switch (type) {
                                 case 'accelerate':
                                     var accelerateCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
@@ -3794,9 +3807,6 @@ var Heat = /** @class */ (function () {
                                     label = "+".concat(number, " [Speed]");
                                     tooltip = "\n                                    <strong>".concat(_("Adrenaline"), "</strong>\n                                    <br><br>\n                                    ").concat(_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space)."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Adrenaline cannot be saved for future rounds"), "</i>");
                                     confirmationMessage = reactArgs_1.crossedFinishLine ? null : _this.getAdrenalineConfirmation(reactArgs_1);
-                                    if (!reactArgs_1.doable.includes('adrenaline')) {
-                                        enabled = false;
-                                    }
                                     break;
                                 case 'cooldown':
                                     label = "".concat(number, " [Cooldown]");
@@ -3825,9 +3835,6 @@ var Heat = /** @class */ (function () {
                                     }
                                     tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _("Regardless of which gear you are in you may pay 1 Heat to boost once per turn.") : '', "\n                                    ").concat(_("Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step."), "</i>");
                                     confirmationMessage = reactArgs_1.crossedFinishLine ? null : _this.getBoostConfirmation(reactArgs_1, paid);
-                                    if (paid && !reactArgs_1.doable.includes('heated-boost')) {
-                                        enabled = false;
-                                    }
                                     break;
                                 case 'reduce':
                                     label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
@@ -3836,7 +3843,7 @@ var Heat = /** @class */ (function () {
                                 case 'salvage':
                                     label = "<div class=\"icon salvage\">".concat(number, "</div>");
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('salvage', number);
-                                    enabled = _this.getCurrentPlayerTable().discard.getCardNumber() > 0;
+                                    enabled = enabled && _this.getCurrentPlayerTable().discard.getCardNumber() > 0;
                                     break;
                                 case 'scrap':
                                     label = "<div class=\"icon scrap\">".concat(number, "</div> <div class=\"icon mandatory\"></div>");
@@ -3856,6 +3863,17 @@ var Heat = /** @class */ (function () {
                     if (!reactArgs_1.canPass) {
                         document.getElementById("actPassReact_button").classList.add('disabled');
                     }
+                    if (reactArgs_1.symbols['heat'] > 0 && !reactArgs_1.doable.includes('heat')) {
+                        var confirmationMessage = reactArgs_1.doable.includes('cooldown') ? _("You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?") : null;
+                        var finalAction = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
+                        var callback = confirmationMessage ? this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
+                        this.addActionButton("actCryCauseNotEnoughHeatToPay_button", _("I can't pay Heat(s)"), callback);
+                    }
+                    break;
+                case 'payHeats':
+                    this.onEnteringPayHeats(args);
+                    this.addActionButton("actPayHeats_button", formatTextIcons(_('Keep selected cards (max: ${number} [Heat])').replace('${number}', args.heatInReserve)), function () { return _this.actPayHeats(_this.getCurrentPlayerTable().inplay.getSelection()); });
+                    this.onInPlayCardSelectionChange([]);
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
@@ -4185,6 +4203,13 @@ var Heat = /** @class */ (function () {
             this.checkSwapUpgradeSelectionState();
         }
     };
+    Heat.prototype.onInPlayCardSelectionChange = function (selection) {
+        if (this.gamedatas.gamestate.name == 'payHeats') {
+            var args_1 = this.gamedatas.gamestate.args;
+            var selectionHeats = selection.map(function (card) { return args_1.payingCards[card.id]; }).reduce(function (a, b) { return a + b; }, 0);
+            document.getElementById('actPayHeats_button').classList.toggle('disabled', selectionHeats > args_1.heatInReserve);
+        }
+    };
     Heat.prototype.onMarketSelectionChange = function (selection) {
         if (this.gamedatas.gamestate.name == 'chooseUpgrade') {
             document.getElementById("actChooseUpgrade_button").classList.toggle('disabled', selection.length != 1);
@@ -4256,6 +4281,12 @@ var Heat = /** @class */ (function () {
         }
         this.takeAction('actPassReact');
     };
+    Heat.prototype.actCryCauseNotEnoughHeatToPay = function () {
+        if (!this.checkAction('actCryCauseNotEnoughHeatToPay')) {
+            return;
+        }
+        this.takeAction('actCryCauseNotEnoughHeatToPay');
+    };
     Heat.prototype.actReact = function (symbol, arg) {
         if (!this.checkAction('actReact')) {
             return;
@@ -4271,6 +4302,14 @@ var Heat = /** @class */ (function () {
         }
         this.takeAction('actRefresh', {
             cardId: cardId,
+        });
+    };
+    Heat.prototype.actPayHeats = function (selectedCards) {
+        if (!this.checkAction('actPayHeats')) {
+            return;
+        }
+        this.takeAction('actPayHeats', {
+            cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
     };
     Heat.prototype.actDiscard = function (selectedCards) {
@@ -4494,6 +4533,9 @@ var Heat = /** @class */ (function () {
                     case 0:
                         constructor_id = args.constructor_id, cell = args.cell, path = args.path, totalSpeed = args.totalSpeed, progress = args.progress, distanceToCorner = args.distanceToCorner;
                         isAi = this.gamedatas.constructors[constructor_id].ai;
+                        if (args.clearPath) {
+                            this.circuit.removeMapPaths();
+                        }
                         this.setSpeedCounter(constructor_id, totalSpeed);
                         (_a = this.championshipTable) === null || _a === void 0 ? void 0 : _a.setRaceProgress(progress);
                         return [4 /*yield*/, this.circuit.moveCar(constructor_id, cell, path, isAi ? path.length : totalSpeed)];

@@ -112,6 +112,7 @@ interface HeatGame extends Game {
     getWeatherTokenTooltip(type: number, cardType: number): string;
     setTooltip(id: string, html: string): void;
     onHandCardSelectionChange(selection: Card[]): void;
+    onInPlayCardSelectionChange(selection: Card[]): void;
     changePageTitle(suffix?: string, save?: boolean): void;
 }
 
@@ -168,6 +169,12 @@ interface EnteringReactArgs {
     crossedFinishLine: boolean;
 }
 
+interface EnteringPayHeatsArgs {    
+    heatInReserve: number;
+    maxPayableCards: number;
+    payingCards: { [cardId: number]: number };
+}
+
 interface EnteringDiscardArgs {    
     _private?: {
         cardIds: number[];
@@ -220,6 +227,7 @@ interface NotifMoveCarArgs {
     progress: number;
     totalSpeed: number;
     distanceToCorner: number;
+    clearPath: boolean;
 }
 
 // payHeats

@@ -335,6 +335,12 @@ class Heat implements HeatGame {
         );
     }
 
+    private onEnteringPayHeats(args: EnteringPayHeatsArgs) {
+        const inplay = this.getCurrentPlayerTable().inplay;
+        const ids = Object.keys(args.payingCards).map(Number);
+        inplay.setSelectionMode('multiple', inplay.getCards().filter(card => ids.includes(card.id)));
+    }
+
     private onEnteringDiscard(args: EnteringDiscardArgs) {
         this.getCurrentPlayerTable().setHandSelectable('multiple', args._private.cardIds);
     }
@@ -373,6 +379,9 @@ class Heat implements HeatGame {
             case 'slipstream':
                 this.onLeavingSlipstream();
                 break;
+            case 'payHeats':
+                this.onLeavingPayHeats();
+                break;
             case 'discard':
                 this.onLeavingHandSelection();
                 break;
@@ -398,6 +407,10 @@ class Heat implements HeatGame {
 
     private onLeavingHandSelection() {
         this.getCurrentPlayerTable()?.setHandSelectable('none');
+    }
+
+    private onLeavingPayHeats() {
+        this.getCurrentPlayerTable()?.inplay.setSelectionMode('none');
     }
 
     private onLeavingSalvage() {
@@ -630,7 +643,7 @@ class Heat implements HeatGame {
                             let label = ``;
                             let tooltip = ``;
                             let confirmationMessage = null;
-                            let enabled = true;
+                            let enabled = reactArgs.doable.includes(type);
                             switch (type) {
                                 case 'accelerate':
                                     const accelerateCard = this.getCurrentPlayerTable().inplay.getCards().find(card => card.id == number);
@@ -652,9 +665,6 @@ class Heat implements HeatGame {
                                     <i>${_("Note: Adrenaline cannot be saved for future rounds")}</i>`;
 
                                     confirmationMessage = reactArgs.crossedFinishLine ? null : this.getAdrenalineConfirmation(reactArgs);
-                                    if (!reactArgs.doable.includes('adrenaline')) {
-                                        enabled = false;
-                                    }
                                     break;
                                 case 'cooldown':
                                     label = `${number} [Cooldown]`;
@@ -691,9 +701,6 @@ class Heat implements HeatGame {
                                     <i>${_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.")}</i>`;
 
                                     confirmationMessage = reactArgs.crossedFinishLine ? null : this.getBoostConfirmation(reactArgs, paid);
-                                    if (paid && !reactArgs.doable.includes('heated-boost')) {
-                                        enabled = false;
-                                    }
                                     break;
                                 case 'reduce':
                                     label = `<div class="icon reduce-stress">${number}</div>`;
@@ -703,7 +710,7 @@ class Heat implements HeatGame {
                                     label = `<div class="icon salvage">${number}</div>`;
                                     tooltip = this.getGarageModuleIconTooltipWithIcon('salvage', number);
 
-                                    enabled = this.getCurrentPlayerTable().discard.getCardNumber() > 0;
+                                    enabled = enabled && this.getCurrentPlayerTable().discard.getCardNumber() > 0;
                                     break;
                                 case 'scrap':
                                     label = `<div class="icon scrap">${number}</div> <div class="icon mandatory"></div>`;
@@ -730,6 +737,23 @@ class Heat implements HeatGame {
                     if (!reactArgs.canPass) {
                         document.getElementById(`actPassReact_button`).classList.add('disabled');
                     }
+                    if ((reactArgs.symbols['heat'] as number) > 0 && !reactArgs.doable.includes('heat')) {
+                        const confirmationMessage = reactArgs.doable.includes('cooldown') ? _("You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?") : null;
+
+                        const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
+                        const callback = confirmationMessage ? (this as any).confirmationDialog(confirmationMessage, finalAction) : finalAction;
+
+                        (this as any).addActionButton(
+                            `actCryCauseNotEnoughHeatToPay_button`, 
+                            _("I can't pay Heat(s)"), 
+                            callback
+                        );
+                    }
+                    break;
+                case 'payHeats':
+                    this.onEnteringPayHeats(args);
+                    (this as any).addActionButton(`actPayHeats_button`, formatTextIcons(_('Keep selected cards (max: ${number} [Heat])').replace('${number}', args.heatInReserve)), () => this.actPayHeats(this.getCurrentPlayerTable().inplay.getSelection()));
+                    this.onInPlayCardSelectionChange([]);
                     break;
                 case 'discard':
                     this.onEnteringDiscard(args);
@@ -1305,6 +1329,15 @@ class Heat implements HeatGame {
         }
     }
     
+    public onInPlayCardSelectionChange(selection: Card[]): void {
+        if (this.gamedatas.gamestate.name == 'payHeats') {
+            const args: EnteringPayHeatsArgs = this.gamedatas.gamestate.args;
+            const selectionHeats = selection.map(card => args.payingCards[card.id]).reduce((a, b) => a + b, 0);
+
+            document.getElementById('actPayHeats_button').classList.toggle('disabled', selectionHeats > args.heatInReserve);
+        }
+    }
+    
     public onMarketSelectionChange(selection: Card[]): void {
         if (this.gamedatas.gamestate.name == 'chooseUpgrade') {
             document.getElementById(`actChooseUpgrade_button`).classList.toggle('disabled', selection.length != 1);
@@ -1391,6 +1424,14 @@ class Heat implements HeatGame {
 
         this.takeAction('actPassReact');
     }
+    
+    private actCryCauseNotEnoughHeatToPay() {
+        if(!(this as any).checkAction('actCryCauseNotEnoughHeatToPay')) {
+            return;
+        }
+
+        this.takeAction('actCryCauseNotEnoughHeatToPay');
+    }
   	
     public actReact(symbol: string, arg?: number) {
         if(!(this as any).checkAction('actReact')) {
@@ -1410,6 +1451,16 @@ class Heat implements HeatGame {
 
         this.takeAction('actRefresh', {
             cardId,
+        });
+    }
+  	
+    public actPayHeats(selectedCards: Card[]) {
+        if(!(this as any).checkAction('actPayHeats')) {
+            return;
+        }
+
+        this.takeAction('actPayHeats', {
+            cardIds: JSON.stringify(selectedCards.map(card => card.id)),
         });
     }
   	
@@ -1642,6 +1693,10 @@ class Heat implements HeatGame {
     async notif_moveCar(args: NotifMoveCarArgs) {
         const { constructor_id, cell, path, totalSpeed, progress, distanceToCorner } = args;
         const isAi = this.gamedatas.constructors[constructor_id].ai;
+
+        if (args.clearPath) {
+            this.circuit.removeMapPaths();
+        }
 
         this.setSpeedCounter(constructor_id, totalSpeed);
 

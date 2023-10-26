@@ -35,6 +35,7 @@ class InPlayStock extends ManualPositionStock<Card> {
         this.playerId = constructor.pId;
         this.addCards(Object.values(constructor.inplay));
         this.toggleInPlay(); // in case inplay is empty, addCard is not called
+        this.onSelectionChange = (selection: Card[]) => game.onInPlayCardSelectionChange(selection);   
     }
 
     private toggleInPlay() {
