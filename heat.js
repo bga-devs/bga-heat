@@ -4451,6 +4451,7 @@ var Heat = /** @class */ (function () {
         (_a = this.market) === null || _a === void 0 ? void 0 : _a.remove();
         this.market = null;
         (_b = this.getCurrentPlayerTable()) === null || _b === void 0 ? void 0 : _b.hand.removeAll();
+        this.playersTables.forEach(function (playerTable) { return playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + 3); });
     };
     Heat.prototype.notif_updatePlanification = function (args) {
         this.updatePlannedCards(args.args._private.selection);
