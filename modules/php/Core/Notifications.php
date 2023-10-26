@@ -601,6 +601,35 @@ class Notifications
     );
   }
 
+  public function cryCauseNotEnoughHeatToPay($constructor, $cell, $turn, $distanceToCorner)
+  {
+    self::notifyAll(
+      'cryCauseNotEnoughHeatToPay',
+      clienttranslate('${constructor_name} does not have enough Heat in their engine to pay for all their played cards'),
+      [
+        'constructor' => $constructor,
+        'cell' => $cell,
+        'turn' => $turn,
+        'distance' => $distanceToCorner,
+      ]
+    );
+  }
+
+  public function discardCantPay($constructor, $cards)
+  {
+    self::notify(
+      $constructor,
+      'discard',
+      clienttranslate(
+        '${constructor_name} can\'t pay for ${cards_images} and therefore discards them and resolve them as stress instead'
+      ),
+      [
+        'constructor' => $constructor,
+        'cards' => $cards,
+      ]
+    );
+  }
+
   ///////////////////////////////////////////////////////////////
   //  _   _           _       _            _
   // | | | |_ __   __| | __ _| |_ ___     / \   _ __ __ _ ___

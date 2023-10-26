@@ -9,6 +9,37 @@
 
 -- dbmodel.sql
 
+------------------- HIDDEN COPIES ------------------
+CREATE TABLE IF NOT EXISTS `constructors2` (
+  `id` int(10) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `no` int(10),
+  `player_id` int(10),
+  `score` int(10) NOT NULL DEFAULT 0,
+  `gear` int(10),
+  `car_cell` varchar(32),
+  `speed` int(10),
+  `turn` int(10),
+  `paths` JSON,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `cards2` (
+  `card_id` int(10) NOT NULL,
+  `card_location` varchar(32) NOT NULL,
+  `card_state` int(10),
+  `type` int(10) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`card_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `global_variables2` (
+  `name` varchar(255) NOT NULL,
+  `value` JSON,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-----------------------------------------------------
+
 
 CREATE TABLE IF NOT EXISTS `constructors` (
   `id` int(10) NOT NULL,

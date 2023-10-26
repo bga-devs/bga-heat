@@ -22,10 +22,13 @@ const ST_PLANIFICATION = 12;
 const ST_REVEAL = 13;
 const ST_CHOOSE_SPEED = 14;
 const ST_REACT = 15;
+const ST_SALVAGE = 18;
+const ST_PAY_HEATS = 19;
+
 const ST_SLIPSTREAM = 16;
 const ST_DISCARD = 17;
 
-const ST_SALVAGE = 18;
+const ST_HIDDEN_PLANIFICATION = 40;
 
 const ST_END_ROUND = 20;
 

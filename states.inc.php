@@ -181,7 +181,7 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsReact',
     'action' => 'stReact',
-    'possibleactions' => ['actReact', 'actPassReact'],
+    'possibleactions' => ['actReact', 'actPassReact', 'actCryCauseNotEnoughHeatToPay'],
   ],
 
   ST_SALVAGE => [
@@ -191,6 +191,19 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsSalvage',
     'possibleactions' => ['actSalvage', 'actPassReact'],
+  ],
+
+  ST_PAY_HEATS => [
+    'name' => 'payHeats',
+    'description' => clienttranslate(
+      '${actplayer} must choose which card to pay Heat(s) for and which card to discard and resolve as stress'
+    ),
+    'descriptionmyturn' => clienttranslate(
+      '${you} must choose which card to pay Heat(s) for and which card to discard and resolve as stress'
+    ),
+    'type' => 'activeplayer',
+    'args' => 'argsPayHeats',
+    'possibleactions' => ['actPayHeats'],
   ],
 
   ST_SLIPSTREAM => [

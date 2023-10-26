@@ -107,6 +107,22 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actCryCauseNotEnoughHeatToPay()
+  {
+    self::setAjaxMode();
+    $this->game->actCryCauseNotEnoughHeatToPay();
+    self::ajaxResponse();
+  }
+
+  public function actPayHeats()
+  {
+    self::setAjaxMode();
+    $cardIds = self::getArg('cardIds', AT_json, true);
+    $this->validateJSonAlphaNum($cardIds, 'cardIds');
+    $this->game->actPayHeats($cardIds);
+    self::ajaxResponse();
+  }
+
   public function actSalvage()
   {
     self::setAjaxMode();

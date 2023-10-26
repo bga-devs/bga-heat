@@ -234,7 +234,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
     return $cards;
   }
 
-  public function canUseSymbol($symbol)
+  public function canUseSymbol($symbol, $n)
   {
     // Cooldown => must have something to cooldown in the hand
     if ($symbol == \COOLDOWN) {
@@ -246,11 +246,11 @@ class Constructor extends \HEAT\Helpers\DB_Model
     }
     // Heated boost => must be able to pay for it
     elseif ($symbol == \HEATED_BOOST) {
-      return $this->getEngine()->count() > 0; // TODO : wheather can remove this
+      return $this->getEngine()->count() > 0;
     }
     // Heat
     elseif ($symbol == HEAT) {
-      return $this->getEngine()->count() > 0;
+      return $this->getEngine()->count() >= $n;
     }
 
     return true;

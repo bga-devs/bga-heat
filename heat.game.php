@@ -47,6 +47,7 @@ class Heat extends Table
   use HEAT\States\SetupTrait;
   use HEAT\States\RaceTrait;
   use HEAT\States\RoundTrait;
+  use HEAT\States\ReactTrait;
   use HEAT\States\LegendTrait;
 
   public static $instance = null;
@@ -68,6 +69,11 @@ class Heat extends Table
   protected function getGameName()
   {
     return 'heat';
+  }
+
+  public function shouldHide()
+  {
+    return self::isAsync() && $this->gamestate->state_id() == ST_HIDDEN_PLANIFICATION;
   }
 
   /*
