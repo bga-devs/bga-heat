@@ -409,7 +409,7 @@ trait ReactTrait
       }
     }
     $previousSymbols = Globals::getSymbols();
-    if ($previousSymbols[ADRENALINE]) {
+    if (isset($previousSymbols[ADRENALINE])) {
       $symbols[ADRENALINE] = $previousSymbols[ADRENALINE];
     }
     unset($symbols[COOLDOWN]);
@@ -429,6 +429,7 @@ trait ReactTrait
     foreach ($constructor->getPlayedCards() as $card) {
       $speed += is_array($card['speed']) ? min($card['speed']) : $card['speed'];
     }
+    $constructor->setSpeed($speed);
     $this->moveCar($constructor, $speed);
 
     $this->gamestate->jumpToState(ST_REACT);
