@@ -4400,6 +4400,7 @@ var Heat = /** @class */ (function () {
             'setupRace',
             'clutteredHand',
             'playerEliminated',
+            'cryCauseNotEnoughHeatToPay',
             'loadBug',
         ];
         notifs.forEach(function (notifName) {
@@ -4533,9 +4534,6 @@ var Heat = /** @class */ (function () {
                     case 0:
                         constructor_id = args.constructor_id, cell = args.cell, path = args.path, totalSpeed = args.totalSpeed, progress = args.progress, distanceToCorner = args.distanceToCorner;
                         isAi = this.gamedatas.constructors[constructor_id].ai;
-                        if (args.clearPath) {
-                            this.circuit.removeMapPaths();
-                        }
                         this.setSpeedCounter(constructor_id, totalSpeed);
                         (_a = this.championshipTable) === null || _a === void 0 ? void 0 : _a.setRaceProgress(progress);
                         return [4 /*yield*/, this.circuit.moveCar(constructor_id, cell, path, isAi ? path.length : totalSpeed)];
@@ -4882,6 +4880,14 @@ var Heat = /** @class */ (function () {
         if (who_quits == this.getPlayerId()) {
             (_a = document.getElementById('leave-text-action')) === null || _a === void 0 ? void 0 : _a.remove();
         }
+    };
+    Heat.prototype.notif_cryCauseNotEnoughHeatToPay = function (args) {
+        var _a, _b;
+        var constructor_id = args.constructor_id, cell = args.cell, turn = args.turn, distance = args.distance;
+        this.circuit.removeMapPaths();
+        this.circuit.moveCar(constructor_id, cell, undefined, -1);
+        (_a = this.lapCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.setValue(Math.max(1, Math.min(this.gamedatas.nbrLaps, turn + 1)));
+        (_b = this.cornerCounters[constructor_id]) === null || _b === void 0 ? void 0 : _b.setValue(distance);
     };
     Heat.prototype.setRank = function (constructorId, pos, eliminated) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);
