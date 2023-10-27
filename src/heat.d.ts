@@ -227,7 +227,6 @@ interface NotifMoveCarArgs {
     progress: number;
     totalSpeed: number;
     distanceToCorner: number;
-    clearPath: boolean;
 }
 
 // payHeats
@@ -374,4 +373,12 @@ interface NotifSetupRaceArgs {
         engine: { [id: number]: Card };
         discard: { [id: number]: Card };
     } };
+}
+
+// cryCauseNotEnoughHeatToPay
+interface NotifCryCauseNotEnoughHeatToPayArgs {
+    constructor_id: number;
+    cell: number;
+    turn: number;
+    distance: number;
 }

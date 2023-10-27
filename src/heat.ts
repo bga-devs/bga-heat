@@ -1564,6 +1564,7 @@ class Heat implements HeatGame {
             'setupRace',
             'clutteredHand',
             'playerEliminated',
+            'cryCauseNotEnoughHeatToPay',
             'loadBug',
         ];
         
@@ -1693,10 +1694,6 @@ class Heat implements HeatGame {
     async notif_moveCar(args: NotifMoveCarArgs) {
         const { constructor_id, cell, path, totalSpeed, progress, distanceToCorner } = args;
         const isAi = this.gamedatas.constructors[constructor_id].ai;
-
-        if (args.clearPath) {
-            this.circuit.removeMapPaths();
-        }
 
         this.setSpeedCounter(constructor_id, totalSpeed);
 
@@ -1966,6 +1963,15 @@ class Heat implements HeatGame {
         if (who_quits == this.getPlayerId()) {
             document.getElementById('leave-text-action')?.remove();
         }
+    }
+    
+    notif_cryCauseNotEnoughHeatToPay(args: NotifCryCauseNotEnoughHeatToPayArgs) {
+        const { constructor_id, cell, turn, distance } = args;
+
+        this.circuit.removeMapPaths();
+        this.circuit.moveCar(constructor_id, cell, undefined, -1);
+        this.lapCounters[constructor_id]?.setValue(Math.max(1, Math.min(this.gamedatas.nbrLaps, turn + 1)));
+        this.cornerCounters[constructor_id]?.setValue(distance);
     }
 
     private setRank(constructorId: number, pos: number, eliminated: boolean) {
