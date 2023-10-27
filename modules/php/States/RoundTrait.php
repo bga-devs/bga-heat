@@ -205,6 +205,12 @@ trait RoundTrait
           );
         }
       }
+    } else {
+      foreach (Cards::getMany($cardIds) as $card) {
+        if ($card['effect'] == HEAT) {
+          throw new UserException(clienttranslate('You can\'t select an Heat card unless you have a cluttered hand.'));
+        }
+      }
     }
 
     $planification = Globals::getPlanification();

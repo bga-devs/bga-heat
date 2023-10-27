@@ -44,11 +44,32 @@ trait RaceTrait
       // $constructor->setTurn($this->getNbrLaps());
       $constructor->setGear(1);
       $constructor->setSpeed(-1);
+      $constructor->setPaths([]);
       $constructor->incStat('position', $i + 1);
       $positions[$cId] = $cell;
       $constructors[] = $constructor;
     }
 
+    Notifications::startRace($constructors, $positions);
+    Cards::clean();
+
+    if (!Globals::isChampionship()) {
+      $this->setWeatherAndSetupCards();
+    }
+
+    Globals::setFinishedConstructors([]);
+    Globals::setSkippedPlayers([]);
+    Globals::setGiveUpPlayers([]);
+    if (Globals::getGarageModuleMode() == \HEAT\OPTION_GARAGE_DRAFT) {
+      Globals::setDraftRound(1);
+      $this->gamestate->nextState('draft');
+    } else {
+      $this->gamestate->nextState('start');
+    }
+  }
+
+  function setWeatherAndSetupCards()
+  {
     // Weather
     if (Globals::isWeatherModule()) {
       // Draw a card
@@ -64,26 +85,21 @@ trait RaceTrait
         'card' => $weatherCard,
         'tokens' => $cornerTokens,
       ]);
-    }
 
-    Notifications::startRace($constructors, $positions, Globals::getWeather());
+      Notifications::setWeather(Globals::getWeather());
+    }
 
     // Draw heat and stress cards
     Cards::setupRace();
-
-    Globals::setFinishedConstructors([]);
-    Globals::setSkippedPlayers([]);
-    Globals::setGiveUpPlayers([]);
-    if (Globals::getGarageModuleMode() == \HEAT\OPTION_GARAGE_DRAFT) {
-      Globals::setDraftRound(1);
-      $this->gamestate->nextState('draft');
-    } else {
-      $this->gamestate->nextState('start');
-    }
   }
 
   function stStartRace()
   {
+    if (Globals::isChampionship()) {
+      $this->setWeatherAndSetupCards();
+    }
+
+    // Shuffle deck and draw cards
     foreach (Constructors::getAll() as $cId => $constructor) {
       if ($constructor->isAI()) {
         continue;

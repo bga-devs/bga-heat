@@ -1,22 +1,15 @@
 Other :
-  - Cluttered hand: waiting for an answer from DoW about that.
-    How can we compute "valid cards to play" ? Should we take into account the cooldown the the car may get if it lands in a sector with a weather token ?
-    Can a player make a bet using stress by hoping to land in such sector ?
 
 Backend :
- - check path cleaning between championship races
  - zombie during draft
- - beewee_bgaTiens, je viens de réaliser… 
-normalement on ne connait pas les conditions météo et de piste au moment du draft des améliorations
-beewee_bgaIl faut faire les étapes dans l’ordre haut --> bas sur la carte événement
-
- - beewee_bgalà le message devrait être «one of the Upgrades they picked» je pense -> probablement à l'étape ST_DRAFT_GARAGE_SWAP
-
- - add an error message if a player sends a Heat card during planification && !args.clutteredHand
-
  - react sometimes not autopassing. Example  => https://boardgamearena.com/bug?id=100829
 
 Frontend :
+ - Notif :
+    self::notifyAll('setWeather', '', [
+      'weather' => $weather,
+    ]);
+
  -  Notif: 
     self::notifyAll('cryCauseNotEnoughHeatToPay', clienttranslate('${constructor_name} does not have enough Heat in their engine to pay for all their played cards'), [
       'constructor' => $constructor,

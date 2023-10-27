@@ -93,8 +93,8 @@ $machinestates = [
   // Championship only
   ST_DRAFT_GARAGE_SWAP => [
     'name' => 'swapUpgrade',
-    'description' => clienttranslate('${actplayer} may swap the upgrade they picked with another one left in the market'),
-    'descriptionmyturn' => clienttranslate('${you} may swap the upgrade you picked with another one left in the market'),
+    'description' => clienttranslate('${actplayer} may swap one of the Upgrades they picked with another one left in the market'),
+    'descriptionmyturn' => clienttranslate('${you} may swap one of the Upgrades they picked with another one left in the market'),
     'type' => 'activeplayer',
     'args' => 'argsSwapUpgrade',
     'possibleactions' => ['actSwapUpgrade', 'actPassSwapUpgrade'],

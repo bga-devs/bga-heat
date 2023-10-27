@@ -520,12 +520,18 @@ class Notifications
     );
   }
 
-  public static function startRace($constructors, $positions, $weather)
+  public static function startRace($constructors, $positions)
   {
     self::notifyAll('startRace', clienttranslate('Order on the starting grid is: ${constructors_names}'), [
       'constructors' => $constructors,
-      'weather' => $weather,
       'cells' => $positions,
+    ]);
+  }
+
+  public static function setWeather($weather)
+  {
+    self::notifyAll('setWeather', clienttranslate('Weather tiles and road condition tokens are revealed'), [
+      'weather' => $weather,
     ]);
   }
 
