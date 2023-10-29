@@ -139,6 +139,7 @@ trait ReactTrait
     }
     // HEATED BOOST
     elseif ($symbol == HEATED_BOOST || $symbol == BOOST) {
+      $oldRoadCondition = $constructor->getRoadCondition();
       Globals::setUsedBoost(true);
       $constructor->incStat('boost');
       if ($symbol == HEATED_BOOST) {
@@ -156,6 +157,18 @@ trait ReactTrait
       $speed = $card['speed'];
       $constructor->incSpeed($speed);
       $this->moveCar($constructor, $speed);
+
+      $symbols = Globals::getSymbols();
+      $roadCondition = $constructor->getRoadCondition();
+      if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
+        unset($symbols[COOLDOWN]);
+      }
+
+      // Weather might add 1 cooldown
+      if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
+        $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
+      }
+      Globals::setSymbols($symbols);
     }
     // REDUCE STRESS
     elseif ($symbol == REDUCE) {
@@ -197,6 +210,7 @@ trait ReactTrait
     }
     // DIRECT
     elseif ($symbol == DIRECT) {
+      $oldRoadCondition = $constructor->getRoadCondition();
       $cardId = $arg;
       $card = Cards::getSingle($cardId);
       Cards::move($cardId, ['inplay', $constructor->getId()]);
@@ -220,8 +234,14 @@ trait ReactTrait
         }
       }
 
+      $roadCondition = $constructor->getRoadCondition();
       if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
         unset($symbols[COOLDOWN]);
+      }
+
+      // Weather might add 1 cooldown
+      if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
+        $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
       }
 
       Globals::setSymbols($symbols);
