@@ -103,6 +103,18 @@ trait SetupTrait
     }
   }
 
+  function getSpecificColorPairings(): array
+  {
+    return [
+      '000000' /* Black */ => '12151a',
+      '0000ff' /* Blue */ => '376bbe',
+      '008000' /* Green */ => '26a54e',
+      'ff0000' /* Red */ => 'e52927',
+      '7b7b7b' /* Gray */ => '979797',
+      'ffa500' /* Yellow */ => 'face0d',
+    ];
+  }
+
   //////////////////////////////////////////
   //  _   _       _                 _
   // | | | |_ __ | | ___   __ _  __| |
