@@ -741,7 +741,7 @@ class Heat implements HeatGame {
                         const confirmationMessage = reactArgs.doable.includes('cooldown') ? _("You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?") : null;
 
                         const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
-                        const callback = confirmationMessage ? (this as any).confirmationDialog(confirmationMessage, finalAction) : finalAction;
+                        const callback = confirmationMessage ? () => (this as any).confirmationDialog(confirmationMessage, finalAction) : finalAction;
 
                         (this as any).addActionButton(
                             `actCryCauseNotEnoughHeatToPay_button`, 
