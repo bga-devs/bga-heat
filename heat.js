@@ -3864,9 +3864,9 @@ var Heat = /** @class */ (function () {
                         document.getElementById("actPassReact_button").classList.add('disabled');
                     }
                     if (reactArgs_1.symbols['heat'] > 0 && !reactArgs_1.doable.includes('heat')) {
-                        var confirmationMessage = reactArgs_1.doable.includes('cooldown') ? _("You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?") : null;
-                        var finalAction = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
-                        var callback = confirmationMessage ? this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
+                        var confirmationMessage_1 = reactArgs_1.doable.includes('cooldown') ? _("You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?") : null;
+                        var finalAction_1 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
+                        var callback = confirmationMessage_1 ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); } : finalAction_1;
                         this.addActionButton("actCryCauseNotEnoughHeatToPay_button", _("I can't pay Heat(s)"), callback);
                     }
                     break;
