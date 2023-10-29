@@ -219,6 +219,11 @@ trait ReactTrait
           $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
         }
       }
+
+      if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
+        unset($symbols[COOLDOWN]);
+      }
+
       Globals::setSymbols($symbols);
     }
 
