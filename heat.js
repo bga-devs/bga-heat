@@ -4885,6 +4885,7 @@ var Heat = /** @class */ (function () {
         var _a, _b;
         var constructor_id = args.constructor_id, cell = args.cell, turn = args.turn, distance = args.distance;
         this.circuit.removeMapPaths();
+        this.circuit.removeCornerHeatIndicators();
         this.circuit.moveCar(constructor_id, cell, undefined, -1);
         (_a = this.lapCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.setValue(Math.max(1, Math.min(this.gamedatas.nbrLaps, turn + 1)));
         (_b = this.cornerCounters[constructor_id]) === null || _b === void 0 ? void 0 : _b.setValue(distance);

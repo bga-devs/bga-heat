@@ -1969,6 +1969,7 @@ class Heat implements HeatGame {
         const { constructor_id, cell, turn, distance } = args;
 
         this.circuit.removeMapPaths();
+        this.circuit.removeCornerHeatIndicators();
         this.circuit.moveCar(constructor_id, cell, undefined, -1);
         this.lapCounters[constructor_id]?.setValue(Math.max(1, Math.min(this.gamedatas.nbrLaps, turn + 1)));
         this.cornerCounters[constructor_id]?.setValue(distance);
