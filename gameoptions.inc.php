@@ -236,19 +236,16 @@ $game_options = [
       OPTION_GARAGE_BASIC => [
         'name' => clienttranslate('Basic upgrades only'),
         'tmdisplay' => clienttranslate('[Garage: basic]'),
-        'alpha' => true,
         'nobeginner' => true,
       ],
       OPTION_GARAGE_ADVANCED => [
         'name' => clienttranslate('Advanced upgrades only'),
         'tmdisplay' => clienttranslate('[Garage: advanced]'),
-        'alpha' => true,
         'nobeginner' => true,
       ],
       OPTION_GARAGE_MIXED => [
         'name' => clienttranslate('All upgrades'),
         'tmdisplay' => clienttranslate('[Garage]'),
-        'alpha' => true,
         'nobeginner' => true,
       ],
     ],
