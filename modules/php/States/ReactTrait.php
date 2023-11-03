@@ -30,6 +30,11 @@ trait ReactTrait
       unset($symbols[$symbol]);
     }
 
+    $roadCondition = $constructor->getRoadCondition();
+    if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
+      unset($symbols[COOLDOWN]);
+    }
+
     // Boost bonus
     $boostInfos = [];
     if (!Globals::isUsedBoost()) {
@@ -134,8 +139,17 @@ trait ReactTrait
       $constructor->incSpeed(1);
       Notifications::adrenaline($constructor);
       // Move car 1 cell (if possible)
+      $oldRoadCondition = $constructor->getRoadCondition();
       $nForward = $this->moveCar($constructor, 1);
       $constructor->incStat('adrenalineGains', $nForward);
+
+      // Weather might add 1 cooldown
+      $roadCondition = $constructor->getRoadCondition();
+      if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
+        $symbols = Globals::getSymbols();
+        $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
+        Globals::setSymbols($symbols);
+      }
     }
     // HEATED BOOST
     elseif ($symbol == HEATED_BOOST || $symbol == BOOST) {
@@ -158,17 +172,13 @@ trait ReactTrait
       $constructor->incSpeed($speed);
       $this->moveCar($constructor, $speed);
 
-      $symbols = Globals::getSymbols();
-      $roadCondition = $constructor->getRoadCondition();
-      if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
-        unset($symbols[COOLDOWN]);
-      }
-
       // Weather might add 1 cooldown
+      $roadCondition = $constructor->getRoadCondition();
       if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
+        $symbols = Globals::getSymbols();
         $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
+        Globals::setSymbols($symbols);
       }
-      Globals::setSymbols($symbols);
     }
     // REDUCE STRESS
     elseif ($symbol == REDUCE) {
@@ -234,12 +244,8 @@ trait ReactTrait
         }
       }
 
-      $roadCondition = $constructor->getRoadCondition();
-      if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
-        unset($symbols[COOLDOWN]);
-      }
-
       // Weather might add 1 cooldown
+      $roadCondition = $constructor->getRoadCondition();
       if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
         $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
       }
