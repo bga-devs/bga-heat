@@ -4406,6 +4406,7 @@ var Heat = /** @class */ (function () {
             'clutteredHand',
             'playerEliminated',
             'cryCauseNotEnoughHeatToPay',
+            'setWeather',
             'loadBug',
         ];
         notifs.forEach(function (notifName) {
@@ -4894,6 +4895,10 @@ var Heat = /** @class */ (function () {
         this.circuit.moveCar(constructor_id, cell, undefined, -1);
         (_a = this.lapCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.setValue(Math.max(1, Math.min(this.gamedatas.nbrLaps, turn + 1)));
         (_b = this.cornerCounters[constructor_id]) === null || _b === void 0 ? void 0 : _b.setValue(distance);
+    };
+    Heat.prototype.notif_setWeather = function (args) {
+        var weather = args.weather;
+        this.circuit.createWeather(weather);
     };
     Heat.prototype.setRank = function (constructorId, pos, eliminated) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);
