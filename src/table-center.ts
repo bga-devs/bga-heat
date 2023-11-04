@@ -219,7 +219,11 @@ class Circuit {
         Object.entries(tokens).forEach(([cornerId, type]) => {
             const field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             const corner = corners[cornerId];
-            this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`], cardType);
+            if (corner) {
+                this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`], cardType);
+            } else {
+                console.warn(cornerId, `doesn't exists `, corners);
+            }
         });
     }
     

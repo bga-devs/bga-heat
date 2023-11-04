@@ -2582,7 +2582,12 @@ var Circuit = /** @class */ (function () {
             var cornerId = _a[0], type = _a[1];
             var field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             var corner = corners[cornerId];
-            _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType);
+            if (corner) {
+                _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType);
+            }
+            else {
+                console.warn(cornerId, "doesn't exists ", corners);
+            }
         });
     };
     Circuit.prototype.createWeatherToken = function (type, x, y, cardType) {
