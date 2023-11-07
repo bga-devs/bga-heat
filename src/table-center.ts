@@ -266,7 +266,7 @@ class Circuit {
 
             let html = `<div class="constructor-avatar ${constructor.ai ? 'legend' : 'player'}" style="`;
             if (constructor.ai) {
-                html += `--constructor-id: 0;`;
+                html += `--constructor-id: ${constructor.id};`;
             } else {
                 // ? Custom image : Bga Image
                 //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');

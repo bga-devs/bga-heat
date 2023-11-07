@@ -2625,7 +2625,7 @@ var Circuit = /** @class */ (function () {
             this.circuitDiv.insertAdjacentElement('beforeend', car);
             var html = "<div class=\"constructor-avatar ".concat(constructor.ai ? 'legend' : 'player', "\" style=\"");
             if (constructor.ai) {
-                html += "--constructor-id: 0;";
+                html += "--constructor-id: ".concat(constructor.id, ";");
             }
             else {
                 // ? Custom image : Bga Image
