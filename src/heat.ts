@@ -1874,6 +1874,7 @@ class Heat implements HeatGame {
         this.notif_updateTurnOrder({
             constructor_ids: args.order
         });
+        this.gamedatas.scores = args.scores;
         Object.values(this.gamedatas.constructors).forEach(constructor => 
             this.setScore(this.getPlayerIdFromConstructorId(constructor.id), Object.values(args.scores).map(circuitScores => circuitScores[constructor.id]).reduce((a, b) => a + b))
         );

@@ -3221,7 +3221,7 @@ var ChampionshipTable = /** @class */ (function () {
         gamedatas.championship.circuits.forEach(function (_, index) {
             return html += "\n                <div id=\"circuit-progress-".concat(index, "\" class=\"circuit-progress ").concat(gamedatas.championship.index > index ? 'finished' : '', "\">\n                    <div id=\"current-circuit-progress-").concat(index, "\" class=\"current-circuit-progress\"></div>\n                </div>");
         });
-        html += "\n            </div>\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">").concat(gamedatas.championship.name, "</div>");
+        html += "\n            </div>\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">\n                ").concat(gamedatas.championship.name, "\n                <button type=\"button\" id=\"scorepad-button\" class=\"bgabutton bgabutton_blue\"><div class=\"scorepad-icon\"></div></button>\n            </div>");
         gamedatas.championship.circuits.forEach(function (circuit, index) {
             return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                <span class=\"circuit-name\">").concat(circuit.name, "</span>\n                ").concat(_this.game.eventCardsManager.getHtml(circuit.event), "\n            </div>\n            ");
         });
@@ -3232,6 +3232,7 @@ var ChampionshipTable = /** @class */ (function () {
             championshipCircuits.dataset.folded = (championshipCircuits.dataset.folded == 'false').toString();
         });
         this.setRaceProgress(gamedatas.progress);
+        document.getElementById('scorepad-button').addEventListener('click', function (e) { return _this.showScorepad(e); });
     }
     ChampionshipTable.prototype.newChampionshipRace = function (index) {
         this.setRaceFinished(index - 1);
@@ -3243,6 +3244,33 @@ var ChampionshipTable = /** @class */ (function () {
     };
     ChampionshipTable.prototype.setRaceFinished = function (index) {
         document.getElementById("circuit-progress-".concat(index)).classList.add('finished');
+    };
+    ChampionshipTable.prototype.showScorepad = function (e) {
+        e.stopImmediatePropagation();
+        var scores = this.gamedatas.scores;
+        var scorepadDialog = new ebg.popindialog();
+        scorepadDialog.create('scorepadDialog');
+        scorepadDialog.setTitle(this.gamedatas.championship.name);
+        var html = "<div id=\"scorepad-popin\">\n            <div id=\"scorepad-image\">\n                <table>";
+        this.gamedatas.championship.circuits.forEach(function (circuit, index) {
+            html += "\n            <tr>\n                <th>".concat(circuit.name, "</th>");
+            [5, 1, 2, 3, 0, 4].forEach(function (constructorId) {
+                var _a;
+                html += "<td>";
+                if ((_a = scores[index]) === null || _a === void 0 ? void 0 : _a[constructorId]) {
+                    html += "".concat(scores[index][constructorId]);
+                    if (index > 0) {
+                        html += "<div class=\"subTotal\">".concat(Array.from(Array(index + 1)).map(function (_, subIndex) { return scores[subIndex][constructorId]; }).reduce(function (a, b) { return a + b; }, 0), "</div>");
+                    }
+                }
+                html += "</td>";
+            });
+            html += "</tr>";
+        });
+        html += "</table></div>\n        </div>";
+        // Show the dialog
+        scorepadDialog.setContent(html);
+        scorepadDialog.show();
     };
     return ChampionshipTable;
 }());
@@ -4779,6 +4807,7 @@ var Heat = /** @class */ (function () {
         this.notif_updateTurnOrder({
             constructor_ids: args.order
         });
+        this.gamedatas.scores = args.scores;
         Object.values(this.gamedatas.constructors).forEach(function (constructor) {
             return _this.setScore(_this.getPlayerIdFromConstructorId(constructor.id), Object.values(args.scores).map(function (circuitScores) { return circuitScores[constructor.id]; }).reduce(function (a, b) { return a + b; }));
         });
