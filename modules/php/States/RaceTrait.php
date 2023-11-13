@@ -281,7 +281,7 @@ trait RaceTrait
       $upgrades = [];
       foreach (Constructors::getAll() as $cId => $constructor) {
         foreach ($constructor->getDeck() as $cardId => $card) {
-          if ($card['isUpgrade'] ?? false) {
+          if (($card['isUpgrade'] ?? false) || ($card['isSponsor'] ?? false)) {
             $upgrades[] = $card;
             Cards::move($cardId, ['inplay', $constructor->getId()]);
           }
