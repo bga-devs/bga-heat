@@ -22,12 +22,13 @@ trait LegendTrait
     $length = $this->getCircuit()->getLength();
     $deltaCorner = ($cornerPos - $pos + $length) % $length;
     $deltaLine = ($linePos - $pos + $length) % $length;
+    $deltaFinishLine = ($length - $pos) % $length;
 
     LegendCards::drawIfNeeded();
     list($slot, $number) = LegendCards::getCurrentCardInfos($constructor);
 
     // A => cross the corner
-    if (($deltaLine == 0 || $deltaCorner < $deltaLine) && ($pos < $cornerPos || $turn < $this->getNbrLaps())) {
+    if ($deltaLine == 0 || $deltaCorner < $deltaLine) {
       // Try to move at corner speed + "slot cell" number
       $speed = $this->getCircuit()->getCornerMaxSpeed($cornerPos) + $slot;
       list($newCell, $nSpacesForward, $extraTurns, $path, ,) = $this->getCircuit()->getReachedCell($constructor, $speed, true);
@@ -48,7 +49,7 @@ trait LegendTrait
     else {
       // Try to move ahead at speed = number on the Helmet
       // Check if that makes the car cross the corner
-      if ($number < $deltaCorner || $turn == $this->getNbrLaps()) {
+      if ($number < $deltaCorner || ($turn == $this->getNbrLaps() - 1 && $deltaFinishLine < $deltaCorner)) {
         $this->moveCar($constructor, $number);
         $constructor->setSpeed($number);
       }
