@@ -393,6 +393,13 @@ class Notifications
     ]);
   }
 
+  public static function clean($counters)
+  {
+    self::notifyAll('clean', clienttranslate('Clearing previous heat and stress cards'), [
+      'counters' => $counters,
+    ]);
+  }
+
   public static function newMarket($round, $cards, $upgrades)
   {
     self::notifyAll('newMarket', clienttranslate('Starting round n°${round}/${nRounds} of Upgrade card drafting'), [

@@ -148,9 +148,6 @@ class Cards extends \HEAT\Helpers\Pieces
 
   public static function setupRace()
   {
-    // Clear previous heat/stress if any
-    self::clean();
-
     // Create the stresses and heats
     $nStress = Game::get()
       ->getCircuit()
@@ -236,6 +233,14 @@ class Cards extends \HEAT\Helpers\Pieces
         self::move($cardIds, "deck-$cId");
       }
     }
+
+    $counters = [];
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      $counters[$cId] = [
+        'deckCount' => $constructor->getDeck()->count(),
+      ];
+    }
+    Notifications::clean($counters);
   }
 
   public static function fillHand($constructor)
