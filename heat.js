@@ -2582,7 +2582,12 @@ var Circuit = /** @class */ (function () {
             var cornerId = _a[0], type = _a[1];
             var field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             var corner = corners[cornerId];
-            _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType);
+            if (corner) {
+                _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType);
+            }
+            else {
+                console.warn(cornerId, "doesn't exists ", corners);
+            }
         });
     };
     Circuit.prototype.createWeatherToken = function (type, x, y, cardType) {
@@ -2620,7 +2625,7 @@ var Circuit = /** @class */ (function () {
             this.circuitDiv.insertAdjacentElement('beforeend', car);
             var html = "<div class=\"constructor-avatar ".concat(constructor.ai ? 'legend' : 'player', "\" style=\"");
             if (constructor.ai) {
-                html += "--constructor-id: 0;";
+                html += "--constructor-id: ".concat(constructor.id, ";");
             }
             else {
                 // ? Custom image : Bga Image
@@ -4401,6 +4406,7 @@ var Heat = /** @class */ (function () {
             'clutteredHand',
             'playerEliminated',
             'cryCauseNotEnoughHeatToPay',
+            'setWeather',
             'loadBug',
         ];
         notifs.forEach(function (notifName) {
@@ -4889,6 +4895,10 @@ var Heat = /** @class */ (function () {
         this.circuit.moveCar(constructor_id, cell, undefined, -1);
         (_a = this.lapCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.setValue(Math.max(1, Math.min(this.gamedatas.nbrLaps, turn + 1)));
         (_b = this.cornerCounters[constructor_id]) === null || _b === void 0 ? void 0 : _b.setValue(distance);
+    };
+    Heat.prototype.notif_setWeather = function (args) {
+        var weather = args.weather;
+        this.circuit.createWeather(weather);
     };
     Heat.prototype.setRank = function (constructorId, pos, eliminated) {
         var playerId = this.getPlayerIdFromConstructorId(constructorId);

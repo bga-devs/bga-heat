@@ -1565,6 +1565,7 @@ class Heat implements HeatGame {
             'clutteredHand',
             'playerEliminated',
             'cryCauseNotEnoughHeatToPay',
+            'setWeather',
             'loadBug',
         ];
         
@@ -1973,6 +1974,12 @@ class Heat implements HeatGame {
         this.circuit.moveCar(constructor_id, cell, undefined, -1);
         this.lapCounters[constructor_id]?.setValue(Math.max(1, Math.min(this.gamedatas.nbrLaps, turn + 1)));
         this.cornerCounters[constructor_id]?.setValue(distance);
+    }
+    
+    notif_setWeather(args: NotifSetWeatherArgs) {
+        const { weather } = args;
+
+        this.circuit.createWeather(weather);
     }
 
     private setRank(constructorId: number, pos: number, eliminated: boolean) {

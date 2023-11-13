@@ -33,4 +33,4 @@ Also add one auto-FTP upload extension (for example https://marketplace.visualst
 Make sure ftp-sync.json and node_modules are in .gitignore
 
 # Rules
-TODO
+About heat cards you can't pay : https://boardgamearena.com/forum/viewtopic.php?t=33091

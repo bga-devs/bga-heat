@@ -382,3 +382,8 @@ interface NotifCryCauseNotEnoughHeatToPayArgs {
     turn: number;
     distance: number;
 }
+
+// setWeather
+interface NotifSetWeatherArgs {
+    weather: Weather;
+}

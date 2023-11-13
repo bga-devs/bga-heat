@@ -219,7 +219,11 @@ class Circuit {
         Object.entries(tokens).forEach(([cornerId, type]) => {
             const field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             const corner = corners[cornerId];
-            this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`], cardType);
+            if (corner) {
+                this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`], cardType);
+            } else {
+                console.warn(cornerId, `doesn't exists `, corners);
+            }
         });
     }
     
@@ -262,7 +266,7 @@ class Circuit {
 
             let html = `<div class="constructor-avatar ${constructor.ai ? 'legend' : 'player'}" style="`;
             if (constructor.ai) {
-                html += `--constructor-id: 0;`;
+                html += `--constructor-id: ${constructor.id};`;
             } else {
                 // ? Custom image : Bga Image
                 //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');

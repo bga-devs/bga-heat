@@ -5,10 +5,6 @@ Backend :
  - react sometimes not autopassing. Example  => https://boardgamearena.com/bug?id=100829
 
 Frontend :
- - Notif :
-    self::notifyAll('setWeather', '', [
-      'weather' => $weather,
-    ]);
 
  -  Notif: 
     self::notifyAll('cryCauseNotEnoughHeatToPay', clienttranslate('${constructor_name} does not have enough Heat in their engine to pay for all their played cards'), [
