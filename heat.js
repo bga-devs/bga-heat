@@ -2510,8 +2510,7 @@ var Circuit = /** @class */ (function () {
             this.createWeather(this.gamedatas.weather);
             if ((_b = gamedatas.championship) === null || _b === void 0 ? void 0 : _b.circuits) {
                 var event_1 = gamedatas.championship.circuits[gamedatas.championship.index].event;
-                var pressCorners = EVENTS_PRESS_CORNERS[event_1];
-                pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
+                this.createPressTokens(event_1);
             }
             Object.values(this.gamedatas.constructors).filter(function (constructor) { var _a; return ((_a = constructor.paths) === null || _a === void 0 ? void 0 : _a.length) > 0; }).forEach(function (constructor) {
                 return constructor.paths.filter(function (path) { return (path === null || path === void 0 ? void 0 : path.length) > 1; }).forEach(function (path) { return _this.addMapPath(path, false); });
@@ -2543,6 +2542,11 @@ var Circuit = /** @class */ (function () {
         cornerDiv.style.setProperty('--x', "".concat(corner.x, "px"));
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
+    };
+    Circuit.prototype.createPressTokens = function (event) {
+        var _this = this;
+        var pressCorners = EVENTS_PRESS_CORNERS[event];
+        pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
     };
     Circuit.prototype.createPressToken = function (cornerNumber) {
         var corners = Object.values(this.circuitDatas.corners);
@@ -2885,6 +2889,7 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.playerId = Number(player.id);
+        this.constructorId = constructor.id;
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         this.currentGear = constructor.gear;
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" style=\"--player-color: #").concat(player.color, "; --personal-card-background-y: ").concat(constructor.id * 100 / 6, "%;\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"name-wrapper\">").concat(player.name, "</div>\n        ");
@@ -4400,6 +4405,7 @@ var Heat = /** @class */ (function () {
         var notifs = [
             'message',
             'loadCircuit',
+            'newMarket',
             'chooseUpgrade',
             'swapUpgrade',
             'endDraftRound',
@@ -4494,6 +4500,15 @@ var Heat = /** @class */ (function () {
         (_a = document.getElementById("circuit-dropzone-container")) === null || _a === void 0 ? void 0 : _a.remove();
         //document.querySelectorAll('.nbr-laps').forEach(elem => elem.innerHTML == `${circuit.}`)
         this.circuit.loadCircuit(circuit);
+    };
+    Heat.prototype.notif_newMarket = function (args) {
+        var upgrades = args.upgrades;
+        if (upgrades) {
+            this.playersTables.forEach(function (playerTable) {
+                playerTable.inplay.removeAll();
+                playerTable.inplay.addCards(upgrades.filter(function (card) { return card.location == "deck-".concat(playerTable.constructorId); }));
+            });
+        }
     };
     Heat.prototype.notif_chooseUpgrade = function (args) {
         var constructor_id = args.constructor_id, card = args.card;
@@ -4853,11 +4868,18 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_newChampionshipRace = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var index, circuitDatas;
+            var index, circuitDatas, event;
             return __generator(this, function (_a) {
                 index = args.index, circuitDatas = args.circuitDatas;
                 this.championshipTable.newChampionshipRace(index);
                 this.circuit.newCircuit(circuitDatas);
+                event = this.gamedatas.championship.circuits[index].event;
+                this.circuit.createPressTokens(event);
+                this.playersTables.forEach(function (playerTable) {
+                    var _a;
+                    (_a = playerTable.hand) === null || _a === void 0 ? void 0 : _a.removeAll();
+                    playerTable.inplay.removeAll();
+                });
                 document.getElementById("player_boards").querySelectorAll('.finished').forEach(function (elem) { return elem.classList.remove('finished'); });
                 return [2 /*return*/];
             });

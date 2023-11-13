@@ -194,6 +194,11 @@ interface NotifLoadCircuitArgs {
     circuit: CircuitDatas;
 }
 
+// newMarket
+interface NotifNewMarketArgs {
+    upgrades: Card[];
+}
+
 // chooseUpgrade
 interface NotifChooseUpgradeArgs {
     constructor_id: number;

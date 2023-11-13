@@ -55,6 +55,7 @@ class InPlayStock extends ManualPositionStock<Card> {
 }
 
 class PlayerTable {
+    public constructorId: number;
     public playerId: number;
     public hand?: LineStock<Card>;
     public deck: Deck<Card>;
@@ -67,6 +68,7 @@ class PlayerTable {
 
     constructor(private game: HeatGame, player: HeatPlayer, constructor: Constructor) {
         this.playerId = Number(player.id);
+        this.constructorId = constructor.id;
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         this.currentGear = constructor.gear;
 
