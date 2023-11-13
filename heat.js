@@ -2510,8 +2510,7 @@ var Circuit = /** @class */ (function () {
             this.createWeather(this.gamedatas.weather);
             if ((_b = gamedatas.championship) === null || _b === void 0 ? void 0 : _b.circuits) {
                 var event_1 = gamedatas.championship.circuits[gamedatas.championship.index].event;
-                var pressCorners = EVENTS_PRESS_CORNERS[event_1];
-                pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
+                this.createPressTokens(event_1);
             }
             Object.values(this.gamedatas.constructors).filter(function (constructor) { var _a; return ((_a = constructor.paths) === null || _a === void 0 ? void 0 : _a.length) > 0; }).forEach(function (constructor) {
                 return constructor.paths.filter(function (path) { return (path === null || path === void 0 ? void 0 : path.length) > 1; }).forEach(function (path) { return _this.addMapPath(path, false); });
@@ -2543,6 +2542,11 @@ var Circuit = /** @class */ (function () {
         cornerDiv.style.setProperty('--x', "".concat(corner.x, "px"));
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
+    };
+    Circuit.prototype.createPressTokens = function (event) {
+        var _this = this;
+        var pressCorners = EVENTS_PRESS_CORNERS[event];
+        pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
     };
     Circuit.prototype.createPressToken = function (cornerNumber) {
         var corners = Object.values(this.circuitDatas.corners);
@@ -2885,6 +2889,7 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.playerId = Number(player.id);
+        this.constructorId = constructor.id;
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         this.currentGear = constructor.gear;
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" style=\"--player-color: #").concat(player.color, "; --personal-card-background-y: ").concat(constructor.id * 100 / 6, "%;\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"name-wrapper\">").concat(player.name, "</div>\n        ");
@@ -3221,7 +3226,7 @@ var ChampionshipTable = /** @class */ (function () {
         gamedatas.championship.circuits.forEach(function (_, index) {
             return html += "\n                <div id=\"circuit-progress-".concat(index, "\" class=\"circuit-progress ").concat(gamedatas.championship.index > index ? 'finished' : '', "\">\n                    <div id=\"current-circuit-progress-").concat(index, "\" class=\"current-circuit-progress\"></div>\n                </div>");
         });
-        html += "\n            </div>\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">").concat(gamedatas.championship.name, "</div>");
+        html += "\n            </div>\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">\n                ").concat(gamedatas.championship.name, "\n                <button type=\"button\" id=\"scorepad-button\" class=\"bgabutton bgabutton_blue\"><div class=\"scorepad-icon\"></div></button>\n            </div>");
         gamedatas.championship.circuits.forEach(function (circuit, index) {
             return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                <span class=\"circuit-name\">").concat(circuit.name, "</span>\n                ").concat(_this.game.eventCardsManager.getHtml(circuit.event), "\n            </div>\n            ");
         });
@@ -3232,6 +3237,7 @@ var ChampionshipTable = /** @class */ (function () {
             championshipCircuits.dataset.folded = (championshipCircuits.dataset.folded == 'false').toString();
         });
         this.setRaceProgress(gamedatas.progress);
+        document.getElementById('scorepad-button').addEventListener('click', function (e) { return _this.showScorepad(e); });
     }
     ChampionshipTable.prototype.newChampionshipRace = function (index) {
         this.setRaceFinished(index - 1);
@@ -3243,6 +3249,33 @@ var ChampionshipTable = /** @class */ (function () {
     };
     ChampionshipTable.prototype.setRaceFinished = function (index) {
         document.getElementById("circuit-progress-".concat(index)).classList.add('finished');
+    };
+    ChampionshipTable.prototype.showScorepad = function (e) {
+        e.stopImmediatePropagation();
+        var scores = this.gamedatas.scores;
+        var scorepadDialog = new ebg.popindialog();
+        scorepadDialog.create('scorepadDialog');
+        scorepadDialog.setTitle(this.gamedatas.championship.name);
+        var html = "<div id=\"scorepad-popin\">\n            <div id=\"scorepad-image\">\n                <table>";
+        this.gamedatas.championship.circuits.forEach(function (circuit, index) {
+            html += "\n            <tr>\n                <th>".concat(circuit.name, "</th>");
+            [5, 1, 2, 3, 0, 4].forEach(function (constructorId) {
+                var _a;
+                html += "<td>";
+                if ((_a = scores[index]) === null || _a === void 0 ? void 0 : _a[constructorId]) {
+                    html += "".concat(scores[index][constructorId]);
+                    if (index > 0) {
+                        html += "<div class=\"subTotal\">".concat(Array.from(Array(index + 1)).map(function (_, subIndex) { return scores[subIndex][constructorId]; }).reduce(function (a, b) { return a + b; }, 0), "</div>");
+                    }
+                }
+                html += "</td>";
+            });
+            html += "</tr>";
+        });
+        html += "</table></div>\n        </div>";
+        // Show the dialog
+        scorepadDialog.setContent(html);
+        scorepadDialog.show();
     };
     return ChampionshipTable;
 }());
@@ -4372,6 +4405,7 @@ var Heat = /** @class */ (function () {
         var notifs = [
             'message',
             'loadCircuit',
+            'newMarket',
             'chooseUpgrade',
             'swapUpgrade',
             'endDraftRound',
@@ -4466,6 +4500,15 @@ var Heat = /** @class */ (function () {
         (_a = document.getElementById("circuit-dropzone-container")) === null || _a === void 0 ? void 0 : _a.remove();
         //document.querySelectorAll('.nbr-laps').forEach(elem => elem.innerHTML == `${circuit.}`)
         this.circuit.loadCircuit(circuit);
+    };
+    Heat.prototype.notif_newMarket = function (args) {
+        var upgrades = args.upgrades;
+        if (upgrades) {
+            this.playersTables.forEach(function (playerTable) {
+                playerTable.inplay.removeAll();
+                playerTable.inplay.addCards(upgrades.filter(function (card) { return card.location == "deck-".concat(playerTable.constructorId); }));
+            });
+        }
     };
     Heat.prototype.notif_chooseUpgrade = function (args) {
         var constructor_id = args.constructor_id, card = args.card;
@@ -4779,6 +4822,7 @@ var Heat = /** @class */ (function () {
         this.notif_updateTurnOrder({
             constructor_ids: args.order
         });
+        this.gamedatas.scores = args.scores;
         Object.values(this.gamedatas.constructors).forEach(function (constructor) {
             return _this.setScore(_this.getPlayerIdFromConstructorId(constructor.id), Object.values(args.scores).map(function (circuitScores) { return circuitScores[constructor.id]; }).reduce(function (a, b) { return a + b; }));
         });
@@ -4824,11 +4868,18 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_newChampionshipRace = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var index, circuitDatas;
+            var index, circuitDatas, event;
             return __generator(this, function (_a) {
                 index = args.index, circuitDatas = args.circuitDatas;
                 this.championshipTable.newChampionshipRace(index);
                 this.circuit.newCircuit(circuitDatas);
+                event = this.gamedatas.championship.circuits[index].event;
+                this.circuit.createPressTokens(event);
+                this.playersTables.forEach(function (playerTable) {
+                    var _a;
+                    (_a = playerTable.hand) === null || _a === void 0 ? void 0 : _a.removeAll();
+                    playerTable.inplay.removeAll();
+                });
                 document.getElementById("player_boards").querySelectorAll('.finished').forEach(function (elem) { return elem.classList.remove('finished'); });
                 return [2 /*return*/];
             });

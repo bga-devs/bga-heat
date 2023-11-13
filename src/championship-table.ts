@@ -14,7 +14,10 @@ class ChampionshipTable {
             html += `
             </div>
             <div id="championship-circuits" data-folded="true" style="--race-count: ${gamedatas.championship.circuits.length};">
-            <div class="championship-name">${gamedatas.championship.name}</div>`;
+            <div class="championship-name">
+                ${gamedatas.championship.name}
+                <button type="button" id="scorepad-button" class="bgabutton bgabutton_blue"><div class="scorepad-icon"></div></button>
+            </div>`;
 
         gamedatas.championship.circuits.forEach((circuit, index) => 
             
@@ -39,6 +42,8 @@ class ChampionshipTable {
         });
 
         this.setRaceProgress(gamedatas.progress);
+
+        document.getElementById('scorepad-button').addEventListener('click', e => this.showScorepad(e));
     }
     
     public newChampionshipRace(index: number) {
@@ -53,5 +58,44 @@ class ChampionshipTable {
 
     public setRaceFinished(index: number) {
         document.getElementById(`circuit-progress-${index}`).classList.add('finished');
+    }
+
+    private showScorepad(e: MouseEvent) {
+        e.stopImmediatePropagation();  
+        const scores =  this.gamedatas.scores;
+        
+        const scorepadDialog = new ebg.popindialog();
+        scorepadDialog.create('scorepadDialog');
+        scorepadDialog.setTitle(this.gamedatas.championship.name );
+        
+        let html = `<div id="scorepad-popin">
+            <div id="scorepad-image">
+                <table>`;
+
+        this.gamedatas.championship.circuits.forEach((circuit, index) => {
+            html += `
+            <tr>
+                <th>${circuit.name}</th>`;
+
+                [5, 1, 2, 3, 0, 4].forEach(constructorId => {
+                    html += `<td>`;
+                    if (scores[index]?.[constructorId]) {
+                        html += `${scores[index][constructorId]}`;
+                        if (index > 0) {
+                            html += `<div class="subTotal">${Array.from(Array(index + 1)).map((_, subIndex) => scores[subIndex][constructorId]).reduce((a, b) => a + b, 0)}</div>`;
+                        }
+                    }
+                    html += `</td>`;
+                });
+            
+            html += `</tr>`;
+        });
+            
+        html += `</table></div>
+        </div>`;
+        
+        // Show the dialog
+        scorepadDialog.setContent(html);
+        scorepadDialog.show();
     }
 }

@@ -1531,6 +1531,7 @@ class Heat implements HeatGame {
         const notifs = [
             'message',
             'loadCircuit',
+            'newMarket',
             'chooseUpgrade',
             'swapUpgrade',
             'endDraftRound',
@@ -1635,6 +1636,17 @@ class Heat implements HeatGame {
         //document.querySelectorAll('.nbr-laps').forEach(elem => elem.innerHTML == `${circuit.}`)
         this.circuit.loadCircuit(circuit);
     }
+    
+    notif_newMarket(args: NotifNewMarketArgs) {
+        const { upgrades } = args;
+
+        if (upgrades) {
+            this.playersTables.forEach(playerTable => {
+                playerTable.inplay.removeAll();
+                playerTable.inplay.addCards(upgrades.filter(card => card.location == `deck-${playerTable.constructorId}`));
+            });
+        }
+    }  
     
     notif_chooseUpgrade(args: NotifChooseUpgradeArgs) {
         const { constructor_id, card } = args;
@@ -1874,6 +1886,7 @@ class Heat implements HeatGame {
         this.notif_updateTurnOrder({
             constructor_ids: args.order
         });
+        this.gamedatas.scores = args.scores;
         Object.values(this.gamedatas.constructors).forEach(constructor => 
             this.setScore(this.getPlayerIdFromConstructorId(constructor.id), Object.values(args.scores).map(circuitScores => circuitScores[constructor.id]).reduce((a, b) => a + b))
         );
@@ -1920,7 +1933,14 @@ class Heat implements HeatGame {
     async notif_newChampionshipRace(args: NotifNewChampionshipRaceArgs) {
         const { index, circuitDatas } = args;
         this.championshipTable.newChampionshipRace(index);
-        this.circuit.newCircuit(circuitDatas);
+        this.circuit.newCircuit(circuitDatas);        
+        const event = this.gamedatas.championship.circuits[index].event;
+        this.circuit.createPressTokens(event);
+
+        this.playersTables.forEach(playerTable => {
+            playerTable.hand?.removeAll();
+            playerTable.inplay.removeAll();
+        });
 
         document.getElementById(`player_boards`).querySelectorAll('.finished').forEach(elem => elem.classList.remove('finished'));
     }

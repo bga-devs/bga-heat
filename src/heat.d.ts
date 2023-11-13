@@ -93,6 +93,7 @@ interface HeatGamedatas {
     legendCard: LegendCard;
     weather: Weather;
     progress: number;
+    scores: { [index: number]: { [constructor_id: number]: number}};
 }
 
 interface HeatGame extends Game {
@@ -191,6 +192,11 @@ interface EnteringSalvageArgs {
 // loadCircuit
 interface NotifLoadCircuitArgs {
     circuit: CircuitDatas;
+}
+
+// newMarket
+interface NotifNewMarketArgs {
+    upgrades: Card[];
 }
 
 // chooseUpgrade

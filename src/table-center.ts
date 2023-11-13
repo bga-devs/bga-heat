@@ -128,8 +128,7 @@ class Circuit {
 
             if (gamedatas.championship?.circuits) {
                 const event = gamedatas.championship.circuits[gamedatas.championship.index].event;
-                const pressCorners = EVENTS_PRESS_CORNERS[event];
-                pressCorners.forEach((cornerId: number) => this.createPressToken(cornerId));
+                this.createPressTokens(event);
             }
 
             Object.values(this.gamedatas.constructors).filter(constructor => constructor.paths?.length > 0).forEach(constructor => 
@@ -164,6 +163,11 @@ class Circuit {
         cornerDiv.style.setProperty('--x', `${corner.x}px`);
         cornerDiv.style.setProperty('--y', `${corner.y}px`);
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
+    }
+
+    public createPressTokens(event: number) {
+        const pressCorners = EVENTS_PRESS_CORNERS[event];
+        pressCorners.forEach((cornerId: number) => this.createPressToken(cornerId));
     }
     
     private createPressToken(cornerNumber: number): void {
