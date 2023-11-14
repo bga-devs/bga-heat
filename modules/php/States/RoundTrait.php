@@ -570,10 +570,6 @@ trait RoundTrait
     if ($roadCondition == ROAD_CONDITION_COOLING_BONUS) {
       $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
     }
-    // Weather might disable cooldown
-    if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
-      unset($symbols[COOLDOWN]);
-    }
 
     // Save all the symbols and proceed to React phase
     Globals::setSymbols($symbols);
