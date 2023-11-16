@@ -3276,17 +3276,36 @@ var ChampionshipTable = /** @class */ (function () {
         document.getElementById("circuit-progress-".concat(index)).classList.add('finished');
     };
     ChampionshipTable.prototype.showScorepad = function (e) {
+        var _this = this;
         e.stopImmediatePropagation();
         var scores = this.gamedatas.scores;
         var scorepadDialog = new ebg.popindialog();
         scorepadDialog.create('scorepadDialog');
         scorepadDialog.setTitle(this.gamedatas.championship.name);
-        var html = "<div id=\"scorepad-popin\">\n            <div id=\"scorepad-image\">\n                <table>";
+        var html = "<div id=\"scorepad-popin\">\n            <div id=\"scorepad-image\">\n                <table>\n                <tr class=\"names\">\n                    <th></th>";
+        [5, 1, 2, 3, 0, 4].forEach(function (constructorId) {
+            html += "<td>";
+            var constructor = _this.gamedatas.constructors[constructorId];
+            if (constructor) {
+                html += "<div class=\"name\"><div class=\"constructor-avatar ".concat(constructor.ai ? 'legend' : 'player', "\" style=\"");
+                if (constructor.ai) {
+                    html += "--constructor-id: ".concat(constructor.id, ";");
+                }
+                else {
+                    // ? Custom image : Bga Image
+                    //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
+                    html += "background-image: url('".concat(document.getElementById("avatar_".concat(constructor.pId)).src, "');");
+                }
+                html += "\"></div> <strong style=\"color: #".concat(CONSTRUCTORS_COLORS[constructor.id], ";\">").concat(_(constructor.name), "</strong></div>");
+            }
+            html += "</td>";
+        });
+        html += "</tr>";
         this.gamedatas.championship.circuits.forEach(function (circuit, index) {
             html += "\n            <tr>\n                <th>".concat(circuit.name, "</th>");
             [5, 1, 2, 3, 0, 4].forEach(function (constructorId) {
                 var _a;
-                html += "<td>";
+                html += "<td class=\"score\">";
                 if ((_a = scores[index]) === null || _a === void 0 ? void 0 : _a[constructorId]) {
                     html += "".concat(scores[index][constructorId]);
                     if (index > 0) {
