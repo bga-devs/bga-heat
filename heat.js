@@ -1050,8 +1050,12 @@ var CardStock = /** @class */ (function () {
             }
         }
         if (needsCreation) {
-            var element = this.manager.createCardElement(card, ((_d = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _d !== void 0 ? _d : this.manager.isCardVisible(card)));
-            promise = this.moveFromElement(card, element, animation, settingsWithIndex);
+            var element = this.getCardElement(card);
+            if (needsCreation && element) {
+                console.warn("Card ".concat(this.manager.getId(card), " already exists, not re-created."));
+            }
+            var newElement = element !== null && element !== void 0 ? element : this.manager.createCardElement(card, ((_d = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _d !== void 0 ? _d : this.manager.isCardVisible(card)));
+            promise = this.moveFromElement(card, newElement, animation, settingsWithIndex);
         }
         if (settingsWithIndex.index !== null && settingsWithIndex.index !== undefined) {
             this.cards.splice(index, 0, card);
@@ -1258,9 +1262,13 @@ var CardStock = /** @class */ (function () {
      * @param settings a `RemoveCardSettings` object
      */
     CardStock.prototype.removeAll = function (settings) {
-        var _this = this;
-        var cards = this.getCards(); // use a copy of the array as we iterate and modify it at the same time
-        cards.forEach(function (card) { return _this.removeCard(card, settings); });
+        return __awaiter(this, void 0, void 0, function () {
+            var cards;
+            return __generator(this, function (_a) {
+                cards = this.getCards();
+                return [2 /*return*/, this.removeCards(cards, settings)];
+            });
+        });
     };
     /**
      * Set if the stock is selectable, and if yes if it can be multiple.
@@ -1598,9 +1606,17 @@ var Deck = /** @class */ (function (_super) {
     Deck.prototype.setCardNumber = function (cardNumber, topCard) {
         var _this = this;
         if (topCard === void 0) { topCard = undefined; }
-        var promise = topCard === null || cardNumber == 0 ?
-            Promise.resolve(false) :
-            _super.prototype.addCard.call(this, topCard || this.getFakeCard(), undefined, { autoUpdateCardNumber: false });
+        var promise = Promise.resolve(false);
+        var oldTopCard = this.getTopCard();
+        if (topCard !== null && cardNumber > 0) {
+            var newTopCard = topCard || this.getFakeCard();
+            if (!oldTopCard || this.manager.getId(newTopCard) != this.manager.getId(oldTopCard)) {
+                promise = this.addCard(newTopCard, undefined, { autoUpdateCardNumber: false });
+            }
+        }
+        else if (cardNumber == 0 && oldTopCard) {
+            promise = this.removeCard(oldTopCard, { autoUpdateCardNumber: false });
+        }
         this.cardNumber = cardNumber;
         this.element.dataset.empty = (this.cardNumber == 0).toString();
         var thickness = 0;
@@ -1637,6 +1653,19 @@ var Deck = /** @class */ (function (_super) {
             this.setCardNumber(this.cardNumber - 1);
         }
         _super.prototype.cardRemoved.call(this, card, settings);
+    };
+    Deck.prototype.removeAll = function (settings) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function () {
+            var promise;
+            return __generator(this, function (_c) {
+                promise = _super.prototype.removeAll.call(this, __assign(__assign({}, settings), { autoUpdateCardNumber: (_a = settings === null || settings === void 0 ? void 0 : settings.autoUpdateCardNumber) !== null && _a !== void 0 ? _a : false }));
+                if ((_b = settings === null || settings === void 0 ? void 0 : settings.autoUpdateCardNumber) !== null && _b !== void 0 ? _b : true) {
+                    this.setCardNumber(0, null);
+                }
+                return [2 /*return*/, promise];
+            });
+        });
     };
     Deck.prototype.getTopCard = function () {
         var cards = this.getCards();
@@ -2950,10 +2979,6 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.setCurrentGear = function (gear) {
         this.currentGear = gear;
         document.getElementById("player-table-".concat(this.playerId, "-gear")).dataset.gear = "".concat(gear);
-    };
-    PlayerTable.prototype.refreshHand = function (hand) {
-        this.hand.removeAll();
-        return this.hand.addCards(hand);
     };
     PlayerTable.prototype.setInplay = function (cards) {
         this.inplay.removeAll();
@@ -4405,6 +4430,7 @@ var Heat = /** @class */ (function () {
         var notifs = [
             'message',
             'loadCircuit',
+            'clean',
             'newMarket',
             'chooseUpgrade',
             'swapUpgrade',
@@ -4501,12 +4527,36 @@ var Heat = /** @class */ (function () {
         //document.querySelectorAll('.nbr-laps').forEach(elem => elem.innerHTML == `${circuit.}`)
         this.circuit.loadCircuit(circuit);
     };
+    Heat.prototype.notif_clean = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var counters;
+            return __generator(this, function (_a) {
+                counters = args.counters;
+                this.playersTables.forEach(function (playerTable) {
+                    var _a;
+                    (_a = playerTable.hand) === null || _a === void 0 ? void 0 : _a.removeAll();
+                    playerTable.inplay.removeAll();
+                    playerTable.discard.removeAll();
+                    playerTable.discard.setCardNumber(0);
+                    playerTable.engine.removeAll();
+                    playerTable.engine.setCardNumber(0);
+                    playerTable.deck.removeAll();
+                    playerTable.deck.setCardNumber(counters[playerTable.constructorId].deckCount);
+                });
+                return [2 /*return*/];
+            });
+        });
+    };
     Heat.prototype.notif_newMarket = function (args) {
         var upgrades = args.upgrades;
         if (upgrades) {
             this.playersTables.forEach(function (playerTable) {
-                playerTable.inplay.removeAll();
-                playerTable.inplay.addCards(upgrades.filter(function (card) { return card.location == "deck-".concat(playerTable.constructorId); }));
+                var playerUpdates = upgrades.filter(function (card) { return card.location == "deck-".concat(playerTable.constructorId); });
+                playerTable.deck.addCards(playerUpdates, undefined, {
+                    autoUpdateCardNumber: false,
+                    autoRemovePreviousCards: false,
+                });
+                playerTable.inplay.addCards(playerUpdates);
             });
         }
     };
@@ -4536,11 +4586,18 @@ var Heat = /** @class */ (function () {
         (_a = this.market) === null || _a === void 0 ? void 0 : _a.removeAll();
     };
     Heat.prototype.notif_reformingDeckWithUpgrades = function () {
-        var _a, _b;
+        var _a;
         (_a = this.market) === null || _a === void 0 ? void 0 : _a.remove();
         this.market = null;
-        (_b = this.getCurrentPlayerTable()) === null || _b === void 0 ? void 0 : _b.hand.removeAll();
-        this.playersTables.forEach(function (playerTable) { return playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + 3); });
+        var currentPlayerTable = this.getCurrentPlayerTable();
+        if (currentPlayerTable === null || currentPlayerTable === void 0 ? void 0 : currentPlayerTable.hand) {
+            currentPlayerTable.deck.addCards(currentPlayerTable.hand.getCards().map(function (card) { return ({ id: card.id }); }), undefined, {
+                autoUpdateCardNumber: false,
+            }, 100);
+            // currentPlayerTable.hand.removeAll();
+        }
+        var nbCards = this.gamedatas.championship ? 1 : 3;
+        this.playersTables.forEach(function (playerTable) { return playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + nbCards); });
     };
     Heat.prototype.notif_updatePlanification = function (args) {
         this.updatePlannedCards(args.args._private.selection);
@@ -4875,12 +4932,8 @@ var Heat = /** @class */ (function () {
                 this.circuit.newCircuit(circuitDatas);
                 event = this.gamedatas.championship.circuits[index].event;
                 this.circuit.createPressTokens(event);
-                this.playersTables.forEach(function (playerTable) {
-                    var _a;
-                    (_a = playerTable.hand) === null || _a === void 0 ? void 0 : _a.removeAll();
-                    playerTable.inplay.removeAll();
-                });
                 document.getElementById("player_boards").querySelectorAll('.finished').forEach(function (elem) { return elem.classList.remove('finished'); });
+                document.getElementById("player_boards").querySelectorAll('.played').forEach(function (elem) { return elem.classList.remove('played'); });
                 return [2 /*return*/];
             });
         });
@@ -4901,11 +4954,9 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.notif_setupRace = function (args) {
-        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            return __generator(this, function (_b) {
-                (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.hand.removeAll();
+            return __generator(this, function (_a) {
                 Object.entries(args.counters).forEach(function (_a) {
                     var constructor_id = _a[0], counters = _a[1];
                     var table = _this.getPlayerTable(_this.getPlayerIdFromConstructorId(Number(constructor_id)));
