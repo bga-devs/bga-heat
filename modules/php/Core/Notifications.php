@@ -586,8 +586,8 @@ class Notifications
         );
       }
 
-      self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1]);
-      self::notify($constructor, 'pDraw', $pmsg, ['constructor' => $constructor, 'cards' => [$card]]);
+      self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1,  'areSponsors' => true, ]);
+      self::notify($constructor, 'pDraw', $pmsg, ['constructor' => $constructor, 'cards' => [$card],  'areSponsors' => true, ]);
     }
   }
 
