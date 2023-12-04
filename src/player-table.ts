@@ -159,11 +159,6 @@ class PlayerTable {
         document.getElementById(`player-table-${this.playerId}-gear`).dataset.gear = `${gear}`;
     }
     
-    public refreshHand(hand: Card[]): Promise<any> {
-        this.hand.removeAll();
-        return this.hand.addCards(hand);
-    }
-    
     public setInplay(cards: Card[]): Promise<any> {
         this.inplay.removeAll();
         return this.inplay.addCards(cards);

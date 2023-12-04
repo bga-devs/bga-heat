@@ -1332,6 +1332,7 @@ height: 241px; */
 }
 
 #scorepad-image {
+  margin-top: 60px;
   width: 600px;
   height: 360px;
   background-image: url("img/scorepad.jpg");
@@ -1339,10 +1340,14 @@ height: 241px; */
 }
 #scorepad-image table {
   position: absolute;
-  top: 64px;
+  top: 0;
+  left: 0;
 }
 #scorepad-image table tr {
   height: 71px;
+}
+#scorepad-image table tr .names {
+  height: 64px;
 }
 #scorepad-image table tr th {
   width: 91px;
@@ -1352,8 +1357,15 @@ height: 241px; */
 #scorepad-image table tr td {
   width: 85px;
   text-align: center;
+  text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;
   position: relative;
+}
+#scorepad-image table tr td.score {
   font-size: 24pt;
+}
+#scorepad-image table tr td .name {
+  position: relative;
+  top: -60px;
 }
 #scorepad-image table tr td .subTotal {
   position: absolute;

@@ -194,6 +194,13 @@ interface NotifLoadCircuitArgs {
     circuit: CircuitDatas;
 }
 
+// clean
+interface NotifCleanArgs {
+    counters: { [constructor_id: number]: {
+        deckCount: number;
+    }}
+}
+
 // newMarket
 interface NotifNewMarketArgs {
     upgrades: Card[];

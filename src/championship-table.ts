@@ -70,7 +70,27 @@ class ChampionshipTable {
         
         let html = `<div id="scorepad-popin">
             <div id="scorepad-image">
-                <table>`;
+                <table>
+                <tr class="names">
+                    <th></th>`;
+    
+        [5, 1, 2, 3, 0, 4].forEach(constructorId => {
+            html += `<td>`;
+            const constructor = this.gamedatas.constructors[constructorId];
+            if (constructor) {
+                html += `<div class="name"><div class="constructor-avatar ${constructor.ai ? 'legend' : 'player'}" style="`;
+                if (constructor.ai) {
+                    html += `--constructor-id: ${constructor.id};`;
+                } else {
+                    // ? Custom image : Bga Image
+                    //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
+                    html += `background-image: url('${(document.getElementById(`avatar_${constructor.pId}`) as HTMLImageElement).src}');`;
+                }
+                html += `"></div> <strong style="color: #${CONSTRUCTORS_COLORS[constructor.id]};">${_(constructor.name)}</strong></div>`;
+            }
+            html += `</td>`;
+        });
+        html += `</tr>`;
 
         this.gamedatas.championship.circuits.forEach((circuit, index) => {
             html += `
@@ -78,7 +98,7 @@ class ChampionshipTable {
                 <th>${circuit.name}</th>`;
 
                 [5, 1, 2, 3, 0, 4].forEach(constructorId => {
-                    html += `<td>`;
+                    html += `<td class="score">`;
                     if (scores[index]?.[constructorId]) {
                         html += `${scores[index][constructorId]}`;
                         if (index > 0) {

@@ -1531,6 +1531,7 @@ class Heat implements HeatGame {
         const notifs = [
             'message',
             'loadCircuit',
+            'clean',
             'newMarket',
             'chooseUpgrade',
             'swapUpgrade',
@@ -1637,13 +1638,32 @@ class Heat implements HeatGame {
         this.circuit.loadCircuit(circuit);
     }
     
+    async notif_clean(args: NotifCleanArgs) {
+        const { counters } = args;
+
+        this.playersTables.forEach(playerTable => {
+            playerTable.hand?.removeAll();
+            playerTable.inplay.removeAll();
+            playerTable.discard.removeAll();
+            playerTable.discard.setCardNumber(0);
+            playerTable.engine.removeAll();
+            playerTable.engine.setCardNumber(0);
+            playerTable.deck.removeAll();
+            playerTable.deck.setCardNumber(counters[playerTable.constructorId].deckCount);
+        });
+    }  
+    
     notif_newMarket(args: NotifNewMarketArgs) {
         const { upgrades } = args;
 
         if (upgrades) {
             this.playersTables.forEach(playerTable => {
-                playerTable.inplay.removeAll();
-                playerTable.inplay.addCards(upgrades.filter(card => card.location == `deck-${playerTable.constructorId}`));
+                const playerUpdates = upgrades.filter(card => card.location == `deck-${playerTable.constructorId}`);
+                playerTable.deck.addCards(playerUpdates, undefined, <AddCardToDeckSettings>{
+                    autoUpdateCardNumber: false,
+                    autoRemovePreviousCards: false,
+                });
+                playerTable.inplay.addCards(playerUpdates);
             });
         }
     }  
@@ -1677,8 +1697,15 @@ class Heat implements HeatGame {
     notif_reformingDeckWithUpgrades() {
         this.market?.remove();
         this.market = null;
-        this.getCurrentPlayerTable()?.hand.removeAll();
-        this.playersTables.forEach(playerTable => playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + 3));
+        const currentPlayerTable = this.getCurrentPlayerTable();
+        if (currentPlayerTable?.hand) {
+            currentPlayerTable.deck.addCards(currentPlayerTable.hand.getCards().map(card => ({ id: card.id }) as Card), undefined, <AddCardToDeckSettings>{
+                autoUpdateCardNumber: false,
+            }, 100);
+            // currentPlayerTable.hand.removeAll();
+        }
+        const nbCards = this.gamedatas.championship ? 1 : 3;
+        this.playersTables.forEach(playerTable => playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + nbCards));
     } 
     
     notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
@@ -1937,12 +1964,8 @@ class Heat implements HeatGame {
         const event = this.gamedatas.championship.circuits[index].event;
         this.circuit.createPressTokens(event);
 
-        this.playersTables.forEach(playerTable => {
-            playerTable.hand?.removeAll();
-            playerTable.inplay.removeAll();
-        });
-
         document.getElementById(`player_boards`).querySelectorAll('.finished').forEach(elem => elem.classList.remove('finished'));
+        document.getElementById(`player_boards`).querySelectorAll('.played').forEach(elem => elem.classList.remove('played'));
     }
 
     async notif_startRace(args: NotifStartRaceArgs) {
@@ -1951,9 +1974,7 @@ class Heat implements HeatGame {
         this.circuit.createWeather(weather);
     }
 
-    async notif_setupRace(args: NotifSetupRaceArgs) {
-        this.getCurrentPlayerTable()?.hand.removeAll();
-        
+    async notif_setupRace(args: NotifSetupRaceArgs) {        
         Object.entries(args.counters).forEach(([constructor_id, counters]) => {
             const table = this.getPlayerTable(this.getPlayerIdFromConstructorId(Number(constructor_id)));
             if (table) {

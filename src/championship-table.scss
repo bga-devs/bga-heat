@@ -109,6 +109,7 @@
 }
 
 #scorepad-image {
+  margin-top: 60px;
   width: 600px;
   height: 360px;
   background-image: url('img/scorepad.jpg');
@@ -116,10 +117,15 @@
 
   table {
     position: absolute;
-    top: 64px;
+    top: 0;
+    left: 0;
 
     tr {
       height: 71px;
+
+      .names {
+        height: 64px;
+      }
 
       th {
         width: 91px;
@@ -130,8 +136,17 @@
       td {
         width: 85px;
         text-align: center;
+        text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;
         position: relative;
-        font-size: 24pt;
+
+        &.score {
+          font-size: 24pt;
+        }
+
+        .name {
+          position: relative;
+          top: -60px;
+        }
 
         .subTotal {
           position: absolute;
