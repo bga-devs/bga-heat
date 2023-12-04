@@ -550,7 +550,7 @@ trait RoundTrait
     // Adrenaline
     $no = $constructor->getNo();
     $nbr = Constructors::count();
-    $maxNo = count(Constructors::getTurnOrder());
+    $maxNo = count(Constructors::getTurnOrder()) + count(Globals::getGiveUpPlayers());
     if ($no == $maxNo - 1 || ($no == $maxNo - 2 && $nbr >= 5)) {
       $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
       $symbols[ADRENALINE] = 1;
