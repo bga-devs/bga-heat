@@ -1964,8 +1964,15 @@ class Heat implements HeatGame {
         const event = this.gamedatas.championship.circuits[index].event;
         this.circuit.createPressTokens(event);
 
-        document.getElementById(`player_boards`).querySelectorAll('.finished').forEach(elem => elem.classList.remove('finished'));
-        document.getElementById(`player_boards`).querySelectorAll('.played').forEach(elem => elem.classList.remove('played'));
+        const playerBoards = document.getElementById(`player_boards`);
+        this.lapCounters.forEach(counter => counter.setValue(1));
+        playerBoards.querySelectorAll('.finished').forEach(elem => elem.classList.remove('finished'));
+        playerBoards.querySelectorAll('.played').forEach(elem => elem.classList.remove('played'));
+        playerBoards.querySelectorAll('.nbr-laps').forEach(elem => elem.innerHTML = `${args.nbrLaps}`);
+
+        Object.entries(args.distancesToCorners).forEach(([constructorId, distance]) => {
+            this.cornerCounters[constructorId].setValue(distance);
+        });        
     }
 
     async notif_startRace(args: NotifStartRaceArgs) {

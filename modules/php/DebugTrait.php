@@ -65,7 +65,7 @@ trait DebugTrait
   function endRace($constructorId = null)
   {
     $sql = 'UPDATE constructors SET `turn` = 2';
-    if ($constructorId !== null) {
+    if ($constructorId != null) {
       $sql .= " WHERE `id` = $constructorId";
     }
     $this->DbQuery($sql);

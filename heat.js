@@ -4944,15 +4944,23 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_newChampionshipRace = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var index, circuitDatas, event;
+            var index, circuitDatas, event, playerBoards;
+            var _this = this;
             return __generator(this, function (_a) {
                 index = args.index, circuitDatas = args.circuitDatas;
                 this.championshipTable.newChampionshipRace(index);
                 this.circuit.newCircuit(circuitDatas);
                 event = this.gamedatas.championship.circuits[index].event;
                 this.circuit.createPressTokens(event);
-                document.getElementById("player_boards").querySelectorAll('.finished').forEach(function (elem) { return elem.classList.remove('finished'); });
-                document.getElementById("player_boards").querySelectorAll('.played').forEach(function (elem) { return elem.classList.remove('played'); });
+                playerBoards = document.getElementById("player_boards");
+                this.lapCounters.forEach(function (counter) { return counter.setValue(1); });
+                playerBoards.querySelectorAll('.finished').forEach(function (elem) { return elem.classList.remove('finished'); });
+                playerBoards.querySelectorAll('.played').forEach(function (elem) { return elem.classList.remove('played'); });
+                playerBoards.querySelectorAll('.nbr-laps').forEach(function (elem) { return elem.innerHTML = "".concat(args.nbrLaps); });
+                Object.entries(args.distancesToCorners).forEach(function (_a) {
+                    var constructorId = _a[0], distance = _a[1];
+                    _this.cornerCounters[constructorId].setValue(distance);
+                });
                 return [2 /*return*/];
             });
         });
