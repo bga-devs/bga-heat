@@ -28,7 +28,6 @@ trait RaceTrait
         Globals::loadCircuitDatas();
       }
       $this->circuit = null; // Prevent caching
-      Notifications::newChampionshipRace($datas, $this->getCircuit());
     }
 
     // Place cars on starting positions
@@ -50,6 +49,9 @@ trait RaceTrait
       $constructors[] = $constructor;
     }
 
+    if (Globals::isChampionship()) {
+      Notifications::newChampionshipRace($datas, $this->getCircuit());
+    }
     Notifications::startRace($constructors, $positions);
     Cards::clean();
 
