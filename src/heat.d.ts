@@ -370,6 +370,8 @@ interface NotifNewChampionshipRaceArgs {
     event: string;
     index: number;
     circuitDatas: CircuitDatas;
+    nbrLaps: number;
+    distancesToCorners: { [constructor_id: number]: number };
 }
 
 // startRace
