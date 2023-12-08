@@ -94,6 +94,12 @@ class Constructor extends \HEAT\Helpers\DB_Model
       Players::get($this->pId)->incScore($n);
     }
   }
+  public function incScoreAux($n)
+  {
+    if (!$this->isAI()) {
+      Players::get($this->pId)->incScoreAux($n);
+    }
+  }
 
   public function getPosition()
   {

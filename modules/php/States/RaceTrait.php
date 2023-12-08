@@ -142,6 +142,7 @@ trait RaceTrait
         $score[$cId] = 0;
       }
       $constructor->incScore($score[$cId]);
+      $constructor->setScoreAux($score[$cId]);
     }
 
     // Compute new turn order (only useful for championship)
