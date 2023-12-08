@@ -523,6 +523,8 @@ class Notifications
         'circuitDatas' => $circuit->getUiData(),
         'event' => $map[$datas['circuits'][$i]['event']],
         'index' => $i,
+        'nbrLaps' => $circuit->getNbrLaps(),
+        'distancesToCorners' => Constructors::getAll()->map(fn($constructor) => $constructor->getDistanceToCorner()),
       ]
     );
   }
@@ -586,8 +588,8 @@ class Notifications
         );
       }
 
-      self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1,  'areSponsors' => true, ]);
-      self::notify($constructor, 'pDraw', $pmsg, ['constructor' => $constructor, 'cards' => [$card],  'areSponsors' => true, ]);
+      self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1, 'areSponsors' => true]);
+      self::notify($constructor, 'pDraw', $pmsg, ['constructor' => $constructor, 'cards' => [$card], 'areSponsors' => true]);
     }
   }
 
