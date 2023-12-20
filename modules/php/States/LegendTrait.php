@@ -29,7 +29,6 @@ trait LegendTrait
 
     LegendCards::drawIfNeeded();
     list($slot, $number) = LegendCards::getCurrentCardInfos($constructor);
-    $number = 20;
 
     // A => cross the corner
     if ($deltaLine == 0 || $deltaCorner < $deltaLine) {
