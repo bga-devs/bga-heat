@@ -43,6 +43,8 @@ class ChampionshipTable {
 
         this.setRaceProgress(gamedatas.progress);
 
+        gamedatas.championship.circuits.forEach(circuit => this.game.setTooltip(`event-card-${circuit.event}`, this.game.eventCardsManager.getTooltip(circuit.event)));
+
         document.getElementById('scorepad-button').addEventListener('click', e => this.showScorepad(e));
     }
     
