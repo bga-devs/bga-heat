@@ -96,7 +96,7 @@ class EventCardsManager {
     public getHtml(card: number): string {
         const texts = this.getTexts(card);
 
-        let html = `<div class="card event-card" data-side="front">
+        let html = `<div id="event-card-${card}" class="card event-card" data-side="front">
             <div class="card-sides">
                 <div class="card-side front" data-index="${card}">
                     <div class="title-and-rule">
@@ -113,6 +113,25 @@ class EventCardsManager {
                 </div>
             </div>
         </div>`;
+        return html;
+    }
+    
+    public getTooltip(card: number): string {
+        const texts = this.getTexts(card);
+
+        let html = `
+            <div><strong>${texts.title}</strong></div><br>
+
+            <div>${texts.rule}</div><br>
+            
+            <div class="bottom-line">
+                <span class="year">${texts.year}</span>
+                •
+                <span class="race">${_('RACE ${number}').replace('${number}', texts.race)}</span>
+                •
+                <span class="country">${texts.country}</span>
+            </div>
+        `;
         return html;
     }
 }

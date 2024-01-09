@@ -2417,7 +2417,12 @@ var EventCardsManager = /** @class */ (function () {
     };
     EventCardsManager.prototype.getHtml = function (card) {
         var texts = this.getTexts(card);
-        var html = "<div class=\"card event-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\" data-index=\"".concat(card, "\">\n                    <div class=\"title-and-rule\">\n                        <div class=\"title\">").concat(texts.title, "</div>\n                        <div class=\"rule\">").concat(texts.rule, "</div>\n                    </div>\n                    <div class=\"bottom-line\">\n                        <span class=\"year\">").concat(texts.year, "</span>\n                        \u2022\n                        <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', texts.race), "</span>\n                        \u2022\n                        <span class=\"country\">").concat(texts.country, "</span>\n                    </div>\n                </div>\n            </div>\n        </div>");
+        var html = "<div id=\"event-card-".concat(card, "\" class=\"card event-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\" data-index=\"").concat(card, "\">\n                    <div class=\"title-and-rule\">\n                        <div class=\"title\">").concat(texts.title, "</div>\n                        <div class=\"rule\">").concat(texts.rule, "</div>\n                    </div>\n                    <div class=\"bottom-line\">\n                        <span class=\"year\">").concat(texts.year, "</span>\n                        \u2022\n                        <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', texts.race), "</span>\n                        \u2022\n                        <span class=\"country\">").concat(texts.country, "</span>\n                    </div>\n                </div>\n            </div>\n        </div>");
+        return html;
+    };
+    EventCardsManager.prototype.getTooltip = function (card) {
+        var texts = this.getTexts(card);
+        var html = "\n            <div><strong>".concat(texts.title, "</strong></div><br>\n\n            <div>").concat(texts.rule, "</div><br>\n            \n            <div class=\"bottom-line\">\n                <span class=\"year\">").concat(texts.year, "</span>\n                \u2022\n                <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', texts.race), "</span>\n                \u2022\n                <span class=\"country\">").concat(texts.country, "</span>\n            </div>\n        ");
         return html;
     };
     return EventCardsManager;
@@ -3262,6 +3267,7 @@ var ChampionshipTable = /** @class */ (function () {
             championshipCircuits.dataset.folded = (championshipCircuits.dataset.folded == 'false').toString();
         });
         this.setRaceProgress(gamedatas.progress);
+        gamedatas.championship.circuits.forEach(function (circuit) { return _this.game.setTooltip("event-card-".concat(circuit.event), _this.game.eventCardsManager.getTooltip(circuit.event)); });
         document.getElementById('scorepad-button').addEventListener('click', function (e) { return _this.showScorepad(e); });
     }
     ChampionshipTable.prototype.newChampionshipRace = function (index) {
