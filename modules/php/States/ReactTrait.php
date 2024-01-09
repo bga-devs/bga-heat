@@ -80,6 +80,16 @@ trait ReactTrait
       $adrenalineWillCrossNextCorner = count($heatCosts) > count($currentHeatCosts);
     }
 
+    // Direct play extra infos
+    $directPlayCosts = [];
+    foreach ($symbols[DIRECT] ?? [] as $cardId) {
+      $card = Cards::getSingle($cardId);
+      $speed = $card['speed'];
+      list(, , , , , , $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, true, true);
+
+      $directPlayCosts[$cardId] = $heatCosts;
+    }
+
     $canPass = $this->canPassReact($symbols);
 
     return [
@@ -97,6 +107,7 @@ trait ReactTrait
       'nextCornerExtraHeatCost' => $nextCornerExtraHeatCost,
       'boostInfos' => $boostInfos,
       'crossedFinishLine' => $constructor->getTurn() >= $this->getCircuit()->getNbrLaps(),
+      'directPlayCosts' => $directPlayCosts,
     ];
   }
 
