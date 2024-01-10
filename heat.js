@@ -3790,6 +3790,32 @@ var Heat = /** @class */ (function () {
         }
         return confirmationMessage;
     };
+    Heat.prototype.getDirectPlayConfirmation = function (reactArgs, card) {
+        var willCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < card.speed;
+        var newHeatCost = Object.values(reactArgs.directPlayCosts[card.id])[0];
+        var confirmationMessage = null;
+        if (reactArgs.currentHeatCost < newHeatCost) {
+            var newSpeed = this.speedCounters[this.getConstructorId()].getValue() + card.speed;
+            if (willCrossCorner) {
+                confirmationMessage = _("The Direct Play reaction may make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeed, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
+                    + "<br>";
+            }
+            else {
+                confirmationMessage = '';
+            }
+            if (reactArgs.currentHeatCost > 0) {
+                confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
+                    .replace('${heat}', "<strong>".concat(reactArgs.currentHeatCost, "</strong>"))
+                    .replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
+            }
+            else {
+                confirmationMessage += _("You will have to pay ${newHeat} Heat(s).")
+                    .replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
+            }
+            confirmationMessage += "<br><br>\n            ".concat(_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
+        }
+        return confirmationMessage;
+    };
     Heat.prototype.getSlipstreamConfirmation = function (reactArgs, speed) {
         var confirmationMessage = null;
         var slipstreamWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() < speed && reactArgs.slipstreamWillCrossNextCorner[speed];
@@ -3909,6 +3935,7 @@ var Heat = /** @class */ (function () {
                                     label = "<div class=\"icon direct\"></div>".concat(_("Play from hand"), "\n                                    <br>").concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
                                     //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
+                                    confirmationMessage = reactArgs_1.crossedFinishLine ? null : _this.getDirectPlayConfirmation(reactArgs_1, directCard);
                                     break;
                                 case 'heat':
                                     label = "<div class=\"icon forced-heat\">".concat(number, "</div> <div class=\"icon mandatory\"></div>");
