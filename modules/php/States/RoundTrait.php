@@ -192,6 +192,9 @@ trait RoundTrait
     $constructor = Constructors::getOfPlayer($player->getId());
     $args = $this->argsPlanification()['_private'][$player->getId()];
     $newGear = count($cardIds);
+    if (count($cardIds) <= 0 || count($cardIds) > 4) {
+      throw new UserException(clienttranslate('Invalid number of cards. Should not happen.'));
+    }
     if (abs($newGear - $constructor->getGear()) > 1) {
       if ($constructor->hasNoHeat()) {
         throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 2.'));
