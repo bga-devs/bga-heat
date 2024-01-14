@@ -192,7 +192,7 @@ trait RoundTrait
     $constructor = Constructors::getOfPlayer($player->getId());
     $args = $this->argsPlanification()['_private'][$player->getId()];
     $newGear = count($cardIds);
-    if (count($cardIds) <= 0 || count($cardIds) > 4) {
+    if ($newGear <= 0 || $newGear > 4) {
       throw new UserException(clienttranslate('Invalid number of cards. Should not happen.'));
     }
     if (abs($newGear - $constructor->getGear()) > 1) {
