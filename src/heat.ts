@@ -544,6 +544,36 @@ class Heat implements HeatGame {
         return confirmationMessage;
     }
 
+    private getDirectPlayConfirmation(reactArgs: EnteringReactArgs, card: Card) {
+        const willCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < card.speed ;
+        const newHeatCost = Object.values(reactArgs.directPlayCosts[card.id])[0];
+
+        let confirmationMessage = null;
+        if (reactArgs.currentHeatCost < newHeatCost) {
+            const newSpeed = this.speedCounters[this.getConstructorId()].getValue() + card.speed;
+
+            if (willCrossCorner) {
+                confirmationMessage = _("The Direct Play reaction may make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', `<strong>${newSpeed}</strong>`).replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`)
+                + `<br>`;
+            } else {
+                confirmationMessage = '';
+            }
+
+            if (reactArgs.currentHeatCost > 0) {
+                confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
+                    .replace('${heat}', `<strong>${reactArgs.currentHeatCost}</strong>`)
+                    .replace('${newHeat}', `<strong>${newHeatCost}</strong>`);
+            } else {
+                confirmationMessage += _("You will have to pay ${newHeat} Heat(s).")
+                    .replace('${newHeat}', `<strong>${newHeatCost}</strong>`);
+            }
+
+            confirmationMessage += `<br><br>
+            ${_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', `<strong>${this.engineCounters[this.getConstructorId()].getValue()}</strong>`)}`;
+        }
+        return confirmationMessage;
+    }
+
     private getSlipstreamConfirmation(reactArgs: EnteringSlipstreamArgs, speed: number) {
         let confirmationMessage = null;
         const slipstreamWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() < speed && reactArgs.slipstreamWillCrossNextCorner[speed];
@@ -680,6 +710,8 @@ class Heat implements HeatGame {
                                     <br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
                                     //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
+
+                                    confirmationMessage = reactArgs.crossedFinishLine ? null : this.getDirectPlayConfirmation(reactArgs, directCard);
                                     break;
                                 case 'heat':
                                     label = `<div class="icon forced-heat">${number}</div> <div class="icon mandatory"></div>`;

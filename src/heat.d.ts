@@ -168,6 +168,7 @@ interface EnteringReactArgs {
     nextCornerExtraHeatCost: boolean;
     boostInfos: { [boostSpeed: number]: { [cornerId: number]: number }; };
     crossedFinishLine: boolean;
+    directPlayCosts: { [cardId: number]: { [something: number]: number }; };
 }
 
 interface EnteringPayHeatsArgs {    
