@@ -967,12 +967,6 @@ trait RoundTrait
 
   public function stReplenish()
   {
-    $constructor = Constructors::getActive();
-    if ($constructor->getTurn() >= $this->getNbrLaps()) {
-      $this->nextPlayerCustomOrder('reveal');
-      return;
-    }
-
     // Discard played cards (or put them away if sponsors)
     $constructor = Constructors::getActive();
     $cardIds = [];
@@ -987,10 +981,13 @@ trait RoundTrait
     Cards::move($cardIds, ['discard', $constructor->getId()]);
     Cards::move($sponsorIds, ['discard-sponsors']);
     Notifications::clearPlayedCards($constructor, $cardIds, $sponsorIds);
-
-    // Replenish
-    Cards::fillHand($constructor);
+    
     $constructor->setPaths([]);
+
+    if ($constructor->getTurn() < $this->getNbrLaps()) {
+      // Replenish
+      Cards::fillHand($constructor);
+    }
 
     $this->nextPlayerCustomOrder('reveal');
   }
