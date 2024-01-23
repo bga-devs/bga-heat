@@ -38,6 +38,7 @@ use HEAT\Managers\Constructors;
 use HEAT\Managers\LegendCards;
 use HEAT\Helpers\Log;
 use HEAT\Core\Globals;
+use HEAT\Core\Notifications;
 use HEAT\Core\Preferences;
 use HEAT\Core\Stats;
 
@@ -240,12 +241,26 @@ class Heat extends Table
       $constructor->eliminate();
     }
 
-    $stateName = $state['name'];
     if ($state['type'] == 'activeplayer') {
       if (in_array($state['name'], ['chooseSpeed', 'react', 'salvage', 'slipstream', 'discard'])) {
         $this->nextPlayerCustomOrder('reveal');
       } elseif ($state['name'] == 'chooseUpgrade') {
+        /*
+        if we want the zombie players to take a random card
+        
+        $args = $this->argsChooseUpgrade();
+        $cardsIds = array_keys((array)$args['market']);
+        $cardId = $cardsIds[bga_rand(0, count($cardsIds) - 1)];
+        $card = $args['market'][$cardId];
+    
+        $constructor = Constructors::getActive();
+        $cId = $constructor->getId();
+        Cards::move($cardId, "inplay-${cId}");
+        Notifications::chooseUpgrade($constructor, $card);*/
+    
         $this->nextPlayerCustomOrder('draft');
+      } elseif ($state['name'] == 'swapUpgrade') {
+        $this->stFinishChampionshipDraft();
       } else {
         $this->gamestate->nextState('zombiePass');
       }
