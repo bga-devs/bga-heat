@@ -659,6 +659,9 @@ class Heat implements HeatGame {
                 case 'react':
                     const reactArgs = args as EnteringReactArgs;
 
+                    //reactArgs.symbols['super-cool'] = 2;
+                    //reactArgs.doable.push('super-cool');
+
                     Object.entries(reactArgs.symbols).forEach((entry, index) => {
                         const type = entry[0];
                         let numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
@@ -747,6 +750,10 @@ class Heat implements HeatGame {
                                 case 'scrap':
                                     label = `<div class="icon scrap">${number}</div> <div class="icon mandatory"></div>`;
                                     tooltip = this.getGarageModuleIconTooltipWithIcon('scrap', number);
+                                    break;
+                                case 'super-cool':
+                                    label = `<div class="icon super-cool">${number}</div>`;
+                                    tooltip = this.getGarageModuleIconTooltipWithIcon('super-cool', number);
                                     break;
                             }
 
@@ -958,6 +965,14 @@ class Heat implements HeatGame {
                     <strong>${_("Slipstream boost")}</strong>
                     <br>
                     ${ _("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number) }
+                `;
+            case 'super-cool':
+                return `
+                    <strong>${/*_TODOHR*/("Super cool")}</strong>
+                    <br>
+                    ${/*_TODOHR*/("You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot." as any).replace('${number}', number) }
+                    <br>
+                    <i>${/*_TODOHR*/("Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there).")}</i>
                 `;
         }
     }
@@ -1240,7 +1255,7 @@ class Heat implements HeatGame {
 
             <h1>${_("Optional symbols")}</h1>
             ${
-                ['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate']
+                ['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate'] // TODOHR add 'super-cool'
                 .map(symbol => this.getGarageModuleIconTooltipWithIcon(symbol, '#')).join('<br><br>')
             }
 

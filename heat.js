@@ -3891,6 +3891,8 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'react':
                     var reactArgs_1 = args;
+                    //reactArgs.symbols['super-cool'] = 2;
+                    //reactArgs.doable.push('super-cool');
                     Object.entries(reactArgs_1.symbols).forEach(function (entry, index) {
                         var type = entry[0];
                         var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
@@ -3963,6 +3965,10 @@ var Heat = /** @class */ (function () {
                                 case 'scrap':
                                     label = "<div class=\"icon scrap\">".concat(number, "</div> <div class=\"icon mandatory\"></div>");
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('scrap', number);
+                                    break;
+                                case 'super-cool':
+                                    label = "<div class=\"icon super-cool\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('super-cool', number);
                                     break;
                             }
                             var finalAction = function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); };
@@ -4090,6 +4096,8 @@ var Heat = /** @class */ (function () {
                 return "\n                    <strong>".concat(_("Scrap"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Discard the top card of your draw deck ${number} times.").replace('${number}', number), "\n                ");
             case 'slipstream':
                 return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number), "\n                ");
+            case 'super-cool':
+                return "\n                    <strong>".concat(/*_TODOHR*/ ("Super cool"), "</strong>\n                    <br>\n                    ").concat(/*_TODOHR*/ "You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.".replace('${number}', number), "\n                    <br>\n                    <i>").concat(/*_TODOHR*/ ("Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there)."), "</i>\n                ");
         }
     };
     Heat.prototype.getWeatherCardSetupTooltip = function (type) {
@@ -4247,7 +4255,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.getHelpHtml = function () {
         var _this = this;
         var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Mandatory symbols"), "</h1>\n            ").concat(['heat', 'scrap', 'adjust', 'one-time']
-            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Optional symbols"), "</h1>\n            ").concat(['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate']
+            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Optional symbols"), "</h1>\n            ").concat(['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate'] // TODOHR add 'super-cool'
             .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Road Conditions Tokens"), "</h1>\n            <h2>").concat(_("Corner Effects"), "</h2>\n            ").concat([3, 2, 1].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n            <h2>").concat(_("Sector Effects"), "</h2>\n            ").concat([4, 5, 0].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n\n            <h1>").concat(_("Weather Tokens"), "</h1>\n\n            ").concat([0, 1, 2, 3, 4, 5].map(function (type) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-card\" data-card-type=\"".concat(type, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherCardSetupTooltip(type), "<br><br>\n                    ").concat(_this.getWeatherCardEffectTooltip(type), "\n                </div>\n                "); }).join('<br><br>'), "\n        </div>");
         return html;
     };
