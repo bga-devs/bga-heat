@@ -3258,7 +3258,7 @@ var ChampionshipTable = /** @class */ (function () {
         });
         html += "\n            </div>\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">\n                ").concat(gamedatas.championship.name, "\n                <button type=\"button\" id=\"scorepad-button\" class=\"bgabutton bgabutton_blue\"><div class=\"scorepad-icon\"></div></button>\n            </div>");
         gamedatas.championship.circuits.forEach(function (circuit, index) {
-            return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                <span class=\"circuit-name\">").concat(circuit.name, "</span>\n                ").concat(_this.game.eventCardsManager.getHtml(circuit.event), "\n            </div>\n            ");
+            return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                <span class=\"circuit-name\">").concat(_(circuit.name), "</span>\n                ").concat(_this.game.eventCardsManager.getHtml(circuit.event), "\n            </div>\n            ");
         });
         html += "\n            </div>\n        </div>\n        ";
         document.getElementById('top').insertAdjacentHTML('afterbegin', html);
@@ -3308,7 +3308,7 @@ var ChampionshipTable = /** @class */ (function () {
         });
         html += "</tr>";
         this.gamedatas.championship.circuits.forEach(function (circuit, index) {
-            html += "\n            <tr>\n                <th>".concat(circuit.name, "</th>");
+            html += "\n            <tr>\n                <th>".concat(_(circuit.name), "</th>");
             [5, 1, 2, 3, 0, 4].forEach(function (constructorId) {
                 var _a;
                 html += "<td class=\"score\">";

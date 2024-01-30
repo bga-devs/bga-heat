@@ -23,7 +23,7 @@ class ChampionshipTable {
             
             html += `
             <div class="championship-circuit ${gamedatas.championship.index == index ? 'current' : ''}" data-index="${index}">
-                <span class="circuit-name">${circuit.name}</span>
+                <span class="circuit-name">${_(circuit.name)}</span>
                 ${this.game.eventCardsManager.getHtml(circuit.event)}
             </div>
             `
@@ -68,7 +68,7 @@ class ChampionshipTable {
         
         const scorepadDialog = new ebg.popindialog();
         scorepadDialog.create('scorepadDialog');
-        scorepadDialog.setTitle(this.gamedatas.championship.name );
+        scorepadDialog.setTitle(this.gamedatas.championship.name);
         
         let html = `<div id="scorepad-popin">
             <div id="scorepad-image">
@@ -97,7 +97,7 @@ class ChampionshipTable {
         this.gamedatas.championship.circuits.forEach((circuit, index) => {
             html += `
             <tr>
-                <th>${circuit.name}</th>`;
+                <th>${_(circuit.name)}</th>`;
 
                 [5, 1, 2, 3, 0, 4].forEach(constructorId => {
                     html += `<td class="score">`;
