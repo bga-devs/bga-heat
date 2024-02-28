@@ -15,7 +15,7 @@ const LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 const LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
-const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
+const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d'/*, 'ffa500'*/]; // copy of gameinfos
 
 function sleep(ms: number){
     return new Promise((r) => setTimeout(r, ms));
@@ -67,7 +67,7 @@ class Heat implements HeatGame {
         if (gamedatas.circuitDatas?.jpgUrl && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
             g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
-        g_img_preload.push(...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
+        //g_img_preload.push(...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
 
         // Create a new div for buttons to avoid BGA auto clearing it
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
@@ -717,7 +717,7 @@ class Heat implements HeatGame {
                                     confirmationMessage = reactArgs.crossedFinishLine ? null : this.getDirectPlayConfirmation(reactArgs, directCard);
                                     break;
                                 case 'heat':
-                                    label = `<div class="icon forced-heat">${number}</div> <div class="icon mandatory"></div>`;
+                                    label = `<div class="icon forced-heat">${number}</div>`;
                                     tooltip = this.getGarageModuleIconTooltipWithIcon('heat', number);
                                     break;
                                 case 'boost':
@@ -748,7 +748,7 @@ class Heat implements HeatGame {
                                     enabled = enabled && this.getCurrentPlayerTable().discard.getCardNumber() > 0;
                                     break;
                                 case 'scrap':
-                                    label = `<div class="icon scrap">${number}</div> <div class="icon mandatory"></div>`;
+                                    label = `<div class="icon scrap">${number}</div>`;
                                     tooltip = this.getGarageModuleIconTooltipWithIcon('scrap', number);
                                     break;
                                 case 'super-cool':
@@ -759,12 +759,25 @@ class Heat implements HeatGame {
 
                             const finalAction = () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined);
                             const callback = confirmationMessage ? (() => this.showHeatCostConfirmations() ? (this as any).confirmationDialog(confirmationMessage, finalAction) : finalAction()) : finalAction;
+                            const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
 
                             (this as any).addActionButton(
                                 `actReact${type}_${number}_button`, 
                                 formatTextIcons(label), 
                                 callback
                             );
+
+                            if (mandatory) {
+                                let mandatoryZone = document.getElementById('mandatory-buttons');
+                                if (!mandatoryZone) {
+                                    mandatoryZone = document.createElement('div');
+                                    mandatoryZone.id = 'mandatory-buttons';
+                                    mandatoryZone.innerHTML = `<div class="mandatory icon"></div>`;
+                                    document.getElementById('generalactions').appendChild(mandatoryZone);
+                                }
+                                mandatoryZone.appendChild(document.getElementById(`actReact${type}_${number}_button`));
+                            }
+
                             this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
                             if (!enabled) {
                                 document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');

@@ -3335,7 +3335,7 @@ var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 var LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
-var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d']; // copy of gameinfos
+var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d' /*, 'ffa500'*/]; // copy of gameinfos
 function sleep(ms) {
     return new Promise(function (r) { return setTimeout(r, ms); });
 }
@@ -3368,7 +3368,7 @@ var Heat = /** @class */ (function () {
         if (((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
             g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
-        g_img_preload.push.apply(g_img_preload, Object.values(gamedatas.players).map(function (player) { return "mats/player-board-".concat(player.color, ".jpg"); }));
+        //g_img_preload.push(...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
         // Create a new div for buttons to avoid BGA auto clearing it
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
         dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
@@ -3940,7 +3940,7 @@ var Heat = /** @class */ (function () {
                                     confirmationMessage = reactArgs_1.crossedFinishLine ? null : _this.getDirectPlayConfirmation(reactArgs_1, directCard);
                                     break;
                                 case 'heat':
-                                    label = "<div class=\"icon forced-heat\">".concat(number, "</div> <div class=\"icon mandatory\"></div>");
+                                    label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('heat', number);
                                     break;
                                 case 'boost':
@@ -3963,7 +3963,7 @@ var Heat = /** @class */ (function () {
                                     enabled = enabled && _this.getCurrentPlayerTable().discard.getCardNumber() > 0;
                                     break;
                                 case 'scrap':
-                                    label = "<div class=\"icon scrap\">".concat(number, "</div> <div class=\"icon mandatory\"></div>");
+                                    label = "<div class=\"icon scrap\">".concat(number, "</div>");
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('scrap', number);
                                     break;
                                 case 'super-cool':
@@ -3973,7 +3973,18 @@ var Heat = /** @class */ (function () {
                             }
                             var finalAction = function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); };
                             var callback = confirmationMessage ? (function () { return _this.showHeatCostConfirmations() ? _this.confirmationDialog(confirmationMessage, finalAction) : finalAction(); }) : finalAction;
+                            var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
                             _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
+                            if (mandatory) {
+                                var mandatoryZone = document.getElementById('mandatory-buttons');
+                                if (!mandatoryZone) {
+                                    mandatoryZone = document.createElement('div');
+                                    mandatoryZone.id = 'mandatory-buttons';
+                                    mandatoryZone.innerHTML = "<div class=\"mandatory icon\"></div>";
+                                    document.getElementById('generalactions').appendChild(mandatoryZone);
+                                }
+                                mandatoryZone.appendChild(document.getElementById("actReact".concat(type, "_").concat(number, "_button")));
+                            }
                             _this.setTooltip("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(tooltip));
                             if (!enabled) {
                                 document.getElementById("actReact".concat(type, "_").concat(number, "_button")).classList.add('disabled');

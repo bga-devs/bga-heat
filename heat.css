@@ -1086,6 +1086,9 @@ height: 241px; */
 .player-table .player-board[data-color=face0d] {
   background-image: url("img/mats/player-board-face0d.jpg");
 }
+.player-table .player-board[data-color=ffa500] {
+  background-image: url("img/mats/player-board-ffa500.jpg");
+}
 .player-table .player-board .bga-cards_deck-counter {
   --bga-cards-deck-counter-size: 40px;
 }
@@ -1159,6 +1162,9 @@ height: 241px; */
 }
 .player-table .player-board .gear[data-color=face0d] {
   background-position-x: 100%;
+}
+.player-table .player-board .gear[data-color=ffa500] {
+  background-position-x: 120%;
 }
 .player-table .player-board .gear[data-color="12151a"] {
   box-shadow: 0px 0px 8px 10px white;
@@ -1703,4 +1709,12 @@ html, .mode_3d #game_play_area_background {
 #leave-text button.bgabutton {
   width: auto;
   margin: 0 2px;
+}
+
+#mandatory-buttons {
+  border: 1px solid #ffe035;
+  background: rgba(255, 224, 53, 0.4);
+  display: inline-block;
+  margin-left: 5px;
+  padding: 5px;
 }

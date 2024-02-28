@@ -1,4 +1,4 @@
-$playerColors: '12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d';
+$playerColors: '12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'ffa500';
 
 @import '../node_modules/bga-help/bga-help';
 @import '../node_modules/bga-zoom/bga-zoom';
@@ -288,4 +288,12 @@ html, .mode_3d #game_play_area_background {
     width: auto;
     margin: 0 2px;
   }
+}
+
+#mandatory-buttons {
+  border: 1px solid #ffe035;
+  background: #ffe03566;
+  display: inline-block;
+  margin-left: 5px;
+  padding: 5px;
 }

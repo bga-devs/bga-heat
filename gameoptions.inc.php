@@ -87,6 +87,11 @@ $game_options = [
         'tmdisplay' => clienttranslate('[legends: fill to 6]'),
         'description' => clienttranslate('Add legends up to 6 cars in total'),
       ],
+      /*7 => [
+        'name' => clienttranslate('Fill to 7 cars'),
+        'tmdisplay' => clienttranslate('[legends: fill to 7]'),
+        'description' => clienttranslate('Add legends up to 7 cars in total'),
+      ],*/
     ],
     'default' => 6,
     // 'displaycondition' => [
@@ -140,6 +145,20 @@ $game_options = [
           'Top speed of legend cars is increased by 4. (The value shown on the Legend Cards will be the increased value)'
         ),
         'tmdisplay' => clienttranslate('[Legend:+4]'),
+      ],
+      5 => [
+        'name' => clienttranslate('+5'),
+        'description' => clienttranslate(
+          'Top speed of legend cars is increased by 5. (The value shown on the Legend Cards will be the increased value)'
+        ),
+        'tmdisplay' => clienttranslate('[Legend:+5]'),
+      ],
+      6 => [
+        'name' => clienttranslate('+6'),
+        'description' => clienttranslate(
+          'Top speed of legend cars is increased by 6. (The value shown on the Legend Cards will be the increased value)'
+        ),
+        'tmdisplay' => clienttranslate('[Legend:+6]'),
       ],
     ],
     'displaycondition' => [
