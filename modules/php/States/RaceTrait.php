@@ -378,7 +378,7 @@ trait RaceTrait
     $constructor = Constructors::getActive();
     return [
       'market' => Cards::getInLocation('market'),
-      'owned' => $constructor->getPlayedCards(),
+      'owned' => $constructor->getPlayedCards()->filter(fn($card) => $card['effect'] != SPONSOR),
     ];
   }
 
