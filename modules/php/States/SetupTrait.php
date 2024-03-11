@@ -12,6 +12,7 @@ use HEAT\Managers\Constructors;
 use HEAT\Managers\Actions;
 use HEAT\Helpers\Utils;
 use HEAT\Helpers\Log;
+use HEAT\Models\Constructor;
 
 trait SetupTrait
 {
@@ -62,7 +63,14 @@ trait SetupTrait
 
     $i = 1;
     $constructors = [];
-    foreach (Players::getAll() as $pId => $player) {
+    $players = Players::getAll();
+    foreach ($players as $pId => $player) {
+      // if it's the last player, there will be 7 constructors, and orange hasn't been affected yet, we force this player to orange
+      // as a Legend cannot be Orange
+      if (!in_array(CONSTRUCTOR_ORANGE, $constructors) && Constructors::count() == 7 && count($constructors) == count($players) - 1) {
+        $player->setColor('f37321');
+      }
+
       $no = array_shift($nos);
       $cId = array_search($player->getColor(), $colors);
       $constructors[$no] = $cId;

@@ -56,11 +56,6 @@ class LegendCards
   {
     $cId = $constructor->getId();
 
-    // the Orange constructor isn't in the legend cards, so it will use Red values
-    if ($cId == CONSTRUCTOR_ORANGE) {
-      $cId = CONSTRUCTOR_RED;
-    }
-
     $card = self::getCurrentCard();
     foreach ($card as $slot => $t) {
       if (array_key_exists($cId, $t)) {
