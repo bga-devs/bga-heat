@@ -40,8 +40,8 @@
   width: 61.08px;
   height: 34px;
   background: url('img/cars.png');
-  background-position-y: calc(var(--constructor-id) * 20%);
-  background-size: 200% 600%;
+  background-position-y: calc(var(--constructor-id) * 100% / 6);
+  background-size: 200% 700%;
   transform:  translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 
@@ -66,7 +66,6 @@
   top: -16px;
   width: 32px;
   height: 32px;
-  background: url('img/cars.png');
   border-radius: 50%;
   background: white;
   box-shadow: 0 0 5px 5px white;

@@ -1,4 +1,4 @@
-$playerColors: '12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'ffa500';
+$playerColors: '12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321';
 
 @import '../node_modules/bga-help/bga-help';
 @import '../node_modules/bga-zoom/bga-zoom';
@@ -165,7 +165,7 @@ html, .mode_3d #game_play_area_background {
   &.legend {  
     background: url('img/legend-icons.png');
     background-size: 100% auto;
-    background-position-y: calc(var(--constructor-id) * 20%);
+    background-position-y: calc(var(--constructor-id) * 100% / 6);
   }
 
   &.player {

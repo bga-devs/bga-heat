@@ -3281,17 +3281,10 @@ var ChampionshipTable = /** @class */ (function () {
     ChampionshipTable.prototype.setRaceFinished = function (index) {
         document.getElementById("circuit-progress-".concat(index)).classList.add('finished');
     };
-    ChampionshipTable.prototype.showScorepad = function (e) {
-        var _this = this;
-        e.stopImmediatePropagation();
-        var scores = this.gamedatas.scores;
-        var scorepadDialog = new ebg.popindialog();
-        scorepadDialog.create('scorepadDialog');
-        scorepadDialog.setTitle(this.gamedatas.championship.name);
-        var html = "<div id=\"scorepad-popin\">\n            <div id=\"scorepad-image\">\n                <table>\n                <tr class=\"names\">\n                    <th></th>";
-        [5, 1, 2, 3, 0, 4].forEach(function (constructorId) {
+    ChampionshipTable.prototype.getScorepadHtml = function (constructors, scores) {
+        var html = "\n            <div class=\"scorepad-image\">\n                <table>\n                <tr class=\"names\">\n                    <th></th>";
+        constructors.forEach(function (constructor) {
             html += "<td>";
-            var constructor = _this.gamedatas.constructors[constructorId];
             if (constructor) {
                 html += "<div class=\"name\"><div class=\"constructor-avatar ".concat(constructor.ai ? 'legend' : 'player', "\" style=\"");
                 if (constructor.ai) {
@@ -3302,27 +3295,51 @@ var ChampionshipTable = /** @class */ (function () {
                     //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
                     html += "background-image: url('".concat(document.getElementById("avatar_".concat(constructor.pId)).src, "');");
                 }
-                html += "\"></div> <strong style=\"color: #".concat(CONSTRUCTORS_COLORS[constructor.id], ";\">").concat(_(constructor.name), "</strong></div>");
+                html += "\"></div><br><strong style=\"color: #".concat(CONSTRUCTORS_COLORS[constructor.id], ";\">").concat(_(constructor.name), "</strong></div>");
             }
             html += "</td>";
         });
+        for (var i = constructors.length; i < 6; i++) {
+            html += "<td></td>";
+        }
         html += "</tr>";
         this.gamedatas.championship.circuits.forEach(function (circuit, index) {
             html += "\n            <tr>\n                <th>".concat(_(circuit.name), "</th>");
-            [5, 1, 2, 3, 0, 4].forEach(function (constructorId) {
+            constructors.forEach(function (constructor) {
                 var _a;
                 html += "<td class=\"score\">";
-                if ((_a = scores[index]) === null || _a === void 0 ? void 0 : _a[constructorId]) {
-                    html += "".concat(scores[index][constructorId]);
+                if (((_a = scores[index]) === null || _a === void 0 ? void 0 : _a[constructor.id]) !== undefined) {
+                    html += "".concat(scores[index][constructor.id]);
                     if (index > 0) {
-                        html += "<div class=\"subTotal\">".concat(Array.from(Array(index + 1)).map(function (_, subIndex) { return scores[subIndex][constructorId]; }).reduce(function (a, b) { return a + b; }, 0), "</div>");
+                        html += "<div class=\"subTotal\">".concat(Array.from(Array(index + 1)).map(function (_, subIndex) { return scores[subIndex][constructor.id]; }).reduce(function (a, b) { return a + b; }, 0), "</div>");
                     }
                 }
                 html += "</td>";
             });
+            for (var i = constructors.length; i < 6; i++) {
+                html += "<td></td>";
+            }
             html += "</tr>";
         });
-        html += "</table></div>\n        </div>";
+        html += "</table></div>\n        ";
+        return html;
+    };
+    ChampionshipTable.prototype.chunk = function (arr, chunkSize) {
+        if (chunkSize === void 0) { chunkSize = 6; }
+        var chunks = [];
+        for (var i = 0; i < arr.length; i += chunkSize) {
+            chunks.push(arr.slice(i, i + chunkSize));
+        }
+        return chunks;
+    };
+    ChampionshipTable.prototype.showScorepad = function (e) {
+        var _this = this;
+        e.stopImmediatePropagation();
+        var scorepadDialog = new ebg.popindialog();
+        scorepadDialog.create('scorepadDialog');
+        scorepadDialog.setTitle(this.gamedatas.championship.name);
+        var padConstructors = this.chunk(Object.values(this.gamedatas.constructors));
+        var html = "<div id=\"scorepad-popin\">".concat(padConstructors.map(function (pad) { return _this.getScorepadHtml(pad, _this.gamedatas.scores); }).join(''), "</div>");
         // Show the dialog
         scorepadDialog.setContent(html);
         scorepadDialog.show();
@@ -3335,7 +3352,7 @@ var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 var LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
-var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d' /*, 'ffa500'*/]; // copy of gameinfos
+var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321']; // copy of gameinfos
 function sleep(ms) {
     return new Promise(function (r) { return setTimeout(r, ms); });
 }

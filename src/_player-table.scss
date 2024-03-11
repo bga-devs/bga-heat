@@ -100,7 +100,7 @@
       @each $playerColor in $playerColors {
         $i: index($playerColors, $playerColor) - 1;
         &[data-color="#{$playerColor}"] { 
-          background-position-x: #{$i * 100% / 5};
+          background-position-x: #{$i * 100% / 6};
         }
       }
   

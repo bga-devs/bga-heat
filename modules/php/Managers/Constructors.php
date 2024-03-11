@@ -54,7 +54,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
       \CONSTRUCTOR_YELLOW => clienttranslate('Yellow legend'),
       \CONSTRUCTOR_GREEN => clienttranslate('Green legend'),
       \CONSTRUCTOR_GRAY => clienttranslate('Gray legend'),
-      //\CONSTRUCTOR_ORANGE => /*TODOclienttranslate(*/'Orange legend'/*)*/,
+      \CONSTRUCTOR_ORANGE => clienttranslate('Orange legend'),
     ];
     $name = $names[$cId];
 

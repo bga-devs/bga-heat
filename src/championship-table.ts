@@ -62,23 +62,15 @@ class ChampionshipTable {
         document.getElementById(`circuit-progress-${index}`).classList.add('finished');
     }
 
-    private showScorepad(e: MouseEvent) {
-        e.stopImmediatePropagation();  
-        const scores =  this.gamedatas.scores;
-        
-        const scorepadDialog = new ebg.popindialog();
-        scorepadDialog.create('scorepadDialog');
-        scorepadDialog.setTitle(this.gamedatas.championship.name);
-        
-        let html = `<div id="scorepad-popin">
-            <div id="scorepad-image">
+    private getScorepadHtml(constructors: Constructor[], scores: { [index: number]: { [constructor_id: number]: number}}) {
+        let html = `
+            <div class="scorepad-image">
                 <table>
                 <tr class="names">
                     <th></th>`;
     
-        [5, 1, 2, 3, 0, 4].forEach(constructorId => {
+        constructors.forEach(constructor => {
             html += `<td>`;
-            const constructor = this.gamedatas.constructors[constructorId];
             if (constructor) {
                 html += `<div class="name"><div class="constructor-avatar ${constructor.ai ? 'legend' : 'player'}" style="`;
                 if (constructor.ai) {
@@ -88,10 +80,15 @@ class ChampionshipTable {
                     //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
                     html += `background-image: url('${(document.getElementById(`avatar_${constructor.pId}`) as HTMLImageElement).src}');`;
                 }
-                html += `"></div> <strong style="color: #${CONSTRUCTORS_COLORS[constructor.id]};">${_(constructor.name)}</strong></div>`;
+                html += `"></div><br><strong style="color: #${CONSTRUCTORS_COLORS[constructor.id]};">${_(constructor.name)}</strong></div>`;
             }
             html += `</td>`;
         });
+
+        for (let i = constructors.length; i < 6; i++) {
+            html += `<td></td>`;
+        }
+
         html += `</tr>`;
 
         this.gamedatas.championship.circuits.forEach((circuit, index) => {
@@ -99,22 +96,50 @@ class ChampionshipTable {
             <tr>
                 <th>${_(circuit.name)}</th>`;
 
-                [5, 1, 2, 3, 0, 4].forEach(constructorId => {
+                constructors.forEach(constructor => {
                     html += `<td class="score">`;
-                    if (scores[index]?.[constructorId]) {
-                        html += `${scores[index][constructorId]}`;
+                    if (scores[index]?.[constructor.id] !== undefined) {
+                        html += `${scores[index][constructor.id]}`;
                         if (index > 0) {
-                            html += `<div class="subTotal">${Array.from(Array(index + 1)).map((_, subIndex) => scores[subIndex][constructorId]).reduce((a, b) => a + b, 0)}</div>`;
+                            html += `<div class="subTotal">${Array.from(Array(index + 1)).map((_, subIndex) => scores[subIndex][constructor.id]).reduce((a, b) => a + b, 0)}</div>`;
                         }
                     }
                     html += `</td>`;
                 });
+
+                for (let i = constructors.length; i < 6; i++) {
+                    html += `<td></td>`;
+                }
             
             html += `</tr>`;
         });
             
         html += `</table></div>
-        </div>`;
+        `;
+
+        return html;
+    }
+
+    private chunk<T>(arr: T[], chunkSize: number = 6): T[][] {
+        const chunks: T[][] = [];
+      
+        for (let i = 0; i < arr.length; i += chunkSize) {
+          chunks.push(arr.slice(i, i + chunkSize));
+        }
+      
+        return chunks;
+    }
+
+    private showScorepad(e: MouseEvent) {
+        e.stopImmediatePropagation();
+        
+        const scorepadDialog = new ebg.popindialog();
+        scorepadDialog.create('scorepadDialog');
+        scorepadDialog.setTitle(this.gamedatas.championship.name);
+
+        const padConstructors = this.chunk(Object.values(this.gamedatas.constructors));
+        
+        let html = `<div id="scorepad-popin">${padConstructors.map(pad => this.getScorepadHtml(pad, this.gamedatas.scores)).join('')}</div>`;
         
         // Show the dialog
         scorepadDialog.setContent(html);

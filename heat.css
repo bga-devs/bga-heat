@@ -541,13 +541,19 @@ height: 241px; */
   user-select: none;
 }
 .personal-card .card-sides .card-side.back {
-  background-position: 33.3333333333% 100%;
+  background-image: url("img/common-cards.jpg");
+  background-size: auto 100%;
+  background-position-x: 100%;
 }
 .personal-card .card-sides .card-side.front.stress {
-  background-position: 0% 100%;
+  background-image: url("img/common-cards.jpg");
+  background-size: auto 100%;
+  background-position-x: 0%;
 }
 .personal-card .card-sides .card-side.front.heat {
-  background-position: 16.6666666667% 100%;
+  background-image: url("img/common-cards.jpg");
+  background-size: auto 100%;
+  background-position-x: 50%;
 }
 .personal-card .card-sides .card-side.front:not(.stress):not(.heat) {
   background-position-y: var(--personal-card-background-y);
@@ -656,7 +662,7 @@ height: 241px; */
   height: 48px;
   background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--color) * 20%);
+  background-position-y: calc(var(--color) * 100% / 6);
   color: white;
   text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
   text-align: center;
@@ -806,8 +812,8 @@ height: 241px; */
   width: 61.08px;
   height: 34px;
   background: url("img/cars.png");
-  background-position-y: calc(var(--constructor-id) * 20%);
-  background-size: 200% 600%;
+  background-position-y: calc(var(--constructor-id) * 100% / 6);
+  background-size: 200% 700%;
   transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 }
@@ -831,7 +837,6 @@ height: 241px; */
   top: -16px;
   width: 32px;
   height: 32px;
-  background: url("img/cars.png");
   border-radius: 50%;
   background: white;
   box-shadow: 0 0 5px 5px white;
@@ -1033,7 +1038,7 @@ height: 241px; */
 .legend_avatar {
   background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 20%);
+  background-position-y: calc(var(--constructor-id) * 100% / 6);
 }
 
 .player-table {
@@ -1086,8 +1091,8 @@ height: 241px; */
 .player-table .player-board[data-color=face0d] {
   background-image: url("img/mats/player-board-face0d.jpg");
 }
-.player-table .player-board[data-color=ffa500] {
-  background-image: url("img/mats/player-board-ffa500.jpg");
+.player-table .player-board[data-color=f37321] {
+  background-image: url("img/mats/player-board-f37321.jpg");
 }
 .player-table .player-board .bga-cards_deck-counter {
   --bga-cards-deck-counter-size: 40px;
@@ -1149,22 +1154,22 @@ height: 241px; */
   background-position-x: 0%;
 }
 .player-table .player-board .gear[data-color="376bbe"] {
-  background-position-x: 20%;
+  background-position-x: 16.6666666667%;
 }
 .player-table .player-board .gear[data-color="26a54e"] {
-  background-position-x: 40%;
+  background-position-x: 33.3333333333%;
 }
 .player-table .player-board .gear[data-color=e52927] {
-  background-position-x: 60%;
+  background-position-x: 50%;
 }
 .player-table .player-board .gear[data-color="979797"] {
-  background-position-x: 80%;
+  background-position-x: 66.6666666667%;
 }
 .player-table .player-board .gear[data-color=face0d] {
-  background-position-x: 100%;
+  background-position-x: 83.3333333333%;
 }
-.player-table .player-board .gear[data-color=ffa500] {
-  background-position-x: 120%;
+.player-table .player-board .gear[data-color=f37321] {
+  background-position-x: 100%;
 }
 .player-table .player-board .gear[data-color="12151a"] {
   box-shadow: 0px 0px 8px 10px white;
@@ -1337,43 +1342,43 @@ height: 241px; */
   background-position: center;
 }
 
-#scorepad-image {
-  margin-top: 60px;
+.scorepad-image {
+  margin-top: 10px;
   width: 600px;
   height: 360px;
   background-image: url("img/scorepad.jpg");
   position: relative;
 }
-#scorepad-image table {
+.scorepad-image table {
   position: absolute;
   top: 0;
   left: 0;
 }
-#scorepad-image table tr {
+.scorepad-image table tr {
   height: 71px;
 }
-#scorepad-image table tr .names {
+.scorepad-image table tr .names {
   height: 64px;
 }
-#scorepad-image table tr th {
+.scorepad-image table tr th {
   width: 91px;
   text-align: center;
   padding-top: 30px;
 }
-#scorepad-image table tr td {
+.scorepad-image table tr td {
   width: 85px;
   text-align: center;
   text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;
   position: relative;
 }
-#scorepad-image table tr td.score {
+.scorepad-image table tr td.score {
   font-size: 24pt;
 }
-#scorepad-image table tr td .name {
+.scorepad-image table tr td .name {
   position: relative;
-  top: -60px;
+  top: -10px;
 }
-#scorepad-image table tr td .subTotal {
+.scorepad-image table tr td .subTotal {
   position: absolute;
   right: 2px;
   bottom: 2px;
@@ -1594,7 +1599,7 @@ html, .mode_3d #game_play_area_background {
 .constructor-avatar.legend {
   background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 20%);
+  background-position-y: calc(var(--constructor-id) * 100% / 6);
 }
 .constructor-avatar.player {
   border-radius: 50%;

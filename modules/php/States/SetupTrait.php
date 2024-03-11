@@ -112,7 +112,7 @@ trait SetupTrait
       'ff0000' /* Red */ => 'e52927',
       '7b7b7b' /* Gray */ => '979797',
       'ffa500' /* Yellow */ => 'face0d',
-      //'f07f16' /* Orange */ => 'ffa500',
+      'f07f16' /* Orange */ => 'f37321',
     ];
   }
 

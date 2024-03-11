@@ -108,8 +108,8 @@
   }
 }
 
-#scorepad-image {
-  margin-top: 60px;
+.scorepad-image {
+  margin-top: 10px;
   width: 600px;
   height: 360px;
   background-image: url('img/scorepad.jpg');
@@ -145,7 +145,7 @@
 
         .name {
           position: relative;
-          top: -60px;
+          top: -10px;
         }
 
         .subTotal {

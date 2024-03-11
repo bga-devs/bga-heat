@@ -87,11 +87,11 @@ $game_options = [
         'tmdisplay' => clienttranslate('[legends: fill to 6]'),
         'description' => clienttranslate('Add legends up to 6 cars in total'),
       ],
-      /*7 => [
+      7 => [
         'name' => clienttranslate('Fill to 7 cars'),
         'tmdisplay' => clienttranslate('[legends: fill to 7]'),
         'description' => clienttranslate('Add legends up to 7 cars in total'),
-      ],*/
+      ],
     ],
     'default' => 6,
     // 'displaycondition' => [
