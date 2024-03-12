@@ -13,7 +13,7 @@ class LegendCardsManager extends CardManager<LegendCard> {
             },
             setupFrontDiv: (card: LegendCard, div: HTMLElement) => this.setupFrontDiv(card, div),
             isCardVisible: card => Object.values(card).length > 0,
-            cardWidth: 362,
+            cardWidth: 363,
             cardHeight: 225,
             animationManager: game.animationManager,
         });

@@ -86,6 +86,7 @@ const REFRESH = 'refresh';
 const ADJUST = 'adjust';
 const ADRENALINE = 'adrenaline';
 const HEATED_BOOST = 'heated-boost';
+const SUPER_COOL = 'super-cool';
 
 /*
  * MISC

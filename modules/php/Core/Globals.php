@@ -52,7 +52,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'draftRound' => 'int',
     'weatherModule' => 'bool',
     'weather' => 'obj',
-
+    'heavyRain' => 'bool',
     'championship' => 'bool',
     'championshipDatas' => 'obj',
   ];
@@ -192,6 +192,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     self::setNbrLaps($options[\HEAT\OPTION_NBR_LAPS] ?? 0);
     self::setGarageModuleMode($options[\HEAT\OPTION_GARAGE_CHOICE] ?? \HEAT\OPTION_GARAGE_RANDOM);
     self::setWeatherModule(($options[\HEAT\OPTION_WEATHER_MODULE] ?? \HEAT\OPTION_DISABLED) == \HEAT\OPTION_WEATHER_ENABLED);
+    self::setHeavyRain(false); // TODOHR
 
     self::setChampionship($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP);
     if (self::isChampionship()) {

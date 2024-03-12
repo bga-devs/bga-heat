@@ -2076,7 +2076,7 @@ function formatTextIcons(rawText) {
         .replace(/\[\+\]/ig, '<div class="boost icon"></div>');
 }
 var CARD_WIDTH = 225;
-var CARD_HEIGHT = 362;
+var CARD_HEIGHT = 363;
 //console.log(Object.values(CARDS_DATA).map(card => card.startingSpace));
 var CardsManager = /** @class */ (function (_super) {
     __extends(CardsManager, _super);
@@ -2304,7 +2304,7 @@ var LegendCardsManager = /** @class */ (function (_super) {
             },
             setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
             isCardVisible: function (card) { return Object.values(card).length > 0; },
-            cardWidth: 362,
+            cardWidth: 363,
             cardHeight: 225,
             animationManager: game.animationManager,
         }) || this;

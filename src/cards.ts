@@ -11,7 +11,7 @@ interface Card {
 }
 
 const CARD_WIDTH = 225;
-const CARD_HEIGHT = 362;
+const CARD_HEIGHT = 363;
 
 //console.log(Object.values(CARDS_DATA).map(card => card.startingSpace));
 

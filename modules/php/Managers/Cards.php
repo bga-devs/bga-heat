@@ -25,10 +25,10 @@ class Cards extends \HEAT\Helpers\Pieces
     $datas = array_merge($card, self::getDatas()[$card['type']]);
     $datas['id'] = (int) $datas['id'];
     $datas['type'] = (int) $datas['type'];
-    if ($datas['type'] <= 48) {
+    if ($datas['type'] < 80) {
       $datas['isUpgrade'] = true;
     }
-    if ($datas['type'] >= 80 && $datas['type'] < 85) {
+    if ($datas['type'] >= 80 && $datas['type'] < 100) {
       $datas['isSponsor'] = true;
     }
     return $datas;
@@ -115,7 +115,9 @@ class Cards extends \HEAT\Helpers\Pieces
     if ($garage != \HEAT\OPTION_DISABLED) {
       $withAdvanced = in_array($garage, [\HEAT\OPTION_GARAGE_ADVANCED, \HEAT\OPTION_GARAGE_MIXED]);
       $withBasic = in_array($garage, [\HEAT\OPTION_GARAGE_BASIC, \HEAT\OPTION_GARAGE_MIXED]);
-      for ($i = 1; $i <= 48; $i++) {
+      
+      $max = Globals::isHeavyRain() ? 54 : 48;
+      for ($i = 1; $i <= $max; $i++) {
         $advanced = $i >= 18;
         if ((!$advanced && $withBasic) || ($advanced && $withAdvanced)) {
           $cards[] = ['type' => $i, 'nbr' => 2, 'location' => 'upgrades'];
@@ -125,7 +127,8 @@ class Cards extends \HEAT\Helpers\Pieces
 
     // Create deck of sponsors
     if (Globals::isChampionship()) {
-      for ($i = 80; $i <= 84; $i++) {
+      $max = Globals::isHeavyRain() ? 85 : 84;
+      for ($i = 80; $i <= $max; $i++) {
         $cards[] = ['type' => $i, 'nbr' => 7, 'location' => 'sponsors'];
       }
     }
@@ -369,12 +372,22 @@ class Cards extends \HEAT\Helpers\Pieces
 
       48 => $f(HEAT, 0),
 
+      // Heavy Rain expansion
+      49 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, SALVAGE => 4, ADJUST => -1], clienttranslate('Air intake')),      
+      50 => $f(ADVANCED_UPGRADE, 0, [SUPER_COOL => 1, SLIPSTREAM => 1, REDUCE => 1], clienttranslate('Air intake')),      
+      51 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, COOLDOWN => 1, SCRAP => 1], clienttranslate('Air intake')),
+      52 => $f(ADVANCED_UPGRADE, 3, [SUPER_COOL => 1, SCRAP => 3], clienttranslate('Air intake')),
+      53 => $f(ADVANCED_UPGRADE, 4, [SUPER_COOL => 1, SCRAP => 4], clienttranslate('Air intake')),
+      54 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, SUPER_COOL => 1, REFRESH => 1, ADJUST => -1], clienttranslate('Air intake')),
+
       // SPONSORS
       80 => $f(SPONSOR, [1, 2, 3, 4], [], 'Dramdo Brakes'),
       81 => $f(SPONSOR, 4, [COOLDOWN => 2], 'Fredo&F. C.S.'),
       82 => $f(SPONSOR, 1, [SLIPSTREAM => 2], 'Aperault RPM Cie'),
       83 => $f(SPONSOR, 6, [], 'Lord&Co. T.B.'),
       84 => $f(SPONSOR, 3, [ADJUST => 1], 'De Angeli Wings Inc.'),
+      // Heavy Rain expansion
+      85 => $f(SPONSOR, 0, [SUPER_COOL => 2], 'E.Mercury air system'),
     ];
   }
 }

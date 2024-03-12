@@ -521,7 +521,7 @@ body > .card {
 .personal-card {
   position: relative;
   width: 225px;
-  height: 362px; /*
+  height: 363px; /*
 width: 150px;
 height: 241px; */
   /*width: 112px;
@@ -581,7 +581,7 @@ height: 241px; */
 }
 .personal-card .card-sides .card-side.front.upgrade-card {
   background-image: url("img/upgrade-cards.jpg");
-  background-size: auto 500%;
+  background-size: auto 600%;
 }
 .personal-card .card-sides .card-side.front.sponsor-card {
   background-image: url("img/sponsor-cards.jpg");
@@ -631,7 +631,7 @@ height: 241px; */
 
 .legend-card {
   position: relative;
-  width: 362px;
+  width: 363px;
   height: 225px;
   border-radius: 8px;
 }
@@ -1190,7 +1190,7 @@ height: 241px; */
   max-width: 90%;
   position: relative;
   left: 5%;
-  height: 362px;
+  height: 363px;
 }
 .player-table .inplay-wrapper .hand-wrapper {
   max-width: 100%;
