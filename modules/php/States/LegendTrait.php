@@ -37,7 +37,16 @@ trait LegendTrait
       list($newCell, $nSpacesForward, $extraTurns, $path, ,) = $this->getCircuit()->getReachedCell($constructor, $speed, true);
       // Check if that makes the car cross AT MOST one corner
       $cornersCrossed = $this->getCircuit()->getCornersInBetween($turn, $pos, $turn + $extraTurns, $pos + $nSpacesForward);
-      if (count($cornersCrossed) <= 1) {
+
+      $maxCornerCrossed = 1;
+      if (boolval(Globals::getAggressiveLegends())) {
+        $aggressiveLegends = $this->getCircuit()->getCornerAggressiveLegends($cornerPos);
+        if ($aggressiveLegends !== null && $deltaCorner <= $aggressiveLegends) {
+          $maxCornerCrossed = 2;
+        }
+      }
+
+      if (count($cornersCrossed) <= $maxCornerCrossed) {
         $this->moveCar($constructor, $speed);
       }
       // Otherwise, stop before second corner

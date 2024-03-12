@@ -40,6 +40,7 @@ const OPTION_CHAMPIONSHIP_CUSTOM = 100;
 
 const OPTION_LEGEND = 110;
 const OPTION_LEGEND_PRO = 109;
+const OPTION_AGGRESSIVE_LEGENDS = 111;
 
 /**
  * User preferences

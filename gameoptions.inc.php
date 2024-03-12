@@ -175,6 +175,35 @@ $game_options = [
     ],
   ],
 
+  OPTION_AGGRESSIVE_LEGENDS => [
+    'name' => totranslate('Aggressive Legends'),
+    'values' => [
+      0 => [
+        'name' => clienttranslate('Disabled'),
+      ],
+      1 => [
+        'name' => clienttranslate('Enabled'),
+        'description' => clienttranslate(
+          'If a Legend starts its turn on a space with a chevron above the diamond on the track, it can cross one extra Corner Line this Round.'
+        ),
+        'tmdisplay' => clienttranslate('[Aggressive Legends]'),
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_LEGEND,
+        'value' => [0],
+      ],
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER],
+      ],
+    ],
+    'alpha' => true
+  ],
+
   OPTION_CIRCUIT => [
     'name' => totranslate('Circuit'),
     'values' => [

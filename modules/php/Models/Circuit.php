@@ -427,6 +427,19 @@ class Circuit
     return $limit;
   }
 
+  // return the ma
+  public function getCornerAggressiveLegends(int $cornerPos)
+  {
+    $corner = null;
+    foreach ($this->datas['corners'] as $infos) {
+      if ($infos['position'] == $cornerPos) {
+        $corner = $infos;
+      }
+    }
+
+    return array_key_exists('aggressiveLegends', $corner) ? $corner['aggressiveLegends'] : null;
+  }
+
   public function getCrossedCornersHeatCosts($constructor, $speed, $turn1, $pos1, $turn2, $pos2)
   {
     $corners = $this->getCornersInBetween($turn1, $pos1, $turn2, $pos2);
