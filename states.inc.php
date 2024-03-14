@@ -186,11 +186,20 @@ $machinestates = [
 
   ST_SALVAGE => [
     'name' => 'salvage',
-    'description' => clienttranslate('${actplayer} may choose up to ${n} card(s) in your discard to put back in your deck'),
+    'description' => clienttranslate('${actplayer} may choose up to ${n} card(s) in their discard to put back in their deck'),
     'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} card(s) in your discard to put back in your deck'),
     'type' => 'activeplayer',
     'args' => 'argsSalvage',
     'possibleactions' => ['actSalvage', 'actPassReact'],
+  ],
+
+  ST_SUPER_COOL => [
+    'name' => 'superCool',
+    'description' => /*clienttranslateTODOHR*/('${actplayer} may choose up to ${n} Heat card(s) in their discard to put back in their engine'),
+    'descriptionmyturn' => /*clienttranslateTODOHR*/('${you} may choose up to ${n} Heat card(s) in your discard to put back in your engine'),
+    'type' => 'activeplayer',
+    'args' => 'argsSuperCool',
+    'possibleactions' => ['actSuperCool', 'actPassReact'],
   ],
 
   ST_PAY_HEATS => [

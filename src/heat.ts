@@ -362,6 +362,20 @@ class Heat implements HeatGame {
         this.market.setSelectionMode((this as any).isCurrentPlayerActive() ? 'multiple' : 'none');
     }
 
+    private onEnteringSuperCool(args: EnteringSalvageArgs) {
+        if (!this.market) {
+            const constructor = Object.values(this.gamedatas.constructors).find(constructor => constructor.pId == this.getPlayerId());
+            document.getElementById('top').insertAdjacentHTML('afterbegin', `
+                <div id="market" style="--personal-card-background-y: ${(constructor?.id ?? 0) * 100 / 6}%;"></div>
+            `);
+            this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
+        }
+        // negative ids to not mess with deck pile
+        this.market.addCards(Object.values(args._private.cards).map(card => ({...card, id: -card.id })));
+
+        this.market.setSelectionMode('none');
+    }
+
     public onLeavingState(stateName: string) {
         log( 'Leaving state: '+stateName );
 
@@ -387,6 +401,9 @@ class Heat implements HeatGame {
                 break;
             case 'salvage':
                 this.onLeavingSalvage();
+                break;
+            case 'superCool':
+                this.onLeavingSuperCool();
                 break;
         }
     }
@@ -414,6 +431,11 @@ class Heat implements HeatGame {
     }
 
     private onLeavingSalvage() {
+        this.market?.remove();
+        this.market = null;
+    }
+
+    private onLeavingSuperCool() {
         this.market?.remove();
         this.market = null;
     }
@@ -833,6 +855,12 @@ class Heat implements HeatGame {
                     this.onEnteringSalvage(args);
                     (this as any).addActionButton(`actSalvage_button`, _('Salvage selected cards'), () => this.actSalvage());
                     document.getElementById(`actSalvage_button`).classList.add('disabled');
+                    break;
+                case 'superCool':
+                    this.onEnteringSuperCool(args);
+                    for (let i = args._private.max; i >= 0; i--) {
+                        (this as any).addActionButton(`actSuperCool${i}_button`, `<div class="icon super-cool">${i}</div>`, () => this.actSuperCool(i));
+                    }
                     break;
                 case 'confirmEndOfRace':
                     (this as any).addActionButton(`seen_button`, _("Seen"), () => this.actConfirmResults());
@@ -1546,6 +1574,16 @@ class Heat implements HeatGame {
         });
     }
   	
+    public actSuperCool(n: number) {
+        if(!(this as any).checkAction('actSuperCool')) {
+            return;
+        }
+
+        this.takeAction('actSuperCool', {
+            n
+        });
+    }
+  	
     public actConfirmResults() {
         if(!(this as any).checkAction('actConfirmResults')) {
             return;
@@ -1619,6 +1657,7 @@ class Heat implements HeatGame {
             'resolveBoost',
             'accelerate',
             'salvageCards',
+            'superCoolCards',
             'directPlay',
             'eliminate',
             'newChampionshipRace',
@@ -2001,6 +2040,12 @@ class Heat implements HeatGame {
         const { constructor_id, cards, discard } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard));
+    } 
+
+    notif_superCoolCards(args: NotifSalvageCardsArgs) {
+        const { constructor_id, cards, discard } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).superCoolCards(Object.values(cards), Object.values(discard));
     } 
 
     notif_directPlay(args: NotifDirectPlayArgs) {

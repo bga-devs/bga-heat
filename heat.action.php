@@ -132,6 +132,14 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actSuperCool()
+  {
+    self::setAjaxMode();
+    $n = self::getArg('n', AT_posint, true);
+    $this->game->actSuperCool($n);
+    self::ajaxResponse();
+  }
+
   public function actRefresh()
   {
     self::setAjaxMode();

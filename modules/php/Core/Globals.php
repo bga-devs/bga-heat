@@ -30,6 +30,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'scores' => 'obj',
     'flippedCards' => 'int',
     'salvage' => 'int',
+    'superCool' => 'int',
     'refreshedCards' => 'obj',
     'usedBoost' => 'bool',
 

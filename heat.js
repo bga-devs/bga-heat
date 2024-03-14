@@ -3157,6 +3157,25 @@ var PlayerTable = /** @class */ (function () {
             });
         });
     };
+    PlayerTable.prototype.superCoolCards = function (cards, discardCards) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.discard.setCardNumber(discardCards.length + cards.length, discardCards[0]);
+                        cards.forEach(function (heatCard) { return _this.discard.addCard(heatCard, undefined, {
+                            autoUpdateCardNumber: false,
+                            autoRemovePreviousCards: false,
+                        }); });
+                        return [4 /*yield*/, this.engine.addCards(cards)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, true];
+                }
+            });
+        });
+    };
     PlayerTable.prototype.moveDiscardToDeckAndShuffle = function () {
         return __awaiter(this, void 0, void 0, function () {
             var cardNumber;
@@ -3644,6 +3663,18 @@ var Heat = /** @class */ (function () {
         this.market.addCards(Object.values(args._private.cards).map(function (card) { return (__assign(__assign({}, card), { id: -card.id })); }));
         this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'multiple' : 'none');
     };
+    Heat.prototype.onEnteringSuperCool = function (args) {
+        var _this = this;
+        var _a;
+        if (!this.market) {
+            var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
+            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
+            this.market = new LineStock(this.cardsManager, document.getElementById("market"));
+        }
+        // negative ids to not mess with deck pile
+        this.market.addCards(Object.values(args._private.cards).map(function (card) { return (__assign(__assign({}, card), { id: -card.id })); }));
+        this.market.setSelectionMode('none');
+    };
     Heat.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
         this.removeActionButtons();
@@ -3668,6 +3699,9 @@ var Heat = /** @class */ (function () {
             case 'salvage':
                 this.onLeavingSalvage();
                 break;
+            case 'superCool':
+                this.onLeavingSuperCool();
+                break;
         }
     };
     Heat.prototype.onLeavingChooseSpeed = function () {
@@ -3690,6 +3724,11 @@ var Heat = /** @class */ (function () {
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.inplay.setSelectionMode('none');
     };
     Heat.prototype.onLeavingSalvage = function () {
+        var _a;
+        (_a = this.market) === null || _a === void 0 ? void 0 : _a.remove();
+        this.market = null;
+    };
+    Heat.prototype.onLeavingSuperCool = function () {
         var _a;
         (_a = this.market) === null || _a === void 0 ? void 0 : _a.remove();
         this.market = null;
@@ -4044,6 +4083,16 @@ var Heat = /** @class */ (function () {
                     this.onEnteringSalvage(args);
                     this.addActionButton("actSalvage_button", _('Salvage selected cards'), function () { return _this.actSalvage(); });
                     document.getElementById("actSalvage_button").classList.add('disabled');
+                    break;
+                case 'superCool':
+                    this.onEnteringSuperCool(args);
+                    var _loop_3 = function (i) {
+                        this_1.addActionButton("actSuperCool".concat(i, "_button"), "<div class=\"icon super-cool\">".concat(i, "</div>"), function () { return _this.actSuperCool(i); });
+                    };
+                    var this_1 = this;
+                    for (var i = args._private.max; i >= 0; i--) {
+                        _loop_3(i);
+                    }
                     break;
                 case 'confirmEndOfRace':
                     this.addActionButton("seen_button", _("Seen"), function () { return _this.actConfirmResults(); });
@@ -4480,6 +4529,14 @@ var Heat = /** @class */ (function () {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return -card.id; })),
         });
     };
+    Heat.prototype.actSuperCool = function (n) {
+        if (!this.checkAction('actSuperCool')) {
+            return;
+        }
+        this.takeAction('actSuperCool', {
+            n: n
+        });
+    };
     Heat.prototype.actConfirmResults = function () {
         if (!this.checkAction('actConfirmResults')) {
             return;
@@ -4546,6 +4603,7 @@ var Heat = /** @class */ (function () {
             'resolveBoost',
             'accelerate',
             'salvageCards',
+            'superCoolCards',
             'directPlay',
             'eliminate',
             'newChampionshipRace',
@@ -4990,6 +5048,11 @@ var Heat = /** @class */ (function () {
         var constructor_id = args.constructor_id, cards = args.cards, discard = args.discard;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard));
+    };
+    Heat.prototype.notif_superCoolCards = function (args) {
+        var constructor_id = args.constructor_id, cards = args.cards, discard = args.discard;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).superCoolCards(Object.values(cards), Object.values(discard));
     };
     Heat.prototype.notif_directPlay = function (args) {
         var constructor_id = args.constructor_id, card = args.card;

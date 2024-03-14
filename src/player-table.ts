@@ -277,6 +277,18 @@ class PlayerTable {
 
         return true;
     }
+    
+    public async superCoolCards(cards: Card[], discardCards: Card[]): Promise<any> {
+        this.discard.setCardNumber(discardCards.length + cards.length, discardCards[0]);
+        cards.forEach(heatCard => this.discard.addCard(heatCard, undefined, <AddCardToDeckSettings>{
+            autoUpdateCardNumber: false,
+            autoRemovePreviousCards: false,
+        }));
+
+        await this.engine.addCards(cards);
+
+        return true;
+    }
 
     private async moveDiscardToDeckAndShuffle() {
         this.deck.setCardNumber(0);

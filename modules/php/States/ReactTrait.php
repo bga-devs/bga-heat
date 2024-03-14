@@ -229,6 +229,18 @@ trait ReactTrait
         return;
       }
     }
+    // SALVAGE
+    elseif ($symbol == SUPER_COOL) {
+      if ($constructor->getDiscard()->empty()) {
+        Notifications::message(/*clienttranslateTODOHR*/('${constructor_name} can\'t super cool any card because their discard is empty'), [
+          'constructor' => $constructor,
+        ]);
+      } else {
+        Globals::setSuperCool($n);
+        $this->gamestate->jumpToState(ST_SUPER_COOL);
+        return;
+      }
+    }
     // DIRECT
     elseif ($symbol == DIRECT) {
       $oldRoadCondition = $constructor->getRoadCondition();
@@ -340,6 +352,49 @@ trait ReactTrait
       Cards::shuffle("deck-$cId");
       $cards = Cards::getMany($cardIds);
       Notifications::salvageCards($constructor, $cards);
+    }
+    $this->gamestate->jumpToState(ST_REACT);
+  }
+
+  ///////////////////////////////
+  /// SUPER COOL
+  ///////////////////////////////
+  public function argsSuperCool()
+  {
+    $n = Globals::getSuperCool();
+    $constructor = Constructors::getActive();
+    $discard = $constructor->getDiscard();
+    $heatCards = $discard->filter(fn($card) => $card['effect'] == HEAT);
+    return [
+      'n' => $n,      
+      '_private' => [
+        $constructor->getPId() => [
+          'cards' => $discard,
+          'max' => count($heatCards),
+        ],
+      ],
+    ];
+  }
+
+  public function actSuperCool($n)
+  {
+    self::checkAction('actSuperCool');
+    $args = $this->argsSuperCool();
+    if ($n > $args['n']) {
+      throw new \BgaVisibleSystemException('Too much cards. Should not happen');
+    }
+
+    $constructor = Constructors::getActive();
+    $cId = $constructor->getId();
+    if ($n > 0) {
+      $discard = $constructor->getDiscard();
+      $heatCards = $discard->filter(fn($card) => $card['effect'] == HEAT);
+      $cards = $heatCards->limit($n);
+      $cardIds = $cards->getIds();
+      Cards::move($cardIds, "engine-$cId");
+      Notifications::superCoolCards($constructor, $cards);
+    } else {      
+      Notifications::superCoolCards($constructor, []);
     }
     $this->gamestate->jumpToState(ST_REACT);
   }

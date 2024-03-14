@@ -362,6 +362,16 @@ class Notifications
     ]);
   }
 
+  public function superCoolCards($constructor, $cards)
+  {
+    self::notifyAll(count($cards) > 0 ? 'superCoolCards' : 'log', /*clienttranslateTODOHR*/('${constructor_name} super cool ${n} Heat card(s)'), [
+      'constructor' => $constructor,
+      'n' => count($cards),
+      'cards' => $cards,
+      'discard' => $constructor->getDiscard(),
+    ]);
+  }
+
   public function directPlay($constructor, $card, $speed)
   {
     self::notifyAll('directPlay', clienttranslate('${constructor_name} plays ${card_image} from their hand'), [
