@@ -373,12 +373,12 @@ class Cards extends \HEAT\Helpers\Pieces
       48 => $f(HEAT, 0),
 
       // Heavy Rain expansion
-      49 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, SALVAGE => 4, ADJUST => -1], clienttranslate('Air intake')),      
-      50 => $f(ADVANCED_UPGRADE, 0, [SUPER_COOL => 1, SLIPSTREAM => 1, REDUCE => 1], clienttranslate('Air intake')),      
-      51 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, COOLDOWN => 1, SCRAP => 1], clienttranslate('Air intake')),
-      52 => $f(ADVANCED_UPGRADE, 3, [SUPER_COOL => 1, SCRAP => 3], clienttranslate('Air intake')),
-      53 => $f(ADVANCED_UPGRADE, 4, [SUPER_COOL => 1, SCRAP => 4], clienttranslate('Air intake')),
-      54 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, SUPER_COOL => 1, REFRESH => 1, ADJUST => -1], clienttranslate('Air intake')),
+      49 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, SALVAGE => 4, ADJUST => -1], /*clienttranslateTODOHR*/('Air intake')),      
+      50 => $f(ADVANCED_UPGRADE, 0, [SUPER_COOL => 1, SLIPSTREAM => 1, REDUCE => 1], /*clienttranslateTODOHR*/('Air intake')),      
+      51 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, COOLDOWN => 1, SCRAP => 1], /*clienttranslateTODOHR*/('Air intake')),
+      52 => $f(ADVANCED_UPGRADE, 3, [SUPER_COOL => 1, SCRAP => 3], /*clienttranslateTODOHR*/('Air intake')),
+      53 => $f(ADVANCED_UPGRADE, 4, [SUPER_COOL => 1, SCRAP => 4], /*clienttranslateTODOHR*/('Air intake')),
+      54 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, SUPER_COOL => 1, REFRESH => 1, ADJUST => -1], /*clienttranslateTODOHR*/('Air intake')),
 
       // SPONSORS
       80 => $f(SPONSOR, [1, 2, 3, 4], [], 'Dramdo Brakes'),
