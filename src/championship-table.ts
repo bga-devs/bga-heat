@@ -15,7 +15,7 @@ class ChampionshipTable {
             </div>
             <div id="championship-circuits" data-folded="true" style="--race-count: ${gamedatas.championship.circuits.length};">
             <div class="championship-name">
-                ${gamedatas.championship.name}
+                ${_(gamedatas.championship.name)}
                 <button type="button" id="scorepad-button" class="bgabutton bgabutton_blue"><div class="scorepad-icon"></div></button>
             </div>`;
 
@@ -135,7 +135,7 @@ class ChampionshipTable {
         
         const scorepadDialog = new ebg.popindialog();
         scorepadDialog.create('scorepadDialog');
-        scorepadDialog.setTitle(this.gamedatas.championship.name);
+        scorepadDialog.setTitle(_(this.gamedatas.championship.name));
 
         const padConstructors = this.chunk(Object.values(this.gamedatas.constructors));
         

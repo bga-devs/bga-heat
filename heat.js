@@ -3275,7 +3275,7 @@ var ChampionshipTable = /** @class */ (function () {
         gamedatas.championship.circuits.forEach(function (_, index) {
             return html += "\n                <div id=\"circuit-progress-".concat(index, "\" class=\"circuit-progress ").concat(gamedatas.championship.index > index ? 'finished' : '', "\">\n                    <div id=\"current-circuit-progress-").concat(index, "\" class=\"current-circuit-progress\"></div>\n                </div>");
         });
-        html += "\n            </div>\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">\n                ").concat(gamedatas.championship.name, "\n                <button type=\"button\" id=\"scorepad-button\" class=\"bgabutton bgabutton_blue\"><div class=\"scorepad-icon\"></div></button>\n            </div>");
+        html += "\n            </div>\n            <div id=\"championship-circuits\" data-folded=\"true\" style=\"--race-count: ".concat(gamedatas.championship.circuits.length, ";\">\n            <div class=\"championship-name\">\n                ").concat(_(gamedatas.championship.name), "\n                <button type=\"button\" id=\"scorepad-button\" class=\"bgabutton bgabutton_blue\"><div class=\"scorepad-icon\"></div></button>\n            </div>");
         gamedatas.championship.circuits.forEach(function (circuit, index) {
             return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                <span class=\"circuit-name\">").concat(_(circuit.name), "</span>\n                ").concat(_this.game.eventCardsManager.getHtml(circuit.event), "\n            </div>\n            ");
         });
@@ -3356,7 +3356,7 @@ var ChampionshipTable = /** @class */ (function () {
         e.stopImmediatePropagation();
         var scorepadDialog = new ebg.popindialog();
         scorepadDialog.create('scorepadDialog');
-        scorepadDialog.setTitle(this.gamedatas.championship.name);
+        scorepadDialog.setTitle(_(this.gamedatas.championship.name));
         var padConstructors = this.chunk(Object.values(this.gamedatas.constructors));
         var html = "<div id=\"scorepad-popin\">".concat(padConstructors.map(function (pad) { return _this.getScorepadHtml(pad, _this.gamedatas.scores); }).join(''), "</div>");
         // Show the dialog
