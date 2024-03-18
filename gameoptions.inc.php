@@ -201,7 +201,6 @@ $game_options = [
         'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_BEGINNER],
       ],
     ],
-    'alpha' => true
   ],
 
   OPTION_CIRCUIT => [
