@@ -306,8 +306,8 @@ class Heat extends Table
   }
 
   // Exposing protected method translation
-  public static function translate($text)
+  public function translate($text)
   {
-    return self::_($text);
+    return $this->_($text);
   }
 }
