@@ -30,7 +30,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
   //                      |_|
   ///////////////////////////////////
 
-  public function assignConstructor($player, $cId, $no)
+  public static function assignConstructor($player, $cId, $no)
   {
     self::DB()->insert([
       'id' => $cId,
@@ -45,7 +45,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
     self::invalidate();
   }
 
-  public function assignConstructorAutoma($fakePId, $cId, $no)
+  public static function assignConstructorAutoma($fakePId, $cId, $no)
   {
     $names = [
       \CONSTRUCTOR_BLACK => clienttranslate('Black legend'),
@@ -74,7 +74,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
   /*
    * Return the number of companies
    */
-  public function count()
+  public static function count()
   {
     return Globals::getCountConstructors();
   }
@@ -82,7 +82,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
   /*
    * getUiData : get all ui data of all players
    */
-  public function getUiData($cId)
+  public static function getUiData($cId)
   {
     return self::getAll()->map(function ($constructor) use ($cId) {
       return $constructor->getUiData($cId);
@@ -92,7 +92,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
   /*
    * Get current turn order
    */
-  public function getTurnOrder()
+  public static function getTurnOrder()
   {
     return Globals::getTurnOrder();
   }
@@ -100,13 +100,13 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
   /*
    * get : returns the Constructor object for the given player ID
    */
-  public function get($cId = null)
+  public static function get($cId = null)
   {
     $cId = is_null($cId) ? self::getActiveId() : $cId;
     return parent::get($cId);
   }
 
-  public function getOfPlayer($pId)
+  public static function getOfPlayer($pId)
   {
     $pId = is_int($pId) ? $pId : $pId->getId();
     return self::getAll()
@@ -119,17 +119,17 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
   /**
    * Emulate active constructor via a global
    */
-  public function getActiveId()
+  public static function getActiveId()
   {
     return Globals::getActiveConstructor();
   }
 
-  public function getActive()
+  public static function getActive()
   {
     return self::get(self::getActiveId());
   }
 
-  public function changeActive($constructor)
+  public static function changeActive($constructor)
   {
     if (is_int($constructor)) {
       $constructor = self::get($constructor);

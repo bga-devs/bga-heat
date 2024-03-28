@@ -58,13 +58,13 @@ trait DebugTrait
       $constructor = Constructors::getActive();
       $constructorId = $constructor->getId();
     }
-    $this->DbQuery("UPDATE constructors SET `turn` = 2 WHERE `id` <> $constructorId");
+    $this->DbQuery("UPDATE constructors SET `turn` = 3 WHERE `id` <> $constructorId");
   }
 
   // endRace()
   function endRace($constructorId = null)
   {
-    $sql = 'UPDATE constructors SET `turn` = 2';
+    $sql = 'UPDATE constructors SET `turn` = 3';
     if ($constructorId != null) {
       $sql .= " WHERE `id` = $constructorId";
     }
@@ -134,7 +134,7 @@ trait DebugTrait
    */
   public function loadBugSQL($reportId)
   {
-    $studioPlayer = self::getCurrentPlayerId();
+    $studioPlayer = $this->getCurrentPlayerId();
     $players = self::getObjectListFromDb('SELECT player_id FROM player', true);
 
     // Change for your game

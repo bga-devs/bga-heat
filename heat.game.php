@@ -300,9 +300,9 @@ class Heat extends Table
   /////////////////////////////////////////////////////////////
 
   // Exposing protected method getCurrentPlayerId
-  public static function getCurrentPId()
+  public function getCurrentPId()
   {
-    return self::getCurrentPlayerId();
+    return $this->getCurrentPlayerId();
   }
 
   // Exposing protected method translation

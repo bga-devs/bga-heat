@@ -10,7 +10,7 @@ abstract class Utils extends \APP_DbObject
     $data = array_values(array_filter($data, $filter));
   }
 
-  public function rand($array, $n = 1)
+  public static function rand($array, $n = 1)
   {
     $keys = array_rand($array, $n);
     if ($n == 1) {
@@ -24,7 +24,7 @@ abstract class Utils extends \APP_DbObject
     return $entries;
   }
 
-  function search($array, $test)
+  static function search($array, $test)
   {
     $found = false;
     $iterator = new \ArrayIterator($array);

@@ -52,7 +52,7 @@ class LegendCards
     }
   }
 
-  public function getCurrentCardInfos($constructor)
+  public static function getCurrentCardInfos($constructor)
   {
     $cId = $constructor->getId();
 

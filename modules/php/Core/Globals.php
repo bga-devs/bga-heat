@@ -246,7 +246,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     }
   }
 
-  public function getCircuitName($circuitId)
+  public static function getCircuitName($circuitId)
   {
     $map = [
       'usa' => clienttranslate('USA'),

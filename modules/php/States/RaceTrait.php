@@ -322,7 +322,7 @@ trait RaceTrait
   {
     self::checkAction('actChooseUpgrade');
     $args = $this->argsChooseUpgrade();
-    if (!array_key_exists($cardId, $args['market'])) {
+    if (!array_key_exists($cardId, $args['market']->toAssoc())) {
       throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
     }
     $card = $args['market'][$cardId];
@@ -386,7 +386,7 @@ trait RaceTrait
   {
     self::checkAction('actSwapUpgrade');
     $args = $this->argsSwapUpgrade();
-    if (!array_key_exists($cardId1, $args['market'])) {
+    if (!array_key_exists($cardId1, $args['market']->toAssoc())) {
       throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
     }
     if (!in_array($cardId2, $args['owned']->getIds())) {

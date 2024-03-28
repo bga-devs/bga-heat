@@ -59,19 +59,19 @@ class Cards extends \HEAT\Helpers\Pieces
     return self::getInLocation(['engine', $cId]);
   }
 
-  public function draw($cId, $n)
+  public static function draw($cId, $n)
   {
     static::$autoreshuffleCustom["deck-$cId"] = "discard-$cId";
     return static::pickForLocation($n, "deck-$cId", "hand-$cId");
   }
 
-  public function flipForBoost($cId)
+  public static function flipForBoost($cId)
   {
     static::$autoreshuffleCustom["deck-$cId"] = "discard-$cId";
     return static::pickOneForLocation("deck-$cId", "discard-$cId");
   }
 
-  public function scrap($cId)
+  public static function scrap($cId)
   {
     static::$autoreshuffleCustom["deck-$cId"] = "discard-$cId";
     return static::pickOneForLocation("deck-$cId", "discard-$cId");
@@ -279,7 +279,7 @@ class Cards extends \HEAT\Helpers\Pieces
   // | |_| | (_| | || (_| \__ \
   // |____/ \__,_|\__\__,_|___/
   ////////////////////////////////
-  public function getDatas()
+  public static function getDatas()
   {
     $f = function ($type, $speed, $symbols = [], $text = '') {
       return [

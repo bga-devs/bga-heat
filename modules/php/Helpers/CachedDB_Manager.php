@@ -18,18 +18,18 @@ class CachedDB_Manager extends DB_Manager
     }
   }
 
-  public function invalidate()
+  public static function invalidate()
   {
     static::$datas = null;
   }
 
-  public function getAll()
+  public static function getAll()
   {
     self::fetchIfNeeded();
     return static::$datas;
   }
 
-  public function get($id)
+  public static function get($id)
   {
     return self::getAll()
       ->filter(function ($obj) use ($id) {

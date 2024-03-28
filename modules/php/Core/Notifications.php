@@ -57,7 +57,7 @@ class Notifications
     ]);
   }
 
-  public function moveCar(
+  public static function moveCar(
     $constructor,
     $newCell,
     $speed,
@@ -127,7 +127,7 @@ class Notifications
     }
   }
 
-  public function gainAdrenaline($constructor, $last)
+  public static function gainAdrenaline($constructor, $last)
   {
     $msg = $last
       ? clienttranslate('${constructor_name} is last so they can use adrenaline\'s effects')
@@ -138,7 +138,7 @@ class Notifications
     ]);
   }
 
-  public function gainGearCooldown($constructor, $gear, $n)
+  public static function gainGearCooldown($constructor, $gear, $n)
   {
     $msg =
       $gear == 1
@@ -151,7 +151,7 @@ class Notifications
     ]);
   }
 
-  public function discard($constructor, $cards)
+  public static function discard($constructor, $cards)
   {
     self::notifyAll('discard', clienttranslate('${constructor_name} discards ${n} card(s)'), [
       'constructor' => $constructor,
@@ -165,7 +165,7 @@ class Notifications
     ]);*/
   }
 
-  public function reduceStress($constructor, $cards)
+  public static function reduceStress($constructor, $cards)
   {
     self::notifyAll('discard', clienttranslate('${constructor_name} discards ${n} stress card(s) (reduce stress)'), [
       'constructor' => $constructor,
@@ -174,7 +174,7 @@ class Notifications
     ]);
   }
 
-  public function clearPlayedCards($constructor, $cardIds, $sponsorIds)
+  public static function clearPlayedCards($constructor, $cardIds, $sponsorIds)
   {
     $msg = clienttranslate('${constructor_name} discards played card(s)');
     if (!empty($sponsorIds)) {
@@ -187,7 +187,7 @@ class Notifications
     ]);
   }
 
-  public function draw($constructor, $cards, $areSponsors = false)
+  public static function draw($constructor, $cards, $areSponsors = false)
   {
     self::notifyAll(
       'draw',
@@ -213,7 +213,7 @@ class Notifications
     );
   }
 
-  public function resolveBoost($constructor, $cards, $card, $i, $n)
+  public static function resolveBoost($constructor, $cards, $card, $i, $n)
   {
     $msg =
       $i == 1 && $n == 1
@@ -237,14 +237,14 @@ class Notifications
     ]);
   }
 
-  public function updateTurnOrder($constructors)
+  public static function updateTurnOrder($constructors)
   {
     self::notifyAll('updateTurnOrder', clienttranslate('New round order is: ${constructors_names}'), [
       'constructors' => $constructors,
     ]);
   }
 
-  public function payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos, $roadCondition)
+  public static function payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos, $roadCondition)
   {
     $msg = clienttranslate('${constructor_name} pays ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit}');
     if ($roadCondition == \ROAD_CONDITION_MORE_HEAT) {
@@ -263,7 +263,7 @@ class Notifications
     ]);
   }
 
-  public function spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $newTurn, $roadCondition)
+  public static function spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $newTurn, $roadCondition)
   {
     $msg = clienttranslate(
       '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) in their engine. They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'
@@ -289,7 +289,7 @@ class Notifications
     ]);
   }
 
-  public function clutteredHand($constructor)
+  public static function clutteredHand($constructor)
   {
     self::notifyAll(
       'clutteredHand',
@@ -300,7 +300,7 @@ class Notifications
     );
   }
 
-  public function cooldown($constructor, $heats)
+  public static function cooldown($constructor, $heats)
   {
     self::notifyAll('cooldown', clienttranslate('${constructor_name} cooldowns ${n} heat(s)'), [
       'constructor' => $constructor,
@@ -309,14 +309,14 @@ class Notifications
     ]);
   }
 
-  public function adrenaline($constructor)
+  public static function adrenaline($constructor)
   {
     self::notifyAll('adrenaline', clienttranslate('${constructor_name} uses adrenaline\'s effect to increase their speed by 1'), [
       'constructor' => $constructor,
     ]);
   }
 
-  public function heatedBoost($constructor, $heats, $cards, $card)
+  public static function heatedBoost($constructor, $heats, $cards, $card)
   {
     if (!is_null($heats)) {
       self::notifyAll('payHeats', clienttranslate('${constructor_name} pays 1 heat to get the [+] effect'), [
@@ -327,7 +327,7 @@ class Notifications
     self::resolveBoost($constructor, $cards, $card, 1, 1);
   }
 
-  public function finishRace($constructor, $podium, $canLeave)
+  public static function finishRace($constructor, $podium, $canLeave)
   {
     self::notifyAll('finishRace', clienttranslate('${constructor_name} finishes the race at position ${pos}'), [
       'constructor' => $constructor,
@@ -336,7 +336,7 @@ class Notifications
     ]);
   }
 
-  public function payHeats($constructor, $heats)
+  public static function payHeats($constructor, $heats)
   {
     self::notifyAll('payHeats', clienttranslate('${constructor_name} pays ${n} heat(s) for its played card(s)'), [
       'constructor' => $constructor,
@@ -345,7 +345,7 @@ class Notifications
     ]);
   }
 
-  public function scrapCards($constructor, $cards)
+  public static function scrapCards($constructor, $cards)
   {
     self::notifyAll('scrapCards', clienttranslate('${constructor_name} scraps ${cards_images}'), [
       'constructor' => $constructor,
@@ -353,7 +353,7 @@ class Notifications
     ]);
   }
 
-  public function salvageCards($constructor, $cards)
+  public static function salvageCards($constructor, $cards)
   {
     self::notifyAll('salvageCards', clienttranslate('${constructor_name} salvages ${cards_images}'), [
       'constructor' => $constructor,
@@ -362,7 +362,7 @@ class Notifications
     ]);
   }
 
-  public function superCoolCards($constructor, $cards)
+  public static function superCoolCards($constructor, $cards)
   {
     self::notifyAll(count($cards) > 0 ? 'superCoolCards' : 'log', /*clienttranslateTODOHR*/('${constructor_name} super cool ${n} Heat card(s)'), [
       'constructor' => $constructor,
@@ -372,7 +372,7 @@ class Notifications
     ]);
   }
 
-  public function directPlay($constructor, $card, $speed)
+  public static function directPlay($constructor, $card, $speed)
   {
     self::notifyAll('directPlay', clienttranslate('${constructor_name} plays ${card_image} from their hand'), [
       'constructor' => $constructor,
@@ -381,7 +381,7 @@ class Notifications
     ]);
   }
 
-  public function refresh($constructor, $card)
+  public static function refresh($constructor, $card)
   {
     self::notifyAll('refresh', clienttranslate('${constructor_name} puts back ${card_image} on the top of their deck'), [
       'constructor' => $constructor,
@@ -555,7 +555,7 @@ class Notifications
     ]);
   }
 
-  public function drawSponsor($constructor, $card, $reason)
+  public static function drawSponsor($constructor, $card, $reason)
   {
     if (is_null($card)) {
       $msg = clienttranslate('${constructor_name} cannot draw a sponsor card because none are left');
@@ -604,7 +604,7 @@ class Notifications
     }
   }
 
-  public function eliminate($constructor, $cell, $canLeave)
+  public static function eliminate($constructor, $cell, $canLeave)
   {
     self::notifyAll('eliminate', clienttranslate('${constructor_name} is eliminated from the race and will score 0 points'), [
       'constructor' => $constructor,
@@ -613,7 +613,7 @@ class Notifications
     ]);
   }
 
-  public function giveUp($constructor, $cell, $canLeave)
+  public static function giveUp($constructor, $cell, $canLeave)
   {
     self::notifyAll(
       'eliminate',
@@ -627,7 +627,7 @@ class Notifications
     );
   }
 
-  public function cryCauseNotEnoughHeatToPay($constructor, $cell, $turn, $distanceToCorner)
+  public static function cryCauseNotEnoughHeatToPay($constructor, $cell, $turn, $distanceToCorner)
   {
     self::notifyAll(
       'cryCauseNotEnoughHeatToPay',
@@ -641,7 +641,7 @@ class Notifications
     );
   }
 
-  public function discardCantPay($constructor, $cards)
+  public static function discardCantPay($constructor, $cards)
   {
     self::notify(
       $constructor,
