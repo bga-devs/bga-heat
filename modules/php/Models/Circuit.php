@@ -431,13 +431,14 @@ class Circuit
   public function getCornerAggressiveLegends(int $cornerPos)
   {
     $corner = null;
-    foreach ($this->datas['corners'] as $infos) {
-      if ($infos['position'] == $cornerPos) {
+    foreach ($this->datas['corners'] as $i => $infos) {
+      $pos = $infos['position'] ?? $i;
+      if ($pos == $cornerPos) {
         $corner = $infos;
       }
     }
 
-    return array_key_exists('aggressiveLegends', $corner) ? $corner['aggressiveLegends'] : null;
+    return $corner != null && array_key_exists('aggressiveLegends', $corner) ? $corner['aggressiveLegends'] : null;
   }
 
   public function getCrossedCornersHeatCosts($constructor, $speed, $turn1, $pos1, $turn2, $pos2)

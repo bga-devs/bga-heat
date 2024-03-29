@@ -219,7 +219,7 @@ trait RoundTrait
     $planification = Globals::getPlanification();
     $planification[$player->getId()] = $cardIds;
     Globals::setPlanification($planification);
-    Notifications::updatePlanification($player, self::argsPlanification());
+    Notifications::updatePlanification($player, $this->argsPlanification());
 
     $this->updateActivePlayersInitialSelection();
   }
@@ -232,7 +232,7 @@ trait RoundTrait
     $planification = Globals::getPlanification();
     unset($planification[$player->getId()]);
     Globals::setPlanification($planification);
-    Notifications::updatePlanification($player, self::argsPlanification());
+    Notifications::updatePlanification($player, $this->argsPlanification());
 
     $this->updateActivePlayersInitialSelection();
   }
