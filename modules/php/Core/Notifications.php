@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\Core;
+
 use HEAT\Managers\Players;
 use HEAT\Helpers\Utils;
 use HEAT\Helpers\Collection;
@@ -46,8 +48,8 @@ class Notifications
   public static function reveal($constructor, $newGear, $cards, $heat)
   {
     $msg = is_null($heat)
-      ? clienttranslate('${constructor_name} shifts gear to ${gear}')
-      : clienttranslate('${constructor_name} pays 1 Heat card to shift gear to ${gear}');
+      ? clienttranslate('${constructor_name} shifts gear to ${gear} and plays ${cards_images}')
+      : clienttranslate('${constructor_name} pays 1 Heat card to shift gear to ${gear} and plays ${cards_images}');
 
     self::notifyAll('reveal', $msg, [
       'constructor' => $constructor,
@@ -70,10 +72,10 @@ class Notifications
   ) {
     $msg =
       $speed == $nSpacesForward
-        ? clienttranslate('${constructor_name} moves their car ${nForward} spaces forward')
-        : clienttranslate(
-          '${constructor_name} moves their car ${nForward} spaces forward out of ${speed} because they are blocked by other cars'
-        );
+      ? clienttranslate('${constructor_name} moves their car ${nForward} spaces forward')
+      : clienttranslate(
+        '${constructor_name} moves their car ${nForward} spaces forward out of ${speed} because they are blocked by other cars'
+      );
 
     if (!is_null($legendSlot)) {
       $msg = clienttranslate(
@@ -84,10 +86,10 @@ class Notifications
     if ($slipstream) {
       $msg =
         $speed == $nSpacesForward
-          ? clienttranslate('Slipstream: ${constructor_name} moves their car ${nForward} spaces forward')
-          : clienttranslate(
-            'Slipstream: ${constructor_name} moves their car ${nForward} spaces forward out of ${speed} because they are blocked by other cars'
-          );
+        ? clienttranslate('Slipstream: ${constructor_name} moves their car ${nForward} spaces forward')
+        : clienttranslate(
+          'Slipstream: ${constructor_name} moves their car ${nForward} spaces forward out of ${speed} because they are blocked by other cars'
+        );
     }
 
     self::notifyAll('moveCar', $msg, [
@@ -142,8 +144,8 @@ class Notifications
   {
     $msg =
       $gear == 1
-        ? clienttranslate('${constructor_name} gains 3 additional cooldowns for being in 1st gear')
-        : clienttranslate('${constructor_name} gains 1 additional cooldown for being in 2nd gear');
+      ? clienttranslate('${constructor_name} gains 3 additional cooldowns for being in 1st gear')
+      : clienttranslate('${constructor_name} gains 1 additional cooldown for being in 2nd gear');
 
     self::notifyAll('gainGearCooldown', $msg, [
       'constructor' => $constructor,
@@ -217,15 +219,15 @@ class Notifications
   {
     $msg =
       $i == 1 && $n == 1
-        ? clienttranslate('${constructor_name} discards ${cards_images} and keep ${card_image} to resolve [+] symbol')
-        : clienttranslate(
-          '${constructor_name} discards ${cards_images} and keep ${card_image} to resolve [+] symbol (${i} / ${n})'
-        );
+      ? clienttranslate('${constructor_name} discards ${cards_images} and keep ${card_image} to resolve [+] symbol')
+      : clienttranslate(
+        '${constructor_name} discards ${cards_images} and keep ${card_image} to resolve [+] symbol (${i} / ${n})'
+      );
     if (empty($cards)) {
       $msg =
         $i == 1 && $n == 1
-          ? clienttranslate('${constructor_name} flips ${card_image} to resolve [+] symbol')
-          : clienttranslate('${constructor_name} flips ${card_image} to resolve [+] symbol (${i} / ${n})');
+        ? clienttranslate('${constructor_name} flips ${card_image} to resolve [+] symbol')
+        : clienttranslate('${constructor_name} flips ${card_image} to resolve [+] symbol (${i} / ${n})');
     }
 
     self::notifyAll('resolveBoost', $msg, [
@@ -364,7 +366,7 @@ class Notifications
 
   public static function superCoolCards($constructor, $cards)
   {
-    self::notifyAll(count($cards) > 0 ? 'superCoolCards' : 'log', /*clienttranslateTODOHR*/('${constructor_name} super cool ${n} Heat card(s)'), [
+    self::notifyAll(count($cards) > 0 ? 'superCoolCards' : 'log', /*clienttranslateTODOHR*/ ('${constructor_name} super cool ${n} Heat card(s)'), [
       'constructor' => $constructor,
       'n' => count($cards),
       'cards' => $cards,
@@ -535,7 +537,7 @@ class Notifications
         'event' => $map[$datas['circuits'][$i]['event']],
         'index' => $i,
         'nbrLaps' => $circuit->getNbrLaps(),
-        'distancesToCorners' => Constructors::getAll()->map(fn($constructor) => $constructor->getDistanceToCorner()),
+        'distancesToCorners' => Constructors::getAll()->map(fn ($constructor) => $constructor->getDistanceToCorner()),
       ]
     );
   }
@@ -725,5 +727,3 @@ class Notifications
     }
   }
 }
-
-?>
