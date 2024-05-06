@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\States;
+
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
 use HEAT\Core\Stats;
@@ -131,6 +133,7 @@ trait RaceTrait
     }
 
     // Award points
+    $nLaps = $this->getNbrLaps();
     $skippedPlayers = Globals::getSkippedPlayers();
     foreach (Constructors::getAll() as $cId => $constructor) {
       $podiumPos = -$constructor->getCarCell() - 1;
@@ -138,7 +141,8 @@ trait RaceTrait
       $constructor->incStat('heatLeft', $constructor->getEngine()->count());
 
       $score[$cId] = $podium[$podiumPos] ?? 0;
-      if (!$constructor->isAI() && in_array($constructor->getPId(), $skippedPlayers)) {
+      $eliminated = $constructor->getTurn() < $nLaps;
+      if ($eliminated || (!$constructor->isAI() && in_array($constructor->getPId(), $skippedPlayers))) {
         $score[$cId] = 0;
       }
       $constructor->incScore($score[$cId]);
@@ -378,7 +382,7 @@ trait RaceTrait
     $constructor = Constructors::getActive();
     return [
       'market' => Cards::getInLocation('market'),
-      'owned' => $constructor->getPlayedCards()->filter(fn($card) => $card['effect'] != SPONSOR),
+      'owned' => $constructor->getPlayedCards()->filter(fn ($card) => $card['effect'] != SPONSOR),
     ];
   }
 
