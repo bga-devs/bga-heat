@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\Models;
+
 use HEAT\Managers\Constructors;
 use HEAT\Core\Globals;
 
@@ -148,7 +150,7 @@ class Circuit
     $event = Globals::getCurrentEvent();
     if ($event == EVENT_SAFETY_REGULATIONS) {
       $value--;
-    } elseif ($value == EVENT_FUTURE_UNKNOWN) {
+    } elseif ($event == EVENT_FUTURE_UNKNOWN) {
       $value++;
     }
 
@@ -384,7 +386,7 @@ class Circuit
     }
 
     // Check that you move at least one cell forward
-    list($cell, $nSpacesForward, , $path, $heatCost, $spinOut, $heatCosts) = $this->getReachedCell(
+    list($cell, $nSpacesForward,, $path, $heatCost, $spinOut, $heatCosts) = $this->getReachedCell(
       $constructor,
       $n,
       true,
@@ -551,7 +553,7 @@ class Circuit
     }
     $i = array_search($cornerPos, array_keys($this->corners));
     $event = Globals::getCurrentEvent();
-    $pressCorners = array_map(fn($j) => $j % count($this->corners), EVENTS[$event]['press']);
+    $pressCorners = array_map(fn ($j) => $j % count($this->corners), EVENTS[$event]['press']);
     return in_array($i, $pressCorners);
   }
 
