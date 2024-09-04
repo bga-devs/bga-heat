@@ -222,6 +222,13 @@ $game_options = [
         'name' => clienttranslate('France'),
         'tmdisplay' => clienttranslate('[France]'),
       ],
+
+      // TODO
+      OPTION_CIRCUIT_JAPAN => [
+        'name' => clienttranslate('Japan'),
+        'tmdisplay' => clienttranslate('[Japan]'),
+      ],
+
       OPTION_CIRCUIT_RANDOM => [
         'name' => clienttranslate('Random'),
         'tmdisplay' => clienttranslate('[Random circuit]'),

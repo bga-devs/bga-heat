@@ -1,4 +1,5 @@
 <?php
+
 namespace HEAT\Core;
 
 use HEAT\Core\Game;
@@ -7,6 +8,7 @@ use HEAT\Helpers\Utils;
 /*
  * Globals
  */
+
 class Globals extends \HEAT\Helpers\DB_Manager
 {
   protected static $initialized = false;
@@ -234,6 +236,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
         \HEAT\OPTION_CIRCUIT_ITALIA => 'italia',
         \HEAT\OPTION_CIRCUIT_GB => 'gb',
         \HEAT\OPTION_CIRCUIT_FRANCE => 'france',
+        \HEAT\OPTION_CIRCUIT_JAPAN => 'japan',
 
         \HEAT\OPTION_CIRCUIT_RANDOM => $circuits[0],
         \HEAT\OPTION_CIRCUIT_CUSTOM => 'custom',
@@ -274,6 +277,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
       'italia' => 'Italia',
       'gb' => 'GB',
       'france' => 'France',
+      'japan' => 'Japan',
     ];
     $fileName = __DIR__ . '/../Circuits/' . $names[Globals::getCircuit()] . '.php';
     include_once $fileName;
