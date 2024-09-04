@@ -238,6 +238,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
         \HEAT\OPTION_CIRCUIT_GB => 'gb',
         \HEAT\OPTION_CIRCUIT_FRANCE => 'france',
         \HEAT\OPTION_CIRCUIT_JAPAN => 'japan',
+        \HEAT\OPTION_CIRCUIT_MEXICO => 'mexico',
 
         \HEAT\OPTION_CIRCUIT_RANDOM => $circuits[0],
         \HEAT\OPTION_CIRCUIT_CUSTOM => 'custom',
@@ -262,6 +263,8 @@ class Globals extends \HEAT\Helpers\DB_Manager
       'gb' => clienttranslate('Great Britain'),
       'france' => clienttranslate('France'),
       'italia' => clienttranslate('Italia'),
+      'japan' => clienttranslate('Japan'),
+      'mexico' => clienttranslate('Mexico'),
     ];
     return $map[$circuitId];
   }
@@ -284,6 +287,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
       'gb' => 'GB',
       'france' => 'France',
       'japan' => 'Japan',
+      'mexico' => 'Mexico',
     ];
     $fileName = __DIR__ . '/../Circuits/' . $names[Globals::getCircuit()] . '.php';
     include_once $fileName;

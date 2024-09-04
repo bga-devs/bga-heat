@@ -448,7 +448,6 @@ $('weather-card').addEventListener('click', async () => {
 
 $('podium').addEventListener('click', async () => {
   let pos = await promptPosition('podium');
-  console.log(pos);
   DATAS.podium = pos;
   updateStatus();
   saveCircuit();
@@ -575,7 +574,6 @@ function highlightCells(cellIds = null, className = null) {
     if (c == 'white') c = '#ffffffaa';
     if (c == 'green') c = '#00ff00aa';
 
-    console.log(highlightedCells, cellId, c);
     CELLS[cellId].style.fill = c;
   });
 }
@@ -1167,16 +1165,14 @@ function checkChicanes(j) {
   let iCorner = null;
   DATAS.corners.forEach((corner, i) => {
     if (i == j) return;
-    if (corner.tentX === undefined) return;
+    if (corner.tentX === undefined || corner.tentX == 0) return;
 
     let dist = Math.abs(corner1.tentX - corner.tentX) + Math.abs(corner1.tentY - corner.tentY);
     if (dist < 50) {
-      console.log(dist);
       iCorner = i;
     }
   });
 
-  console.log(iCorner);
   if (iCorner === null) {
     delete corner1.chicane;
   } else {
