@@ -394,6 +394,9 @@ table#corners-table tbody td {
 table#corners-table tbody td.ok {
     background: rgb(175, 245, 142);
 }
+table#corners-table tbody td.chicane {
+    background: rgb(2, 167, 231);
+}
 
 #filler {
     flex-grow: 1;
@@ -504,6 +507,9 @@ textarea {
 .corner-tent.ok {
     display: block;
 }
+.corner-tent.chicane {
+    background: rgba(0, 0, 142, 0.5);
+}
 
 #weather-card-indicator {
     display: none;
@@ -592,7 +598,8 @@ object {
 #main-frame.show-centers .center-indicator {
     background: red;
 }
-#main-frame.show-lanes .center-indicator::before {
+#main-frame.show-lanes .center-indicator::before,
+#main-frame.show-flooded .center-indicator::before {
     content: attr(data-position);
     background: white;
     width: auto;
@@ -609,6 +616,9 @@ object {
 }
 #main-frame.show-lanes .center-indicator[data-position="0"]::before {
     display: none;
+}
+#main-frame.show-flooded .center-indicator[data-flooded="1"]::before {
+    background: rgb(8, 133, 182);
 }
 
 .direction-indicator {

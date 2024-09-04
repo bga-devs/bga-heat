@@ -3,7 +3,7 @@ let DATAS = null;
 let CELLS = [];
 
 // Sections
-const SECTIONS = ['centers', 'directions', 'neighbours', 'lanes'];
+const SECTIONS = ['centers', 'directions', 'neighbours', 'lanes', 'flooded'];
 
 ////// HELP //////
 
@@ -365,6 +365,7 @@ function exportCompressedJSON() {
       ? { x: parseInt(DATAS.weatherCardPos.x), y: parseInt(DATAS.weatherCardPos.y) }
       : { x: 0, y: 0 },
     corners: DATAS.corners || [],
+    floodedSpaces: DATAS.flooded || [],
     cells: {},
   };
 
@@ -498,6 +499,9 @@ function updateStatus() {
     $('podium-indicator').style.setProperty('--y', DATAS.podium.y + 'px');
   }
 
+  // Always optional
+  DATAS.computed.flooded = true;
+
   SECTIONS.forEach((section) => {
     $(`section-${section}`).classList.toggle('computed', DATAS.computed[section] || false);
   });
@@ -550,10 +554,12 @@ SECTIONS.forEach((section) => {
     });
   });
 
-  $(`generate-${section}`).addEventListener('click', () => {
-    let method = 'generate' + section.charAt(0).toUpperCase() + section.slice(1);
-    window[method]();
-  });
+  if ($(`generate-${section}`)) {
+    $(`generate-${section}`).addEventListener('click', () => {
+      let method = 'generate' + section.charAt(0).toUpperCase() + section.slice(1);
+      window[method]();
+    });
+  }
 });
 
 let highlightedCells = {};
@@ -663,6 +669,7 @@ function onMouseClickCell(id, cell, evt) {
       saveCircuit();
       clearHighlights();
     }
+    return;
   }
 
   if (modes.neighbours.edit) {
@@ -677,6 +684,20 @@ function onMouseClickCell(id, cell, evt) {
     } else {
       toggleNeighbour(selectedCell, id, cell);
     }
+    return;
+  }
+
+  if (modes.flooded.edit) {
+    if (DATAS.flooded === undefined) DATAS.flooded = [];
+
+    const index = DATAS.flooded.indexOf(id);
+    if (index > -1) {
+      DATAS.flooded.splice(index, 1);
+    } else {
+      DATAS.flooded.push(id);
+    }
+    saveCircuit();
+    updateFloodedSpaces();
     return;
   }
 }
@@ -747,6 +768,8 @@ function updateCenters() {
 
     $(`center-${cellId}`).dataset.lane = DATAS.cells[cellId].lane ?? 0;
     $(`center-${cellId}`).dataset.position = DATAS.cells[cellId].position ?? 0;
+
+    $(`center-${cellId}`).dataset.flooded = (DATAS.flooded ?? []).includes(cellId) ? 1 : 0;
   });
 }
 
@@ -1032,6 +1055,18 @@ function generateLanes() {
   console.log('Lanes computed');
 }
 
+//////////////////////////////////////////////
+//  _____ _                 _          _
+// |  ___| | ___   ___   __| | ___  __| |
+// | |_  | |/ _ \ / _ \ / _` |/ _ \/ _` |
+// |  _| | | (_) | (_) | (_| |  __/ (_| |
+// |_|   |_|\___/ \___/ \__,_|\___|\__,_|
+//////////////////////////////////////////////
+
+function updateFloodedSpaces() {
+  updateCenters();
+}
+
 ////////////////////////////////////////////
 //    ____
 //   / ___|___  _ __ _ __   ___ _ __ ___
@@ -1098,6 +1133,7 @@ function createCornerEntries() {
       let pos = await promptPosition('corner');
       DATAS.corners[j].x = pos.x;
       DATAS.corners[j].y = pos.y;
+      checkChicanes(j);
       updateCorners();
       saveCircuit();
     });
@@ -1106,6 +1142,7 @@ function createCornerEntries() {
       let pos = await promptPosition('tent');
       DATAS.corners[j].tentX = pos.x;
       DATAS.corners[j].tentY = pos.y;
+      checkChicanes(j);
       updateCorners();
       saveCircuit();
     });
@@ -1118,6 +1155,33 @@ function createCornerEntries() {
       saveCircuit();
     });
   });
+}
+
+function checkChicanes(j) {
+  if (DATAS.corners === undefined) return;
+
+  // Modified corners
+  let corner1 = DATAS.corners[j];
+
+  // Try to find another corner
+  let iCorner = null;
+  DATAS.corners.forEach((corner, i) => {
+    if (i == j) return;
+    if (corner.tentX === undefined) return;
+
+    let dist = Math.abs(corner1.tentX - corner.tentX) + Math.abs(corner1.tentY - corner.tentY);
+    if (dist < 50) {
+      console.log(dist);
+      iCorner = i;
+    }
+  });
+
+  console.log(iCorner);
+  if (iCorner === null) {
+    delete corner1.chicane;
+  } else {
+    corner1.chicane = iCorner;
+  }
 }
 
 function updateCorners() {
@@ -1145,14 +1209,17 @@ function updateCorners() {
     $(`corner-tent-indicator-${j}`).classList.toggle('ok', corner.tentX != 0 && corner.tentY != 0);
     $(`corner-tent-indicator-${j}`).style.setProperty('--x', corner.tentX + 'px');
     $(`corner-tent-indicator-${j}`).style.setProperty('--y', corner.tentY + 'px');
+    $(`corner-tent-${j}`).classList.toggle('chicane', corner.chicane !== undefined);
+    $(`corner-tent-indicator-${j}`).classList.toggle('chicane', corner.chicane !== undefined);
 
     $(`corner-sector-${j}`).classList.toggle('ok', corner.sectorTentX != 0 && corner.sectorTentY != 0);
     $(`corner-sector-indicator-${j}`).classList.toggle('ok', corner.sectorTentX != 0 && corner.sectorTentY != 0);
     $(`corner-sector-indicator-${j}`).style.setProperty('--x', corner.sectorTentX + 'px');
     $(`corner-sector-indicator-${j}`).style.setProperty('--y', corner.sectorTentY + 'px');
+    $(`corner-sector-${j}`).classList.toggle('chicane', corner.chicane !== undefined);
   });
 
-  let cellLeft = $('corners-table').querySelector('td:not(.ok)');
+  let cellLeft = $('corners-table').querySelector('td:not(.ok):not(.chicane)');
   $(`section-corners`).classList.toggle('computed', cellLeft === null);
 }
 
