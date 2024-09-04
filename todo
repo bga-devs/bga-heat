@@ -1,3 +1,5 @@
 Frontend :
- - Heat Bug.png
- - upload form: only allow .heat files
+
+- snakeDiscard state : select a card and confirm / possibility to cancel selection
+- it looks like sliding during draft is going to hand instead of inPlay (different location after refresh)
+- it looks like reformingDeckWithUpgrades notif is not handled by frontend ?

@@ -23,6 +23,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'activeConstructor' => 'int', // store the id of active company
     'finishedConstructors' => 'obj', // how many cards are finished
 
+    'snakeDiscard' => 'obj',
     'planification' => 'obj',
     'previousPosition' => 'int',
     'positionBeforeSlipstream' => 'int',
@@ -178,7 +179,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
       }
     }
     throw new \feException(print_r(debug_print_backtrace()));
-    return undefined;
+    return null;
   }
 
   /*
@@ -249,6 +250,11 @@ class Globals extends \HEAT\Helpers\DB_Manager
     }
   }
 
+  public static function isSnakeDraft()
+  {
+    return self::getGarageModuleMode() == \HEAT\OPTION_GARAGE_SNAKE_DRAFT;
+  }
+
   public static function getCircuitName($circuitId)
   {
     $map = [
@@ -286,7 +292,15 @@ class Globals extends \HEAT\Helpers\DB_Manager
 
   public static function getNDraftRounds()
   {
-    return self::isChampionship() ? 1 : 3;
+    if (self::isChampionship()) {
+      return 1;
+    }
+
+    if (self::isSnakeDraft()) {
+      return 2;
+    } else {
+      return 3;
+    }
   }
 
   public static function getCurrentRace()

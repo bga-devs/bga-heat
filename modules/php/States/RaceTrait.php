@@ -10,6 +10,7 @@ use HEAT\Helpers\Utils;
 use HEAT\Managers\Constructors;
 use HEAT\Managers\Players;
 use HEAT\Managers\Cards;
+use HEAT\Helpers\UserException;
 
 trait RaceTrait
 {
@@ -64,7 +65,7 @@ trait RaceTrait
     Globals::setFinishedConstructors([]);
     Globals::setSkippedPlayers([]);
     Globals::setGiveUpPlayers([]);
-    if (Globals::getGarageModuleMode() == \HEAT\OPTION_GARAGE_DRAFT) {
+    if (in_array(Globals::getGarageModuleMode(), [\HEAT\OPTION_GARAGE_DRAFT, \HEAT\OPTION_GARAGE_SNAKE_DRAFT])) {
       Globals::setDraftRound(1);
       $this->gamestate->nextState('draft');
     } else {
@@ -284,6 +285,7 @@ trait RaceTrait
     $round = Globals::getDraftRound();
     $cards = Cards::drawMarket();
     $upgrades = null;
+
     if (Globals::isChampionship()) {
       $upgrades = [];
       foreach (Constructors::getAll() as $cId => $constructor) {
@@ -309,8 +311,14 @@ trait RaceTrait
     } else {
       krsort($order);
     }
+    $cIds = array_values($order);
 
-    $this->initCustomTurnOrder('draft', array_values($order), ST_DRAFT_GARAGE, 'stEndDraftRound');
+    // Snake draft => snake order
+    if (Globals::isSnakeDraft()) {
+      $cIds = array_merge($cIds, array_reverse($cIds));
+    }
+
+    $this->initCustomTurnOrder('draft', $cIds, ST_DRAFT_GARAGE, 'stEndDraftRound');
   }
 
   function argsChooseUpgrade()
@@ -333,7 +341,7 @@ trait RaceTrait
 
     $constructor = Constructors::getActive();
     $cId = $constructor->getId();
-    Cards::move($cardId, "inplay-${cId}");
+    Cards::move($cardId, "inplay-$cId");
     Notifications::chooseUpgrade($constructor, $card);
 
     $this->nextPlayerCustomOrder('draft');
@@ -360,7 +368,18 @@ trait RaceTrait
     if ($round <= Globals::getNDraftRounds()) {
       $this->gamestate->nextState('draft');
     } else {
-      $this->stFinishDraft();
+      // Snake draft ? => go to discard card state
+      if (Globals::isSnakeDraft()) {
+        Globals::setSnakeDiscard([]);
+        $pIds = Constructors::getAll()->map(fn($constructor) => $constructor->getPId())->toArray();
+        $this->gamestate->jumpToState(ST_GENERIC_NEXT_PLAYER);
+        $this->gamestate->setPlayersMultiactive($pIds, '', true);
+        $this->gamestate->jumpToState(ST_DRAFT_GARAGE_SNAKE_DISCARD);
+      }
+      // Otherwise, draft is over
+      else {
+        $this->stFinishDraft();
+      }
     }
   }
 
@@ -382,7 +401,7 @@ trait RaceTrait
     $constructor = Constructors::getActive();
     return [
       'market' => Cards::getInLocation('market'),
-      'owned' => $constructor->getPlayedCards()->filter(fn ($card) => $card['effect'] != SPONSOR),
+      'owned' => $constructor->getPlayedCards()->filter(fn($card) => $card['effect'] != SPONSOR),
     ];
   }
 
@@ -440,5 +459,95 @@ trait RaceTrait
     }
 
     $this->gamestate->nextState('start');
+  }
+
+
+  // SNAKE DRAFT DISCARD
+  public function argsSnakeDiscard()
+  {
+    $discards = Globals::getSnakeDiscard();
+    $args = ['_private' => []];
+    foreach (Constructors::getAll() as $constructor) {
+      if ($constructor->isAI()) {
+        continue;
+      }
+
+      $pId = $constructor->getPId();
+      $args['_private'][$pId] = [
+        'cards' => $constructor->getPlayedCards()->getIds(),
+        'choice' => $discards[$pId] ?? null,
+      ];
+    }
+
+    return $args;
+  }
+
+  public function actSnakeDiscard($cardId)
+  {
+    self::checkAction('actSnakeDiscard');
+    $player = Players::getCurrent();
+    $args = $this->argsSnakeDiscard()['_private'][$player->getId()];
+    if (!in_array($cardId, $args['cards'])) {
+      throw new UserException(clienttranslate('You can\'t select that card.'));
+    }
+
+    $discard = Globals::getSnakeDiscard();
+    $discard[$player->getId()] = $cardId;
+    Globals::setSnakeDiscard($discard);
+    Notifications::updateSnakeDiscard($player, $this->argsSnakeDiscard());
+
+    $this->updateActivePlayersSnakeDiscard();
+  }
+
+  public function actCancelSnakeDiscard()
+  {
+    $this->gamestate->checkPossibleAction('actCancelSnakeDiscard');
+
+    $player = Players::getCurrent();
+    $discard = Globals::getSnakeDiscard();
+    unset($discard[$player->getId()]);
+    Globals::setSnakeDiscard($discard);
+    Notifications::updateSnakeDiscard($player, $this->argsSnakeDiscard());
+
+    $this->updateActivePlayersSnakeDiscard();
+  }
+
+  public function updateActivePlayersSnakeDiscard()
+  {
+    // Compute players that still need to select their card
+    // => use that instead of BGA framework feature because in some rare case a player
+    //    might become inactive eventhough the selection failed (seen in Agricola and Rauha at least already)
+    $discard = Globals::getSnakeDiscard();
+    $skipped = Globals::getSkippedPlayers();
+    $ids = [];
+    foreach (Constructors::getAll() as $constructor) {
+      if ($constructor->isAI() || in_array($constructor->getPId(), $skipped)) {
+        continue;
+      }
+      $ids[] = $constructor->getPId();
+    }
+    $ids = array_diff($ids, array_keys($discard));
+
+    // At least one player need to make a choice
+    if (!empty($ids)) {
+      $this->gamestate->setPlayersMultiactive($ids, 'done', true);
+    }
+    // Everyone is done => discard cards and proceed
+    else {
+      $this->stEndOfSnakeDraft();
+    }
+  }
+
+  public function stEndOfSnakeDraft()
+  {
+    $discard = Globals::getSnakeDiscard();
+    foreach ($discard as $pId => $cardId) {
+      $constructor = Constructors::getOfPlayer($pId);
+      Cards::move($cardId, 'box');
+      $card = Cards::get($cardId);
+      Notifications::snakeDiscard($constructor, $card);
+    }
+
+    $this->stFinishDraft();
   }
 }

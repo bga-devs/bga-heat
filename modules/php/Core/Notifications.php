@@ -537,7 +537,7 @@ class Notifications
         'event' => $map[$datas['circuits'][$i]['event']],
         'index' => $i,
         'nbrLaps' => $circuit->getNbrLaps(),
-        'distancesToCorners' => Constructors::getAll()->map(fn ($constructor) => $constructor->getDistanceToCorner()),
+        'distancesToCorners' => Constructors::getAll()->map(fn($constructor) => $constructor->getDistanceToCorner()),
       ]
     );
   }
@@ -654,6 +654,25 @@ class Notifications
       [
         'constructor' => $constructor,
         'cards' => $cards,
+      ]
+    );
+  }
+
+  public static function updateSnakeDiscard($player, $args)
+  {
+    self::notify($player->getId(), 'updateSnakeDiscard', '', [
+      'args' => ['_private' => $args['_private'][$player->getId()]],
+    ]);
+  }
+
+  public static function snakeDiscard($constructor, $card)
+  {
+    self::notifyAll(
+      'snakeDiscard',
+      clienttranslate('${constructor_name} puts back ${card_image}'),
+      [
+        'constructor' => $constructor,
+        'card' => $card,
       ]
     );
   }

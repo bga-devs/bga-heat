@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
@@ -48,6 +49,14 @@ class action_heat extends APP_GameAction
     self::setAjaxMode();
     $cardId = self::getArg('cardId', AT_int, true);
     $this->game->actChooseUpgrade($cardId);
+    self::ajaxResponse();
+  }
+
+  public function actSnakeDiscard()
+  {
+    self::setAjaxMode();
+    $cardId = self::getArg('cardId', AT_int, true);
+    $this->game->actSnakeDiscard($cardId);
     self::ajaxResponse();
   }
 

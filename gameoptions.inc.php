@@ -349,6 +349,11 @@ $game_options = [
         'name' => clienttranslate('Draft'),
         'description' => clienttranslate('3 rounds of upgrade cards drafting'),
       ],
+      OPTION_GARAGE_SNAKE_DRAFT => [
+        'name' => clienttranslate('Snake draft'),
+        'tmdisplay' => clienttranslate('[Snake draft]'),
+        'description' => clienttranslate('Two round of snake draft among 2N + 3 cards (N = number of players), then each player discards one card to keep only 3 upgrade cards'),
+      ],
     ],
     'displaycondition' => [
       [

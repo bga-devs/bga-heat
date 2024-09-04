@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
@@ -88,6 +89,17 @@ $machinestates = [
     'args' => 'argsChooseUpgrade',
     'possibleactions' => ['actChooseUpgrade'],
     'transitions' => ['start' => ST_START_RACE, 'draft' => ST_PREPARE_GARAGE_DRAFT, 'swap' => ST_DRAFT_GARAGE_SWAP],
+  ],
+
+  // Snake draft only
+  ST_DRAFT_GARAGE_SNAKE_DISCARD => [
+    'name' => 'snakeDiscard',
+    'description' => clienttranslate('Waiting for some players to choose the upgrade card they want to discard'),
+    'descriptionmyturn' => clienttranslate('You must discard one of the drafted upgrade card'),
+    'type' => 'multipleactiveplayer',
+    'args' => 'argsSnakeDiscard',
+    'possibleactions' => ['actSnakeDiscard', 'actCancelSnakeDiscard'],
+    'transitions' => ['start' => ST_START_RACE],
   ],
 
   // Championship only
@@ -195,8 +207,8 @@ $machinestates = [
 
   ST_SUPER_COOL => [
     'name' => 'superCool',
-    'description' => /*clienttranslateTODOHR*/('${actplayer} may choose up to ${n} Heat card(s) in their discard to put back in their engine'),
-    'descriptionmyturn' => /*clienttranslateTODOHR*/('${you} may choose up to ${n} Heat card(s) in your discard to put back in your engine'),
+    'description' => /*clienttranslateTODOHR*/ ('${actplayer} may choose up to ${n} Heat card(s) in their discard to put back in their engine'),
+    'descriptionmyturn' => /*clienttranslateTODOHR*/ ('${you} may choose up to ${n} Heat card(s) in your discard to put back in your engine'),
     'type' => 'activeplayer',
     'args' => 'argsSuperCool',
     'possibleactions' => ['actSuperCool', 'actPassReact'],
