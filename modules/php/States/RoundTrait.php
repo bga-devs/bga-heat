@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\States;
+
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
 use HEAT\Core\Stats;
@@ -14,6 +16,7 @@ trait RoundTrait
 {
   function stStartRound()
   {
+
     Globals::setPlanification([]);
     $skipped = Globals::getSkippedPlayers();
     $pIds = Constructors::getAll()
@@ -29,7 +32,13 @@ trait RoundTrait
     if (empty($pIds)) {
       $this->gamestate->nextState('planification');
       $this->stEndOfPlanification();
-    } else {
+    }
+    // Deferred rounds
+    else if (Globals::isDeferredRounds()) {
+      $this->stInitDeferredRound();
+    }
+    // Normal mode => awake every constructors that need to play this round
+    else {
       foreach ($pIds as $pId) {
         self::giveExtraTime($pId);
       }
@@ -41,6 +50,8 @@ trait RoundTrait
 
   function stEndRound()
   {
+    Globals::setDeferredRoundsActive(false);
+
     // Compute new order
     $positions = [];
     $length = $this->getCircuit()->getLength();
@@ -80,6 +91,7 @@ trait RoundTrait
       $this->stFinishRace();
       return;
     }
+
 
     Globals::setTurnOrder($order);
     $constructors = [];
@@ -219,9 +231,13 @@ trait RoundTrait
     $planification = Globals::getPlanification();
     $planification[$player->getId()] = $cardIds;
     Globals::setPlanification($planification);
-    Notifications::updatePlanification($player, $this->argsPlanification());
 
-    $this->updateActivePlayersInitialSelection();
+    if (Globals::isDeferredRounds()) {
+      $this->stEndOfDeferredPlanification();
+    } else {
+      Notifications::updatePlanification($player, $this->argsPlanification());
+      $this->updateActivePlayersInitialSelection();
+    }
   }
 
   public function actCancelPlan()
@@ -434,7 +450,7 @@ trait RoundTrait
     $speeds = [];
     $heatCosts = [];
     foreach ($possibleSpeeds as $speed) {
-      list($newCell, , , , $heatCost, $spinOut) = $this->getCircuit()->getReachedCell($constructor, $speed, false, true);
+      list($newCell,,,, $heatCost, $spinOut) = $this->getCircuit()->getReachedCell($constructor, $speed, false, true);
       $speeds[$speed] = $newCell;
       $heatCosts[$speed] = $heatCost;
     }
@@ -478,7 +494,7 @@ trait RoundTrait
   public function moveCar($constructor, $n, $slipstream = false, $legendSlot = null)
   {
     $circuit = $this->getCircuit();
-    list($newCell, $nSpacesForward, $extraTurns, $path, ,) = $circuit->getReachedCell($constructor, $n, true, false);
+    list($newCell, $nSpacesForward, $extraTurns, $path,,) = $circuit->getReachedCell($constructor, $n, true, false);
     $constructor->setCarCell($newCell);
     $constructor->incTurn($extraTurns);
     $distanceToCorner = $constructor->getDistanceToCorner();
@@ -652,7 +668,7 @@ trait RoundTrait
     foreach ($slipstreams as $n) {
       $res = $this->getCircuit()->getSlipstreamResult($constructor, $n);
       if ($res !== false) {
-        list($cell, $path, $heatCost, , $costs) = $res;
+        list($cell, $path, $heatCost,, $costs) = $res;
         $speeds[$n] = $cell;
         $heatCosts[$n] = $heatCost;
         $slipstreamWillCrossNextCorner[$n] = count($costs) > count($currentHeatCosts);
@@ -741,7 +757,7 @@ trait RoundTrait
     $spinOut = false;
     $speed = $constructor->getSpeed();
     // prettier-ignore
-    list($corners, , $limits) = $this->getCircuit()->getCrossedCornersHeatCosts($constructor, $speed, $prevTurn, $prevPosition, $turn, $position);
+    list($corners,, $limits) = $this->getCircuit()->getCrossedCornersHeatCosts($constructor, $speed, $prevTurn, $prevPosition, $turn, $position);
 
     if (!empty($corners)) {
       foreach ($corners as $cornerPos => $nHeatsToPay) {
@@ -981,7 +997,7 @@ trait RoundTrait
     Cards::move($cardIds, ['discard', $constructor->getId()]);
     Cards::move($sponsorIds, ['discard-sponsors']);
     Notifications::clearPlayedCards($constructor, $cardIds, $sponsorIds);
-    
+
     $constructor->setPaths([]);
 
     if ($constructor->getTurn() < $this->getNbrLaps()) {

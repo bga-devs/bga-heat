@@ -15,7 +15,7 @@ use HEAT\Managers\Constructors;
 
 class Cards extends \HEAT\Helpers\Pieces
 {
-  protected static $table = 'cards';
+  public static $table = 'cards';
   protected static $prefix = 'card_';
   protected static $customFields = ['type'];
   protected static $autoreshuffle = true;

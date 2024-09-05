@@ -2,6 +2,10 @@
 
 namespace HEAT;
 
+const OPTION_TB_MODE = 112;
+const OPTION_TB_STANDARD = 0;
+const OPTION_TB_ENHANCED = 1;
+
 const OPTION_SETUP = 100;
 const OPTION_SETUP_FIRST_GAME = 0;
 const OPTION_SETUP_BEGINNER = 1;

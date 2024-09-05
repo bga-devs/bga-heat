@@ -1,4 +1,5 @@
 <?php
+
 namespace HEAT\Managers;
 
 use BgaVisibleSystemException;
@@ -13,7 +14,7 @@ use HEAT\Helpers\Collection;
 
 class Constructors extends \HEAT\Helpers\CachedDB_Manager
 {
-  protected static $table = 'constructors';
+  public static $table = 'constructors';
   protected static $primary = 'id';
   protected static $datas = null;
   protected static function cast($row)

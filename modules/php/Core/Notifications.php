@@ -17,10 +17,30 @@ class Notifications
   protected static function notifyAll($name, $msg, $data)
   {
     self::updateArgs($data);
-    Game::get()->notifyAllPlayers($name, $msg, $data);
+
+    if (!Globals::isDeferredRoundsActive()) {
+      Game::get()->notifyAllPlayers($name, $msg, $data);
+    }
+    // DeferredRounds mode => send in private instead + store for later
+    else {
+      $pendingNotifs = Globals::getPendingNotifications();
+      $pendingNotifs[] = [
+        'name' => $name,
+        'msg' => $msg,
+        'data' => $data,
+      ];
+      Globals::setPendingNotifications($pendingNotifs);
+
+      $activeConstructor = Constructors::getActive();
+      $previousConstructors = Constructors::getAll()->filter(fn($c) => !$c->isAI() && $c->getNo() <= $activeConstructor->getNo());
+      $pIds = $previousConstructors->map(fn($c) => $c->getPId())->toArray();
+      foreach ($pIds as $pId) {
+        self::notify($pId, $name, $msg, $data);
+      }
+    }
   }
 
-  protected static function notify($constructor, $name, $msg, $data)
+  public static function notify($constructor, $name, $msg, $data)
   {
     $pId = is_int($constructor) ? $constructor : $constructor->getPId();
     self::updateArgs($data);

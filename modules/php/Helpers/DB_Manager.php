@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\Helpers;
+
 use HEAT\Core\Game;
 
 class DB_Manager extends \APP_DbObject

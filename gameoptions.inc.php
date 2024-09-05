@@ -29,6 +29,29 @@ namespace HEAT;
 require_once 'modules/php/gameoptions.inc.php';
 
 $game_options = [
+  OPTION_TB_MODE => [
+    'name' => totranslate('Turn-based mode'),
+    'default' => OPTION_TB_STANDARD,
+    'values' => [
+      OPTION_TB_STANDARD => [
+        'name' => clienttranslate('Standard'),
+        'description' => clienttranslate('Everyone is awaken for planification, then every player in turn order is awaken to move their car'),
+      ],
+      OPTION_TB_ENHANCED => [
+        'name' => clienttranslate('Enhanced'),
+        'description' => clienttranslate('Every player is only awaken once, and all previous players\' actions are hidden until they confirm their planification'),
+        'alpha' => true,
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => 200,
+        'value' => [0, 1, 2],
+      ],
+    ]
+  ],
+
   OPTION_SETUP => [
     'name' => totranslate('Mode'),
     'default' => OPTION_SETUP_BEGINNER,
@@ -222,13 +245,6 @@ $game_options = [
         'name' => clienttranslate('France'),
         'tmdisplay' => clienttranslate('[France]'),
       ],
-
-      // TODO
-      OPTION_CIRCUIT_JAPAN => [
-        'name' => clienttranslate('Japan'),
-        'tmdisplay' => clienttranslate('[Japan]'),
-      ],
-
       OPTION_CIRCUIT_RANDOM => [
         'name' => clienttranslate('Random'),
         'tmdisplay' => clienttranslate('[Random circuit]'),

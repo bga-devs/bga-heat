@@ -4,6 +4,8 @@ namespace HEAT\Core;
 
 use HEAT\Core\Game;
 use HEAT\Helpers\Utils;
+use HEAT\Managers\Constructors;
+use HEAT\Managers\Cards;
 
 /*
  * Globals
@@ -12,11 +14,16 @@ use HEAT\Helpers\Utils;
 class Globals extends \HEAT\Helpers\DB_Manager
 {
   protected static $initialized = false;
+  // Variables that should be stored on both table for deferredRounds feature
+  protected static $syncVariables = [
+    'customTurnOrders',
+    'planification',
+    'turnOrder',
+    'activeConstructor',
+    'finishedConstructors',
+    'pendingNotifications',
+  ];
   protected static $variables = [
-    'engine' => 'obj', // DO NOT MODIFY, USED IN ENGINE MODULE
-    'engineChoices' => 'int', // DO NOT MODIFY, USED IN ENGINE MODULE
-    'callbackEngineResolved' => 'obj', // DO NOT MODIFY, USED IN ENGINE MODULE
-    'anytimeRecursion' => 'int', // DO NOT MODIFY, USED IN ENGINE MODULE
     'customTurnOrders' => 'obj', // DO NOT MODIFY, USED FOR CUSTOM TURN ORDER FEATURE
 
     'turnOrder' => 'obj', // store the current turn order
@@ -59,6 +66,10 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'heavyRain' => 'bool',
     'championship' => 'bool',
     'championshipDatas' => 'obj',
+
+    'deferredRounds' => 'bool', // Enhanced TB-mode 
+    'deferredRoundsActive' => 'bool',
+    'pendingNotifications' => 'obj',
   ];
 
   protected static $table = 'global_variables';
@@ -91,6 +102,34 @@ class Globals extends \HEAT\Helpers\DB_Manager
     }
     self::$initialized = true;
     self::$log = $tmp;
+    self::checkDeferredIfNeeded();
+  }
+
+  public static function checkDeferredIfNeeded($shouldUseDeferred = null)
+  {
+    $shouldUseDeferred = $shouldUseDeferred ?? Game::get()->shouldUsedDeferredDB();
+    // Switch to deferred
+    if (static::$table == 'global_variables' && $shouldUseDeferred) {
+      // Update globals
+      static::$table = 'global_variables2';
+      self::fetch();
+      // Update constructors
+      Constructors::$table = 'constructors2';
+      Constructors::invalidate();
+      // Update cards
+      Cards::$table = 'cards2';
+    }
+    // Switch to undeferred
+    if (static::$table == 'global_variables2' && !$shouldUseDeferred) {
+      // Update globals
+      static::$table = 'global_variables';
+      self::fetch();
+      // Update constructors
+      Constructors::$table = 'constructors';
+      Constructors::invalidate();
+      // Update cards
+      Cards::$table = 'cards';
+    }
   }
 
   /*
@@ -118,11 +157,17 @@ class Globals extends \HEAT\Helpers\DB_Manager
       true
     );
     self::$data[$name] = $val;
-  }
 
-  public static function isBreak()
-  {
-    return !is_null(self::getBreakPlayer()) && self::getBreakPlayer() != -1;
+    // Ensure customTurnOrders are always written into both database
+    if (in_array($name, static::$syncVariables) && static::$table == 'global_variables2') {
+      self::DB('global_variables')->insert(
+        [
+          'name' => $name,
+          'value' => \json_encode($val),
+        ],
+        true
+      );
+    }
   }
 
   /*
@@ -167,6 +212,12 @@ class Globals extends \HEAT\Helpers\DB_Manager
 
         self::$data[$name] = $value;
         self::DB()->update(['value' => \addslashes(\json_encode($value))], $name);
+
+        // Ensure customTurnOrders are always written into both database
+        if (in_array($name, static::$syncVariables) && static::$table == 'global_variables2') {
+          self::DB('global_variables')->update(['value' => \addslashes(\json_encode($value))], $name);
+        }
+
         return $value;
       } elseif ($match[1] == 'inc') {
         if (self::$variables[$name] != 'int') {
@@ -197,6 +248,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     self::setGarageModuleMode($options[\HEAT\OPTION_GARAGE_CHOICE] ?? \HEAT\OPTION_GARAGE_RANDOM);
     self::setWeatherModule(($options[\HEAT\OPTION_WEATHER_MODULE] ?? \HEAT\OPTION_DISABLED) == \HEAT\OPTION_WEATHER_ENABLED);
     self::setHeavyRain(false); // TODOHR
+    self::setDeferredRounds(($options[\HEAT\OPTION_TB_MODE] ?? \HEAT\OPTION_TB_STANDARD) == \HEAT\OPTION_TB_ENHANCED);
 
     self::setChampionship($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP);
     if (self::isChampionship()) {

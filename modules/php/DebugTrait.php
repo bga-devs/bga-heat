@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT;
+
 use HEAT\Managers\Players;
 use HEAT\Managers\Constructors;
 use HEAT\Managers\Cards;
@@ -12,6 +14,12 @@ use HEAT\Helpers\Collection;
 
 trait DebugTrait
 {
+  function test()
+  {
+    $t = file_get_contents(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
+    var_dump($t);
+  }
+
   function tp()
   {
     $round = Globals::getDraftRound();

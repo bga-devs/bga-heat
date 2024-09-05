@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\Helpers;
+
 use HEAT\Core\Game;
 
 abstract class DB_Model extends \APP_DbObject implements \JsonSerializable

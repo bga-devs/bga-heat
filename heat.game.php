@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
@@ -50,6 +51,7 @@ class Heat extends Table
   use HEAT\States\RoundTrait;
   use HEAT\States\ReactTrait;
   use HEAT\States\LegendTrait;
+  use HEAT\States\DeferredRoundTrait;
 
   public static $instance = null;
   function __construct()
@@ -60,6 +62,7 @@ class Heat extends Table
       'logging' => 10,
     ]);
     Stats::checkExistence();
+    Globals::fetch();
   }
 
   public static function get()
@@ -98,6 +101,8 @@ class Heat extends Table
       'championship' => Globals::isChampionship() ? Globals::getChampionshipDatas() : null,
 
       'scores' => Globals::getScores(),
+
+      'deferred' => $this->shouldUsedDeferredDB(),
     ];
   }
 
@@ -257,7 +262,7 @@ class Heat extends Table
         $cId = $constructor->getId();
         Cards::move($cardId, "inplay-${cId}");
         Notifications::chooseUpgrade($constructor, $card);*/
-    
+
         $this->nextPlayerCustomOrder('draft');
       } elseif ($state['name'] == 'swapUpgrade') {
         $this->stFinishChampionshipDraft();
