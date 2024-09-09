@@ -89,6 +89,10 @@ trait DebugTrait
     $this->DbQuery("UPDATE `cards` SET `type` = 111 WHERE card_location = 'hand-$constructorId'");
   }
 
+  function debug_setPodium(?int $constructorId = null, int $rank) {
+    $this->DbQuery("UPDATE constructors SET `turn` = 3, car_cell = -$rank WHERE `id` = $constructorId");
+  }
+
   // discardAll(11, 1)
   /*function discardAll($n = 11, $constructorId = null)
   {

@@ -248,7 +248,8 @@ class Heat implements HeatGame {
         reader.addEventListener('load', (e) => {
           let content = e.target.result;
           let circuit = JSON.parse(content as string);
-          this.takeAction('actUploadCircuit', { circuit: JSON.stringify(circuit), method: 'post' });
+
+          (this as any).ajaxcall(`/${(this as any).game_name}/${(this as any).game_name}/actUploadCircuit.html`, { circuit: JSON.stringify(circuit),  lock: true, }, this, () => {}, undefined, 'post');
         });
     }
 
@@ -280,6 +281,16 @@ class Heat implements HeatGame {
             hand.removeAll();
             hand.addCards(Object.values(args.owned));
             hand.setSelectionMode('single');
+        }
+    }
+
+    private onEnteringSnakeDiscard(args: any) {
+        const playerTable = this.getCurrentPlayerTable();
+        playerTable.inplay.unselectAll();
+        playerTable.inplay.setSelectionMode((this as any).isCurrentPlayerActive() ? 'single' : 'none');
+        const cards = playerTable.inplay.getCards();
+        if (args._private.choice) {
+            playerTable.inplay.selectCard(cards.find(card => Number(card.id) == Number(args._private.choice)));
         }
     }
 
@@ -384,6 +395,9 @@ class Heat implements HeatGame {
       document.getElementById('restartAction').innerHTML = '';
 
         switch (stateName) {
+            case 'snakeDiscard':
+                this.onLeavingSnakeDiscard();
+                break;
             case 'planification':
                 this.onLeavingPlanification();
                 break;
@@ -405,6 +419,13 @@ class Heat implements HeatGame {
             case 'superCool':
                 this.onLeavingSuperCool();
                 break;
+        }
+    }
+
+    private onLeavingSnakeDiscard() {
+        if ((this as any).isCurrentPlayerActive()) {
+            const playerTable = this.getCurrentPlayerTable();
+            playerTable.inplay.setSelectionMode('none');
         }
     }
 
@@ -632,6 +653,10 @@ class Heat implements HeatGame {
     //
     public onUpdateActionButtons(stateName: string, args: any) {
         switch (stateName) {
+            case 'snakeDiscard':
+                this.onEnteringSnakeDiscard(args);
+                break;
+
             case 'planification':
                 this.onEnteringPlanification(args);
                 break;
@@ -648,7 +673,10 @@ class Heat implements HeatGame {
                     document.getElementById(`actSwapUpgrade_button`).classList.add('disabled');
                     (this as any).addActionButton(`actPassSwapUpgrade_button`, _('Pass'), () => this.actPassSwapUpgrade(), null, null, 'red');
                     break;
-
+                case 'snakeDiscard':
+                    (this as any).addActionButton(`actSnakeDiscard_button`, _('Discard selected card'), () => this.actSnakeDiscard());
+                    this.checkSnakeDiscardSelectionState();
+                    break;
                 case 'planification':
                     const planificationArgs = args as EnteringPlanificationArgs;
                     (this as any).addActionButton(`actPlanification_button`, '', () => this.actPlanification());
@@ -868,6 +896,9 @@ class Heat implements HeatGame {
             }
         } else {
             switch (stateName) {
+                case 'snakeDiscard':
+                    (this as any).addActionButton(`actCancelSnakeDiscard_button`, _('Cancel'), () => (this as any).bgaPerformAction('actCancelSnakeDiscard', undefined, { checkAction: false }), null, null, 'gray');
+                    break;
                 case 'planification':
                     (this as any).addActionButton(`actCancelSelection_button`, _('Cancel'), () => this.actCancelSelection(), null, null, 'gray');
                     break;
@@ -1414,6 +1445,8 @@ class Heat implements HeatGame {
             buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
         } else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
             this.checkSwapUpgradeSelectionState();
+        } else if (this.gamedatas.gamestate.name == 'snakeDiscard') {
+            this.checkSnakeDiscardSelectionState();
         }
     }
     
@@ -1423,6 +1456,8 @@ class Heat implements HeatGame {
             const selectionHeats = selection.map(card => args.payingCards[card.id]).reduce((a, b) => a + b, 0);
 
             document.getElementById('actPayHeats_button').classList.toggle('disabled', selectionHeats > args.heatInReserve);
+        } else if (this.gamedatas.gamestate.name == 'snakeDiscard') {
+            this.checkSnakeDiscardSelectionState();
         }
     }
     
@@ -1438,6 +1473,26 @@ class Heat implements HeatGame {
         const marketSelection = this.market?.getSelection() ?? [];
         const handSelection = this.getCurrentPlayerTable()?.hand?.getSelection() ?? [];
         document.getElementById(`actSwapUpgrade_button`).classList.toggle('disabled', marketSelection.length != 1 || handSelection.length != 1);
+    }
+
+    private checkSnakeDiscardSelectionState() {
+        const playerTable = this.getCurrentPlayerTable();
+        const inPlaySelection = playerTable?.inplay?.getSelection() ?? [];
+        document.getElementById(`actSnakeDiscard_button`)?.classList.toggle('disabled', inPlaySelection.length != 1);
+    }
+
+    private actSnakeDiscard() {
+        if(!(this as any).checkAction('actSnakeDiscard')) {
+            return;
+        }
+
+
+        const playerTable = this.getCurrentPlayerTable();
+        const inPlaySelection = playerTable?.inplay?.getSelection() ?? [];
+
+        this.takeAction('actSnakeDiscard', {
+            cardId: inPlaySelection[0].id,
+        });
     }
 
     private actChooseUpgrade() {
@@ -1605,10 +1660,7 @@ class Heat implements HeatGame {
     }
 
     public takeAction(action: string, data?: any) {
-        data = data || {};
-        data.lock = true;
-        const method = data.method === undefined ? 'get' : data.method;
-        (this as any).ajaxcall(`/heat/heat/${action}.html`, data, this, () => {}, undefined, method);
+        (this as any).bgaPerformAction(action, data);
     }
 
     ///////////////////////////////////////////////////
@@ -1645,6 +1697,7 @@ class Heat implements HeatGame {
             'refresh',
             'discard',
             'pDiscard',
+            'snakeDiscard',
             'draw',
             'pDraw',
             'clearPlayedCards',
@@ -1770,11 +1823,7 @@ class Heat implements HeatGame {
     notif_chooseUpgrade(args: NotifChooseUpgradeArgs) {
         const { constructor_id, card } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        if (playerId == this.getPlayerId()) {
-            this.getCurrentPlayerTable().hand.addCard(card);
-        } else {
-            this.market.removeCard(card);
-        }
+        this.getPlayerTable(playerId).inplay.addCard(card);
     }  
 
     notif_swapUpgrade(args: NotifSwapUpgradeArgs) {
@@ -1782,7 +1831,7 @@ class Heat implements HeatGame {
 
         this.market?.addCard(card2);
         if (constructor_id == this.getConstructorId()) {
-            this.getCurrentPlayerTable().hand.addCard(card);
+            this.getCurrentPlayerTable().inplay.addCard(card);
         } else {
             this.market?.addCard(card);
         }
@@ -1804,7 +1853,10 @@ class Heat implements HeatGame {
             // currentPlayerTable.hand.removeAll();
         }
         const nbCards = this.gamedatas.championship ? 1 : 3;
-        this.playersTables.forEach(playerTable => playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + nbCards));
+        this.playersTables.forEach(playerTable => {
+            playerTable.inplay.removeAll();
+            playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + nbCards);
+        });
     } 
     
     notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
@@ -1935,6 +1987,13 @@ class Heat implements HeatGame {
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
         playerTable.discard.addCards(Object.values(cards));
+    }
+
+    notif_snakeDiscard(args: any) {
+        const { constructor_id, card } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        const playerTable = this.getPlayerTable(playerId);
+        playerTable.inplay.removeCard(card);
     }
 
     notif_pDraw(args: NotifPCardsArgs) {

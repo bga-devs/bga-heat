@@ -3560,7 +3560,7 @@ var Heat = /** @class */ (function () {
         reader.addEventListener('load', function (e) {
             var content = e.target.result;
             var circuit = JSON.parse(content);
-            _this.takeAction('actUploadCircuit', { circuit: JSON.stringify(circuit), method: 'post' });
+            _this.ajaxcall("/".concat(_this.game_name, "/").concat(_this.game_name, "/actUploadCircuit.html"), { circuit: JSON.stringify(circuit), lock: true, }, _this, function () { }, undefined, 'post');
         });
     };
     Heat.prototype.initMarketStock = function () {
@@ -3587,6 +3587,15 @@ var Heat = /** @class */ (function () {
             hand.removeAll();
             hand.addCards(Object.values(args.owned));
             hand.setSelectionMode('single');
+        }
+    };
+    Heat.prototype.onEnteringSnakeDiscard = function (args) {
+        var playerTable = this.getCurrentPlayerTable();
+        playerTable.inplay.unselectAll();
+        playerTable.inplay.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
+        var cards = playerTable.inplay.getCards();
+        if (args._private.choice) {
+            playerTable.inplay.selectCard(cards.find(function (card) { return Number(card.id) == Number(args._private.choice); }));
         }
     };
     Heat.prototype.onEnteringPlanification = function (args) {
@@ -3684,6 +3693,9 @@ var Heat = /** @class */ (function () {
         document.getElementById('customActions').innerHTML = '';
         document.getElementById('restartAction').innerHTML = '';
         switch (stateName) {
+            case 'snakeDiscard':
+                this.onLeavingSnakeDiscard();
+                break;
             case 'planification':
                 this.onLeavingPlanification();
                 break;
@@ -3705,6 +3717,12 @@ var Heat = /** @class */ (function () {
             case 'superCool':
                 this.onLeavingSuperCool();
                 break;
+        }
+    };
+    Heat.prototype.onLeavingSnakeDiscard = function () {
+        if (this.isCurrentPlayerActive()) {
+            var playerTable = this.getCurrentPlayerTable();
+            playerTable.inplay.setSelectionMode('none');
         }
     };
     Heat.prototype.onLeavingChooseSpeed = function () {
@@ -3908,6 +3926,9 @@ var Heat = /** @class */ (function () {
         var _this = this;
         var _a, _b, _c, _d;
         switch (stateName) {
+            case 'snakeDiscard':
+                this.onEnteringSnakeDiscard(args);
+                break;
             case 'planification':
                 this.onEnteringPlanification(args);
                 break;
@@ -3922,6 +3943,10 @@ var Heat = /** @class */ (function () {
                     this.addActionButton("actSwapUpgrade_button", _('Swap selected cards'), function () { return _this.actSwapUpgrade(); });
                     document.getElementById("actSwapUpgrade_button").classList.add('disabled');
                     this.addActionButton("actPassSwapUpgrade_button", _('Pass'), function () { return _this.actPassSwapUpgrade(); }, null, null, 'red');
+                    break;
+                case 'snakeDiscard':
+                    this.addActionButton("actSnakeDiscard_button", _('Discard selected card'), function () { return _this.actSnakeDiscard(); });
+                    this.checkSnakeDiscardSelectionState();
                     break;
                 case 'planification':
                     var planificationArgs = args;
@@ -4104,6 +4129,9 @@ var Heat = /** @class */ (function () {
         }
         else {
             switch (stateName) {
+                case 'snakeDiscard':
+                    this.addActionButton("actCancelSnakeDiscard_button", _('Cancel'), function () { return _this.bgaPerformAction('actCancelSnakeDiscard', undefined, { checkAction: false }); }, null, null, 'gray');
+                    break;
                 case 'planification':
                     this.addActionButton("actCancelSelection_button", _('Cancel'), function () { return _this.actCancelSelection(); }, null, null, 'gray');
                     break;
@@ -4405,12 +4433,18 @@ var Heat = /** @class */ (function () {
         else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
             this.checkSwapUpgradeSelectionState();
         }
+        else if (this.gamedatas.gamestate.name == 'snakeDiscard') {
+            this.checkSnakeDiscardSelectionState();
+        }
     };
     Heat.prototype.onInPlayCardSelectionChange = function (selection) {
         if (this.gamedatas.gamestate.name == 'payHeats') {
             var args_1 = this.gamedatas.gamestate.args;
             var selectionHeats = selection.map(function (card) { return args_1.payingCards[card.id]; }).reduce(function (a, b) { return a + b; }, 0);
             document.getElementById('actPayHeats_button').classList.toggle('disabled', selectionHeats > args_1.heatInReserve);
+        }
+        else if (this.gamedatas.gamestate.name == 'snakeDiscard') {
+            this.checkSnakeDiscardSelectionState();
         }
     };
     Heat.prototype.onMarketSelectionChange = function (selection) {
@@ -4426,6 +4460,23 @@ var Heat = /** @class */ (function () {
         var marketSelection = (_b = (_a = this.market) === null || _a === void 0 ? void 0 : _a.getSelection()) !== null && _b !== void 0 ? _b : [];
         var handSelection = (_e = (_d = (_c = this.getCurrentPlayerTable()) === null || _c === void 0 ? void 0 : _c.hand) === null || _d === void 0 ? void 0 : _d.getSelection()) !== null && _e !== void 0 ? _e : [];
         document.getElementById("actSwapUpgrade_button").classList.toggle('disabled', marketSelection.length != 1 || handSelection.length != 1);
+    };
+    Heat.prototype.checkSnakeDiscardSelectionState = function () {
+        var _a, _b, _c;
+        var playerTable = this.getCurrentPlayerTable();
+        var inPlaySelection = (_b = (_a = playerTable === null || playerTable === void 0 ? void 0 : playerTable.inplay) === null || _a === void 0 ? void 0 : _a.getSelection()) !== null && _b !== void 0 ? _b : [];
+        (_c = document.getElementById("actSnakeDiscard_button")) === null || _c === void 0 ? void 0 : _c.classList.toggle('disabled', inPlaySelection.length != 1);
+    };
+    Heat.prototype.actSnakeDiscard = function () {
+        var _a, _b;
+        if (!this.checkAction('actSnakeDiscard')) {
+            return;
+        }
+        var playerTable = this.getCurrentPlayerTable();
+        var inPlaySelection = (_b = (_a = playerTable === null || playerTable === void 0 ? void 0 : playerTable.inplay) === null || _a === void 0 ? void 0 : _a.getSelection()) !== null && _b !== void 0 ? _b : [];
+        this.takeAction('actSnakeDiscard', {
+            cardId: inPlaySelection[0].id,
+        });
     };
     Heat.prototype.actChooseUpgrade = function () {
         if (!this.checkAction('actChooseUpgrade')) {
@@ -4556,10 +4607,7 @@ var Heat = /** @class */ (function () {
         this.takeAction('actGiveUp');
     };
     Heat.prototype.takeAction = function (action, data) {
-        data = data || {};
-        data.lock = true;
-        var method = data.method === undefined ? 'get' : data.method;
-        this.ajaxcall("/heat/heat/".concat(action, ".html"), data, this, function () { }, undefined, method);
+        this.bgaPerformAction(action, data);
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
@@ -4594,6 +4642,7 @@ var Heat = /** @class */ (function () {
             'refresh',
             'discard',
             'pDiscard',
+            'snakeDiscard',
             'draw',
             'pDraw',
             'clearPlayedCards',
@@ -4712,19 +4761,14 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_chooseUpgrade = function (args) {
         var constructor_id = args.constructor_id, card = args.card;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        if (playerId == this.getPlayerId()) {
-            this.getCurrentPlayerTable().hand.addCard(card);
-        }
-        else {
-            this.market.removeCard(card);
-        }
+        this.getPlayerTable(playerId).inplay.addCard(card);
     };
     Heat.prototype.notif_swapUpgrade = function (args) {
         var _a, _b;
         var constructor_id = args.constructor_id, card = args.card, card2 = args.card2;
         (_a = this.market) === null || _a === void 0 ? void 0 : _a.addCard(card2);
         if (constructor_id == this.getConstructorId()) {
-            this.getCurrentPlayerTable().hand.addCard(card);
+            this.getCurrentPlayerTable().inplay.addCard(card);
         }
         else {
             (_b = this.market) === null || _b === void 0 ? void 0 : _b.addCard(card);
@@ -4746,7 +4790,10 @@ var Heat = /** @class */ (function () {
             // currentPlayerTable.hand.removeAll();
         }
         var nbCards = this.gamedatas.championship ? 1 : 3;
-        this.playersTables.forEach(function (playerTable) { return playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + nbCards); });
+        this.playersTables.forEach(function (playerTable) {
+            playerTable.inplay.removeAll();
+            playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() + nbCards);
+        });
     };
     Heat.prototype.notif_updatePlanification = function (args) {
         this.updatePlannedCards(args.args._private.selection);
@@ -4927,6 +4974,12 @@ var Heat = /** @class */ (function () {
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
         playerTable.discard.addCards(Object.values(cards));
+    };
+    Heat.prototype.notif_snakeDiscard = function (args) {
+        var constructor_id = args.constructor_id, card = args.card;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        var playerTable = this.getPlayerTable(playerId);
+        playerTable.inplay.removeCard(card);
     };
     Heat.prototype.notif_pDraw = function (args) {
         var constructor_id = args.constructor_id, areSponsors = args.areSponsors;

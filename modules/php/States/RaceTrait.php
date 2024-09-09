@@ -2,6 +2,8 @@
 
 namespace HEAT\States;
 
+use \Bga\GameFramework\Actions\CheckAction;
+
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
 use HEAT\Core\Stats;
@@ -499,6 +501,7 @@ trait RaceTrait
     $this->updateActivePlayersSnakeDiscard();
   }
 
+  #[CheckAction(false)]
   public function actCancelSnakeDiscard()
   {
     $this->gamestate->checkPossibleAction('actCancelSnakeDiscard');
