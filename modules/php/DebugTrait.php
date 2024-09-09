@@ -14,12 +14,6 @@ use HEAT\Helpers\Collection;
 
 trait DebugTrait
 {
-  function test()
-  {
-    $t = file_get_contents(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
-    var_dump($t);
-  }
-
   function tp()
   {
     $round = Globals::getDraftRound();
@@ -89,7 +83,8 @@ trait DebugTrait
     $this->DbQuery("UPDATE `cards` SET `type` = 111 WHERE card_location = 'hand-$constructorId'");
   }
 
-  function debug_setPodium(?int $constructorId = null, int $rank) {
+  function debug_setPodium(?int $constructorId = null, int $rank)
+  {
     $this->DbQuery("UPDATE constructors SET `turn` = 3, car_cell = -$rank WHERE `id` = $constructorId");
   }
 
