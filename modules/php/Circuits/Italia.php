@@ -9,7 +9,7 @@ $circuitDatas = [
   'stressCards' => 3,
   'heatCards' => 6,
   'startingCells' => [983, 981, 971, 969, 963, 961, 955, 951],
-  'podium' => ['x' => 1488, 'y' => 108, 'a' => 0],
+  'podium' => ['x' => 1488, 'y' => 108, 'size' => 8],
   'corners' => [
     [
       'position' => 10,

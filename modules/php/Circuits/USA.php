@@ -59,7 +59,7 @@ $circuitDatas = [
     ],
   ],
   'weatherCardPos' => ['x' => 119, 'y' => 288],
-  'podium' => ['x' => 376, 'y' => 82, 'a' => 0],
+  'podium' => ['x' => 376, 'y' => 82, 'size' => 8],
 
   'startingCells' => [831, 839, 833, 843, 847, 855, 861, 869],
 

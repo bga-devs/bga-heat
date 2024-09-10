@@ -2,14 +2,30 @@ const MAP_WIDTH = 1650;
 const MAP_HEIGHT = 1100;
 
 const LEADERBOARD_POSITIONS = {
-    1: { x: 0, y: 0, a: 0 },
-    2: { x: -77, y: 52, a: 0 },
-    3: { x: 77, y: 52, a: 0 },
-    4: { x: 0, y: 128, a: 0 },
-    5: { x: 0, y: 180, a: 0 },
-    6: { x: 0, y: 232, a: 0 },
-    7: { x: 0, y: 284, a: 0 },
-    8: { x: 0, y: 336, a: 0 },
+    8: {
+        1: { x: 0, y: 0, a: 0 },
+        2: { x: -77, y: 52, a: 0 },
+        3: { x: 77, y: 52, a: 0 },
+        4: { x: 0, y: 128, a: 0 },
+        5: { x: 0, y: 180, a: 0 },
+        6: { x: 0, y: 232, a: 0 },
+        7: { x: 0, y: 284, a: 0 },
+        8: { x: 0, y: 336, a: 0 },
+    },
+    12: {
+        1: { x: 0, y: 0, a: 0 },
+        2: { x: -77, y: 52, a: 0 },
+        3: { x: 77, y: 52, a: 0 },
+        4: { x: 0, y: 128, a: 0 },
+        5: { x: 0, y: 180, a: 0 },
+        6: { x: 0, y: 232, a: 0 },
+        7: { x: -77, y: 284, a: 0 },
+        8: { x: 0, y: 284, a: 0 },
+        9: { x: 77, y: 284, a: 0 },
+        10: { x: -77, y: 336, a: 0 },
+        11: { x: 0, y: 336, a: 0 },
+        12: { x: 77, y: 336, a: 0 },
+    }
 };
 
 const WEATHER_TOKENS_ON_SECTOR_TENT = [0, 4, 5];
@@ -244,8 +260,9 @@ class Circuit {
 
     private getPodiumPosition(pos: number) {
         const cell = structuredClone(this.circuitDatas.podium);
-        cell.x += LEADERBOARD_POSITIONS[pos].x;
-        cell.y += LEADERBOARD_POSITIONS[pos].y;
+        const leaderboardSize = this.circuitDatas.podium.size ?? 8;
+        cell.x += LEADERBOARD_POSITIONS[leaderboardSize][pos].x;
+        cell.y += LEADERBOARD_POSITIONS[leaderboardSize][pos].y;
         return cell;
     }
 
@@ -282,7 +299,7 @@ class Circuit {
         if (cell) {
             car.style.setProperty('--x', `${cell.x}px`);
             car.style.setProperty('--y', `${cell.y}px`);
-            car.style.setProperty('--r', `${cell.a}deg`);
+            car.style.setProperty('--r', `${cell.a ?? 0}deg`);
         }
     }
 

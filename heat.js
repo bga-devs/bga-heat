@@ -2433,14 +2433,30 @@ var EventCardsManager = /** @class */ (function () {
 var MAP_WIDTH = 1650;
 var MAP_HEIGHT = 1100;
 var LEADERBOARD_POSITIONS = {
-    1: { x: 0, y: 0, a: 0 },
-    2: { x: -77, y: 52, a: 0 },
-    3: { x: 77, y: 52, a: 0 },
-    4: { x: 0, y: 128, a: 0 },
-    5: { x: 0, y: 180, a: 0 },
-    6: { x: 0, y: 232, a: 0 },
-    7: { x: 0, y: 284, a: 0 },
-    8: { x: 0, y: 336, a: 0 },
+    8: {
+        1: { x: 0, y: 0, a: 0 },
+        2: { x: -77, y: 52, a: 0 },
+        3: { x: 77, y: 52, a: 0 },
+        4: { x: 0, y: 128, a: 0 },
+        5: { x: 0, y: 180, a: 0 },
+        6: { x: 0, y: 232, a: 0 },
+        7: { x: 0, y: 284, a: 0 },
+        8: { x: 0, y: 336, a: 0 },
+    },
+    12: {
+        1: { x: 0, y: 0, a: 0 },
+        2: { x: -77, y: 52, a: 0 },
+        3: { x: 77, y: 52, a: 0 },
+        4: { x: 0, y: 128, a: 0 },
+        5: { x: 0, y: 180, a: 0 },
+        6: { x: 0, y: 232, a: 0 },
+        7: { x: -77, y: 284, a: 0 },
+        8: { x: 0, y: 284, a: 0 },
+        9: { x: 77, y: 284, a: 0 },
+        10: { x: -77, y: 336, a: 0 },
+        11: { x: 0, y: 336, a: 0 },
+        12: { x: 77, y: 336, a: 0 },
+    }
 };
 var WEATHER_TOKENS_ON_SECTOR_TENT = [0, 4, 5];
 var EVENTS_PRESS_CORNERS = {
@@ -2642,9 +2658,11 @@ var Circuit = /** @class */ (function () {
         this.game.setTooltip(weatherTokenDiv.id, this.game.getWeatherTokenTooltip(type, cardType));
     };
     Circuit.prototype.getPodiumPosition = function (pos) {
+        var _a;
         var cell = structuredClone(this.circuitDatas.podium);
-        cell.x += LEADERBOARD_POSITIONS[pos].x;
-        cell.y += LEADERBOARD_POSITIONS[pos].y;
+        var leaderboardSize = (_a = this.circuitDatas.podium.size) !== null && _a !== void 0 ? _a : 8;
+        cell.x += LEADERBOARD_POSITIONS[leaderboardSize][pos].x;
+        cell.y += LEADERBOARD_POSITIONS[leaderboardSize][pos].y;
         return cell;
     };
     Circuit.prototype.getCellPosition = function (carCell) {
@@ -2654,6 +2672,7 @@ var Circuit = /** @class */ (function () {
         return this.circuitDatas.cells[carCell];
     };
     Circuit.prototype.createCar = function (constructor) {
+        var _a;
         var car = document.getElementById("car-".concat(constructor.id));
         if (!car) {
             car = document.createElement('div');
@@ -2679,7 +2698,7 @@ var Circuit = /** @class */ (function () {
         if (cell) {
             car.style.setProperty('--x', "".concat(cell.x, "px"));
             car.style.setProperty('--y', "".concat(cell.y, "px"));
-            car.style.setProperty('--r', "".concat(cell.a, "deg"));
+            car.style.setProperty('--r', "".concat((_a = cell.a) !== null && _a !== void 0 ? _a : 0, "deg"));
         }
     };
     Circuit.prototype.moveCar = function (constructorId, carCell, path, totalSpeed) {

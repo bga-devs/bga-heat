@@ -34,6 +34,9 @@ interface Cell {
     y: number;
     a: number;
 }
+interface Podium  extends Cell {
+    size: number;
+}
 
 interface Corner {
     id?: number;
@@ -69,7 +72,7 @@ interface CircuitDatas {
     cells: { [id: number]:  Cell };
     corners: { [id: number]: Corner };
     weatherCardPos: Cell;
-    podium: Cell;
+    podium: Podium;
 }
 
 interface HeatGamedatas {

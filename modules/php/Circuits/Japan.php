@@ -20,9 +20,9 @@ $circuitDatas = [
     969
   ],
   "podium"         => [
-    "x" => 0,
-    "y" => 0,
-    "a" => 0
+    "x" => 774,
+    "y" => 93,
+    'size' => 12
   ],
   "weatherCardPos" => [
     "x" => 81,
