@@ -4414,12 +4414,15 @@ var Heat = /** @class */ (function () {
             var minAllowed = Math.max(1, gear - maxGearChange);
             var maxAllowed = Math.min(4, gear + maxGearChange);
             var allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
-            var useHeat = allowed && Math.abs(selection.length - gear) == 2;
+            var useHeat = allowed && Math.abs(selection.length - gear) == 2 ? 1 : 0;
+            if (privateArgs_1.flooded && selection.length < gear) {
+                useHeat++;
+            }
             var label = '';
             if (allowed) {
                 label = clutteredHand ?
                     _('Unclutter hand with selected cards') :
-                    "".concat(_('Play selected cards'), " (").concat(_('Gear:'), " ").concat(gear, " \u21D2 ").concat(selection.length, " ").concat(formatTextIcons(useHeat ? '[Heat]' : ''), ")");
+                    "".concat(_('Play selected cards'), " (").concat(_('Gear:'), " ").concat(gear, " \u21D2 ").concat(selection.length, " ").concat(formatTextIcons(useHeat > 0 ? ", ".concat(useHeat, "[Heat]") : ''), ")");
             }
             else {
                 label = _('Select between ${min} and ${max} cards').replace('${min}', "".concat(minAllowed)).replace('${max}', "".concat(maxAllowed));

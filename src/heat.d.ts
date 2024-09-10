@@ -136,6 +136,7 @@ interface EnteringPlanificationPrivateArgs {
     boostingCardIds: number[];
     clutteredHand: boolean;
     canSkipEndRace: boolean;
+    flooded: boolean;
 }
 
 interface EnteringPlanificationArgs {    

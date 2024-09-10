@@ -582,4 +582,9 @@ class Circuit
     $length = $this->getLength();
     return ($cornerPos - $position - 1 + $length) % $length;
   }
+
+  public function getFloodedSpaces()
+  {
+    return $this->datas['floodedSpaces'];
+  }
 }

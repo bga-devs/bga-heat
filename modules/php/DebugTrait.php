@@ -14,7 +14,7 @@ use HEAT\Helpers\Collection;
 
 trait DebugTrait
 {
-  function tp()
+  function debug_tp()
   {
     $round = Globals::getDraftRound();
     $turnOrder = Constructors::getTurnOrder();
@@ -32,29 +32,28 @@ trait DebugTrait
     //    var_dump($this->getCircuit()->isFree(7, 1));
   }
 
-  function move($speed)
+  function debug_move($speed)
   {
     $constructor = Constructors::getActive();
     var_dump($this->getCircuit()->getReachedCell($constructor, $speed));
   }
 
-  function discard()
+  function debug_discard()
   {
     $this->actDiscard([]);
   }
 
-  function discardDeck()
+  function debug_discardDeck()
   {
     $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'deck', 'discard')");
   }
 
-  function discardEngine()
+  function debug_discardEngine()
   {
     $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'engine', 'discard')");
   }
 
-  // endRaceExcept(1)
-  function endRaceExcept($constructorId = null)
+  function debug_endRaceExcept(?int $constructorId = null)
   {
     if ($constructorId === null) {
       $constructor = Constructors::getActive();
@@ -63,8 +62,7 @@ trait DebugTrait
     $this->DbQuery("UPDATE constructors SET `turn` = 3 WHERE `id` <> $constructorId");
   }
 
-  // endRace()
-  function endRace($constructorId = null)
+  function debug_endRace(?int $constructorId = null)
   {
     $sql = 'UPDATE constructors SET `turn` = 3';
     if ($constructorId != null) {
@@ -73,7 +71,7 @@ trait DebugTrait
     $this->DbQuery($sql);
   }
 
-  function clutterHand($constructorId = null)
+  function debug_clutterHand(?int $constructorId = null)
   {
     if ($constructorId === null) {
       $constructor = Constructors::getActive();
@@ -95,7 +93,7 @@ trait DebugTrait
     $cards = $constructor->scrapCards($n);
     Notifications::scrapCards($constructor, $cards);
   }*/
-  function drefill($constructorId)
+  function debug_refill($constructorId)
   {
     $constructor = Constructors::get($constructorId);
     $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'deck', 'discard')");

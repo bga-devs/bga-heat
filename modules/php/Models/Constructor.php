@@ -224,6 +224,11 @@ class Constructor extends \HEAT\Helpers\DB_Model
     });
   }
 
+  public function getHeatsInEngine(): int
+  {
+    return $this->getEngine()->count();
+  }
+
   public function getStressesInHand()
   {
     return $this->getHand()->filter(function ($card) {

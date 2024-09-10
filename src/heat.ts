@@ -1406,12 +1406,15 @@ class Heat implements HeatGame {
             const minAllowed = Math.max(1, gear - maxGearChange);
             const maxAllowed = Math.min(4, gear + maxGearChange);
             let allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
-            const useHeat = allowed && Math.abs(selection.length - gear) == 2;
+            let useHeat = allowed && Math.abs(selection.length - gear) == 2 ? 1 : 0;
+            if (privateArgs.flooded && selection.length < gear) {
+                useHeat++;
+            }
             let label = '';
             if (allowed) {
                 label = clutteredHand ? 
                 _('Unclutter hand with selected cards') :
-                `${_('Play selected cards')} (${_('Gear:')} ${gear} ⇒ ${selection.length} ${formatTextIcons(useHeat ? '[Heat]' : '')})`;
+                `${_('Play selected cards')} (${_('Gear:')} ${gear} ⇒ ${selection.length} ${formatTextIcons(useHeat > 0 ? `, ${useHeat}[Heat]` : '')})`;
             } else {
                 label = _('Select between ${min} and ${max} cards').replace('${min}', `${minAllowed}`).replace('${max}', `${maxAllowed}`);
             }

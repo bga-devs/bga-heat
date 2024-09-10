@@ -182,6 +182,8 @@ trait RoundTrait
         !empty(Globals::getFinishedConstructors()) &&
         ($constructor->getTurn() < $this->getNbrLaps() || $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4);
 
+      $flooded = in_array($constructor->getCarCell(), $this->getCircuit()->getFloodedSpaces());
+
       $args['_private'][$pId] = [
         'cards' => $hand->getIds(),
         'speeds' => $speeds,
@@ -190,6 +192,7 @@ trait RoundTrait
         'boostingCardIds' => $boostingCardIds ?? [],
         'clutteredHand' => $clutteredHand,
         'canSkipEndRace' => $canSkipEndRace,
+        'flooded' => $flooded,
       ];
     }
 
@@ -207,10 +210,12 @@ trait RoundTrait
     if ($newGear <= 0 || $newGear > 4) {
       throw new UserException(clienttranslate('Invalid number of cards. Should not happen.'));
     }
-    if (abs($newGear - $constructor->getGear()) > 1) {
-      if ($constructor->hasNoHeat()) {
-        throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 2.'));
-      }
+    $heatCost = abs($newGear - $constructor->getGear()) > 1 ? 1 : 0;
+    if ($args['flooded'] && $newGear < $constructor->getGear()) {
+      $heatCost++;
+    }
+    if ($heatCost > $constructor->getHeatsInEngine()) {
+      throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 2.')); // TODO change message in case of 1 gear change + flooded?
     }
     if ($args['clutteredHand']) {
       foreach ($constructor->getHand() as $card) {
