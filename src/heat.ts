@@ -1537,7 +1537,7 @@ class Heat implements HeatGame {
     }
   	
     public actCancelSelection() {
-        this.takeAction('actCancelSelection');
+        (this as any).bgaPerformAction('actCancelSelection', undefined, { checkAction: false });
     }
     
     private actChooseSpeed(speed: number) {

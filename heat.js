@@ -4511,7 +4511,7 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.actCancelSelection = function () {
-        this.takeAction('actCancelSelection');
+        this.bgaPerformAction('actCancelSelection', undefined, { checkAction: false });
     };
     Heat.prototype.actChooseSpeed = function (speed) {
         if (!this.checkAction('actChooseSpeed')) {
