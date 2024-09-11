@@ -585,6 +585,6 @@ class Circuit
 
   public function getFloodedSpaces()
   {
-    return $this->datas['floodedSpaces'];
+    return $this->datas['floodedSpaces'] ?? [];
   }
 }

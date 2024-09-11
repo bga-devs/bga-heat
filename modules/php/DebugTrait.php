@@ -104,74 +104,38 @@ trait DebugTrait
   }
 
   /*
-   * loadBug: in studio, type loadBug(20762) into the table chat to load a bug report from production
-   * client side JavaScript will fetch each URL below in sequence, then refresh the page
-   */
-  public function loadBug($reportId)
-  {
-    $db = explode('_', self::getUniqueValueFromDB("SELECT SUBSTRING_INDEX(DATABASE(), '_', -2)"));
-    $game = $db[0];
-    $tableId = $db[1];
-    self::notifyAllPlayers(
-      'loadBug',
-      "Trying to load <a href='https://boardgamearena.com/bug?id=$reportId' target='_blank'>bug report $reportId</a>",
-      [
-        'urls' => [
-          // Emulates "load bug report" in control panel
-          "https://studio.boardgamearena.com/admin/studio/getSavedGameStateFromProduction.html?game=$game&report_id=$reportId&table_id=$tableId",
-
-          // Emulates "load 1" at this table
-          "https://studio.boardgamearena.com/table/table/loadSaveState.html?table=$tableId&state=1",
-
-          // Calls the function below to update SQL
-          "https://studio.boardgamearena.com/1/$game/$game/loadBugSQL.html?table=$tableId&report_id=$reportId",
-
-          // Emulates "clear PHP cache" in control panel
-          // Needed at the end because BGA is caching player info
-          "https://studio.boardgamearena.com/admin/studio/clearGameserverPhpCache.html?game=$game",
-        ],
-      ]
-    );
-  }
-
-  /*
    * loadBugSQL: in studio, this is one of the URLs triggered by loadBug() above
    */
-  public function loadBugSQL($reportId)
+  public function loadBugReportSQL(int $reportId, array $studioPlayers): void
   {
-    $studioPlayer = $this->getCurrentPlayerId();
-    $players = self::getObjectListFromDb('SELECT player_id FROM player', true);
+    $prodPlayers = $this->getObjectListFromDb("SELECT `player_id` FROM `player`", true);
+    $prodCount = count($prodPlayers);
+    $studioCount = count($studioPlayers);
+    if ($prodCount != $studioCount) {
+        throw new BgaVisibleSystemException("Incorrect player count (bug report has $prodCount players, studio table has $studioCount players)");
+    }
 
     // Change for your game
     // We are setting the current state to match the start of a player's turn if it's already game over
-    $sql = ['UPDATE global SET global_value=2 WHERE global_id=1 AND global_value=99'];
-    $map = [];
-    foreach ($players as $pId) {
-      $map[(int) $pId] = (int) $studioPlayer;
+    $sql = ['UPDATE global SET global_value='.ST_DRAFT_GARAGE_SNAKE_DISCARD.' WHERE global_id=1 AND global_value=99'];
+    foreach ($prodPlayers as $index => $prodId) {
+      $studioId = $studioPlayers[$index];
 
       // All games can keep this SQL
-      $sql[] = "UPDATE player SET player_id=$studioPlayer WHERE player_id=$pId";
-      $sql[] = "UPDATE global SET global_value=$studioPlayer WHERE global_value=$pId";
-      $sql[] = "UPDATE stats SET stats_player_id=$studioPlayer WHERE stats_player_id=$pId";
+      $sql[] = "UPDATE player SET player_id=$studioId WHERE player_id=$prodId";
+      $sql[] = "UPDATE global SET global_value=$studioId WHERE global_value=$prodId";
+      $sql[] = "UPDATE stats SET stats_player_id=$studioId WHERE stats_player_id=$prodId";
 
       // Add game-specific SQL update the tables for your game
-      $sql[] = "UPDATE constructors SET player_id=$studioPlayer WHERE player_id=$pId";
+      $sql[] = "UPDATE constructors SET player_id=$studioId WHERE player_id=$prodId";
 
       // This could be improved, it assumes you had sequential studio accounts before loading
       // e.g., quietmint0, quietmint1, quietmint2, etc. are at the table
-      $studioPlayer++;
+      $studioId++;
     }
-    $msg =
-      "<b>Loaded <a href='https://boardgamearena.com/bug?id=$reportId' target='_blank'>bug report $reportId</a></b><hr><ul><li>" .
-      implode(';</li><li>', $sql) .
-      ';</li></ul>';
-    self::warn($msg);
-    self::notifyAllPlayers('message', $msg, []);
 
     foreach ($sql as $q) {
-      self::DbQuery($q);
+      $this->DbQuery($q);
     }
-
-    self::reloadPlayersBasicInfos();
   }
 }
