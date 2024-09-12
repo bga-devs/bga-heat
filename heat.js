@@ -4491,44 +4491,29 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.actSnakeDiscard = function () {
         var _a, _b;
-        if (!this.checkAction('actSnakeDiscard')) {
-            return;
-        }
         var playerTable = this.getCurrentPlayerTable();
         var inPlaySelection = (_b = (_a = playerTable === null || playerTable === void 0 ? void 0 : playerTable.inplay) === null || _a === void 0 ? void 0 : _a.getSelection()) !== null && _b !== void 0 ? _b : [];
-        this.takeAction('actSnakeDiscard', {
+        this.bgaPerformAction('actSnakeDiscard', {
             cardId: inPlaySelection[0].id,
         });
     };
     Heat.prototype.actChooseUpgrade = function () {
-        if (!this.checkAction('actChooseUpgrade')) {
-            return;
-        }
-        this.takeAction('actChooseUpgrade', {
+        this.bgaPerformAction('actChooseUpgrade', {
             cardId: this.market.getSelection()[0].id,
         });
     };
     Heat.prototype.actSwapUpgrade = function () {
-        if (!this.checkAction('actSwapUpgrade')) {
-            return;
-        }
-        this.takeAction('actSwapUpgrade', {
+        this.bgaPerformAction('actSwapUpgrade', {
             marketCardId: this.market.getSelection()[0].id,
             ownedCardId: this.getCurrentPlayerTable().hand.getSelection()[0].id,
         });
     };
     Heat.prototype.actPassSwapUpgrade = function () {
-        if (!this.checkAction('actPassSwapUpgrade')) {
-            return;
-        }
-        this.takeAction('actPassSwapUpgrade');
+        this.bgaPerformAction('actPassSwapUpgrade');
     };
     Heat.prototype.actPlanification = function () {
-        if (!this.checkAction('actPlan')) {
-            return;
-        }
         var selectedCards = this.getCurrentPlayerTable().hand.getSelection();
-        this.takeAction('actPlan', {
+        this.bgaPerformAction('actPlan', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
     };
@@ -4536,100 +4521,61 @@ var Heat = /** @class */ (function () {
         this.bgaPerformAction('actCancelSelection', undefined, { checkAction: false });
     };
     Heat.prototype.actChooseSpeed = function (speed) {
-        if (!this.checkAction('actChooseSpeed')) {
-            return;
-        }
-        this.takeAction('actChooseSpeed', {
+        this.bgaPerformAction('actChooseSpeed', {
             speed: speed
         });
     };
     Heat.prototype.actSlipstream = function (speed) {
-        if (!this.checkAction('actSlipstream')) {
-            return;
-        }
-        this.takeAction('actSlipstream', {
+        this.bgaPerformAction('actSlipstream', {
             speed: speed
         });
     };
     Heat.prototype.actPassReact = function () {
-        if (!this.checkAction('actPassReact')) {
-            return;
-        }
-        this.takeAction('actPassReact');
+        this.bgaPerformAction('actPassReact');
     };
     Heat.prototype.actCryCauseNotEnoughHeatToPay = function () {
-        if (!this.checkAction('actCryCauseNotEnoughHeatToPay')) {
-            return;
-        }
-        this.takeAction('actCryCauseNotEnoughHeatToPay');
+        this.bgaPerformAction('actCryCauseNotEnoughHeatToPay');
     };
     Heat.prototype.actReact = function (symbol, arg) {
-        if (!this.checkAction('actReact')) {
-            return;
-        }
-        this.takeAction('actReact', {
+        this.bgaPerformAction('actReact', {
             symbol: symbol,
             arg: arg
         });
     };
     Heat.prototype.actRefresh = function (cardId) {
-        if (!this.checkAction('actRefresh')) {
-            return;
-        }
-        this.takeAction('actRefresh', {
+        this.bgaPerformAction('actRefresh', {
             cardId: cardId,
         });
     };
     Heat.prototype.actPayHeats = function (selectedCards) {
-        if (!this.checkAction('actPayHeats')) {
-            return;
-        }
-        this.takeAction('actPayHeats', {
+        this.bgaPerformAction('actPayHeats', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
     };
     Heat.prototype.actDiscard = function (selectedCards) {
-        if (!this.checkAction('actDiscard')) {
-            return;
-        }
-        this.takeAction('actDiscard', {
+        this.bgaPerformAction('actDiscard', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
     };
     Heat.prototype.actSalvage = function () {
-        if (!this.checkAction('actSalvage')) {
-            return;
-        }
         var selectedCards = this.market.getSelection();
-        this.takeAction('actSalvage', {
+        this.bgaPerformAction('actSalvage', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return -card.id; })),
         });
     };
     Heat.prototype.actSuperCool = function (n) {
-        if (!this.checkAction('actSuperCool')) {
-            return;
-        }
-        this.takeAction('actSuperCool', {
+        this.bgaPerformAction('actSuperCool', {
             n: n
         });
     };
     Heat.prototype.actConfirmResults = function () {
-        if (!this.checkAction('actConfirmResults')) {
-            return;
-        }
-        this.takeAction('actConfirmResults');
+        this.bgaPerformAction('actConfirmResults');
     };
     Heat.prototype.actQuitGame = function () {
-        this.takeAction('actQuitGame');
+        this.bgaPerformAction('actQuitGame', undefined, { checkAction: false });
     };
     Heat.prototype.actGiveUp = function () {
-        if (!this.checkAction('actGiveUp')) {
-            return;
-        }
-        this.takeAction('actGiveUp');
-    };
-    Heat.prototype.takeAction = function (action, data) {
-        this.bgaPerformAction(action, data);
+        this.bgaPerformAction('actGiveUp');
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications

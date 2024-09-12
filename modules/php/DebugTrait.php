@@ -106,7 +106,7 @@ trait DebugTrait
   /*
    * loadBugSQL: in studio, this is one of the URLs triggered by loadBug() above
    */
-  public function loadBugReportSQL(int $reportId, array $studioPlayers): void
+  /*public function loadBugReportSQL(int $reportId, array $studioPlayers): void
   {
     $prodPlayers = $this->getObjectListFromDb("SELECT `player_id` FROM `player`", true);
     $prodCount = count($prodPlayers);
@@ -137,5 +137,5 @@ trait DebugTrait
     foreach ($sql as $q) {
       $this->DbQuery($q);
     }
-  }
+  }*/
 }

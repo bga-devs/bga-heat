@@ -1485,56 +1485,35 @@ class Heat implements HeatGame {
     }
 
     private actSnakeDiscard() {
-        if(!(this as any).checkAction('actSnakeDiscard')) {
-            return;
-        }
-
-
         const playerTable = this.getCurrentPlayerTable();
         const inPlaySelection = playerTable?.inplay?.getSelection() ?? [];
 
-        this.takeAction('actSnakeDiscard', {
+        (this as any).bgaPerformAction('actSnakeDiscard', {
             cardId: inPlaySelection[0].id,
         });
     }
 
     private actChooseUpgrade() {
-        if(!(this as any).checkAction('actChooseUpgrade')) {
-            return;
-        }
-
-        this.takeAction('actChooseUpgrade', {
+        (this as any).bgaPerformAction('actChooseUpgrade', {
             cardId: this.market.getSelection()[0].id,
         });
     }
 
     private actSwapUpgrade() {
-        if(!(this as any).checkAction('actSwapUpgrade')) {
-            return;
-        }
-
-        this.takeAction('actSwapUpgrade', {
+        (this as any).bgaPerformAction('actSwapUpgrade', {
             marketCardId: this.market.getSelection()[0].id,
             ownedCardId: this.getCurrentPlayerTable().hand.getSelection()[0].id,
         });
     }
 
     private actPassSwapUpgrade() {
-        if(!(this as any).checkAction('actPassSwapUpgrade')) {
-            return;
-        }
-
-        this.takeAction('actPassSwapUpgrade');
+        (this as any).bgaPerformAction('actPassSwapUpgrade');
     }
   	
     public actPlanification() {
-        if(!(this as any).checkAction('actPlan')) {
-            return;
-        }
-
         const selectedCards = this.getCurrentPlayerTable().hand.getSelection();
 
-        this.takeAction('actPlan', {
+        (this as any).bgaPerformAction('actPlan', {
             cardIds: JSON.stringify(selectedCards.map(card => card.id)),
         });
     }
@@ -1544,126 +1523,74 @@ class Heat implements HeatGame {
     }
     
     private actChooseSpeed(speed: number) {
-        if(!(this as any).checkAction('actChooseSpeed')) {
-            return;
-        }
-
-        this.takeAction('actChooseSpeed', {
+        (this as any).bgaPerformAction('actChooseSpeed', {
             speed
         });
     }
     
     private actSlipstream(speed: number) {
-        if(!(this as any).checkAction('actSlipstream')) {
-            return;
-        }
-
-        this.takeAction('actSlipstream', {
+        (this as any).bgaPerformAction('actSlipstream', {
             speed
         });
     }
     
     private actPassReact() {
-        if(!(this as any).checkAction('actPassReact')) {
-            return;
-        }
-
-        this.takeAction('actPassReact');
+        (this as any).bgaPerformAction('actPassReact');
     }
     
     private actCryCauseNotEnoughHeatToPay() {
-        if(!(this as any).checkAction('actCryCauseNotEnoughHeatToPay')) {
-            return;
-        }
-
-        this.takeAction('actCryCauseNotEnoughHeatToPay');
+        (this as any).bgaPerformAction('actCryCauseNotEnoughHeatToPay');
     }
   	
     public actReact(symbol: string, arg?: number) {
-        if(!(this as any).checkAction('actReact')) {
-            return;
-        }
-
-        this.takeAction('actReact', {
+        (this as any).bgaPerformAction('actReact', {
             symbol,
             arg
         });
     }
   	
     public actRefresh(cardId: number) {
-        if(!(this as any).checkAction('actRefresh')) {
-            return;
-        }
-
-        this.takeAction('actRefresh', {
+        (this as any).bgaPerformAction('actRefresh', {
             cardId,
         });
     }
   	
     public actPayHeats(selectedCards: Card[]) {
-        if(!(this as any).checkAction('actPayHeats')) {
-            return;
-        }
-
-        this.takeAction('actPayHeats', {
+        (this as any).bgaPerformAction('actPayHeats', {
             cardIds: JSON.stringify(selectedCards.map(card => card.id)),
         });
     }
   	
     public actDiscard(selectedCards: Card[]) {
-        if(!(this as any).checkAction('actDiscard')) {
-            return;
-        }
-
-        this.takeAction('actDiscard', {
+        (this as any).bgaPerformAction('actDiscard', {
             cardIds: JSON.stringify(selectedCards.map(card => card.id)),
         });
     }
   	
     public actSalvage() {
-        if(!(this as any).checkAction('actSalvage')) {
-            return;
-        }
-
         const selectedCards = this.market.getSelection();
 
-        this.takeAction('actSalvage', {
+        (this as any).bgaPerformAction('actSalvage', {
             cardIds: JSON.stringify(selectedCards.map(card => -card.id)),
         });
     }
   	
     public actSuperCool(n: number) {
-        if(!(this as any).checkAction('actSuperCool')) {
-            return;
-        }
-
-        this.takeAction('actSuperCool', {
+        (this as any).bgaPerformAction('actSuperCool', {
             n
         });
     }
   	
     public actConfirmResults() {
-        if(!(this as any).checkAction('actConfirmResults')) {
-            return;
-        }
-
-        this.takeAction('actConfirmResults');
+        (this as any).bgaPerformAction('actConfirmResults');
     }
   	
     public actQuitGame() {
-        this.takeAction('actQuitGame');
+        (this as any).bgaPerformAction('actQuitGame', undefined, { checkAction: false });
     }
   	
     public actGiveUp() {
-        if(!(this as any).checkAction('actGiveUp')) {
-            return;
-        }
-
-        this.takeAction('actGiveUp');
-    }
-
-    public takeAction(action: string, data?: any) {
-        (this as any).bgaPerformAction(action, data);
+        (this as any).bgaPerformAction('actGiveUp');
     }
 
     ///////////////////////////////////////////////////
