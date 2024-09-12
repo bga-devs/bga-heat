@@ -60,70 +60,73 @@ html, .mode_3d #game_play_area_background {
   text-align: center;
   
   &.flag {
-    background-position-x: #{0 * 100% / 21};
+    background-position-x: #{0 * 100% / 22};
   }
   &.engine {
-    background-position-x: #{1 * 100% / 21};
+    background-position-x: #{1 * 100% / 22};
   }
   &.heat {
-    background-position-x: #{2 * 100% / 21};
+    background-position-x: #{2 * 100% / 22};
   }
   &.cooldown {
-    background-position-x: #{3 * 100% / 21};
+    background-position-x: #{3 * 100% / 22};
   }
   &.stress {
-    background-position-x: #{4 * 100% / 21};
+    background-position-x: #{4 * 100% / 22};
   }
   &.boost {
-    background-position-x: #{5 * 100% / 21};
+    background-position-x: #{5 * 100% / 22};
   }
   &.speed {
-    background-position-x: #{6 * 100% / 21};
+    background-position-x: #{6 * 100% / 22};
   }
   &.podium {
-    background-position-x: #{7 * 100% / 21};
+    background-position-x: #{7 * 100% / 22};
   }
   &.reduce-stress, &.reduce {
-    background-position-x: #{8 * 100% / 21};
+    background-position-x: #{8 * 100% / 22};
   }
   &.scrap {
-    background-position-x: #{9 * 100% / 21};
+    background-position-x: #{9 * 100% / 22};
   }
   &.direct {
-    background-position-x: #{10 * 100% / 21};
+    background-position-x: #{10 * 100% / 22};
   }
   &.adjust {
-    background-position-x: #{11 * 100% / 21};
+    background-position-x: #{11 * 100% / 22};
   }
   &.forced-heat {
-    background-position-x: #{12 * 100% / 21};
+    background-position-x: #{12 * 100% / 22};
   }
   &.refresh {
-    background-position-x: #{13 * 100% / 21};
+    background-position-x: #{13 * 100% / 22};
   }
   &.salvage {
-    background-position-x: #{14 * 100% / 21};
+    background-position-x: #{14 * 100% / 22};
   }
   &.gear {
-    background-position-x: #{15 * 100% / 21};
+    background-position-x: #{15 * 100% / 22};
   }
   &.mandatory {
-    background-position-x: #{16 * 100% / 21};
+    background-position-x: #{16 * 100% / 22};
   }
   &.slipstream {
-    background-position-x: #{17 * 100% / 21};
+    background-position-x: #{17 * 100% / 22};
   }
   &.one-time {
-    background-position-x: #{18 * 100% / 21};
+    background-position-x: #{18 * 100% / 22};
   }
   &.corner {
-    background-position-x: #{19 * 100% / 21};
+    background-position-x: #{19 * 100% / 22};
   }
   &.accelerate {
-    background-position-x: #{20 * 100% / 21};
+    background-position-x: #{20 * 100% / 22};
   }
   &.super-cool {
-    background-position-x: #{21 * 100% / 21};
+    background-position-x: #{21 * 100% / 22};
+  }
+  &.no-cooldown {
+    background-position-x: #{22 * 100% / 22};
   }
 }
 
@@ -135,6 +138,20 @@ html, .mode_3d #game_play_area_background {
   .icon {
     width: 24px;
     height: 24px;
+  }
+}
+
+.action-button {
+  position: relative;
+  overflow: unset;
+
+  .no-cooldown-warning {
+    position: absolute;
+    background: #d61b1a;
+    border-radius: 5px;
+    padding: 2px;
+    bottom: -8px;
+    right: -8px;
   }
 }
 

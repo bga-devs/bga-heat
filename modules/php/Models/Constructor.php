@@ -249,6 +249,11 @@ class Constructor extends \HEAT\Helpers\DB_Model
   {
     // Cooldown => must have something to cooldown in the hand
     if ($symbol == \COOLDOWN) {
+      $roadCondition = $this->getRoadCondition();
+      if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
+        return false;
+      }
+
       return $this->getHeatsInHand()->count() > 0;
     }
     // Reduce stress => must have stress cards in hand

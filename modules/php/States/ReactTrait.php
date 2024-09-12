@@ -30,11 +30,6 @@ trait ReactTrait
       unset($symbols[$symbol]);
     }
 
-    $roadCondition = $constructor->getRoadCondition();
-    if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
-      unset($symbols[COOLDOWN]);
-    }
-
     // Boost bonus
     $boostInfos = [];
     if (!Globals::isUsedBoost()) {

@@ -831,6 +831,13 @@ class Heat implements HeatGame {
                             this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
                             if (!enabled) {
                                 document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');
+                                if (type === 'cooldown') {
+                                    document.getElementById(`actReact${type}_${number}_button`).insertAdjacentHTML('beforeend', `
+                                        <div class="no-cooldown-warning">
+                                            <div class="no-cooldown icon"></div>
+                                        </div>
+                                    `);
+                                }
                             }
                         });
                     });
