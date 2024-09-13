@@ -16,8 +16,13 @@ trait RoundTrait
 {
   function stStartRound()
   {
-
     Globals::setPlanification([]);
+    $t = [];
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      $t[$cId] = false;
+    }
+    Globals::setPlanificationRevealed($t);
+
     $skipped = Globals::getSkippedPlayers();
     $pIds = Constructors::getAll()
       ->filter(function ($constructor) use ($skipped) {
@@ -29,6 +34,7 @@ trait RoundTrait
       ->toArray();
 
     Globals::setLegendCardDrawn(false);
+
     if (empty($pIds)) {
       $this->gamestate->nextState('planification');
       $this->stEndOfPlanification();
@@ -332,6 +338,9 @@ trait RoundTrait
     $constructor->incStat('rounds');
     unset($planification[$constructor->getPId()]);
     Globals::setPlanification($planification);
+    $planificationDone = Globals::getPlanificationRevealed();
+    $planificationDone[$constructor->getId()] = true;
+    Globals::setPlanificationRevealed($planificationDone);
 
     // Setup gear and reveal cards
     $newGear = count($cardIds);

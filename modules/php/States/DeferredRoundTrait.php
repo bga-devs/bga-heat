@@ -27,19 +27,31 @@ trait DeferredRoundTrait
       if (is_null($currentConstructor)) {
         return true;
       }
+      if ($currentConstructor->isFinished()) {
+        return false;
+      }
+
       $activeConstructor = Constructors::getActive();
       // Someone before in turn order is active => hide
       if ($activeConstructor->getNo() < $currentConstructor->getNo()) {
         return true;
       }
+
       // Current constructor is active => check whether some cards were played or not
       if ($currentConstructor->getId() == $activeConstructor->getId()) {
-        $planification = Globals::getPlanification();
-        return empty($planification[$currentConstructor->getPId()]) && $currentConstructor->getPlayedCards()->empty();
+        $planificationDone = Globals::getPlanificationRevealed();
+        // FALLBACK CODE, REMOVE A BIT LATTER
+        if (empty($planificationDone)) {
+          return !is_null($this->gamestate) && $this->gamestate->state_id() == ST_PLANIFICATION;
+        } else {
+          return !($planificationDone[$currentConstructor->getPId()] ?? false);
+        }
       }
     } catch (\Exception $e) {
       return true;
     }
+
+    return true;
   }
 
   function stInitDeferredRound()

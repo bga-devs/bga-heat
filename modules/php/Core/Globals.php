@@ -18,6 +18,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
   protected static $syncVariables = [
     'customTurnOrders',
     'planification',
+    'planificationRevealed',
     'turnOrder',
     'activeConstructor',
     'finishedConstructors',
@@ -32,6 +33,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
 
     'snakeDiscard' => 'obj',
     'planification' => 'obj',
+    'planificationRevealed' => 'obj',
     'previousPosition' => 'int',
     'positionBeforeSlipstream' => 'int',
     'turnBeforeSlipstream' => 'int',
@@ -84,7 +86,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
    * Fetch all existings variables from DB
    */
   protected static $data = [];
-  public static function fetch()
+  public static function fetch($checkDeferred = true)
   {
     // Turn of LOG to avoid infinite loop (Globals::isLogging() calling itself for fetching)
     $tmp = self::$log;
@@ -102,17 +104,25 @@ class Globals extends \HEAT\Helpers\DB_Manager
     }
     self::$initialized = true;
     self::$log = $tmp;
-    self::checkDeferredIfNeeded();
+    if ($checkDeferred) {
+      self::checkDeferredIfNeeded();
+    }
   }
 
+  private static $recursionPrevention = 0;
   public static function checkDeferredIfNeeded($shouldUseDeferred = null)
   {
+    self::$recursionPrevention++;
+    if (self::$recursionPrevention > 10) {
+      die("Too much recursion in Globals, please report as a bug");
+    }
+
     $shouldUseDeferred = $shouldUseDeferred ?? Game::get()->shouldUsedDeferredDB();
     // Switch to deferred
     if (static::$table == 'global_variables' && $shouldUseDeferred) {
       // Update globals
       static::$table = 'global_variables2';
-      self::fetch();
+      self::fetch(false);
       // Update constructors
       Constructors::$table = 'constructors2';
       Constructors::invalidate();
@@ -123,7 +133,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     if (static::$table == 'global_variables2' && !$shouldUseDeferred) {
       // Update globals
       static::$table = 'global_variables';
-      self::fetch();
+      self::fetch(false);
       // Update constructors
       Constructors::$table = 'constructors';
       Constructors::invalidate();
