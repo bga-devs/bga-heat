@@ -4038,10 +4038,16 @@ var Heat = /** @class */ (function () {
                                     break;
                                 case 'direct':
                                     var directCard = _this.getCurrentPlayerTable().hand.getCards().find(function (card) { return card.id == number; });
-                                    label = "<div class=\"icon direct\"></div>".concat(_("Play from hand"), "\n                                    <br>").concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
+                                    label = "<div class=\"icon direct\"></div>".concat(_("Play from hand"));
+                                    if (directCard) {
+                                        label = "<br>".concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
+                                    }
+                                    else {
+                                        console.warn('card not found in hand to display direct card', number, directCard);
+                                    }
                                     //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
-                                    confirmationMessage = reactArgs_1.crossedFinishLine ? null : _this.getDirectPlayConfirmation(reactArgs_1, directCard);
+                                    confirmationMessage = reactArgs_1.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(reactArgs_1, directCard);
                                     break;
                                 case 'heat':
                                     label = "<div class=\"icon forced-heat\">".concat(number, "</div>");

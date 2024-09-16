@@ -759,12 +759,16 @@ class Heat implements HeatGame {
                                     break;
                                 case 'direct':
                                     const directCard = this.getCurrentPlayerTable().hand.getCards().find(card => card.id == number);
-                                    label = `<div class="icon direct"></div>${_("Play from hand")}
-                                    <br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+                                    label = `<div class="icon direct"></div>${_("Play from hand")}`;
+                                    if (directCard) {
+                                        label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+                                    } else {
+                                        console.warn('card not found in hand to display direct card', number, directCard);
+                                    }
                                     //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
 
-                                    confirmationMessage = reactArgs.crossedFinishLine ? null : this.getDirectPlayConfirmation(reactArgs, directCard);
+                                    confirmationMessage = reactArgs.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(reactArgs, directCard);
                                     break;
                                 case 'heat':
                                     label = `<div class="icon forced-heat">${number}</div>`;
