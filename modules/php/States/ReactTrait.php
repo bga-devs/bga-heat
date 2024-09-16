@@ -219,6 +219,7 @@ trait ReactTrait
     }
     // ACCELERATE
     elseif ($symbol == ACCELERATE) {
+      $oldRoadCondition = $constructor->getRoadCondition();
       $cardId = $arg;
       $card = Cards::getSingle($cardId);
       $n = Globals::getFlippedCards();
@@ -226,6 +227,14 @@ trait ReactTrait
       Notifications::accelerate($constructor, $card, $n);
       // Move car
       $this->moveCar($constructor, $n);
+
+      // Weather might add 1 cooldown
+      $roadCondition = $constructor->getRoadCondition();
+      if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
+        $symbols = Globals::getSymbols();
+        $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
+        Globals::setSymbols($symbols);
+      }
     }
     // SALVAGE
     elseif ($symbol == SALVAGE) {
