@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\States;
+
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
 use HEAT\Core\Stats;
@@ -42,7 +44,7 @@ trait ReactTrait
 
       // Get some infos
       for ($i = 1; $i <= 4; $i++) {
-        list(, , , , , , $boostHeatCosts) = $this->getCircuit()->getReachedCell($constructor, $i, true, true);
+        list(,,,,,, $boostHeatCosts) = $this->getCircuit()->getReachedCell($constructor, $i, true, true);
         $boostInfos[$i] = $boostHeatCosts;
       }
     }
@@ -68,7 +70,7 @@ trait ReactTrait
     // Adrenaline extra info
     $adrenalineWillCrossNextCorner = false;
     if (in_array(ADRENALINE, $doableSymbols)) {
-      list(, $nSpacesForward, , , , , $heatCosts) = $this->getCircuit()->getReachedCell($constructor, 1, true, true);
+      list(, $nSpacesForward,,,,, $heatCosts) = $this->getCircuit()->getReachedCell($constructor, 1, true, true);
       if ($nSpacesForward == 0) {
         Utils::filter($doableSymbols, fn($symbol) => $symbol != ADRENALINE);
       }
@@ -80,7 +82,7 @@ trait ReactTrait
     foreach ($symbols[DIRECT] ?? [] as $cardId) {
       $card = Cards::getSingle($cardId);
       $speed = $card['speed'];
-      list(, , , , , , $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, true, true);
+      list(,,,,,, $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, true, true);
 
       $directPlayCosts[$cardId] = $heatCosts;
     }
@@ -127,6 +129,9 @@ trait ReactTrait
 
     // Update remaining symbols
     if (in_array($symbol, [DIRECT, ACCELERATE])) {
+      if (!in_array($arg, $symbols[$symbol])) {
+        throw new \BgaVisibleSystemException('Invalid card. Should not happen');
+      }
       $symbols[$symbol] = array_values(array_diff($symbols[$symbol], [$arg]));
     } else {
       unset($symbols[$symbol]);
@@ -361,7 +366,7 @@ trait ReactTrait
     $discard = $constructor->getDiscard();
     $heatCards = $discard->filter(fn($card) => $card['effect'] == HEAT);
     return [
-      'n' => $n,      
+      'n' => $n,
       '_private' => [
         $constructor->getPId() => [
           'cards' => $discard,
@@ -388,7 +393,7 @@ trait ReactTrait
       $cardIds = $cards->getIds();
       Cards::move($cardIds, "engine-$cId");
       Notifications::superCoolCards($constructor, $cards);
-    } else {      
+    } else {
       Notifications::superCoolCards($constructor, []);
     }
     $this->gamestate->jumpToState(ST_REACT);
