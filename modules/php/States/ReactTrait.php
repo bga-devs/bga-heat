@@ -135,7 +135,11 @@ trait ReactTrait
       $symbols[$symbol] = array_values(array_diff($symbols[$symbol], [$arg]));
     } else {
       if ($arg != '') {
-        $n = (int) $arg;
+        $m = (int) $arg;
+        if ($m < 0 || $m > $n) {
+          throw new \BgaVisibleSystemException('Invalid arg. Should not happen');
+        }
+        $n = $m;
         $symbols[$symbol] -= $n;
       } else {
         unset($symbols[$symbol]);
