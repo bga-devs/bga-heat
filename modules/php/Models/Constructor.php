@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\Models;
+
 use HEAT\Managers\Players;
 use HEAT\Managers\Constructors;
 use HEAT\Managers\Cards;
@@ -40,7 +42,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
       'handCount' => $this->getHand()->count(),
       'engine' => $this->getEngine(),
       'discard' => $this->getDiscard(),
-      'deckCount' => $this->getDeck()->count(),
+      'deckCount' => $this->getDeckCount(),
       'inplay' => $this->getPlayedCards(),
       'distanceToCorner' => $this->getDistanceToCorner(),
       'canLeave' => $this->canLeave(),
@@ -148,6 +150,10 @@ class Constructor extends \HEAT\Helpers\DB_Model
   public function getDeck()
   {
     return Cards::getDeck($this->id);
+  }
+  public function getDeckCount()
+  {
+    return $this->getDeck()->count();
   }
 
   public function getHand()

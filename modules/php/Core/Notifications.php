@@ -218,6 +218,7 @@ class Notifications
         : clienttranslate('${constructor_name} draws ${n} card(s)'),
       [
         'constructor' => $constructor,
+        'deckCount' => $constructor->getDeckCount(),
         'n' => count($cards),
         'areSponsors' => $areSponsors,
       ]
@@ -229,6 +230,7 @@ class Notifications
       $areSponsors ? clienttranslate('You draw sponsors ${cards_images}') : clienttranslate('You draw ${cards_images}'),
       [
         'constructor' => $constructor,
+        'deckCount' => $constructor->getDeckCount(),
         'cards' => $cards->toArray(),
         'areSponsors' => $areSponsors,
       ]
@@ -252,6 +254,7 @@ class Notifications
 
     self::notifyAll('resolveBoost', $msg, [
       'constructor' => $constructor,
+      'deckCount' => $constructor->getDeckCount(),
       'cards' => $cards,
       'card' => $card,
       'i' => $i,
@@ -371,6 +374,7 @@ class Notifications
   {
     self::notifyAll('scrapCards', clienttranslate('${constructor_name} scraps ${cards_images}'), [
       'constructor' => $constructor,
+      'deckCount' => $constructor->getDeckCount(),
       'cards' => $cards,
     ]);
   }
@@ -379,6 +383,7 @@ class Notifications
   {
     self::notifyAll('salvageCards', clienttranslate('${constructor_name} salvages ${cards_images}'), [
       'constructor' => $constructor,
+      'deckCount' => $constructor->getDeckCount(),
       'cards' => $cards,
       'discard' => $constructor->getDiscard(),
     ]);
