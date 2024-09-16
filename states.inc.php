@@ -118,7 +118,7 @@ $machinestates = [
     'description' => '',
     'type' => 'game',
     'action' => 'stDrawSponsors',
-    'transitions' => ['start' => ST_START_RACE],
+    'transitions' => [],
   ],
 
   ST_START_RACE => [

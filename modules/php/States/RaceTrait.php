@@ -394,7 +394,7 @@ trait RaceTrait
     }
 
     Notifications::reformingDeckWithUpgrades();
-    $this->gamestate->nextState('start');
+    $this->gamestate->jumpToState(ST_START_RACE);
   }
 
   // CHAMPIONSHIP : swap
@@ -460,7 +460,7 @@ trait RaceTrait
       }
     }
 
-    $this->gamestate->nextState('start');
+    $this->gamestate->jumpToState(ST_START_RACE);
   }
 
 
