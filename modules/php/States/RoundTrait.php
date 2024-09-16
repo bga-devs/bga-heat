@@ -338,9 +338,7 @@ trait RoundTrait
     $constructor->incStat('rounds');
     unset($planification[$constructor->getPId()]);
     Globals::setPlanification($planification);
-    $planificationDone = Globals::getPlanificationRevealed();
-    $planificationDone[$constructor->getId()] = true;
-    Globals::setPlanificationRevealed($planificationDone);
+
 
     // Setup gear and reveal cards
     $newGear = count($cardIds);
@@ -367,6 +365,7 @@ trait RoundTrait
     if ($constructor->getNo() == 0) {
       $constructor->incStat('roundsFirst');
     }
+
     Cards::move($cardIds, ['inplay', $constructor->getId()]);
     $cards = Cards::getMany($cardIds);
     Notifications::reveal($constructor, $newGear, $cards, $heat);

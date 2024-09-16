@@ -44,7 +44,7 @@ trait DeferredRoundTrait
         if (empty($planificationDone)) {
           return !is_null($this->gamestate) && $this->gamestate->state_id() == ST_PLANIFICATION;
         } else {
-          return !($planificationDone[$currentConstructor->getPId()] ?? false);
+          return !($planificationDone[$currentConstructor->getId()] ?? false);
         }
       }
     } catch (\Exception $e) {
@@ -96,9 +96,13 @@ trait DeferredRoundTrait
 
   function stEndOfDeferredPlanification()
   {
-    Globals::checkDeferredIfNeeded(false);
-    // Send missing notif, possible faster ??
     $constructor = Constructors::getActive();
+    $planificationDone = Globals::getPlanificationRevealed();
+    $planificationDone[$constructor->getId()] = true;
+    Globals::setPlanificationRevealed($planificationDone);
+    Globals::checkDeferredIfNeeded(false);
+
+    // Send missing notif, possible faster ??
     $pId = $constructor->getPId();
     $pendingNotifs = Globals::getPendingNotifications();
     foreach ($pendingNotifs as $notif) {
