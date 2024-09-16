@@ -134,8 +134,14 @@ trait ReactTrait
       }
       $symbols[$symbol] = array_values(array_diff($symbols[$symbol], [$arg]));
     } else {
-      unset($symbols[$symbol]);
+      if ($arg != '') {
+        $n = (int) $arg;
+        $symbols[$symbol] -= $n;
+      } else {
+        unset($symbols[$symbol]);
+      }
     }
+
     Globals::setSymbols($symbols);
     /////// Resolve effect ///////
     // COOLDOWN
