@@ -17,11 +17,11 @@ class Globals extends \HEAT\Helpers\DB_Manager
   // Variables that should be stored on both table for deferredRounds feature
   protected static $syncVariables = [
     'customTurnOrders',
-    'planification',
-    'planificationRevealed',
     'turnOrder',
     'activeConstructor',
     'finishedConstructors',
+    'planification',
+    'planificationRevealed',
     'pendingNotifications',
   ];
   protected static $variables = [
@@ -169,8 +169,9 @@ class Globals extends \HEAT\Helpers\DB_Manager
     self::$data[$name] = $val;
 
     // Ensure customTurnOrders are always written into both database
-    if (in_array($name, static::$syncVariables) && static::$table == 'global_variables2') {
-      self::DB('global_variables')->insert(
+    if (in_array($name, static::$syncVariables)) {
+      $otherTable = static::$table == 'global_variables2' ? 'global_variables' : 'global_variables2';
+      self::DB($otherTable)->insert(
         [
           'name' => $name,
           'value' => \json_encode($val),
@@ -224,8 +225,9 @@ class Globals extends \HEAT\Helpers\DB_Manager
         self::DB()->update(['value' => \addslashes(\json_encode($value))], $name);
 
         // Ensure customTurnOrders are always written into both database
-        if (in_array($name, static::$syncVariables) && static::$table == 'global_variables2') {
-          self::DB('global_variables')->update(['value' => \addslashes(\json_encode($value))], $name);
+        if (in_array($name, static::$syncVariables)) {
+          $otherTable = static::$table == 'global_variables2' ? 'global_variables' : 'global_variables2';
+          self::DB($otherTable)->update(['value' => \addslashes(\json_encode($value))], $name);
         }
 
         return $value;

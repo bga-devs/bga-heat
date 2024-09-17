@@ -32,6 +32,11 @@ trait ReactTrait
       unset($symbols[$symbol]);
     }
 
+    // Disable cooldown if no heat in hand
+    if ($constructor->getHeatsInHand()->count() == 0) {
+      unset($symbols[COOLDOWN]);
+    }
+
     // Boost bonus
     $boostInfos = [];
     if (!Globals::isUsedBoost()) {

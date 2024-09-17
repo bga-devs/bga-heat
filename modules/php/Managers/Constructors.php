@@ -135,6 +135,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
     if (is_int($constructor)) {
       $constructor = self::get($constructor);
     }
+    // die("test");
     $constructorId = $constructor->getId();
     Globals::setActiveConstructor($constructorId);
     if (!$constructor->isAI()) {
