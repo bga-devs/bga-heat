@@ -2218,6 +2218,8 @@ var CardsManager = /** @class */ (function (_super) {
             case 100:
             case 105:
                 return "<strong>".concat(_('Starting upgrade'), "</strong><br>\n                ").concat(_('Speed:'), " ").concat(Number(card.type) - 100, "\n                ");
+            default:
+                return "<strong>".concat(_(card.text), "</strong>");
         }
     };
     CardsManager.prototype.getTooltip = function (card) {
@@ -2416,6 +2418,38 @@ var EventCardsManager = /** @class */ (function () {
                     race: 4,
                     country: _('ITALY'),
                 };
+            case 11:
+                return {
+                    title: _('Going global'),
+                    rule: _('In Press Corners, you gain 2 Sponsorship cards instead of one.'),
+                    year: '1964',
+                    race: 1,
+                    country: _('JAPAN'),
+                };
+            case 12:
+                return {
+                    title: _('Turbulent winds'),
+                    rule: _('You may only Slipstream if you are in 3rd or 4th gear.'),
+                    year: '1964',
+                    race: 2,
+                    country: _('FRANCE'),
+                };
+            case 13:
+                return {
+                    title: _('Chicanes for increased safety'),
+                    rule: _('For this race, you may discard Heat cards during step 8.'),
+                    year: '1964',
+                    race: 3,
+                    country: _('MEXICO'),
+                };
+            case 14:
+                return {
+                    title: _('Sudden heavy rain delays race'),
+                    rule: _('Nobody benefits from Adrenaline this race.'),
+                    year: '1964',
+                    race: 4,
+                    country: _('JAPAN'),
+                };
         }
     };
     EventCardsManager.prototype.getHtml = function (card) {
@@ -2554,17 +2588,13 @@ var CarAnimation = /** @class */ (function () {
 var Circuit = /** @class */ (function () {
     function Circuit(game, gamedatas) {
         var _this = this;
-        var _a, _b;
+        var _a;
         this.game = game;
         this.gamedatas = gamedatas;
         this.circuitDiv = document.getElementById('circuit');
         if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
             this.loadCircuit(gamedatas.circuitDatas);
             this.createWeather(this.gamedatas.weather);
-            if ((_b = gamedatas.championship) === null || _b === void 0 ? void 0 : _b.circuits) {
-                var event_1 = gamedatas.championship.circuits[gamedatas.championship.index].event;
-                this.createPressTokens(event_1);
-            }
             Object.values(this.gamedatas.constructors).filter(function (constructor) { var _a; return ((_a = constructor.paths) === null || _a === void 0 ? void 0 : _a.length) > 0; }).forEach(function (constructor) {
                 return constructor.paths.filter(function (path) { return (path === null || path === void 0 ? void 0 : path.length) > 1; }).forEach(function (path) { return _this.addMapPath(path, false); });
             });
@@ -2575,6 +2605,7 @@ var Circuit = /** @class */ (function () {
         this.circuitDatas = circuitDatas;
         this.circuitDiv.style.backgroundImage = "url('".concat(this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : "".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl), "')");
         this.createCorners(this.circuitDatas.corners);
+        this.createPressTokens(this.circuitDatas.pressCorners);
         Object.values(this.gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
     };
     Circuit.prototype.newCircuit = function (circuitDatas) {
@@ -2596,17 +2627,16 @@ var Circuit = /** @class */ (function () {
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
     };
-    Circuit.prototype.createPressTokens = function (event) {
+    Circuit.prototype.createPressTokens = function (pressCorners) {
         var _this = this;
-        var pressCorners = EVENTS_PRESS_CORNERS[event];
-        pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
+        pressCorners === null || pressCorners === void 0 ? void 0 : pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
     };
-    Circuit.prototype.createPressToken = function (cornerNumber) {
+    Circuit.prototype.createPressToken = function (cornerId) {
+        var corner = this.circuitDatas.corners[cornerId];
         var corners = Object.values(this.circuitDatas.corners);
-        var corner = corners[cornerNumber % corners.length];
         var closeCornerToTheRight = corners.find(function (otherCorner) { return (otherCorner.x != corner.x || otherCorner.y != corner.y) && Math.sqrt(Math.pow(corner.tentX - otherCorner.tentX, 2) + Math.pow(corner.tentY - otherCorner.tentY, 2)) < 100 && otherCorner.x > corner.x; });
         var pressIconDiv = document.createElement('div');
-        pressIconDiv.id = "press-icon-".concat(cornerNumber);
+        pressIconDiv.id = "press-icon-".concat(cornerId);
         pressIconDiv.classList.add("press-icon");
         if (closeCornerToTheRight) {
             pressIconDiv.classList.add("left-side");
@@ -3395,6 +3425,7 @@ var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 var LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321']; // copy of gameinfos
+var SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce'];
 function sleep(ms) {
     return new Promise(function (r) { return setTimeout(r, ms); });
 }
@@ -3995,16 +4026,21 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'react':
                     var reactArgs_1 = args;
-                    //reactArgs.symbols['super-cool'] = 2;
-                    //reactArgs.doable.push('super-cool');
                     Object.entries(reactArgs_1.symbols).forEach(function (entry, index) {
                         var type = entry[0];
                         var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
-                        if (type === 'reduce') {
-                            var max = Math.min(entry[1], _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == 'stress'; }).length);
+                        var max = null;
+                        if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
+                            var cardEffectType_1 = {
+                                'reduce': 'stress',
+                                'cooldown': 'heat',
+                            }[type];
+                            max = Math.min(entry[1], _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == cardEffectType_1; }).length);
                             numbers = [];
-                            for (var i = 1; i <= max; i++) {
-                                numbers.push(i);
+                            for (var i = max; i >= 1; i--) {
+                                if (reactArgs_1.doable.includes(type) || i === max) { // only the max button if disabled
+                                    numbers.push(i);
+                                }
                             }
                         }
                         numbers.forEach(function (number) {
@@ -4081,10 +4117,10 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('super-cool', number);
                                     break;
                             }
-                            var finalAction = function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); };
+                            var finalAction = function () { return _this.actReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined); };
                             var callback = confirmationMessage ? (function () { return _this.showHeatCostConfirmations() ? _this.confirmationDialog(confirmationMessage, finalAction) : finalAction(); }) : finalAction;
                             var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
-                            _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
+                            _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback, null, null, SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'gray' : undefined);
                             if (mandatory) {
                                 var mandatoryZone = document.getElementById('mandatory-buttons');
                                 if (!mandatoryZone) {
@@ -5110,14 +5146,12 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_newChampionshipRace = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var index, circuitDatas, event, playerBoards;
+            var index, circuitDatas, playerBoards;
             var _this = this;
             return __generator(this, function (_a) {
                 index = args.index, circuitDatas = args.circuitDatas;
                 this.championshipTable.newChampionshipRace(index);
                 this.circuit.newCircuit(circuitDatas);
-                event = this.gamedatas.championship.circuits[index].event;
-                this.circuit.createPressTokens(event);
                 playerBoards = document.getElementById("player_boards");
                 this.lapCounters.forEach(function (counter) { return counter.setValue(1); });
                 playerBoards.querySelectorAll('.finished').forEach(function (elem) { return elem.classList.remove('finished'); });

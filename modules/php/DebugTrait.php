@@ -53,32 +53,41 @@ trait DebugTrait
     $this->DbQuery("UPDATE `cards` set card_location = REPLACE(card_location, 'engine', 'discard')");
   }
 
-  function debug_endRaceExcept(?int $constructorId = null)
+  function debug_endRaceExcept(int $constructorId = -1)
   {
-    if ($constructorId === null) {
+    if ($constructorId === -1) {
       $constructor = Constructors::getActive();
       $constructorId = $constructor->getId();
     }
     $this->DbQuery("UPDATE constructors SET `turn` = 3 WHERE `id` <> $constructorId");
   }
 
-  function debug_endRace(?int $constructorId = null)
+  function debug_endRace(/*?int $constructorId = null*/)
   {
     $sql = 'UPDATE constructors SET `turn` = 3';
-    if ($constructorId != null) {
+    /*if ($constructorId != null) {
       $sql .= " WHERE `id` = $constructorId";
-    }
+    }*/
     $this->DbQuery($sql);
   }
 
-  function debug_clutterHand(?int $constructorId = null)
+  function debug_clutterHand(int $constructorId = -1)
   {
-    if ($constructorId === null) {
+    if ($constructorId === -1) {
       $constructor = Constructors::getActive();
       $constructorId = $constructor->getId();
     }
     $this->DbQuery("UPDATE constructors SET `gear` = 4 WHERE id = $constructorId");
     $this->DbQuery("UPDATE `cards` SET `type` = 111 WHERE card_location = 'hand-$constructorId'");
+  }
+
+  function debug_addHeats(int $constructorId = -1, int $heats = 4)
+  {
+    if ($constructorId === -1) {
+      $constructor = Constructors::getActive();
+      $constructorId = $constructor->getId();
+    }
+    $this->DbQuery("UPDATE `cards` SET `type` = 111 WHERE card_location = 'hand-$constructorId' LIMIT $heats");
   }
 
   function debug_setPodium(?int $constructorId = null, int $rank)

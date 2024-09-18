@@ -73,6 +73,7 @@ interface CircuitDatas {
     corners: { [id: number]: Corner };
     weatherCardPos: Cell;
     podium: Podium;
+    pressCorners?: number[];
 }
 
 interface HeatGamedatas {

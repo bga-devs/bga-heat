@@ -146,6 +146,9 @@
         .name {
           position: relative;
           top: -10px;
+          word-break: break-word;
+          max-height: 71px;
+          overflow: hidden;
         }
 
         .subTotal {
