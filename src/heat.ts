@@ -724,7 +724,9 @@ class Heat implements HeatGame {
                             max = Math.min(entry[1] as number, this.getCurrentPlayerTable().hand.getCards().filter(card => card.effect == cardEffectType).length);
                             numbers = [];
                             for (let i = max; i >= 1; i--) {
-                                numbers.push(i);
+                                if (reactArgs.doable.includes(type) || i === max) { // only the max button if disabled
+                                    numbers.push(i);
+                                }
                             }
                         }
                         numbers.forEach(number => {

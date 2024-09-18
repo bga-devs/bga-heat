@@ -4036,7 +4036,9 @@ var Heat = /** @class */ (function () {
                             max = Math.min(entry[1], _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == cardEffectType_1; }).length);
                             numbers = [];
                             for (var i = max; i >= 1; i--) {
-                                numbers.push(i);
+                                if (reactArgs_1.doable.includes(type) || i === max) { // only the max button if disabled
+                                    numbers.push(i);
+                                }
                             }
                         }
                         numbers.forEach(function (number) {
