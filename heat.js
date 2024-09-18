@@ -3423,6 +3423,7 @@ var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 var LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321']; // copy of gameinfos
+var SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce'];
 function sleep(ms) {
     return new Promise(function (r) { return setTimeout(r, ms); });
 }
@@ -4023,15 +4024,18 @@ var Heat = /** @class */ (function () {
                     break;
                 case 'react':
                     var reactArgs_1 = args;
-                    //reactArgs.symbols['super-cool'] = 2;
-                    //reactArgs.doable.push('super-cool');
                     Object.entries(reactArgs_1.symbols).forEach(function (entry, index) {
                         var type = entry[0];
                         var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
-                        if (type === 'reduce') {
-                            var max = Math.min(entry[1], _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == 'stress'; }).length);
+                        var max = null;
+                        if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
+                            var cardEffectType_1 = {
+                                'reduce': 'stress',
+                                'cooldown': 'heat',
+                            }[type];
+                            max = Math.min(entry[1], _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == cardEffectType_1; }).length);
                             numbers = [];
-                            for (var i = 1; i <= max; i++) {
+                            for (var i = max; i >= 1; i--) {
                                 numbers.push(i);
                             }
                         }
@@ -4109,10 +4113,10 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('super-cool', number);
                                     break;
                             }
-                            var finalAction = function () { return _this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined); };
+                            var finalAction = function () { return _this.actReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined); };
                             var callback = confirmationMessage ? (function () { return _this.showHeatCostConfirmations() ? _this.confirmationDialog(confirmationMessage, finalAction) : finalAction(); }) : finalAction;
                             var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
-                            _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback);
+                            _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback, null, null, SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'gray' : undefined);
                             if (mandatory) {
                                 var mandatoryZone = document.getElementById('mandatory-buttons');
                                 if (!mandatoryZone) {

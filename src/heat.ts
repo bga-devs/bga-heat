@@ -17,6 +17,8 @@ const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
 const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321']; // copy of gameinfos
 
+const SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce'];
+
 function sleep(ms: number){
     return new Promise((r) => setTimeout(r, ms));
 }
@@ -709,16 +711,19 @@ class Heat implements HeatGame {
                 case 'react':
                     const reactArgs = args as EnteringReactArgs;
 
-                    //reactArgs.symbols['super-cool'] = 2;
-                    //reactArgs.doable.push('super-cool');
-
                     Object.entries(reactArgs.symbols).forEach((entry, index) => {
                         const type = entry[0];
                         let numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
-                        if (type === 'reduce') {
-                            const max = Math.min(entry[1] as number, this.getCurrentPlayerTable().hand.getCards().filter(card => card.effect == 'stress').length);
+
+                        let max = null;
+                        if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
+                            const cardEffectType = {
+                                'reduce': 'stress',
+                                'cooldown': 'heat',
+                            }[type];
+                            max = Math.min(entry[1] as number, this.getCurrentPlayerTable().hand.getCards().filter(card => card.effect == cardEffectType).length);
                             numbers = [];
-                            for (let i = 1; i <= max; i++) {
+                            for (let i = max; i >= 1; i--) {
                                 numbers.push(i);
                             }
                         }
@@ -811,14 +816,17 @@ class Heat implements HeatGame {
                                     break;
                             }
 
-                            const finalAction = () => this.actReact(type, Array.isArray(entry[1]) || type === 'reduce' ? number : undefined);
+                            const finalAction = () => this.actReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined);
                             const callback = confirmationMessage ? (() => this.showHeatCostConfirmations() ? (this as any).confirmationDialog(confirmationMessage, finalAction) : finalAction()) : finalAction;
                             const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
 
                             (this as any).addActionButton(
                                 `actReact${type}_${number}_button`, 
                                 formatTextIcons(label), 
-                                callback
+                                callback,
+                                null, 
+                                null,
+                                SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'gray' : undefined,
                             );
 
                             if (mandatory) {
