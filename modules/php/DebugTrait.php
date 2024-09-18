@@ -62,12 +62,12 @@ trait DebugTrait
     $this->DbQuery("UPDATE constructors SET `turn` = 3 WHERE `id` <> $constructorId");
   }
 
-  function debug_endRace(?int $constructorId = null)
+  function debug_endRace(/*?int $constructorId = null*/)
   {
     $sql = 'UPDATE constructors SET `turn` = 3';
-    if ($constructorId != null) {
+    /*if ($constructorId != null) {
       $sql .= " WHERE `id` = $constructorId";
-    }
+    }*/
     $this->DbQuery($sql);
   }
 

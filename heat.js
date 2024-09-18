@@ -2416,6 +2416,38 @@ var EventCardsManager = /** @class */ (function () {
                     race: 4,
                     country: _('ITALY'),
                 };
+            case 11:
+                return {
+                    title: _('Going global'),
+                    rule: _('In Press Corners, you gain 2 Sponsorship cards instead of one.'),
+                    year: '1964',
+                    race: 1,
+                    country: _('JAPAN'),
+                };
+            case 12:
+                return {
+                    title: _('Turbulent winds'),
+                    rule: _('You may only Slipstream if you are in 3rd or 4th gear.'),
+                    year: '1964',
+                    race: 2,
+                    country: _('FRANCE'),
+                };
+            case 13:
+                return {
+                    title: _('Chicanes for increased safety'),
+                    rule: _('For this race, you may discard Heat cards during step 8.'),
+                    year: '1964',
+                    race: 3,
+                    country: _('MEXICO'),
+                };
+            case 14:
+                return {
+                    title: _('Sudden heavy rain delays race'),
+                    rule: _('Nobody benefits from Adrenaline this race.'),
+                    year: '1964',
+                    race: 4,
+                    country: _('JAPAN'),
+                };
         }
     };
     EventCardsManager.prototype.getHtml = function (card) {
