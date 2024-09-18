@@ -23,6 +23,7 @@ class Circuit
     }
 
     $cornersDatas = [];
+    $pressCorners = [];
     foreach ($this->datas['corners'] as $i => $infos) {
       $pos = $infos['position'] ?? $i;
       $cornersDatas[$pos] = [
@@ -40,6 +41,10 @@ class Circuit
         foreach (['tentX', 'tentY', 'sectorTentX', 'sectorTentY'] as $key) {
           $cornersDatas[$pos][$key] = $chicane[$key];
         }
+      }
+
+      if ($this->isPressCorner($pos)) {
+        $pressCorners[] = $pos;
       }
     }
 
@@ -64,6 +69,7 @@ class Circuit
       'podium' => $this->datas['podium'],
       'startingCells' => $this->startingCells,
       'cells' => $cellsDatas,
+      'pressCorners' => $pressCorners,
     ];
   }
 
@@ -85,7 +91,9 @@ class Circuit
       if (isset($info['position'])) {
         $pos = $info['position'];
       }
-
+      if (isset($info['chicane'])) {
+        $info['chicane'] = $datas['corners'][$info['chicane']]['position'];
+      }
       $this->corners[$pos] = $info['speed'];
       $this->legendLines[$pos] = $info['legend'];
       $lane = $info['lane'];
@@ -559,9 +567,22 @@ class Circuit
     if (!Globals::isChampionship()) {
       return false;
     }
-    $i = array_search($cornerPos, array_keys($this->corners));
+
+    $nCorners = 0;
+    $map = [];
+    foreach ($this->corners as $pos => $infos) {
+      if (isset($infos['chicane'])) {
+        $nCorners--;
+        unset($map[$infos['chicane']]);
+      }
+
+      $map[$pos] = $nCorners;
+      $nCorners++;
+    }
+    $i = $map[$cornerPos] ?? null;
+    if (is_null($i)) return false;
     $event = Globals::getCurrentEvent();
-    $pressCorners = array_map(fn($j) => $j % count($this->corners), EVENTS[$event]['press']);
+    $pressCorners = array_map(fn($j) => $j % $nCorners, EVENTS_EXP[$event]['press']);
     return in_array($i, $pressCorners);
   }
 

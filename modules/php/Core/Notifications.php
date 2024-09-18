@@ -547,6 +547,11 @@ class Notifications
       EVENT_FIRST_LIVE_TV => clienttranslate('First live televised race'),
       EVENT_SAFETY_REGULATIONS => clienttranslate('New safety regulations'),
       EVENT_FUTURE_UNKNOWN => clienttranslate('Title sponsor withdraws future unknown'),
+      // HEAVY RAIN
+      EVENT_GOING_GLOBAL => clienttranslate('Going global'),
+      EVENT_TURBULENT_WINDS => clienttranslate('Turbulent winds'),
+      EVENT_CHICANES => clienttranslate('Chicanes for increased safety'),
+      EVENT_SUDDEN_RAIN => clienttranslate('Sudden heavy rain delays race'),
     ];
 
     $i = $datas['index'];
@@ -625,6 +630,16 @@ class Notifications
           'You passed at least 3 cars during your round and gain sponsor ${cards_images} (event\'s effect)'
         );
       }
+      // EVENT: GOING GLOBAL
+      elseif ($reason == EVENT_GOING_GLOBAL) {
+        $msg = clienttranslate(
+          '${constructor_name} gain 1 extra sponsor card (event\'s effect)'
+        );
+        $pmsg = clienttranslate(
+          'You gain extra sponsor ${cards_images} (event\'s effect)'
+        );
+      }
+
 
       self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1, 'areSponsors' => true]);
       self::notify($constructor, 'pDraw', $pmsg, ['constructor' => $constructor, 'cards' => [$card], 'areSponsors' => true]);

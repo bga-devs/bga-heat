@@ -578,13 +578,14 @@ trait RoundTrait
     $constructor = Constructors::getActive();
     $symbols = Globals::getSymbols();
     $roadCondition = $constructor->getRoadCondition();
+    $event = Globals::getCurrentEvent();
 
     // Adrenaline
     $no = $constructor->getNo();
     $nbr = Constructors::count();
     $notFinished = array_unique(array_merge(Constructors::getTurnOrder(), Globals::getGiveUpPlayers()));
     $maxNo = count($notFinished);
-    if ($no == $maxNo - 1 || ($no == $maxNo - 2 && $nbr >= 5)) {
+    if ($event != EVENT_SUDDEN_RAIN && ($no == $maxNo - 1 || ($no == $maxNo - 2 && $nbr >= 5))) {
       $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
       $symbols[ADRENALINE] = 1;
       Notifications::gainAdrenaline($constructor, $no == $maxNo - 1);
@@ -629,6 +630,7 @@ trait RoundTrait
 
   public function argsSlipstream()
   {
+    $event = Globals::getCurrentEvent();
     $constructor = Constructors::getActive();
     $slipstreams = [2];
     $cards = $constructor->getPlayedCards();
@@ -637,7 +639,13 @@ trait RoundTrait
     $roadCondition = $constructor->getRoadCondition();
     if ($roadCondition == \ROAD_CONDITION_NO_SLIPSTREAM) {
       return ['cells' => []];
-    } else {
+    }
+    // EVENT : turbulent winds, must be in gear 3 or 4
+    else if ($event == EVENT_TURBULENT_WINDS && $constructor->getGear() < 3) {
+      return ['cells' => []];
+    }
+    // Normal case
+    else {
       $map = [
         ROAD_CONDITION_INCREASE_SLIPSTREAM => 1,
         ROAD_CONDITION_SLIPSTREAM_BOOST => 2,
@@ -646,13 +654,6 @@ trait RoundTrait
       $cards[] = [
         'symbols' => [SLIPSTREAM => $slipstreamBonus],
       ];
-    }
-
-    // TODO : REMOVE
-    // Any refreshed cards ?
-    $refreshedCards = Globals::getRefreshedCards();
-    if (!empty($refreshedCards)) {
-      $cards = array_merge($cards->toArray(), $refreshedCards);
     }
 
     foreach ($cards as $card) {
@@ -866,6 +867,11 @@ trait RoundTrait
           $cId = $constructor->getId();
           $card = Cards::pickOneForLocation('sponsors', "hand-$cId");
           Notifications::drawSponsor($constructor, $card, $reason);
+
+          if ($event == EVENT_GOING_GLOBAL) {
+            $card = Cards::pickOneForLocation('sponsors', "hand-$cId");
+            Notifications::drawSponsor($constructor, $card, EVENT_GOING_GLOBAL);
+          }
         }
       }
     }
@@ -881,34 +887,12 @@ trait RoundTrait
   //   \___(_) |____/|_|___/\___\__,_|_|  \__,_|
   /////////////////////////////////////////////////////
 
-  // // REFRESH
-  // elseif ($symbol == REFRESH) {
-  //   if (!$this->canPassReact($symbols)) {
-  //     throw new \BgaVisibleSystemException('You cant use refresh with pending mandatory reactions. Should not happen');
-  //   }
-  //   $cardId = $arg;
-  //   $card = Cards::getSingle($cardId);
-  //   Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
-  //   Notifications::refresh($constructor, $card);
-
-  //   // Remove any other symbols
-  //   $symbols = [
-  //     REFRESH => $symbols[REFRESH],
-  //   ];
-  //   Globals::setSymbols($symbols);
-
-  //   // Keep in memory this card. Useful for slipstream
-  //   $refreshedCards = Globals::getRefreshedCards();
-  //   $refreshedCards[] = $card;
-  //   Globals::setRefreshedCards($refreshedCards);
-  // }
-
   public function argsDiscard()
   {
     $constructor = Constructors::getActive();
-    $cards = $constructor->getHand()->filter(function ($card) {
-      return !in_array($card['effect'], [HEAT, STRESS]);
-    });
+    $event = Globals::getCurrentEvent();
+    $prohibited = $event == EVENT_CHICANES ? [STRESS] : [HEAT, STRESS];
+    $cards = $constructor->getHand()->filter(fn($card) => !in_array($card['effect'], $prohibited));
 
     // Any card to refresh ?
     $symbols = Globals::getSymbols();
