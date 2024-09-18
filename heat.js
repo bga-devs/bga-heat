@@ -2218,6 +2218,8 @@ var CardsManager = /** @class */ (function (_super) {
             case 100:
             case 105:
                 return "<strong>".concat(_('Starting upgrade'), "</strong><br>\n                ").concat(_('Speed:'), " ").concat(Number(card.type) - 100, "\n                ");
+            default:
+                return "<strong>".concat(_(card.text), "</strong>");
         }
     };
     CardsManager.prototype.getTooltip = function (card) {

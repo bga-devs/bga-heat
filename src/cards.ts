@@ -127,6 +127,9 @@ class CardsManager extends CardManager<Card> {
                 return `<strong>${_('Starting upgrade')}</strong><br>
                 ${_('Speed:')} ${Number(card.type) - 100}
                 `;
+
+            default:
+                return `<strong>${_(card.text)}</strong>`;
         }
     }
 
