@@ -133,10 +133,17 @@ trait RoundTrait
         return $card['effect'] != HEAT;
       });
 
+      $flooded = in_array($constructor->getCarCell(), $this->getCircuit()->getFloodedSpaces());
+
       // Do we have a cluttered hand ?
       $clutteredHand = false;
       $gear = $constructor->getGear();
-      $minGear = max(1, $gear - ($constructor->hasNoHeat() ? 1 : 2));
+      $nHeats = $constructor->getHeatsInEngine();
+      $minGear = max(1, $gear - ($nHeats == 0 ? 1 : 2));
+      if ($flooded) {
+        $maxGearReduction = min(2, $nHeats);
+        $minGear = max(1, $gear - $maxGearReduction);
+      }
       if (count($hand) < $minGear) {
         $clutteredHand = true;
       }
@@ -188,7 +195,6 @@ trait RoundTrait
         !empty(Globals::getFinishedConstructors()) &&
         ($constructor->getTurn() < $this->getNbrLaps() || $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4);
 
-      $flooded = in_array($constructor->getCarCell(), $this->getCircuit()->getFloodedSpaces());
 
       $args['_private'][$pId] = [
         'cards' => $hand->getIds(),
@@ -221,7 +227,15 @@ trait RoundTrait
       $heatCost++;
     }
     if ($heatCost > $constructor->getHeatsInEngine()) {
-      throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 2.')); // TODO change message in case of 1 gear change + flooded?
+      if ($args['flooded']) {
+        if ($heatCost == 1) {
+          throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 1 (flooded space).'));
+        } else {
+          throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 2 (flooded space).'));
+        }
+      } else {
+        throw new UserException(clienttranslate('You dont have enough heat to pay for the change of gear of 2.'));
+      }
     }
     if ($args['clutteredHand']) {
       foreach ($constructor->getHand() as $card) {
@@ -342,17 +356,22 @@ trait RoundTrait
 
     // Setup gear and reveal cards
     $newGear = count($cardIds);
-    $heat = null;
+    $heats = [];
     if (abs($newGear - $constructor->getGear()) > 2) {
       throw new \BgaVisibleSystemException('You cant change gear more than 2. Should not happen');
     }
     // Check heat
-    if (abs($newGear - $constructor->getGear()) > 1) {
-      $heat = $constructor->getEngine()->first();
-      if (is_null($heat)) {
-        throw new \BgaVisibleSystemException('You dont have enough heat to pay for the change of gear of 2. Should not happen');
+    $flooded = in_array($constructor->getCarCell(), $this->getCircuit()->getFloodedSpaces());
+    $heatCost = abs($newGear - $constructor->getGear()) > 1 ? 1 : 0;
+    if ($flooded && $newGear < $constructor->getGear()) {
+      $heatCost++;
+    }
+    if ($heatCost > 0) {
+      $heats = $constructor->getEngine()->limit($heatCost);
+      if ($heats->count() < $heatCost) {
+        throw new \BgaVisibleSystemException('You dont have enough heat to pay for the change of gear. Should not happen');
       }
-      Cards::move($heat['id'], ['discard', $constructor->getId()]);
+      Cards::move($heats->getIds(), ['discard', $constructor->getId()]);
       if ($newGear > $constructor->getGear()) {
         $constructor->incStat('heatPayedGearUp');
       } else {
@@ -368,7 +387,7 @@ trait RoundTrait
 
     Cards::move($cardIds, ['inplay', $constructor->getId()]);
     $cards = Cards::getMany($cardIds);
-    Notifications::reveal($constructor, $newGear, $cards, $heat);
+    Notifications::reveal($constructor, $newGear, $cards, $heats, $flooded);
 
     // Are we cluttered ??
     $clutteredHand = false;
