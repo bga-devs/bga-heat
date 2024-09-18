@@ -1377,6 +1377,9 @@ height: 241px; */
 .scorepad-image table tr td .name {
   position: relative;
   top: -10px;
+  word-break: break-word;
+  max-height: 71px;
+  overflow: hidden;
 }
 .scorepad-image table tr td .subTotal {
   position: absolute;
