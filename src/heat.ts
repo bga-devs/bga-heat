@@ -2066,8 +2066,6 @@ class Heat implements HeatGame {
         const { index, circuitDatas } = args;
         this.championshipTable.newChampionshipRace(index);
         this.circuit.newCircuit(circuitDatas);        
-        const event = this.gamedatas.championship.circuits[index].event;
-        this.circuit.createPressTokens(event);
 
         const playerBoards = document.getElementById(`player_boards`);
         this.lapCounters.forEach(counter => counter.setValue(1));

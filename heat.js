@@ -2554,17 +2554,13 @@ var CarAnimation = /** @class */ (function () {
 var Circuit = /** @class */ (function () {
     function Circuit(game, gamedatas) {
         var _this = this;
-        var _a, _b;
+        var _a;
         this.game = game;
         this.gamedatas = gamedatas;
         this.circuitDiv = document.getElementById('circuit');
         if ((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) {
             this.loadCircuit(gamedatas.circuitDatas);
             this.createWeather(this.gamedatas.weather);
-            if ((_b = gamedatas.championship) === null || _b === void 0 ? void 0 : _b.circuits) {
-                var event_1 = gamedatas.championship.circuits[gamedatas.championship.index].event;
-                this.createPressTokens(event_1);
-            }
             Object.values(this.gamedatas.constructors).filter(function (constructor) { var _a; return ((_a = constructor.paths) === null || _a === void 0 ? void 0 : _a.length) > 0; }).forEach(function (constructor) {
                 return constructor.paths.filter(function (path) { return (path === null || path === void 0 ? void 0 : path.length) > 1; }).forEach(function (path) { return _this.addMapPath(path, false); });
             });
@@ -2575,6 +2571,7 @@ var Circuit = /** @class */ (function () {
         this.circuitDatas = circuitDatas;
         this.circuitDiv.style.backgroundImage = "url('".concat(this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : "".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl), "')");
         this.createCorners(this.circuitDatas.corners);
+        this.createPressTokens(this.circuitDatas.pressCorners);
         Object.values(this.gamedatas.constructors).forEach(function (constructor) { return _this.createCar(constructor); });
     };
     Circuit.prototype.newCircuit = function (circuitDatas) {
@@ -2596,17 +2593,16 @@ var Circuit = /** @class */ (function () {
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
     };
-    Circuit.prototype.createPressTokens = function (event) {
+    Circuit.prototype.createPressTokens = function (pressCorners) {
         var _this = this;
-        var pressCorners = EVENTS_PRESS_CORNERS[event];
-        pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
+        pressCorners === null || pressCorners === void 0 ? void 0 : pressCorners.forEach(function (cornerId) { return _this.createPressToken(cornerId); });
     };
-    Circuit.prototype.createPressToken = function (cornerNumber) {
+    Circuit.prototype.createPressToken = function (cornerId) {
+        var corner = this.circuitDatas.corners[cornerId];
         var corners = Object.values(this.circuitDatas.corners);
-        var corner = corners[cornerNumber % corners.length];
         var closeCornerToTheRight = corners.find(function (otherCorner) { return (otherCorner.x != corner.x || otherCorner.y != corner.y) && Math.sqrt(Math.pow(corner.tentX - otherCorner.tentX, 2) + Math.pow(corner.tentY - otherCorner.tentY, 2)) < 100 && otherCorner.x > corner.x; });
         var pressIconDiv = document.createElement('div');
-        pressIconDiv.id = "press-icon-".concat(cornerNumber);
+        pressIconDiv.id = "press-icon-".concat(cornerId);
         pressIconDiv.classList.add("press-icon");
         if (closeCornerToTheRight) {
             pressIconDiv.classList.add("left-side");
@@ -5110,14 +5106,12 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_newChampionshipRace = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var index, circuitDatas, event, playerBoards;
+            var index, circuitDatas, playerBoards;
             var _this = this;
             return __generator(this, function (_a) {
                 index = args.index, circuitDatas = args.circuitDatas;
                 this.championshipTable.newChampionshipRace(index);
                 this.circuit.newCircuit(circuitDatas);
-                event = this.gamedatas.championship.circuits[index].event;
-                this.circuit.createPressTokens(event);
                 playerBoards = document.getElementById("player_boards");
                 this.lapCounters.forEach(function (counter) { return counter.setValue(1); });
                 playerBoards.querySelectorAll('.finished').forEach(function (elem) { return elem.classList.remove('finished'); });

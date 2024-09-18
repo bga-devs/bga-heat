@@ -142,11 +142,6 @@ class Circuit {
             this.loadCircuit(gamedatas.circuitDatas);
             this.createWeather(this.gamedatas.weather);
 
-            if (gamedatas.championship?.circuits) {
-                const event = gamedatas.championship.circuits[gamedatas.championship.index].event;
-                this.createPressTokens(event);
-            }
-
             Object.values(this.gamedatas.constructors).filter(constructor => constructor.paths?.length > 0).forEach(constructor => 
                 constructor.paths.filter(path => path?.length > 1).forEach(path => this.addMapPath(path, false))
             );
@@ -158,6 +153,7 @@ class Circuit {
         this.circuitDiv.style.backgroundImage = `url('${this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : `${g_gamethemeurl}img/${this.circuitDatas.jpgUrl}`}')`;
 
         this.createCorners(this.circuitDatas.corners);
+        this.createPressTokens(this.circuitDatas.pressCorners);
 
         Object.values(this.gamedatas.constructors).forEach((constructor) => this.createCar(constructor));
     }
@@ -181,17 +177,16 @@ class Circuit {
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
     }
 
-    public createPressTokens(event: number) {
-        const pressCorners = EVENTS_PRESS_CORNERS[event];
-        pressCorners.forEach((cornerId: number) => this.createPressToken(cornerId));
+    public createPressTokens(pressCorners: number[]) {
+        pressCorners?.forEach((cornerId: number) => this.createPressToken(cornerId));
     }
     
-    private createPressToken(cornerNumber: number): void {
+    private createPressToken(cornerId: number): void {
+        const corner = this.circuitDatas.corners[cornerId];
         const corners = Object.values(this.circuitDatas.corners);
-        const corner = corners[cornerNumber % corners.length];
         const closeCornerToTheRight = corners.find(otherCorner => (otherCorner.x != corner.x || otherCorner.y != corner.y) && Math.sqrt(Math.pow(corner.tentX - otherCorner.tentX, 2) + Math.pow(corner.tentY - otherCorner.tentY, 2)) < 100 && otherCorner.x > corner.x);
         const pressIconDiv = document.createElement('div');
-        pressIconDiv.id = `press-icon-${cornerNumber}`;
+        pressIconDiv.id = `press-icon-${cornerId}`;
         pressIconDiv.classList.add(`press-icon`);
         if (closeCornerToTheRight) {
             pressIconDiv.classList.add(`left-side`);
