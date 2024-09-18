@@ -127,6 +127,12 @@ const EVENT_TITLE_SPONSOR = 7;
 const EVENT_FIRST_LIVE_TV = 8;
 const EVENT_SAFETY_REGULATIONS = 9;
 const EVENT_FUTURE_UNKNOWN = 10;
+// HR EXPANSION
+const EVENT_GOING_GLOBAL = 11;
+const EVENT_TURBULENT_WINDS = 12;
+const EVENT_CHICANES = 13;
+const EVENT_SUDDEN_RAIN = 14;
+
 const EVENTS = [
   EVENT_INAUGURATION => ['sponsors' => 2, 'press' => [0]],
   EVENT_NEW_RECORD => ['sponsors' => 1, 'press' => [1]],
@@ -138,6 +144,13 @@ const EVENTS = [
   EVENT_FIRST_LIVE_TV => ['sponsors' => 1, 'press' => [1, 3]],
   EVENT_SAFETY_REGULATIONS => ['sponsors' => 1, 'press' => [3]],
   EVENT_FUTURE_UNKNOWN => ['sponsors' => 0, 'press' => [3]],
+];
+
+const EVENTS_EXP = EVENTS + [
+  EVENT_GOING_GLOBAL => ['sponsors' => 0, 'press' => [1, 2]],
+  EVENT_TURBULENT_WINDS => ['sponsors' => 1, 'press' => [1]],
+  EVENT_CHICANES => ['sponsors' => 1, 'press' => [2]],
+  EVENT_SUDDEN_RAIN => ['sponsors' => 1, 'press' => []],
 ];
 
 const CHAMPIONSHIP_SEASONS = [
@@ -166,9 +179,19 @@ const CHAMPIONSHIP_SEASONS = [
       ['circuit' => 'italia', 'event' => EVENT_FUTURE_UNKNOWN],
     ],
   ],
+  \HEAT\OPTION_CHAMPIONSHIP_SEASON_64 => [
+    'name' => 1964,
+    'circuits' => [
+      ['circuit' => 'japan', 'event' => EVENT_GOING_GLOBAL],
+      ['circuit' => 'france', 'event' => EVENT_TURBULENT_WINDS],
+      ['circuit' => 'mexico', 'event' => EVENT_CHICANES],
+      ['circuit' => 'japan', 'event' => EVENT_SUDDEN_RAIN],
+    ],
+  ],
 ];
 
 const CIRCUITS = ['usa', 'gb', 'italia', 'france'];
+const CIRCUITS_EXP = CIRCUITS + ['japan', 'mexico'];
 
 /******************
  ****** STATS ******

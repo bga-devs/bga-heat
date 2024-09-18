@@ -33,6 +33,14 @@ class Circuit
         'sectorTentX' => $infos['sectorTentX'],
         'sectorTentY' => $infos['sectorTentY'],
       ];
+
+      if (isset($infos['chicane'])) {
+        $chicane = $this->datas['corners'][$infos['chicane']];
+        $cornersDatas[$pos]['chicane'] = $chicane['position'];
+        foreach (['tentX', 'tentY', 'sectorTentX', 'sectorTentY'] as $key) {
+          $cornersDatas[$pos][$key] = $chicane[$key];
+        }
+      }
     }
 
     $cellsDatas = [];
@@ -553,7 +561,7 @@ class Circuit
     }
     $i = array_search($cornerPos, array_keys($this->corners));
     $event = Globals::getCurrentEvent();
-    $pressCorners = array_map(fn ($j) => $j % count($this->corners), EVENTS[$event]['press']);
+    $pressCorners = array_map(fn($j) => $j % count($this->corners), EVENTS[$event]['press']);
     return in_array($i, $pressCorners);
   }
 

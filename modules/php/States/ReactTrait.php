@@ -253,7 +253,7 @@ trait ReactTrait
         return;
       }
     }
-    // SALVAGE
+    // SUPER COOL
     elseif ($symbol == SUPER_COOL) {
       if ($constructor->getDiscard()->empty()) {
         Notifications::message(/*clienttranslateTODOHR*/('${constructor_name} can\'t super cool any card because their discard is empty'), [

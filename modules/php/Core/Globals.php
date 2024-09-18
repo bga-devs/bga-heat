@@ -259,12 +259,12 @@ class Globals extends \HEAT\Helpers\DB_Manager
     self::setNbrLaps($options[\HEAT\OPTION_NBR_LAPS] ?? 0);
     self::setGarageModuleMode($options[\HEAT\OPTION_GARAGE_CHOICE] ?? \HEAT\OPTION_GARAGE_RANDOM);
     self::setWeatherModule(($options[\HEAT\OPTION_WEATHER_MODULE] ?? \HEAT\OPTION_DISABLED) == \HEAT\OPTION_WEATHER_ENABLED);
-    self::setHeavyRain(false); // TODOHR
+    self::setHeavyRain(($options[\HEAT\OPTION_HEAVY_RAIN_EXPANSION] ?? \HEAT\OPTION_EXPANSION_DISABLED) == \HEAT\OPTION_EXPANSION_ENABLED);
     self::setDeferredRounds(($options[\HEAT\OPTION_TB_MODE] ?? \HEAT\OPTION_TB_STANDARD) == \HEAT\OPTION_TB_ENHANCED);
 
     self::setChampionship($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP);
     if (self::isChampionship()) {
-      $championship = $options[\HEAT\OPTION_CHAMPIONSHIP];
+      $championship = $options[\HEAT\OPTION_CHAMPIONSHIP] ?? $options[\HEAT\OPTION_CHAMPIONSHIP_EXP];
       // Pre set seasons
       if (!in_array($championship, [\HEAT\OPTION_CHAMPIONSHIP_CUSTOM, \HEAT\OPTION_CHAMPIONSHIP_RANDOM])) {
         $datas = CHAMPIONSHIP_SEASONS[$championship];
@@ -277,8 +277,8 @@ class Globals extends \HEAT\Helpers\DB_Manager
       // Random championship
       elseif ($championship == \HEAT\OPTION_CHAMPIONSHIP_RANDOM) {
         $datas = ['name' => clienttranslate('Custom'), 'circuits' => [], 'index' => 0];
-        $circuits = CIRCUITS;
-        $events = array_keys(EVENTS);
+        $circuits = self::isHeavyRain() ? CIRCUITS_EXP : CIRCUITS;
+        $events = array_keys(self::isHeavyRain() ? EVENTS_EXP : EVENTS);
         shuffle($circuits);
         shuffle($events);
         foreach ($circuits as $i => $circuit) {
@@ -293,7 +293,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     }
     // Single circuit
     else {
-      $circuits = CIRCUITS;
+      $circuits = self::isHeavyRain() ? CIRCUITS_EXP : CIRCUITS;
       shuffle($circuits);
 
       $map = [
@@ -307,7 +307,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
         \HEAT\OPTION_CIRCUIT_RANDOM => $circuits[0],
         \HEAT\OPTION_CIRCUIT_CUSTOM => 'custom',
       ];
-      $circuit = $map[$options[\HEAT\OPTION_CIRCUIT]];
+      $circuit = $map[$options[\HEAT\OPTION_CIRCUIT] ?? $options[\HEAT\OPTION_CIRCUIT_EXP]];
       self::setCircuit($circuit);
       if ($circuit != 'custom') {
         self::loadCircuitDatas();
