@@ -1815,7 +1815,7 @@ class Heat implements HeatGame {
     }  
 
     async notif_reveal(args: NotifRevealArgs) {
-        const { constructor_id, gear, heat } = args;
+        const { constructor_id, gear, heats } = args;
         if (constructor_id === this.getConstructorId()) {
             this.updatePlannedCards([]);
         }
@@ -1825,8 +1825,8 @@ class Heat implements HeatGame {
         playerTable.setCurrentGear(gear);
         this.gearCounters[constructor_id].toValue(gear);
         
-        if (heat) {
-            await this.payHeats(constructor_id, [heat]);
+        if (heats) {
+            await this.payHeats(constructor_id, heats);
         }
 
         const cards = Object.values(args.cards);

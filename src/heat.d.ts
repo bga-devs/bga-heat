@@ -233,7 +233,7 @@ interface NotifRevealArgs {
     constructor_id: number;
     gear: number; // new gear
     cards: { [id: number]: Card};
-    heat?: Card;
+    heats?: Card[];
 }
 
 // moveCar

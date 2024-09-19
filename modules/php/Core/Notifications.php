@@ -80,6 +80,7 @@ class Notifications
       'constructor' => $constructor,
       'gear' => $newGear,
       'cards' => $cards,
+      'n' => count($heats),
       'heats' => $heats,
     ]);
   }

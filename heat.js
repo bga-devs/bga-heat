@@ -4814,11 +4814,11 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.notif_reveal = function (args) {
         return __awaiter(this, void 0, void 0, function () {
-            var constructor_id, gear, heat, playerId, playerTable, cards;
+            var constructor_id, gear, heats, playerId, playerTable, cards;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        constructor_id = args.constructor_id, gear = args.gear, heat = args.heat;
+                        constructor_id = args.constructor_id, gear = args.gear, heats = args.heats;
                         if (constructor_id === this.getConstructorId()) {
                             this.updatePlannedCards([]);
                         }
@@ -4826,8 +4826,8 @@ var Heat = /** @class */ (function () {
                         playerTable = this.getPlayerTable(playerId);
                         playerTable.setCurrentGear(gear);
                         this.gearCounters[constructor_id].toValue(gear);
-                        if (!heat) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.payHeats(constructor_id, [heat])];
+                        if (!heats) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.payHeats(constructor_id, heats)];
                     case 1:
                         _a.sent();
                         _a.label = 2;
