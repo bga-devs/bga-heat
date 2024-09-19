@@ -81,7 +81,7 @@ class Notifications
       'gear' => $newGear,
       'cards' => $cards,
       'n' => count($heats),
-      'heats' => $heats,
+      'heats' => $heats->toArray(),
     ]);
   }
 
