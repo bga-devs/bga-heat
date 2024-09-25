@@ -5,6 +5,7 @@ namespace HEAT\States;
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
 use HEAT\Core\Stats;
+use HEAT\Helpers\Collection;
 use HEAT\Helpers\Log;
 use HEAT\Helpers\Utils;
 use HEAT\Helpers\UserException;
@@ -348,15 +349,19 @@ trait RoundTrait
     }
 
     $planification = Globals::getPlanification();
-    $cardIds = $planification[$constructor->getPId()];
+    $pId = $constructor->getPId();
+    $cardIds = $planification[$pId] ?? null;
+    if (is_null($cardIds)) {
+      throw new UserException("No planification data for player $pId. Should not happen, please report a bug");
+    }
     $constructor->incStat('rounds');
-    unset($planification[$constructor->getPId()]);
+    unset($planification[$pId]);
     Globals::setPlanification($planification);
 
 
     // Setup gear and reveal cards
     $newGear = count($cardIds);
-    $heats = [];
+    $heats = new Collection([]);
     if (abs($newGear - $constructor->getGear()) > 2) {
       throw new \BgaVisibleSystemException('You cant change gear more than 2. Should not happen');
     }

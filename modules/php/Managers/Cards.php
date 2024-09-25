@@ -137,6 +137,7 @@ class Cards extends \HEAT\Helpers\Pieces
     // Create the cards
     self::create($cards, null);
     self::shuffle('upgrades');
+    self::shuffle('sponsors');
 
     // Draw them if random mode is selected
     if ($garage != \HEAT\OPTION_DISABLED && $options[\HEAT\OPTION_GARAGE_CHOICE] == \HEAT\OPTION_GARAGE_RANDOM) {

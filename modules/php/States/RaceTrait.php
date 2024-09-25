@@ -406,7 +406,11 @@ trait RaceTrait
     }
 
     Notifications::reformingDeckWithUpgrades();
-    $this->gamestate->jumpToState(ST_START_RACE);
+    if (Globals::isChampionship()) {
+      $this->gamestate->jumpToState(ST_DRAW_SPONSORS);
+    } else {
+      $this->gamestate->jumpToState(ST_START_RACE);
+    }
   }
 
   // CHAMPIONSHIP : swap
@@ -460,7 +464,7 @@ trait RaceTrait
   {
     Cards::shuffle('sponsors');
     $event = Globals::getCurrentEvent();
-    $n = EVENTS[$event]['sponsors'];
+    $n = EVENTS_EXP[$event]['sponsors'];
     if ($n > 0) {
       foreach (Constructors::getAll() as $cId => $constructor) {
         if ($constructor->isAI()) {

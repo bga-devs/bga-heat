@@ -63,6 +63,9 @@ class Heat extends Table
     ]);
     Stats::checkExistence();
     Globals::fetch();
+
+    // EXPERIMENTAL to avoid deadlocks. This locks the global table early in the game constructor.
+    $this->bSelectGlobalsForUpdate = true;
   }
 
   public static function get()
@@ -73,11 +76,6 @@ class Heat extends Table
   protected function getGameName()
   {
     return 'heat';
-  }
-
-  public function shouldHide()
-  {
-    return self::isAsync() && $this->gamestate->state_id() == ST_HIDDEN_PLANIFICATION;
   }
 
   /*

@@ -1,5 +1,4 @@
 Frontend :
 
-- snakeDiscard state : select a card and confirm / possibility to cancel selection
-- it looks like sliding during draft is going to hand instead of inPlay (different location after refresh)
-- it looks like reformingDeckWithUpgrades notif is not handled by frontend ?
+- inconsistent spritesheet for events and php constants
+- use deckCounter sent by backend to ensure more consistent sync
