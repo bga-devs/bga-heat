@@ -68,7 +68,7 @@ class Notifications
   public static function reveal($constructor, $newGear, $cards, $heats, $flooded)
   {
     $msg = clienttranslate('${constructor_name} shifts gear to ${gear} and plays ${cards_images}');
-    if (!empty($heats)) {
+    if ($heats->count() > 0) {
       if ($flooded) {
         $msg = clienttranslate('${constructor_name} pays ${n} Heat card(s) to shift gear to ${gear} (flooded space) and plays ${cards_images}');
       } else {
