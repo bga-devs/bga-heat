@@ -39,7 +39,8 @@ $circuitDatas = [
       "tentX"       => 240,
       "tentY"       => 239,
       "sectorTentX" => 671,
-      "sectorTentY" => 448
+      "sectorTentY" => 448,
+      'aggressiveLegends' => 4
     ],
     [
       "position"    => 19,
@@ -64,7 +65,8 @@ $circuitDatas = [
       "tentX"       => 1422,
       "tentY"       => 216,
       "sectorTentX" => 1361,
-      "sectorTentY" => 322
+      "sectorTentY" => 322,
+      'aggressiveLegends' => 1
     ],
     [
       "position"    => 44,
@@ -88,7 +90,8 @@ $circuitDatas = [
       "tentX"       => 1448,
       "tentY"       => 848,
       "sectorTentX" => 700,
-      "sectorTentY" => 899
+      "sectorTentY" => 899,
+      'aggressiveLegends' => 3
     ],
     [
       "position"    => 51,

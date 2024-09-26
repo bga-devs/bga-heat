@@ -39,7 +39,8 @@ $circuitDatas = [
       "tentX"       => 1567,
       "tentY"       => 537,
       "sectorTentX" => 1275,
-      "sectorTentY" => 360
+      "sectorTentY" => 360,
+      'aggressiveLegends' => 3
     ],
     [
       "position"    => 12,
