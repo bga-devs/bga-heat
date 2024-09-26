@@ -268,7 +268,11 @@ trait RoundTrait
 
   public function actCancelPlan()
   {
-    $this->gamestate->checkPossibleAction('actCancelPlan');
+    if (Globals::isDeferredRounds()) {
+      throw new UserException('You cant cancel planification in deferred round mode. Should not happen');
+    } else {
+      $this->gamestate->checkPossibleAction('actCancelPlan');
+    }
 
     $player = Players::getCurrent();
     $planification = Globals::getPlanification();

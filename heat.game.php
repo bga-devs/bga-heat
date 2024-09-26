@@ -100,7 +100,8 @@ class Heat extends Table
 
       'scores' => Globals::getScores(),
 
-      'deferred' => $this->shouldUsedDeferredDB(),
+      'isDeferredRounds' => Globals::isDeferredRounds(),
+      'isDeferred' => $this->shouldUsedDeferredDB(),
     ];
   }
 

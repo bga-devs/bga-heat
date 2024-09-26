@@ -2,3 +2,4 @@ Frontend :
 
 - inconsistent spritesheet for events and php constants
 - use deckCounter sent by backend to ensure more consistent sync
+- use isDeferred in getAllDatas to NOT display "Cancel" button during planification
