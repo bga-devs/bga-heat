@@ -79,24 +79,27 @@ trait RaceTrait
   {
     // Weather
     if (Globals::isWeatherModule()) {
+      $circuit = $this->getCircuit();
+
       // Draw a card
       $weatherCard = bga_rand(0, 5);
       // Draw tokens
       $tokens = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
       shuffle($tokens);
       $cornerTokens = [];
-      foreach ($this->getCircuit()->getCorners() as $cornerPos => $infos) {
-        if (!isset($infos['chicane'])) {
+      foreach ($circuit->getCorners() as $cornerPos => $maxSpeed) {
+        if (!$circuit->isChicane($cornerPos)) {
           $cornerTokens[$cornerPos] = array_shift($tokens);
         }
       }
       // Simulate duplicated tokens for chicane, 
       //  but remove sector token from the first corner to make sure sector in between the two corners has nothing on it
-      foreach ($this->getCircuit()->getCorners() as $cornerPos => $infos) {
-        if (isset($infos['chicane'])) {
-          $cornerTokens[$cornerPos] = $cornerTokens[$infos['chicane']];
+      foreach ($circuit->getCorners() as $cornerPos => $maxSpeed) {
+        if ($circuit->isChicane($cornerPos)) {
+          $mainCornerPos = $circuit->getChicaneMainCorner($cornerPos);
+          $cornerTokens[$cornerPos] = $cornerTokens[$mainCornerPos];
           if (in_array($cornerTokens[$cornerPos], [ROAD_CONDITION_WEATHER, ROAD_CONDITION_FREE_BOOST, ROAD_CONDITION_INCREASE_SLIPSTREAM])) {
-            $cornerTokens[$infos['chicane']] = null;
+            $cornerTokens[$mainCornerPos] = null;
           }
         }
       }

@@ -23,6 +23,8 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'planification',
     'planificationRevealed',
     'pendingNotifications',
+
+    'weather',
   ];
   protected static $variables = [
     'customTurnOrders' => 'obj', // DO NOT MODIFY, USED FOR CUSTOM TURN ORDER FEATURE

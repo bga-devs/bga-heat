@@ -11,6 +11,7 @@ class Circuit
   protected $name = null;
   protected $datas = null;
   protected $corners = [];
+  protected $chicanes = [];
   protected $legendLines = [];
   protected $raceLanes = [];
   protected $startingCells = [];
@@ -92,7 +93,7 @@ class Circuit
         $pos = $info['position'];
       }
       if (isset($info['chicane'])) {
-        $info['chicane'] = $datas['corners'][$info['chicane']]['position'];
+        $this->chicanes[$pos] = $datas['corners'][$info['chicane']]['position'];
       }
       $this->corners[$pos] = $info['speed'];
       $this->legendLines[$pos] = $info['legend'];
@@ -560,6 +561,15 @@ class Circuit
   public function getLegendLine($cornerPos)
   {
     return $this->legendLines[$cornerPos];
+  }
+
+  public function isChicane($cornerPos)
+  {
+    return !is_null($this->chicanes[$cornerPos] ?? null);
+  }
+  public function getChicaneMainCorner($cornerPos)
+  {
+    return $this->chicanes[$cornerPos];
   }
 
   public function isPressCorner($cornerPos)
