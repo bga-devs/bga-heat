@@ -580,10 +580,10 @@ class Circuit
 
     $nCorners = 0;
     $map = [];
-    foreach ($this->corners as $pos => $infos) {
-      if (isset($infos['chicane'])) {
+    foreach ($this->corners as $pos => $maxSpeed) {
+      if ($this->isChicane($pos)) {
         $nCorners--;
-        unset($map[$infos['chicane']]);
+        unset($map[$this->getChicaneMainCorner($pos)]);
       }
 
       $map[$pos] = $nCorners;
