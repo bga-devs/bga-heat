@@ -24,7 +24,9 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'planificationRevealed',
     'pendingNotifications',
 
-    'weather',
+    'legendCards',
+    'legendCard',
+    'legendCardDrawn',
   ];
   protected static $variables = [
     'customTurnOrders' => 'obj', // DO NOT MODIFY, USED FOR CUSTOM TURN ORDER FEATURE
