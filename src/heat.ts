@@ -924,7 +924,7 @@ class Heat implements HeatGame {
                     (this as any).addActionButton(`actCancelSnakeDiscard_button`, _('Cancel'), () => (this as any).bgaPerformAction('actCancelSnakeDiscard', undefined, { checkAction: false }), null, null, 'gray');
                     break;
                 case 'planification':
-                    if (!this.gamedatas.isDeferred) {
+                    if (!this.gamedatas.isDeferredRounds) {
                         (this as any).addActionButton(`actCancelSelection_button`, _('Cancel'), () => this.actCancelSelection(), null, null, 'gray');
                     }
                     break;
