@@ -2665,7 +2665,10 @@ var Circuit = /** @class */ (function () {
     };
     Circuit.prototype.createWeatherTokens = function (tokens, corners, cardType) {
         var _this = this;
-        Object.entries(tokens).forEach(function (_a) {
+        Object.entries(tokens).filter(function (_a) {
+            var cornerId = _a[0], type = _a[1];
+            return type !== null && type !== undefined;
+        }).forEach(function (_a) {
             var cornerId = _a[0], type = _a[1];
             var field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             var corner = corners[cornerId];

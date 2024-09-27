@@ -231,7 +231,7 @@ class Circuit {
     }
     
     private createWeatherTokens(tokens: { [id: number]: number }, corners: { [id: number]: Corner }, cardType: number): void {
-        Object.entries(tokens).forEach(([cornerId, type]) => {
+        Object.entries(tokens).filter(([cornerId, type]) => type !== null && type !== undefined).forEach(([cornerId, type]) => {
             const field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             const corner = corners[cornerId];
             if (corner) {
