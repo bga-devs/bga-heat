@@ -270,6 +270,7 @@ interface NotifCardsArgs {
     constructor_id: number;
     n: number;
     areSponsors: boolean;
+    deckCount: number;
 }
 
 // refresh
@@ -288,6 +289,7 @@ interface NotifPCardsArgs {
     constructor_id: number;
     cards: { [id: number]: Card};
     areSponsors: boolean;
+    deckCount: number;
 }
 
 // clearPlayedCards
@@ -337,6 +339,7 @@ interface NotifNewLegendCardArgs {
 interface NotifScrapCardsArgs {
     constructor_id: number;
     cards: { [id: number]: Card}; // cards to discard (from deck)
+    deckCount: number;
 }
 
 // resolveBoost
@@ -355,6 +358,7 @@ interface NotifSalvageCardsArgs {
     constructor_id: number;
     cards: { [id: number]: Card}; // cards to salvage (from discard to deck)
     discard: { [id: number]: Card}; // for remaining discard pile
+    deckCount: number;
 }
 
 // directPlay

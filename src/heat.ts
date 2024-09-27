@@ -1918,11 +1918,11 @@ class Heat implements HeatGame {
     }
 
     notif_draw(args: NotifCardsArgs) {
-        const { constructor_id, areSponsors } = args;
+        const { constructor_id, areSponsors, deckCount } = args;
         const n = Number(args.n);
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
         const playerTable = this.getPlayerTable(playerId);
-        playerTable.drawCardsPublic(n, areSponsors);
+        playerTable.drawCardsPublic(n, areSponsors, deckCount);
     }
 
     async notif_refresh(args: NotifRefreshArgs) {
@@ -1953,10 +1953,10 @@ class Heat implements HeatGame {
     }
 
     notif_pDraw(args: NotifPCardsArgs) {
-        const { constructor_id, areSponsors } = args;
+        const { constructor_id, areSponsors, deckCount } = args;
         const cards = Object.values(args.cards);
         const playerTable = this.getCurrentPlayerTable();
-        playerTable.drawCardsPrivate(cards, areSponsors);
+        playerTable.drawCardsPrivate(cards, areSponsors, deckCount);
     }
 
     notif_pDiscard(args: NotifPCardsArgs) {
@@ -2038,23 +2038,23 @@ class Heat implements HeatGame {
     }
 
     notif_scrapCards(args: NotifScrapCardsArgs) {
-        const { constructor_id, cards } = args;
+        const { constructor_id, cards, deckCount } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        return this.getPlayerTable(playerId).scrapCards(Object.values(cards));
+        return this.getPlayerTable(playerId).scrapCards(Object.values(cards), deckCount);
     }
 
     notif_resolveBoost(args: NotifResolveBoostArgs) {
-        const { constructor_id, cards, card } = args;
+        const { constructor_id, cards, card, deckCount } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
+        return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card, deckCount);
     }
 
     notif_accelerate(args: NotifAccelerateArgs) {}  
 
     notif_salvageCards(args: NotifSalvageCardsArgs) {
-        const { constructor_id, cards, discard } = args;
+        const { constructor_id, cards, discard, deckCount } = args;
         const playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard));
+        return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard), deckCount);
     } 
 
     notif_superCoolCards(args: NotifSalvageCardsArgs) {

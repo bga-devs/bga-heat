@@ -195,7 +195,7 @@ class PlayerTable {
         return promise ?? Promise.resolve(true);
     }
     
-    public async drawCardsPublic(n: number, areSponsors: boolean): Promise<any> {
+    public async drawCardsPublic(n: number, areSponsors: boolean, deckCount?: number): Promise<any> {
         if (areSponsors) {
             return;
         }
@@ -214,21 +214,25 @@ class PlayerTable {
 
             await this.deck.shuffle();
 
-            this.deck.setCardNumber(after);
+            this.deck.setCardNumber(deckCount ?? after);
 
             return true;
         }
     }
     
-    public drawCardsPrivate(cards: Card[], areSponsors: boolean): Promise<any> {
+    public async drawCardsPrivate(cards: Card[], areSponsors: boolean, deckCount?: number): Promise<any> {
         if (areSponsors) {
             return this.hand.addCards(cards);
         }
 
-        return this.addCardsFromDeck(cards, this.hand);
+        await this.addCardsFromDeck(cards, this.hand);
+
+        if (deckCount !== undefined) {
+            this.deck.setCardNumber(deckCount);
+        }
     }
     
-    public async scrapCards(cards: Card[]): Promise<any> {
+    public async scrapCards(cards: Card[], deckCount?: number): Promise<any> {
         for (let i = 0; i < cards.length; i++) {
             const card = cards[i];
 
@@ -243,10 +247,14 @@ class PlayerTable {
             await this.discard.addCard(card);
         }
 
+        if (deckCount !== undefined) {
+            this.deck.setCardNumber(deckCount);
+        }
+
         return true;
     }
     
-    public async resolveBoost(cards: Card[], card: Card): Promise<any> {
+    public async resolveBoost(cards: Card[], card: Card, deckCount: number): Promise<any> {
         await this.scrapCards(cards);
 
         if (card.isReshuffled) {
@@ -259,10 +267,14 @@ class PlayerTable {
         });
         await this.inplay.addCard(card);
 
+        if (deckCount !== undefined) {
+            this.deck.setCardNumber(deckCount);
+        }
+
         return true;
     }
     
-    public async salvageCards(cards: Card[], discardCards: Card[]): Promise<any> {
+    public async salvageCards(cards: Card[], discardCards: Card[], deckCount?: number): Promise<any> {
         this.discard.setCardNumber(discardCards.length + cards.length, discardCards[0]);
         cards.forEach(salvagedCard => this.discard.addCard(salvagedCard, undefined, <AddCardToDeckSettings>{
             autoUpdateCardNumber: false,
@@ -271,7 +283,7 @@ class PlayerTable {
 
         await this.deck.addCards(cards.map(card => ({id: card.id }) as Card), undefined, undefined, true);
 
-        this.deck.setCardNumber(this.deck.getCardNumber());
+        this.deck.setCardNumber(deckCount ?? this.deck.getCardNumber());
 
         await this.deck.shuffle();
 

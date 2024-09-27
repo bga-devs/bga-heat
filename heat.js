@@ -3098,7 +3098,7 @@ var PlayerTable = /** @class */ (function () {
         this.setCurrentGear(1);
         return promise !== null && promise !== void 0 ? promise : Promise.resolve(true);
     };
-    PlayerTable.prototype.drawCardsPublic = function (n, areSponsors) {
+    PlayerTable.prototype.drawCardsPublic = function (n, areSponsors, deckCount) {
         return __awaiter(this, void 0, void 0, function () {
             var isReshuffled, count, before, after;
             return __generator(this, function (_a) {
@@ -3120,19 +3120,32 @@ var PlayerTable = /** @class */ (function () {
                         return [4 /*yield*/, this.deck.shuffle()];
                     case 2:
                         _a.sent();
-                        this.deck.setCardNumber(after);
+                        this.deck.setCardNumber(deckCount !== null && deckCount !== void 0 ? deckCount : after);
                         return [2 /*return*/, true];
                 }
             });
         });
     };
-    PlayerTable.prototype.drawCardsPrivate = function (cards, areSponsors) {
-        if (areSponsors) {
-            return this.hand.addCards(cards);
-        }
-        return this.addCardsFromDeck(cards, this.hand);
+    PlayerTable.prototype.drawCardsPrivate = function (cards, areSponsors, deckCount) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (areSponsors) {
+                            return [2 /*return*/, this.hand.addCards(cards)];
+                        }
+                        return [4 /*yield*/, this.addCardsFromDeck(cards, this.hand)];
+                    case 1:
+                        _a.sent();
+                        if (deckCount !== undefined) {
+                            this.deck.setCardNumber(deckCount);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
-    PlayerTable.prototype.scrapCards = function (cards) {
+    PlayerTable.prototype.scrapCards = function (cards, deckCount) {
         return __awaiter(this, void 0, void 0, function () {
             var i, card;
             return __generator(this, function (_a) {
@@ -3160,12 +3173,16 @@ var PlayerTable = /** @class */ (function () {
                     case 5:
                         i++;
                         return [3 /*break*/, 1];
-                    case 6: return [2 /*return*/, true];
+                    case 6:
+                        if (deckCount !== undefined) {
+                            this.deck.setCardNumber(deckCount);
+                        }
+                        return [2 /*return*/, true];
                 }
             });
         });
     };
-    PlayerTable.prototype.resolveBoost = function (cards, card) {
+    PlayerTable.prototype.resolveBoost = function (cards, card, deckCount) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -3185,12 +3202,15 @@ var PlayerTable = /** @class */ (function () {
                         return [4 /*yield*/, this.inplay.addCard(card)];
                     case 4:
                         _a.sent();
+                        if (deckCount !== undefined) {
+                            this.deck.setCardNumber(deckCount);
+                        }
                         return [2 /*return*/, true];
                 }
             });
         });
     };
-    PlayerTable.prototype.salvageCards = function (cards, discardCards) {
+    PlayerTable.prototype.salvageCards = function (cards, discardCards, deckCount) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
@@ -3204,7 +3224,7 @@ var PlayerTable = /** @class */ (function () {
                         return [4 /*yield*/, this.deck.addCards(cards.map(function (card) { return ({ id: card.id }); }), undefined, undefined, true)];
                     case 1:
                         _a.sent();
-                        this.deck.setCardNumber(this.deck.getCardNumber());
+                        this.deck.setCardNumber(deckCount !== null && deckCount !== void 0 ? deckCount : this.deck.getCardNumber());
                         return [4 /*yield*/, this.deck.shuffle()];
                     case 2:
                         _a.sent();
@@ -4960,11 +4980,11 @@ var Heat = /** @class */ (function () {
         return (_a = this.gamedatas.constructors[constructorId]) === null || _a === void 0 ? void 0 : _a.pId;
     };
     Heat.prototype.notif_draw = function (args) {
-        var constructor_id = args.constructor_id, areSponsors = args.areSponsors;
+        var constructor_id = args.constructor_id, areSponsors = args.areSponsors, deckCount = args.deckCount;
         var n = Number(args.n);
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
-        playerTable.drawCardsPublic(n, areSponsors);
+        playerTable.drawCardsPublic(n, areSponsors, deckCount);
     };
     Heat.prototype.notif_refresh = function (args) {
         return __awaiter(this, void 0, void 0, function () {
@@ -5004,10 +5024,10 @@ var Heat = /** @class */ (function () {
         playerTable.inplay.removeCard(card);
     };
     Heat.prototype.notif_pDraw = function (args) {
-        var constructor_id = args.constructor_id, areSponsors = args.areSponsors;
+        var constructor_id = args.constructor_id, areSponsors = args.areSponsors, deckCount = args.deckCount;
         var cards = Object.values(args.cards);
         var playerTable = this.getCurrentPlayerTable();
-        playerTable.drawCardsPrivate(cards, areSponsors);
+        playerTable.drawCardsPrivate(cards, areSponsors, deckCount);
     };
     Heat.prototype.notif_pDiscard = function (args) {
         var constructor_id = args.constructor_id;
@@ -5112,20 +5132,20 @@ var Heat = /** @class */ (function () {
         return this.legendTable.newLegendCard(args.card);
     };
     Heat.prototype.notif_scrapCards = function (args) {
-        var constructor_id = args.constructor_id, cards = args.cards;
+        var constructor_id = args.constructor_id, cards = args.cards, deckCount = args.deckCount;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        return this.getPlayerTable(playerId).scrapCards(Object.values(cards));
+        return this.getPlayerTable(playerId).scrapCards(Object.values(cards), deckCount);
     };
     Heat.prototype.notif_resolveBoost = function (args) {
-        var constructor_id = args.constructor_id, cards = args.cards, card = args.card;
+        var constructor_id = args.constructor_id, cards = args.cards, card = args.card, deckCount = args.deckCount;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card);
+        return this.getPlayerTable(playerId).resolveBoost(Object.values(cards), card, deckCount);
     };
     Heat.prototype.notif_accelerate = function (args) { };
     Heat.prototype.notif_salvageCards = function (args) {
-        var constructor_id = args.constructor_id, cards = args.cards, discard = args.discard;
+        var constructor_id = args.constructor_id, cards = args.cards, discard = args.discard, deckCount = args.deckCount;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
-        return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard));
+        return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard), deckCount);
     };
     Heat.prototype.notif_superCoolCards = function (args) {
         var constructor_id = args.constructor_id, cards = args.cards, discard = args.discard;
