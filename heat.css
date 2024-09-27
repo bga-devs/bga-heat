@@ -679,7 +679,7 @@ height: 241px; */
 .event-card .card-sides .card-side {
   border-radius: 8px;
   background-image: url("img/events.jpg");
-  background-size: 100% auto;
+  background-size: 200% auto;
 }
 .event-card .card-sides .card-side > * {
   pointer-events: all !important;
@@ -689,34 +689,64 @@ height: 241px; */
   text-shadow: 0 0 1px black, 0 0 2px black;
 }
 .event-card .card-sides .card-side.front[data-index="1"] {
-  background-position-y: 0%;
+  background-position: 0% 0%;
 }
 .event-card .card-sides .card-side.front[data-index="2"] {
-  background-position-y: 11.1111111111%;
+  background-position: 0% 11.1111111111%;
 }
 .event-card .card-sides .card-side.front[data-index="3"] {
-  background-position-y: 22.2222222222%;
+  background-position: 0% 22.2222222222%;
 }
 .event-card .card-sides .card-side.front[data-index="4"] {
-  background-position-y: 33.3333333333%;
+  background-position: 0% 33.3333333333%;
 }
 .event-card .card-sides .card-side.front[data-index="5"] {
-  background-position-y: 44.4444444444%;
+  background-position: 0% 44.4444444444%;
 }
 .event-card .card-sides .card-side.front[data-index="6"] {
-  background-position-y: 55.5555555556%;
+  background-position: 0% 55.5555555556%;
 }
 .event-card .card-sides .card-side.front[data-index="7"] {
-  background-position-y: 66.6666666667%;
+  background-position: 0% 66.6666666667%;
 }
 .event-card .card-sides .card-side.front[data-index="8"] {
-  background-position-y: 77.7777777778%;
+  background-position: 0% 77.7777777778%;
 }
 .event-card .card-sides .card-side.front[data-index="9"] {
-  background-position-y: 88.8888888889%;
+  background-position: 0% 88.8888888889%;
 }
 .event-card .card-sides .card-side.front[data-index="10"] {
-  background-position-y: 100%;
+  background-position: 0% 100%;
+}
+.event-card .card-sides .card-side.front[data-index="11"] {
+  background-position: 100% 111.1111111111%;
+}
+.event-card .card-sides .card-side.front[data-index="12"] {
+  background-position: 100% 122.2222222222%;
+}
+.event-card .card-sides .card-side.front[data-index="13"] {
+  background-position: 100% 133.3333333333%;
+}
+.event-card .card-sides .card-side.front[data-index="14"] {
+  background-position: 100% 144.4444444444%;
+}
+.event-card .card-sides .card-side.front[data-index="15"] {
+  background-position: 100% 155.5555555556%;
+}
+.event-card .card-sides .card-side.front[data-index="16"] {
+  background-position: 100% 166.6666666667%;
+}
+.event-card .card-sides .card-side.front[data-index="17"] {
+  background-position: 100% 177.7777777778%;
+}
+.event-card .card-sides .card-side.front[data-index="18"] {
+  background-position: 100% 188.8888888889%;
+}
+.event-card .card-sides .card-side.front[data-index="19"] {
+  background-position: 100% 200%;
+}
+.event-card .card-sides .card-side.front[data-index="20"] {
+  background-position: 100% 211.1111111111%;
 }
 .event-card .card-sides .card-side.front .title-and-rule {
   position: absolute;

@@ -8,7 +8,7 @@
         .card-side {
             border-radius: 8px;
             background-image: url('img/events.jpg');  
-            background-size: 100% auto; 
+            background-size: 200% auto; 
 
             &>* {
                 pointer-events: all !important;
@@ -17,7 +17,12 @@
             &.front {
                 @for $index from 1 through 10 {
                     &[data-index="#{$index}"]  {
-                        background-position-y: #{($index - 1) * 100% / 9};
+                        background-position: 0% #{($index - 1) * 100% / 9};
+                    }
+                }
+                @for $index from 11 through 20 {
+                    &[data-index="#{$index}"]  {
+                        background-position: 100% #{($index - 1) * 100% / 9};
                     }
                 }
 
