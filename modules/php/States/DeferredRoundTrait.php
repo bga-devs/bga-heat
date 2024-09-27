@@ -36,6 +36,10 @@ trait DeferredRoundTrait
       if ($activeConstructor->getNo() < $currentConstructor->getNo()) {
         return true;
       }
+      // Someone after in turn order is active => show
+      else if ($activeConstructor->getNo() > $currentConstructor->getNo()) {
+        return false;
+      }
 
       // Current constructor is active => check whether some cards were played or not
       if ($currentConstructor->getId() == $activeConstructor->getId()) {
@@ -51,6 +55,7 @@ trait DeferredRoundTrait
       return true;
     }
 
+    die("testaze");
     return true;
   }
 
