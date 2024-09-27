@@ -907,8 +907,11 @@ class Heat implements HeatGame {
                     break;
                 case 'superCool':
                     this.onEnteringSuperCool(args);
-                    for (let i = args._private.max; i >= 0; i--) {
+                    for (let i = args.n; i >= 0; i--) {
                         (this as any).addActionButton(`actSuperCool${i}_button`, `<div class="icon super-cool">${i}</div>`, () => this.actSuperCool(i));
+                        if (i > args._private.max) {
+                            document.getElementById(`actSuperCool${i}_button`).classList.add('disabled');
+                        }
                     }
                     break;
                 case 'confirmEndOfRace':

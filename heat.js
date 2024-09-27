@@ -4184,9 +4184,12 @@ var Heat = /** @class */ (function () {
                     this.onEnteringSuperCool(args);
                     var _loop_3 = function (i) {
                         this_1.addActionButton("actSuperCool".concat(i, "_button"), "<div class=\"icon super-cool\">".concat(i, "</div>"), function () { return _this.actSuperCool(i); });
+                        if (i > args._private.max) {
+                            document.getElementById("actSuperCool".concat(i, "_button")).classList.add('disabled');
+                        }
                     };
                     var this_1 = this;
-                    for (var i = args._private.max; i >= 0; i--) {
+                    for (var i = args.n; i >= 0; i--) {
                         _loop_3(i);
                     }
                     break;
