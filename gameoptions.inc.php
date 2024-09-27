@@ -79,14 +79,14 @@ $game_options = [
   ],
 
   OPTION_HEAVY_RAIN_EXPANSION => [
-    'name' => totranslate('Heavy Rain expansion'),
+    'name' => totranslate('Expansion'),
     'level' => "major",
     'values' => [
       OPTION_EXPANSION_DISABLED => [
-        'name' => clienttranslate('Disabled'),
+        'name' => clienttranslate('Base game only'),
       ],
       OPTION_EXPANSION_ENABLED => [
-        'name' => clienttranslate('Enabled'),
+        'name' => clienttranslate('Heavy Rain'),
         'tmdisplay' => clienttranslate('((Heavy Rain))'),
         'nobeginner' => true,
       ],
