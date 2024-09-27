@@ -98,6 +98,7 @@ interface HeatGamedatas {
     weather: Weather;
     progress: number;
     scores: { [index: number]: { [constructor_id: number]: number}};
+    isDeferred: boolean;
 }
 
 interface HeatGame extends Game {
