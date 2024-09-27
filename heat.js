@@ -4224,7 +4224,7 @@ var Heat = /** @class */ (function () {
                     this.addActionButton("actCancelSnakeDiscard_button", _('Cancel'), function () { return _this.bgaPerformAction('actCancelSnakeDiscard', undefined, { checkAction: false }); }, null, null, 'gray');
                     break;
                 case 'planification':
-                    if (!this.gamedatas.isDeferred) {
+                    if (!this.gamedatas.isDeferredRounds) {
                         this.addActionButton("actCancelSelection_button", _('Cancel'), function () { return _this.actCancelSelection(); }, null, null, 'gray');
                     }
                     break;
