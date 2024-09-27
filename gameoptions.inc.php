@@ -80,6 +80,7 @@ $game_options = [
 
   OPTION_HEAVY_RAIN_EXPANSION => [
     'name' => totranslate('Heavy Rain expansion'),
+    'level' => "major",
     'values' => [
       OPTION_EXPANSION_DISABLED => [
         'name' => clienttranslate('Disabled'),
