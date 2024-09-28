@@ -3472,20 +3472,20 @@ var Heat = /** @class */ (function () {
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
     }
     /*
-        setup:
-
-        This method must set up the game user interface according to current game situation specified
-        in parameters.
-
-        The method is called each time the game interface is displayed to a player, ie:
-        _ when the game starts
-        _ when a player refreshes the game page (F5)
-
-        "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
-    */
+          setup:
+  
+          This method must set up the game user interface according to current game situation specified
+          in parameters.
+  
+          The method is called each time the game interface is displayed to a player, ie:
+          _ when the game starts
+          _ when a player refreshes the game page (F5)
+  
+          "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
+      */
     Heat.prototype.setup = function (gamedatas) {
         var _a, _b;
-        log("Starting game setup");
+        log('Starting game setup');
         this.gamedatas = gamedatas;
         if (((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
             g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
@@ -3499,14 +3499,12 @@ var Heat = /** @class */ (function () {
         this.cardsManager = new CardsManager(this);
         this.legendCardsManager = new LegendCardsManager(this);
         this.eventCardsManager = new EventCardsManager(this);
-        var jumpToEntries = [
-            new JumpToEntry(_('Circuit'), 'table-center', { 'color': '#222222' })
-        ];
+        var jumpToEntries = [new JumpToEntry(_('Circuit'), 'table-center', { color: '#222222' })];
         if (gamedatas.isLegend) {
-            jumpToEntries.push(new JumpToEntry(_('Legends'), 'legend-board', { 'color': '#39464c' }));
+            jumpToEntries.push(new JumpToEntry(_('Legends'), 'legend-board', { color: '#39464c' }));
         }
         if (gamedatas.championship) {
-            jumpToEntries.unshift(new JumpToEntry(_('Championship'), 'championship-table', { 'color': '#39464c' }));
+            jumpToEntries.unshift(new JumpToEntry(_('Championship'), 'championship-table', { color: '#39464c' }));
         }
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
@@ -3552,15 +3550,15 @@ var Heat = /** @class */ (function () {
         new HelpManager(this, {
             buttons: [
                 new BgaHelpPopinButton({
-                    title: _("Help"),
+                    title: _('Help'),
                     html: this.getHelpHtml(),
                     buttonBackground: '#d61b1a',
                 }),
-            ]
+            ],
         });
         this.setupNotifications();
         this.setupPreferences();
-        log("Ending game setup");
+        log('Ending game setup');
     };
     ///////////////////////////////////////////////////
     //// Game & client states
@@ -3643,7 +3641,7 @@ var Heat = /** @class */ (function () {
         reader.addEventListener('load', function (e) {
             var content = e.target.result;
             var circuit = JSON.parse(content);
-            _this.ajaxcall("/".concat(_this.game_name, "/").concat(_this.game_name, "/actUploadCircuit.html"), { circuit: JSON.stringify(circuit), lock: true, }, _this, function () { }, undefined, 'post');
+            _this.ajaxcall("/".concat(_this.game_name, "/").concat(_this.game_name, "/actUploadCircuit.html"), { circuit: JSON.stringify(circuit), lock: true }, _this, function () { }, undefined, 'post');
         });
     };
     Heat.prototype.initMarketStock = function () {
@@ -3651,7 +3649,7 @@ var Heat = /** @class */ (function () {
         var _a;
         if (!this.market) {
             var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
-            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
+            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat((((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100) / 6, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
             this.market.onSelectionChange = function (selection) { return _this.onMarketSelectionChange(selection); };
         }
@@ -3748,7 +3746,7 @@ var Heat = /** @class */ (function () {
         var _a;
         if (!this.market) {
             var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
-            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
+            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat((((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100) / 6, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
             this.market.onSelectionChange = function (selection) {
                 document.getElementById("actSalvage_button").classList.toggle('disabled', selection.length > args.n);
@@ -3763,7 +3761,7 @@ var Heat = /** @class */ (function () {
         var _a;
         if (!this.market) {
             var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
-            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat(((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100 / 6, "%;\"></div>\n            "));
+            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat((((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100) / 6, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
         }
         // negative ids to not mess with deck pile
@@ -3855,11 +3853,13 @@ var Heat = /** @class */ (function () {
             var speed = Number(entry[0]);
             var label = _('Move ${cell} cell(s)').replace('${cell}', "".concat(speed));
             /*if (args.heatCosts[speed]) {
-                label += ` (${args.heatCosts[speed]}[Heat])`;
-            }*/
+                      label += ` (${args.heatCosts[speed]}[Heat])`;
+                  }*/
             var confirmationMessage = _this.getSlipstreamConfirmation(args, speed);
             var finalAction = function () { return _this.actSlipstream(speed); };
-            var callback = confirmationMessage ? function () { return _this.confirmationDialog(confirmationMessage, finalAction); } : finalAction;
+            var callback = confirmationMessage
+                ? function () { return _this.confirmationDialog(confirmationMessage, finalAction); }
+                : finalAction;
             _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), formatTextIcons(label), callback);
             _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
         });
@@ -3872,7 +3872,9 @@ var Heat = /** @class */ (function () {
         var _a;
         var confirmationMessage = null;
         var adrenalineWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() == 0 && reactArgs.adrenalineWillCrossNextCorner;
-        var adrenalineCostOnCurrentCorner = ((_a = reactArgs.boostInfos) === null || _a === void 0 ? void 0 : _a[1]) ? Object.values(reactArgs.boostInfos[1]).reduce(function (a, b) { return a + b; }, 0) : 0;
+        var adrenalineCostOnCurrentCorner = ((_a = reactArgs.boostInfos) === null || _a === void 0 ? void 0 : _a[1])
+            ? Object.values(reactArgs.boostInfos[1]).reduce(function (a, b) { return a + b; }, 0)
+            : 0;
         if (adrenalineWillCrossNextCorner || reactArgs.currentHeatCost > 0 || adrenalineCostOnCurrentCorner > 0) {
             var newSpeed = this.speedCounters[this.getConstructorId()].getValue() + 1;
             var newHeatCost = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 1 : 0;
@@ -3889,22 +3891,23 @@ var Heat = /** @class */ (function () {
             }
             if (newHeatCost > 0) {
                 if (adrenalineWillCrossNextCorner) {
-                    confirmationMessage = _("The Adrenaline reaction will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeed, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
-                        + "<br>";
+                    confirmationMessage =
+                        _('The Adrenaline reaction will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).')
+                            .replace('${speed}', "<strong>".concat(newSpeed, "</strong>"))
+                            .replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>")) + "<br>";
                 }
                 else {
                     confirmationMessage = '';
                 }
                 if (reactArgs.currentHeatCost > 0) {
-                    confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
+                    confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).')
                         .replace('${heat}', "<strong>".concat(reactArgs.currentHeatCost, "</strong>"))
                         .replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
                 }
                 else {
-                    confirmationMessage += _("You will have to pay ${newHeat} Heat(s).")
-                        .replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
+                    confirmationMessage += _('You will have to pay ${newHeat} Heat(s).').replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
                 }
-                confirmationMessage += "<br><br>\n                ".concat(_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
+                confirmationMessage += "<br><br>\n                ".concat(_('Your currently have ${heat} Heat(s) in your engine.').replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
             }
         }
         return confirmationMessage;
@@ -3913,10 +3916,12 @@ var Heat = /** @class */ (function () {
         var _a;
         var mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
         var confirmationMessage = null;
-        var boostCostOnCurrentCorner = ((_a = reactArgs.boostInfos) === null || _a === void 0 ? void 0 : _a[4]) ? Object.values(reactArgs.boostInfos[4]).reduce(function (a, b) { return a + b; }, 0) : 0;
+        var boostCostOnCurrentCorner = ((_a = reactArgs.boostInfos) === null || _a === void 0 ? void 0 : _a[4])
+            ? Object.values(reactArgs.boostInfos[4]).reduce(function (a, b) { return a + b; }, 0)
+            : 0;
         if (mayCrossCorner || reactArgs.currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
             var newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
-            var newHeatCostMax = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 4 : (paid ? 1 : 0);
+            var newHeatCostMax = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 4 : paid ? 1 : 0;
             var newCornerCostMax = 0;
             if (mayCrossCorner) {
                 newCornerCostMax = Math.max(0, newSpeedMax - reactArgs.nextCornerSpeedLimit);
@@ -3930,22 +3935,23 @@ var Heat = /** @class */ (function () {
             }
             if (newHeatCostMax > 0) {
                 if (mayCrossCorner) {
-                    confirmationMessage = _("The Boost reaction may make you cross a <strong>new</strong> corner at a speed up to ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeedMax, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
-                        + "<br>";
+                    confirmationMessage =
+                        _('The Boost reaction may make you cross a <strong>new</strong> corner at a speed up to ${speed} (Corner speed limit: ${speedLimit}).')
+                            .replace('${speed}', "<strong>".concat(newSpeedMax, "</strong>"))
+                            .replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>")) + "<br>";
                 }
                 else {
                     confirmationMessage = '';
                 }
                 if (reactArgs.currentHeatCost > 0) {
-                    confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change up to ${newHeat} Heat(s).")
+                    confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change up to ${newHeat} Heat(s).')
                         .replace('${heat}', "<strong>".concat(reactArgs.currentHeatCost, "</strong>"))
                         .replace('${newHeat}', "<strong>".concat(newHeatCostMax, "</strong>"));
                 }
                 else {
-                    confirmationMessage += _("You will have to pay up to ${newHeat} Heat(s).")
-                        .replace('${newHeat}', "<strong>".concat(newHeatCostMax, "</strong>"));
+                    confirmationMessage += _('You will have to pay up to ${newHeat} Heat(s).').replace('${newHeat}', "<strong>".concat(newHeatCostMax, "</strong>"));
                 }
-                confirmationMessage += "<br><br>\n                ".concat(_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
+                confirmationMessage += "<br><br>\n                ".concat(_('Your currently have ${heat} Heat(s) in your engine.').replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
             }
         }
         return confirmationMessage;
@@ -3957,22 +3963,23 @@ var Heat = /** @class */ (function () {
         if (reactArgs.currentHeatCost < newHeatCost) {
             var newSpeed = this.speedCounters[this.getConstructorId()].getValue() + card.speed;
             if (willCrossCorner) {
-                confirmationMessage = _("The Direct Play reaction may make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(newSpeed, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
-                    + "<br>";
+                confirmationMessage =
+                    _('The Direct Play reaction may make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).')
+                        .replace('${speed}', "<strong>".concat(newSpeed, "</strong>"))
+                        .replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>")) + "<br>";
             }
             else {
                 confirmationMessage = '';
             }
             if (reactArgs.currentHeatCost > 0) {
-                confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
+                confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).')
                     .replace('${heat}', "<strong>".concat(reactArgs.currentHeatCost, "</strong>"))
                     .replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
             }
             else {
-                confirmationMessage += _("You will have to pay ${newHeat} Heat(s).")
-                    .replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
+                confirmationMessage += _('You will have to pay ${newHeat} Heat(s).').replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
             }
-            confirmationMessage += "<br><br>\n            ".concat(_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
+            confirmationMessage += "<br><br>\n            ".concat(_('Your currently have ${heat} Heat(s) in your engine.').replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
         }
         return confirmationMessage;
     };
@@ -3986,18 +3993,19 @@ var Heat = /** @class */ (function () {
                 newHeatCost++;
             }
             if (newHeatCost > 0) {
-                confirmationMessage = _("The Slipstream move will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).").replace('${speed}', "<strong>".concat(speed_1, "</strong>")).replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>"))
-                    + "<br>";
+                confirmationMessage =
+                    _('The Slipstream move will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).')
+                        .replace('${speed}', "<strong>".concat(speed_1, "</strong>"))
+                        .replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>")) + "<br>";
                 if (reactArgs.currentHeatCost > 0) {
-                    confirmationMessage += _("You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).")
+                    confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).')
                         .replace('${heat}', "<strong>".concat(reactArgs.currentHeatCost, "</strong>"))
                         .replace('${newHeat}', "<strong>".concat(reactArgs.currentHeatCost + newHeatCost, "</strong>"));
                 }
                 else {
-                    confirmationMessage += _("You will have to pay ${newHeat} Heat(s).")
-                        .replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
+                    confirmationMessage += _('You will have to pay ${newHeat} Heat(s).').replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
                 }
-                confirmationMessage += "<br><br>\n                    ".concat(_("Your currently have ${heat} Heat(s) in your engine.").replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
+                confirmationMessage += "<br><br>\n                    ".concat(_('Your currently have ${heat} Heat(s) in your engine.').replace('${heat}', "<strong>".concat(this.engineCounters[this.getConstructorId()].getValue(), "</strong>")));
             }
         }
         return confirmationMessage;
@@ -4036,9 +4044,9 @@ var Heat = /** @class */ (function () {
                     this.addActionButton("actPlanification_button", '', function () { return _this.actPlanification(); });
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
                     if ((_a = planificationArgs._private) === null || _a === void 0 ? void 0 : _a.canSkipEndRace) {
-                        var giveUpMessage_1 = _("If you give up, you will be ranked last.");
+                        var giveUpMessage_1 = _('If you give up, you will be ranked last.');
                         if (planificationArgs.nPlayersLeft > 1) {
-                            giveUpMessage_1 += '<br><br>' + _("You are not the only player remaining, so there is still hope!");
+                            giveUpMessage_1 += '<br><br>' + _('You are not the only player remaining, so there is still hope!');
                         }
                         this.addActionButton("actGiveUp_button", _('I want to give up this race'), function () { return _this.confirmationDialog(giveUpMessage_1, function () { return _this.actGiveUp(); }); }, null, null, 'gray');
                     }
@@ -4064,13 +4072,16 @@ var Heat = /** @class */ (function () {
                         var max = null;
                         if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
                             var cardEffectType_1 = {
-                                'reduce': 'stress',
-                                'cooldown': 'heat',
+                                reduce: 'stress',
+                                cooldown: 'heat',
                             }[type];
-                            max = Math.min(entry[1], _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == cardEffectType_1; }).length);
+                            max = Math.min(entry[1], _this.getCurrentPlayerTable()
+                                .hand.getCards()
+                                .filter(function (card) { return card.effect == cardEffectType_1; }).length);
                             numbers = [];
                             for (var i = max; i >= 1; i--) {
-                                if (reactArgs_1.doable.includes(type) || i === max) { // only the max button if disabled
+                                if (reactArgs_1.doable.includes(type) || i === max) {
+                                    // only the max button if disabled
                                     numbers.push(i);
                                 }
                             }
@@ -4082,7 +4093,9 @@ var Heat = /** @class */ (function () {
                             var enabled = reactArgs_1.doable.includes(type);
                             switch (type) {
                                 case 'accelerate':
-                                    var accelerateCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
+                                    var accelerateCard = _this.getCurrentPlayerTable()
+                                        .inplay.getCards()
+                                        .find(function (card) { return card.id == number; });
                                     label = "+".concat(reactArgs_1.flippedCards, " [Speed]<br>").concat(_this.cardImageHtml(accelerateCard, { constructor_id: _this.getConstructorId() }));
                                     //label = `+${reactArgs.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('accelerate', reactArgs_1.flippedCards);
@@ -4093,20 +4106,26 @@ var Heat = /** @class */ (function () {
                                     break;
                                 case 'adrenaline':
                                     label = "+".concat(number, " [Speed]");
-                                    tooltip = "\n                                    <strong>".concat(_("Adrenaline"), "</strong>\n                                    <br><br>\n                                    ").concat(_("Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space)."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: Adrenaline cannot be saved for future rounds"), "</i>");
+                                    tooltip = "\n                                    <strong>".concat(_('Adrenaline'), "</strong>\n                                    <br><br>\n                                    ").concat(_('Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).'), "\n                                    <br><br>\n                                    <i>").concat(_('Note: Adrenaline cannot be saved for future rounds'), "</i>");
                                     confirmationMessage = reactArgs_1.crossedFinishLine ? null : _this.getAdrenalineConfirmation(reactArgs_1);
                                     break;
                                 case 'cooldown':
                                     label = "".concat(number, " [Cooldown]");
-                                    var heats = _this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return card.effect == 'heat'; }).length;
+                                    var heats = _this.getCurrentPlayerTable()
+                                        .hand.getCards()
+                                        .filter(function (card) { return card.effect == 'heat'; }).length;
                                     if (heats < number) {
                                         label += "(- ".concat(heats, " [Heat])");
                                     }
-                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('cooldown', number) + _("You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).");
+                                    tooltip =
+                                        _this.getGarageModuleIconTooltipWithIcon('cooldown', number) +
+                                            _('You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).');
                                     break;
                                 case 'direct':
-                                    var directCard = _this.getCurrentPlayerTable().hand.getCards().find(function (card) { return card.id == number; });
-                                    label = "<div class=\"icon direct\"></div>".concat(_("Play from hand"));
+                                    var directCard = _this.getCurrentPlayerTable()
+                                        .hand.getCards()
+                                        .find(function (card) { return card.id == number; });
+                                    label = "<div class=\"icon direct\"></div>".concat(_('Play from hand'));
                                     if (directCard) {
                                         label = "<br>".concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
                                     }
@@ -4115,7 +4134,8 @@ var Heat = /** @class */ (function () {
                                     }
                                     //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
-                                    confirmationMessage = reactArgs_1.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(reactArgs_1, directCard);
+                                    confirmationMessage =
+                                        reactArgs_1.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(reactArgs_1, directCard);
                                     break;
                                 case 'heat':
                                     label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
@@ -4128,7 +4148,7 @@ var Heat = /** @class */ (function () {
                                     if (paid) {
                                         label += " (1[Heat])";
                                     }
-                                    tooltip = "\n                                    <strong>".concat(_("Boost"), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _("Regardless of which gear you are in you may pay 1 Heat to boost once per turn.") : '', "\n                                    ").concat(_("Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly."), "\n                                    <br><br>\n                                    <i>").concat(_("Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step."), "</i>");
+                                    tooltip = "\n                                    <strong>".concat(_('Boost'), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _('Regardless of which gear you are in you may pay 1 Heat to boost once per turn.') : '', "\n                                    ").concat(_('Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly.'), "\n                                    <br><br>\n                                    <i>").concat(_('Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.'), "</i>");
                                     confirmationMessage = reactArgs_1.crossedFinishLine ? null : _this.getBoostConfirmation(reactArgs_1, paid);
                                     break;
                                 case 'reduce':
@@ -4149,8 +4169,16 @@ var Heat = /** @class */ (function () {
                                     tooltip = _this.getGarageModuleIconTooltipWithIcon('super-cool', number);
                                     break;
                             }
-                            var finalAction = function () { return _this.actReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined); };
-                            var callback = confirmationMessage ? (function () { return _this.showHeatCostConfirmations() ? _this.confirmationDialog(confirmationMessage, finalAction) : finalAction(); }) : finalAction;
+                            var finalAction = function () {
+                                return _this.actReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined);
+                            };
+                            var callback = confirmationMessage
+                                ? function () {
+                                    return _this.showHeatCostConfirmations()
+                                        ? _this.confirmationDialog(confirmationMessage, finalAction)
+                                        : finalAction();
+                                }
+                                : finalAction;
                             var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
                             _this.addActionButton("actReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback, null, null, SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'gray' : undefined);
                             if (mandatory) {
@@ -4177,9 +4205,13 @@ var Heat = /** @class */ (function () {
                         document.getElementById("actPassReact_button").classList.add('disabled');
                     }
                     if (reactArgs_1.symbols['heat'] > 0 && !reactArgs_1.doable.includes('heat')) {
-                        var confirmationMessage_1 = reactArgs_1.doable.includes('cooldown') ? _("You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?") : null;
+                        var confirmationMessage_1 = reactArgs_1.doable.includes('cooldown')
+                            ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
+                            : null;
                         var finalAction_1 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
-                        var callback = confirmationMessage_1 ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); } : finalAction_1;
+                        var callback = confirmationMessage_1
+                            ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); }
+                            : finalAction_1;
                         this.addActionButton("actCryCauseNotEnoughHeatToPay_button", _("I can't pay Heat(s)"), callback);
                     }
                     break;
@@ -4192,17 +4224,20 @@ var Heat = /** @class */ (function () {
                     this.onEnteringDiscard(args);
                     if ((_c = (_b = args._private) === null || _b === void 0 ? void 0 : _b.refreshedIds) === null || _c === void 0 ? void 0 : _c.length) {
                         (_d = args._private) === null || _d === void 0 ? void 0 : _d.refreshedIds.forEach(function (number) {
-                            var refreshCard = _this.getCurrentPlayerTable().inplay.getCards().find(function (card) { return card.id == number; });
-                            var label = "<div class=\"icon refresh\"></div>".concat(_("Place back on deck"), "<br>\n                            ").concat(_this.cardImageHtml(refreshCard, { constructor_id: _this.getConstructorId() }));
+                            var refreshCard = _this.getCurrentPlayerTable()
+                                .inplay.getCards()
+                                .find(function (card) { return card.id == number; });
+                            var label = "<div class=\"icon refresh\"></div>".concat(_('Place back on deck'), "<br>\n                            ").concat(_this.cardImageHtml(refreshCard, { constructor_id: _this.getConstructorId() }));
                             var tooltip = _this.getGarageModuleIconTooltipWithIcon('refresh', 1);
                             _this.addActionButton("actRefresh_".concat(number, "_button"), formatTextIcons(label), function () { return _this.actRefresh(number); });
                             _this.setTooltip("actRefresh_".concat(number, "_button"), formatTextIcons(tooltip));
                         });
                     }
-                    this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); });
+                    this.addActionButton("actDiscard_button", '', function () {
+                        return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection());
+                    });
                     this.addActionButton("actNoDiscard_button", _('No additional discard'), function () { return _this.actDiscard([]); }, null, null, 'red');
                     this.onHandCardSelectionChange([]);
-                    ;
                     break;
                 case 'salvage':
                     this.onEnteringSalvage(args);
@@ -4212,7 +4247,9 @@ var Heat = /** @class */ (function () {
                 case 'superCool':
                     this.onEnteringSuperCool(args);
                     var _loop_3 = function (i) {
-                        this_1.addActionButton("actSuperCool".concat(i, "_button"), "<div class=\"icon super-cool\">".concat(i, "</div>"), function () { return _this.actSuperCool(i); });
+                        this_1.addActionButton("actSuperCool".concat(i, "_button"), "<div class=\"icon super-cool\">".concat(i, "</div>"), function () {
+                            return _this.actSuperCool(i);
+                        });
                         if (i > args._private.max) {
                             document.getElementById("actSuperCool".concat(i, "_button")).classList.add('disabled');
                         }
@@ -4223,7 +4260,7 @@ var Heat = /** @class */ (function () {
                     }
                     break;
                 case 'confirmEndOfRace':
-                    this.addActionButton("seen_button", _("Seen"), function () { return _this.actConfirmResults(); });
+                    this.addActionButton("seen_button", _('Seen'), function () { return _this.actConfirmResults(); });
                     break;
             }
         }
@@ -4281,79 +4318,81 @@ var Heat = /** @class */ (function () {
     Heat.prototype.getGarageModuleIconTooltip = function (symbol, number) {
         switch (symbol) {
             case 'accelerate':
-                return "\n                    <strong>".concat(_("Accelerate"), "</strong>\n                    <br>\n                    ").concat(_("You may increase your Speed by ${number} for every [+] symbol used by you this turn (from Upgrades, Stress, Boost, etc). If you do, you must increase it for all [+] symbols used and this counts for corner checks.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Accelerate'), "</strong>\n                    <br>\n                    ").concat(_('You may increase your Speed by ${number} for every [+] symbol used by you this turn (from Upgrades, Stress, Boost, etc). If you do, you must increase it for all [+] symbols used and this counts for corner checks.').replace('${number}', number), "\n                ");
             case 'adjust':
-                return "\n                    <strong>".concat(_("Adjust Speed Limit"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(isNaN(number) ?
-                    _("If you cross a corner this turn, your Speed Limit is modified by # for you; “+” means you can move faster, “-” means you must move slower.") :
-                    (Number(number) < 0 ? _("Speed limit is ${number} lower.") : _("Speed limit is ${number} higher.")).replace('${number}', Math.abs(Number(number))), "\n                ");
+                return "\n                    <strong>".concat(_('Adjust Speed Limit'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(isNaN(number)
+                    ? _('If you cross a corner this turn, your Speed Limit is modified by # for you; “+” means you can move faster, “-” means you must move slower.')
+                    : (Number(number) < 0
+                        ? _('Speed limit is ${number} lower.')
+                        : _('Speed limit is ${number} higher.')).replace('${number}', Math.abs(Number(number))), "\n                ");
             case 'boost':
-                return "\n                    <strong>".concat(_("Boost"), "</strong>\n                    <br>\n                    ").concat(_("Flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly."), "\n                    <br>\n                    <i>").concat(_("Note: Boost increases your Speed value for the purpose of the Check Corner step."), "</i>\n                ");
+                return "\n                    <strong>".concat(_('Boost'), "</strong>\n                    <br>\n                    ").concat(_('Flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly.'), "\n                    <br>\n                    <i>").concat(_('Note: Boost increases your Speed value for the purpose of the Check Corner step.'), "</i>\n                ");
             case 'cooldown':
-                return "\n                    <strong>".concat(_("Cooldown"), "</strong>\n                    <br>\n                    ").concat(_("Cooldown allows you to take ${number} Heat card(s) from your hand and put it back in your Engine (so you can use the Heat card again). ").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Cooldown'), "</strong>\n                    <br>\n                    ").concat(_('Cooldown allows you to take ${number} Heat card(s) from your hand and put it back in your Engine (so you can use the Heat card again). ').replace('${number}', number), "\n                ");
             case 'direct':
-                return "\n                    <strong>".concat(_("Direct Play"), "</strong>\n                    <br>\n                    ").concat(_("You may play this card from your hand in the React step. If you do, it applies as if you played it normally, including Speed value and mandatory/optional icons."), "\n                ");
+                return "\n                    <strong>".concat(_('Direct Play'), "</strong>\n                    <br>\n                    ").concat(_('You may play this card from your hand in the React step. If you do, it applies as if you played it normally, including Speed value and mandatory/optional icons.'), "\n                ");
             case 'heat':
-                return "\n                    <strong>".concat(_("Heat"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Take ${number} Heat cards from the Engine and move them to your discard pile.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Heat'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_('Take ${number} Heat cards from the Engine and move them to your discard pile.').replace('${number}', number), "\n                ");
             case 'one-time':
-                return "\n                    <strong>".concat(_("One-time use"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("During the discard step, this card is removed instead of going to the discard."), "\n                ");
+                return "\n                    <strong>".concat(_('One-time use'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_('During the discard step, this card is removed instead of going to the discard.'), "\n                ");
             case 'reduce':
-                return "\n                    <strong>".concat(_("Reduce Stress"), "</strong>\n                    <br>\n                    ").concat(_("You may immediately discard up to ${number} Stress cards from your hand to the discard pile.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Reduce Stress'), "</strong>\n                    <br>\n                    ").concat(_('You may immediately discard up to ${number} Stress cards from your hand to the discard pile.').replace('${number}', number), "\n                ");
             case 'refresh':
-                return "\n                    <strong>".concat(_("Refresh"), "</strong>\n                    <br>\n                    ").concat(_("You may place this card back on top of your draw deck instead of discarding it, when discarding cards."), "\n                ");
+                return "\n                    <strong>".concat(_('Refresh'), "</strong>\n                    <br>\n                    ").concat(_('You may place this card back on top of your draw deck instead of discarding it, when discarding cards.'), "\n                ");
             case 'salvage':
-                return "\n                    <strong>".concat(_("Salvage"), "</strong>\n                    <br>\n                    ").concat(_("You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Salvage'), "</strong>\n                    <br>\n                    ").concat(_('You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.').replace('${number}', number), "\n                ");
             case 'scrap':
-                return "\n                    <strong>".concat(_("Scrap"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("Discard the top card of your draw deck ${number} times.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Scrap'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_('Discard the top card of your draw deck ${number} times.').replace('${number}', number), "\n                ");
             case 'slipstream':
-                return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.").replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Slipstream boost'), "</strong>\n                    <br>\n                    ").concat(_('If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.').replace('${number}', number), "\n                ");
             case 'super-cool':
-                return "\n                    <strong>".concat(/*_TODOHR*/ ("Super cool"), "</strong>\n                    <br>\n                    ").concat(/*_TODOHR*/ "You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.".replace('${number}', number), "\n                    <br>\n                    <i>").concat(/*_TODOHR*/ ("Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there)."), "</i>\n                ");
+                return "\n                    <strong>".concat(/*_TODOHR*/ 'Super cool', "</strong>\n                    <br>\n                    ").concat(/*_TODOHR*/ 'You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.'.replace('${number}', number), "\n                    <br>\n                    <i>").concat(/*_TODOHR*/ 'Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there).', "</i>\n                ");
         }
     };
     Heat.prototype.getWeatherCardSetupTooltip = function (type) {
         switch (type) {
             case 0:
-                return _("Remove 1 Stress card from your deck.");
+                return _('Remove 1 Stress card from your deck.');
             case 1:
-                return _("Place 1 extra Heat card in your Engine.");
+                return _('Place 1 extra Heat card in your Engine.');
             case 2:
-                return _("Shuffle 1 extra Stress card into your deck.");
+                return _('Shuffle 1 extra Stress card into your deck.');
             case 3:
-                return _("Remove 1 Heat card from your Engine.");
+                return _('Remove 1 Heat card from your Engine.');
             case 4:
-                return _("Shuffle 3 of your Heat cards into your draw deck.");
+                return _('Shuffle 3 of your Heat cards into your draw deck.');
             case 5:
-                return _("Place 3 of your Heat cards into your discard pile.");
+                return _('Place 3 of your Heat cards into your discard pile.');
         }
     };
     Heat.prototype.getWeatherCardEffectTooltip = function (type) {
         switch (type) {
             case 0:
-                return "\n                    <strong>".concat(_("No cooling"), "</strong>\n                    <br>\n                    ").concat(_("No Cooldown allowed in this sector during the React step."), "\n                ");
+                return "\n                    <strong>".concat(_('No cooling'), "</strong>\n                    <br>\n                    ").concat(_('No Cooldown allowed in this sector during the React step.'), "\n                ");
             case 1:
-                return "\n                    <strong>".concat(_("No slipstream"), "</strong>\n                    <br>\n                    ").concat(_("You cannot start slipstreaming from this sector (you may slipstream into it)."), "\n                    ");
+                return "\n                    <strong>".concat(_('No slipstream'), "</strong>\n                    <br>\n                    ").concat(_('You cannot start slipstreaming from this sector (you may slipstream into it).'), "\n                    ");
             case 2:
             case 5:
-                return "<strong>".concat(_("Slipstream boost"), "</strong>\n                <br>\n                ").concat(_("If you choose to Slipstream, you may add 2 extra Spaces to the usual 2 Spaces. Your car must be located in this sector before you slipstream."), "\n                ");
+                return "<strong>".concat(_('Slipstream boost'), "</strong>\n                <br>\n                ").concat(_('If you choose to Slipstream, you may add 2 extra Spaces to the usual 2 Spaces. Your car must be located in this sector before you slipstream.'), "\n                ");
             case 3:
             case 4:
-                return "<strong>".concat(_("Cooling Bonus"), "</strong>\n                <br>\n                ").concat(_("+1 Cooldown in this sector during the React step."), "\n                ");
+                return "<strong>".concat(_('Cooling Bonus'), "</strong>\n                <br>\n                ").concat(_('+1 Cooldown in this sector during the React step.'), "\n                ");
         }
     };
     Heat.prototype.getWeatherTokenTooltip = function (type, cardType) {
         switch (type) {
             case 0:
-                return "\n                    <strong>".concat(_("Weather"), "</strong>\n                    <br>\n                    ").concat(_("Weather effect applies to this sector:"), "\n                    <br>\n                    ").concat(cardType === null ? _('See the Weather token for the effect.') : this.getWeatherCardEffectTooltip(cardType), "\n                ");
+                return "\n                    <strong>".concat(_('Weather'), "</strong>\n                    <br>\n                    ").concat(_('Weather effect applies to this sector:'), "\n                    <br>\n                    ").concat(cardType === null ? _('See the Weather token for the effect.') : this.getWeatherCardEffectTooltip(cardType), "\n                ");
             case 1:
-                return "\n                    <strong>".concat(_("Overheat"), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_("If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one."), "\n                ");
+                return "\n                    <strong>".concat(_('Overheat'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_('If your Speed is higher than the Speed Limit when you cross this corner, the cost in Heat that you need to pay is increased by one.'), "\n                ");
             case 2:
                 return this.getGarageModuleIconTooltip('adjust', -1);
             case 3:
                 return this.getGarageModuleIconTooltip('adjust', 1);
             case 4:
-                return "\n                    <strong>".concat(_("Heat control"), "</strong>\n                    <br>\n                    ").concat(_("Do not pay Heat to boost in this sector (still max one boost per turn). Your car must be in the sector when you boost."), "\n                ");
+                return "\n                    <strong>".concat(_('Heat control'), "</strong>\n                    <br>\n                    ").concat(_('Do not pay Heat to boost in this sector (still max one boost per turn). Your car must be in the sector when you boost.'), "\n                ");
             case 5:
-                return "\n                    <strong>".concat(_("Slipstream boost"), "</strong>\n                    <br>\n                    ").concat(_("If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream."), "\n                ");
+                return "\n                    <strong>".concat(_('Slipstream boost'), "</strong>\n                    <br>\n                    ").concat(_('If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream.'), "\n                ");
         }
     };
     Heat.prototype.setupPreferences = function () {
@@ -4369,9 +4408,9 @@ var Heat = /** @class */ (function () {
             _this.prefs[prefId].value = prefValue;
         };
         // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
+        dojo.query('.preference_control').connect('onchange', onchange);
         // Call onPreferenceChange() now
-        dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
+        dojo.forEach(dojo.query('#ingame_menu_content .preference_control'), function (el) { return onchange({ target: el }); });
     };
     Heat.prototype.getOrderedPlayers = function (gamedatas) {
         var _this = this;
@@ -4383,12 +4422,16 @@ var Heat = /** @class */ (function () {
     Heat.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;
         var constructors = Object.values(gamedatas.constructors);
-        constructors.filter(function (constructor) { return constructor.ai; }).forEach(function (constructor) {
+        constructors
+            .filter(function (constructor) { return constructor.ai; })
+            .forEach(function (constructor) {
             document.getElementById('player_boards').insertAdjacentHTML('beforeend', "\n            <div id=\"overall_player_board_".concat(constructor.pId, "\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n                    \n                    <div class=\"emblemwrap\" id=\"avatar_active_wrap_").concat(constructor.id, "\">\n                        <div src=\"img/gear.png\" alt=\"\" class=\"avatar avatar_active legend_avatar\" id=\"avatar_active_").concat(constructor.id, "\" style=\"--constructor-id: ").concat(constructor.id, "\"></div>\n                    </div>\n                                               \n                    <div class=\"player-name\" id=\"player_name_").concat(constructor.id, "\">\n                        ").concat(_(constructor.name), "\n                    </div>\n                    <div id=\"player_board_").concat(constructor.pId, "\" class=\"player_board_content\">\n                        <div class=\"player_score\">\n                            <span id=\"player_score_").concat(constructor.pId, "\" class=\"player_score_value\">-</span> <i class=\"fa fa-star\" id=\"icon_point_").concat(constructor.id, "\"></i>           \n                        </div>\n                    </div>\n                </div>\n            </div>"));
         });
         constructors.forEach(function (constructor) {
             var _a;
-            var html = constructor.ai ? '' : "<div class=\"counters\">\n                <div id=\"gear-counter-wrapper-".concat(constructor.id, "\" class=\"gear-counter\">\n                    <div class=\"gear icon\"></div>\n                    <span id=\"gear-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
+            var html = constructor.ai
+                ? ''
+                : "<div class=\"counters\">\n                <div id=\"gear-counter-wrapper-".concat(constructor.id, "\" class=\"gear-counter\">\n                    <div class=\"gear icon\"></div>\n                    <span id=\"gear-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"engine-counter-wrapper-").concat(constructor.id, "\" class=\"engine-counter\">\n                    <div class=\"engine icon\"></div>\n                    <span id=\"engine-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             html += "\n            <div class=\"counters\">\n                <div id=\"speed-counter-wrapper-".concat(constructor.id, "\" class=\"speed-counter\">\n                    <div class=\"speed icon\"></div>\n                    <span id=\"speed-counter-").concat(constructor.id, "\">-</span>\n                </div>\n                <div id=\"corner-counter-wrapper-").concat(constructor.id, "\" class=\"corner-counter\">\n                    <div class=\"corner icon\"></div> \n                    <span id=\"corner-counter-").concat(constructor.id, "\"></span>\n                </div>\n                <div id=\"lap-counter-wrapper-").concat(constructor.id, "\" class=\"lap-counter\">\n                    <div class=\"flag icon\"></div>\n                    <span id=\"lap-counter-").concat(constructor.id, "\">-</span> / <span class=\"nbr-laps\">").concat(gamedatas.nbrLaps || '?', "</span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div>\n                    <div id=\"order-").concat(constructor.id, "\" class=\"order-counter ").concat(constructor.speed >= 0 ? 'played' : '', "\">\n                        ").concat(constructor.no + 1, "\n                    </div>\n                </div>\n                <div id=\"podium-wrapper-").concat(constructor.id, "\" class=\"podium-counter\">\n                    <div class=\"podium icon\"></div>\n                    <span id=\"podium-counter-").concat(constructor.id, "\"></span>\n                </div>\n            </div>");
             dojo.place(html, "player_board_".concat(constructor.pId));
             _this.setScore(constructor.pId, constructor.score);
@@ -4434,10 +4477,9 @@ var Heat = /** @class */ (function () {
             return;
         }
         var withAction = !this.gamedatas.players[this.getPlayerId()].eliminated;
-        var html = "\n        <div id=\"leave-text\"><i class=\"fa fa-info-circle\" aria-hidden=\"true\"></i>\n            ".concat(_("You have finished the race."));
+        var html = "\n        <div id=\"leave-text\"><i class=\"fa fa-info-circle\" aria-hidden=\"true\"></i>\n            ".concat(_('You have finished the race.'));
         if (withAction) {
-            html += "\n                <span id=\"leave-text-action\">\n                ".concat(_("You can stay to see the end, or you can <leave-button> to start a new one!")
-                .replace('<leave-button>', "<button id=\"leave-button\" class=\"bgabutton bgabutton_blue\">".concat(_('Leave the game'), "</button>")), "\n                </span>");
+            html += "\n                <span id=\"leave-text-action\">\n                ".concat(_('You can stay to see the end, or you can <leave-button> to start a new one!').replace('<leave-button>', "<button id=\"leave-button\" class=\"bgabutton bgabutton_blue\">".concat(_('Leave the game'), "</button>")), "\n                </span>");
         }
         html += "\n        </div>\n        ";
         document.getElementById('top').insertAdjacentHTML('afterbegin', html);
@@ -4448,9 +4490,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;
         var orderedPlayers = this.getOrderedPlayers(gamedatas);
-        orderedPlayers.forEach(function (player) {
-            return _this.createPlayerTable(gamedatas, Number(player.id));
-        });
+        orderedPlayers.forEach(function (player) { return _this.createPlayerTable(gamedatas, Number(player.id)); });
         if (gamedatas.isLegend) {
             this.legendTable = new LegendTable(this, gamedatas.legendCard);
         }
@@ -4464,9 +4504,17 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.getHelpHtml = function () {
         var _this = this;
-        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Mandatory symbols"), "</h1>\n            ").concat(['heat', 'scrap', 'adjust', 'one-time']
-            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Optional symbols"), "</h1>\n            ").concat(['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate'] // TODOHR add 'super-cool'
-            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); }).join('<br><br>'), "\n\n            <h1>").concat(_("Road Conditions Tokens"), "</h1>\n            <h2>").concat(_("Corner Effects"), "</h2>\n            ").concat([3, 2, 1].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n            <h2>").concat(_("Sector Effects"), "</h2>\n            ").concat([4, 5, 0].map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); }).join('<br><br>'), "\n\n            <h1>").concat(_("Weather Tokens"), "</h1>\n\n            ").concat([0, 1, 2, 3, 4, 5].map(function (type) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-card\" data-card-type=\"".concat(type, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherCardSetupTooltip(type), "<br><br>\n                    ").concat(_this.getWeatherCardEffectTooltip(type), "\n                </div>\n                "); }).join('<br><br>'), "\n        </div>");
+        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_('Mandatory symbols'), "</h1>\n            ").concat(['heat', 'scrap', 'adjust', 'one-time']
+            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); })
+            .join('<br><br>'), "\n\n            <h1>").concat(_('Optional symbols'), "</h1>\n            ").concat(['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate'] // TODOHR add 'super-cool'
+            .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); })
+            .join('<br><br>'), "\n\n            <h1>").concat(_('Road Conditions Tokens'), "</h1>\n            <h2>").concat(_('Corner Effects'), "</h2>\n            ").concat([3, 2, 1]
+            .map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); })
+            .join('<br><br>'), "\n            <h2>").concat(_('Sector Effects'), "</h2>\n            ").concat([4, 5, 0]
+            .map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); })
+            .join('<br><br>'), "\n\n            <h1>").concat(_('Weather Tokens'), "</h1>\n\n            ").concat([0, 1, 2, 3, 4, 5]
+            .map(function (type) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-card\" data-card-type=\"".concat(type, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherCardSetupTooltip(type), "<br><br>\n                    ").concat(_this.getWeatherCardEffectTooltip(type), "\n                </div>\n                "); })
+            .join('<br><br>'), "\n        </div>");
         return html;
     };
     Heat.prototype.getPossibleSpeeds = function (selectedCards, args) {
@@ -4503,9 +4551,9 @@ var Heat = /** @class */ (function () {
             }
             var label = '';
             if (allowed) {
-                label = clutteredHand ?
-                    _('Unclutter hand with selected cards') :
-                    "".concat(_('Play selected cards'), " (").concat(_('Gear:'), " ").concat(gear, " \u21D2 ").concat(selection.length, " ").concat(formatTextIcons(useHeat > 0 ? ", ".concat(useHeat, "[Heat]") : ''), ")");
+                label = clutteredHand
+                    ? _('Unclutter hand with selected cards')
+                    : "".concat(_('Play selected cards'), " (").concat(_('Gear:'), " ").concat(gear, " \u21D2 ").concat(selection.length, " ").concat(formatTextIcons(useHeat > 0 ? ", ".concat(useHeat, "[Heat]") : ''), ")");
             }
             else {
                 label = _('Select between ${min} and ${max} cards').replace('${min}', "".concat(minAllowed)).replace('${max}', "".concat(maxAllowed));
@@ -4516,15 +4564,17 @@ var Heat = /** @class */ (function () {
                 button.innerHTML = label;
                 // we let the user able to click, so the back will explain in the error why he can't
                 /*if (allowed && useHeat && this.engineCounters[this.getConstructorId()].getValue() == 0) {
-                    allowed = false;
-                }*/
+                            allowed = false;
+                        }*/
                 button.classList.toggle('disabled', !allowed);
             }
             this.circuit.removeMapIndicators();
             if (selection.length && privateArgs_1 && !clutteredHand) {
                 var totalSpeeds = this.getPossibleSpeeds(selection, privateArgs_1);
                 var stressCardsSelected_1 = selection.some(function (card) { return privateArgs_1.boostingCardIds.includes(card.id); });
-                totalSpeeds.forEach(function (totalSpeed) { return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed], undefined, totalSpeed, stressCardsSelected_1); });
+                totalSpeeds.forEach(function (totalSpeed) {
+                    return _this.circuit.addMapIndicator(privateArgs_1.cells[totalSpeed], undefined, totalSpeed, stressCardsSelected_1);
+                });
             }
         }
         else if (this.gamedatas.gamestate.name == 'discard') {
@@ -4564,7 +4614,9 @@ var Heat = /** @class */ (function () {
         var _a, _b, _c, _d, _e;
         var marketSelection = (_b = (_a = this.market) === null || _a === void 0 ? void 0 : _a.getSelection()) !== null && _b !== void 0 ? _b : [];
         var handSelection = (_e = (_d = (_c = this.getCurrentPlayerTable()) === null || _c === void 0 ? void 0 : _c.hand) === null || _d === void 0 ? void 0 : _d.getSelection()) !== null && _e !== void 0 ? _e : [];
-        document.getElementById("actSwapUpgrade_button").classList.toggle('disabled', marketSelection.length != 1 || handSelection.length != 1);
+        document
+            .getElementById("actSwapUpgrade_button")
+            .classList.toggle('disabled', marketSelection.length != 1 || handSelection.length != 1);
     };
     Heat.prototype.checkSnakeDiscardSelectionState = function () {
         var _a, _b, _c;
@@ -4605,12 +4657,12 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.actChooseSpeed = function (speed) {
         this.bgaPerformAction('actChooseSpeed', {
-            speed: speed
+            speed: speed,
         });
     };
     Heat.prototype.actSlipstream = function (speed) {
         this.bgaPerformAction('actSlipstream', {
-            speed: speed
+            speed: speed,
         });
     };
     Heat.prototype.actPassReact = function () {
@@ -4622,7 +4674,7 @@ var Heat = /** @class */ (function () {
     Heat.prototype.actReact = function (symbol, arg) {
         this.bgaPerformAction('actReact', {
             symbol: symbol,
-            arg: arg
+            arg: arg,
         });
     };
     Heat.prototype.actRefresh = function (cardId) {
@@ -4648,7 +4700,7 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.actSuperCool = function (n) {
         this.bgaPerformAction('actSuperCool', {
-            n: n
+            n: n,
         });
     };
     Heat.prototype.actConfirmResults = function () {
@@ -4663,14 +4715,14 @@ var Heat = /** @class */ (function () {
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
     /*
-        setupNotifications:
-
-        In this method, you associate each of your game notifications with your local method to handle it.
-
-        Note: game notification names correspond to "notifyAllPlayers" and "notifyPlayer" calls in
-                your pylos.game.php file.
-
-    */
+          setupNotifications:
+  
+          In this method, you associate each of your game notifications with your local method to handle it.
+  
+          Note: game notification names correspond to "notifyAllPlayers" and "notifyPlayer" calls in
+                  your pylos.game.php file.
+  
+      */
     Heat.prototype.setupNotifications = function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
@@ -4732,10 +4784,10 @@ var Heat = /** @class */ (function () {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
                     $('generalactions').innerHTML = '';
-                    // If there is some text, we let the message some time, to be read 
+                    // If there is some text, we let the message some time, to be read
                     minDuration = MIN_NOTIFICATION_MS;
                 }
-                // tell the UI notification ends, if the function returned a promise. 
+                // tell the UI notification ends, if the function returned a promise.
                 if (_this.animationManager.animationsActive()) {
                     Promise.all(__spreadArray(__spreadArray([], promises, true), [sleep(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
                 }
@@ -4753,18 +4805,19 @@ var Heat = /** @class */ (function () {
                     console.warn("notif_".concat(notifName, " function is not declared, but listed in setupNotifications"));
                 }
             });
-            Object.getOwnPropertyNames(Heat.prototype).filter(function (item) { return item.startsWith('notif_'); }).map(function (item) { return item.slice(6); }).forEach(function (item) {
+            Object.getOwnPropertyNames(Heat.prototype)
+                .filter(function (item) { return item.startsWith('notif_'); })
+                .map(function (item) { return item.slice(6); })
+                .forEach(function (item) {
                 if (!notifs.some(function (notifName) { return notifName == item; })) {
                     console.warn("notif_".concat(item, " function is declared, but not listed in setupNotifications"));
                 }
             });
         }
         /*(this as any).notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) =>
-            this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
-        );*/
-        this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) {
-            return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId();
-        });
+                this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
+            );*/
+        this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) { return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId(); });
     };
     Heat.prototype.notif_message = function () {
         // just to log them on the title bar
@@ -5130,11 +5183,13 @@ var Heat = /** @class */ (function () {
     Heat.prototype.notif_endOfRace = function (args) {
         var _this = this;
         this.notif_updateTurnOrder({
-            constructor_ids: args.order
+            constructor_ids: args.order,
         });
         this.gamedatas.scores = args.scores;
         Object.values(this.gamedatas.constructors).forEach(function (constructor) {
-            return _this.setScore(_this.getPlayerIdFromConstructorId(constructor.id), Object.values(args.scores).map(function (circuitScores) { return circuitScores[constructor.id]; }).reduce(function (a, b) { return a + b; }));
+            return _this.setScore(_this.getPlayerIdFromConstructorId(constructor.id), Object.values(args.scores)
+                .map(function (circuitScores) { return circuitScores[constructor.id]; })
+                .reduce(function (a, b) { return a + b; }));
         });
     };
     Heat.prototype.notif_newLegendCard = function (args) {
@@ -5157,8 +5212,10 @@ var Heat = /** @class */ (function () {
         return this.getPlayerTable(playerId).salvageCards(Object.values(cards), Object.values(discard), deckCount);
     };
     Heat.prototype.notif_superCoolCards = function (args) {
+        var _a;
         var constructor_id = args.constructor_id, cards = args.cards, discard = args.discard;
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        (_a = this.engineCounters[constructor_id]) === null || _a === void 0 ? void 0 : _a.incValue(Object.values(cards).length);
         return this.getPlayerTable(playerId).superCoolCards(Object.values(cards), Object.values(discard));
     };
     Heat.prototype.notif_directPlay = function (args) {
@@ -5193,7 +5250,7 @@ var Heat = /** @class */ (function () {
                 this.lapCounters.forEach(function (counter) { return counter.setValue(1); });
                 playerBoards.querySelectorAll('.finished').forEach(function (elem) { return elem.classList.remove('finished'); });
                 playerBoards.querySelectorAll('.played').forEach(function (elem) { return elem.classList.remove('played'); });
-                playerBoards.querySelectorAll('.nbr-laps').forEach(function (elem) { return elem.innerHTML = "".concat(args.nbrLaps); });
+                playerBoards.querySelectorAll('.nbr-laps').forEach(function (elem) { return (elem.innerHTML = "".concat(args.nbrLaps)); });
                 Object.entries(args.distancesToCorners).forEach(function (_a) {
                     var constructorId = _a[0], distance = _a[1];
                     _this.cornerCounters[constructorId].setValue(distance);
@@ -5273,8 +5330,8 @@ var Heat = /** @class */ (function () {
         document.getElementById("podium-counter-".concat(constructorId)).innerHTML = "".concat(eliminated ? '❌' : pos);
     };
     /**
-    * Load production bug report handler
-    */
+     * Load production bug report handler
+     */
     Heat.prototype.notif_loadBug = function (args) {
         var that = this;
         function fetchNextUrl() {
@@ -5320,16 +5377,19 @@ var Heat = /** @class */ (function () {
         var _this = this;
         var _a, _b;
         var constructorId = (_a = args.constructor_id) !== null && _a !== void 0 ? _a : (_b = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); })) === null || _b === void 0 ? void 0 : _b.id;
-        return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat(constructorId * 100 / 6, "%;\" data-symbols=\"").concat(card.type < 100 ? Object.keys(card.symbols).length : 0, "\">").concat(this.cardsManager.getHtml(card), "</div>");
+        return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat((constructorId * 100) / 6, "%;\" data-symbols=\"").concat(card.type < 100 ? Object.keys(card.symbols).length : 0, "\">").concat(this.cardsManager.getHtml(card), "</div>");
     };
     Heat.prototype.cardsImagesHtml = function (cards, args) {
         var _this = this;
-        return Object.values(cards).map(function (card) { return _this.cardImageHtml(card, args); }).join('');
+        return Object.values(cards)
+            .map(function (card) { return _this.cardImageHtml(card, args); })
+            .join('');
     };
     Heat.prototype.formatArgCardImage = function (args, argName, argImageName) {
         if (args[argImageName] === '' && args[argName]) {
-            var reshuffle = "<div>".concat(_("(discard is reshuffled to the deck)"), "</div>");
-            args[argImageName] = "".concat(args[argName].isReshuffled ? reshuffle : '', "<div class=\"log-card-set\">").concat(this.cardImageHtml(args[argName], args), "</div>");
+            var reshuffle = "<div>".concat(_('(discard is reshuffled to the deck)'), "</div>");
+            args[argImageName] =
+                "".concat(args[argName].isReshuffled ? reshuffle : '', "<div class=\"log-card-set\">").concat(this.cardImageHtml(args[argName], args), "</div>");
         }
     };
     Heat.prototype.formatArgCardsImages = function (args, argName, argImageName) {
@@ -5342,7 +5402,7 @@ var Heat = /** @class */ (function () {
             else {
                 var cardsBefore = cards.slice(0, shuffleIndex);
                 var cardsAfter = cards.slice(shuffleIndex);
-                var reshuffle = "<div>".concat(_("(discard is reshuffled to the deck)"), "</div>");
+                var reshuffle = "<div>".concat(_('(discard is reshuffled to the deck)'), "</div>");
                 args[argImageName] = "\n                <div class=\"log-card-set\">".concat(this.cardsImagesHtml(cardsBefore, args), "</div>\n                ").concat(reshuffle, "\n                <div class=\"log-card-set\">").concat(this.cardsImagesHtml(cardsAfter, args), "</div>\n                ");
             }
         }
@@ -5361,14 +5421,16 @@ var Heat = /** @class */ (function () {
                     args.finishIcon = "<div class=\"flag icon\"></div>";
                 }
                 var constructorKeys = Object.keys(args).filter(function (key) { return key.substring(0, 16) == 'constructor_name'; });
-                constructorKeys.filter(function (key) { return args[key][0] != '<'; }).forEach(function (key) {
+                constructorKeys
+                    .filter(function (key) { return args[key][0] != '<'; })
+                    .forEach(function (key) {
                     args[key] = _this.coloredConstructorName(args[key]);
                 });
                 log = formatTextIcons(_(log));
             }
         }
         catch (e) {
-            console.error(log, args, "Exception thrown", e.stack);
+            console.error(log, args, 'Exception thrown', e.stack);
         }
         return this.inherited(arguments);
     };
