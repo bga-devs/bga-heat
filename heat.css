@@ -824,6 +824,15 @@ height: 241px; */
   top: calc(var(--y) - 30px);
   box-shadow: 0 0 5px 5px white;
 }
+#table-center #circuit #japan-tunnel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  background-image: url("img/circuits/japan-tunnel.png");
+}
 #table-center .corner {
   --color: transparent;
   position: absolute;
@@ -841,6 +850,7 @@ height: 241px; */
   top: -17px;
   width: 61.08px;
   height: 34px;
+  z-index: 3;
   background: url("img/cars.png");
   background-position-y: calc(var(--constructor-id) * 100% / 6);
   background-size: 200% 700%;
@@ -1772,3 +1782,5 @@ html, .mode_3d #game_play_area_background {
   margin-left: 5px;
   padding: 5px;
 }
+
+/*# sourceMappingURL=heat.css.map */

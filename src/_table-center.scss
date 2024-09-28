@@ -19,6 +19,17 @@
       top: calc(var(--y) - 30px);
       box-shadow: 0 0 5px 5px white;
     }
+
+    // JAPAN TUNNEL
+    #japan-tunnel {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      background-image: url("img/circuits/japan-tunnel.png");
+    }
   }
 
   .corner {
@@ -39,10 +50,11 @@
   top: -17px;
   width: 61.08px;
   height: 34px;
-  background: url('img/cars.png');
+  z-index: 3;
+  background: url("img/cars.png");
   background-position-y: calc(var(--constructor-id) * 100% / 6);
   background-size: 200% 700%;
-  transform:  translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
+  transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 
   &.with-transition {
@@ -81,7 +93,8 @@
   &.clickable {
     cursor: pointer;
 
-    &.hover, &:hover {
+    &.hover,
+    &:hover {
       background: yellow;
       box-shadow: 0 0 5px 5px yellow;
     }
@@ -109,7 +122,10 @@
   line-height: 48px !important;
   user-select: none;
   pointer-events: none;
-  text-shadow: 0 0 1px red, 0 0 2px red, 0 0 3px red;
+  text-shadow:
+    0 0 1px red,
+    0 0 2px red,
+    0 0 3px red;
 }
 
 .press-icon {
@@ -120,7 +136,12 @@
   height: 32px;
   font-size: 32px;
   color: #116193;
-  text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white, 0 0 4px white, 0 0 5px white;
+  text-shadow:
+    0 0 1px white,
+    0 0 2px white,
+    0 0 3px white,
+    0 0 4px white,
+    0 0 5px white;
 
   &.left-side {
     left: calc(var(--x) - 48px);
@@ -131,7 +152,7 @@
   display: inline-block;
   width: 114px;
   height: 148px;
-  background: url('img/press-token.png');
+  background: url("img/press-token.png");
   background-size: contain;
 }
 
@@ -142,12 +163,12 @@
   width: 167px;
   height: 127.5px;
   box-shadow: 0 0 5px 5px white;
-  border-radius: 8px; 
-  background-image: url('img/weather-cards.jpg'); 
+  border-radius: 8px;
+  background-image: url("img/weather-cards.jpg");
   background-size: 100% auto;
 
   @for $type from 0 through 5 {
-    &[data-card-type="#{$type}"]  {
+    &[data-card-type="#{$type}"] {
       background-position-y: #{$type * 100% / 5};
     }
   }
@@ -156,12 +177,12 @@
 .weather-token {
   width: 60px;
   height: 60px;
-  border-radius: 8px; 
-  background-image: url('img/weather-tokens.jpg'); 
+  border-radius: 8px;
+  background-image: url("img/weather-tokens.jpg");
   background-size: 100% auto;
 
   @for $type from 0 through 5 {
-    &[data-token-type="#{$type}"]  {
+    &[data-token-type="#{$type}"] {
       background-position-y: #{$type * 100% / 5};
     }
   }
@@ -178,7 +199,7 @@
     stroke-width: 3;
     fill: none;
   }
-  
+
   &.animated {
     path {
       stroke-dasharray: var(--path-length);

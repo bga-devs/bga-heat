@@ -5,7 +5,9 @@
   "main": "heat.js",
   "scripts": {
     "build:ts": "tsc",
-    "build:scss": "sass --no-source-map src/heat.scss heat.css"
+    "build:scss": "sass --no-source-map src/heat.scss heat.css",
+    "watch:ts": "tsc --watch",
+    "watch:scss": "sass --watch src/heat.scss heat.css"
   },
   "author": "",
   "license": "ISC",
