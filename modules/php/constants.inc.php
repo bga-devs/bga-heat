@@ -146,7 +146,18 @@ const EVENTS = [
   EVENT_FUTURE_UNKNOWN => ['sponsors' => 0, 'press' => [3]],
 ];
 
-const EVENTS_EXP = EVENTS + [
+const EVENTS_EXP = [
+  EVENT_INAUGURATION => ['sponsors' => 2, 'press' => [0]],
+  EVENT_NEW_RECORD => ['sponsors' => 1, 'press' => [1]],
+  EVENT_STRIKE => ['sponsors' => 1, 'press' => [2]],
+  EVENT_RESTRICTIONS_LIFTED => ['sponsors' => 2, 'press' => [4]],
+  EVENT_RECORD_CROWDS => ['sponsors' => 1, 'press' => [2, 4]],
+  EVENT_CORRUPTION => ['sponsors' => 1, 'press' => [2]],
+  EVENT_TITLE_SPONSOR => ['sponsors' => 3, 'press' => [0]],
+  EVENT_FIRST_LIVE_TV => ['sponsors' => 1, 'press' => [1, 3]],
+  EVENT_SAFETY_REGULATIONS => ['sponsors' => 1, 'press' => [3]],
+  EVENT_FUTURE_UNKNOWN => ['sponsors' => 0, 'press' => [3]],
+
   EVENT_GOING_GLOBAL => ['sponsors' => 0, 'press' => [1, 2]],
   EVENT_TURBULENT_WINDS => ['sponsors' => 1, 'press' => [1]],
   EVENT_CHICANES => ['sponsors' => 1, 'press' => [2]],
@@ -191,7 +202,7 @@ const CHAMPIONSHIP_SEASONS = [
 ];
 
 const CIRCUITS = ['usa', 'gb', 'italia', 'france'];
-const CIRCUITS_EXP = CIRCUITS + ['japan', 'mexico'];
+const CIRCUITS_EXP = ['usa', 'gb', 'italia', 'france', 'japan', 'mexico'];
 
 /******************
  ****** STATS ******

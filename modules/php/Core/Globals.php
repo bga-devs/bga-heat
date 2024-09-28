@@ -281,11 +281,13 @@ class Globals extends \HEAT\Helpers\DB_Manager
       // Random championship
       elseif ($championship == \HEAT\OPTION_CHAMPIONSHIP_RANDOM) {
         $datas = ['name' => clienttranslate('Custom'), 'circuits' => [], 'index' => 0];
-        $circuits = self::isHeavyRain() ? CIRCUITS_EXP : CIRCUITS;
+        $circuits = array_values(self::isHeavyRain() ? CIRCUITS_EXP : CIRCUITS);
         $events = array_keys(self::isHeavyRain() ? EVENTS_EXP : EVENTS);
         shuffle($circuits);
         shuffle($events);
         foreach ($circuits as $i => $circuit) {
+          if (count($datas['circuits']) == 4) break;
+
           $datas['circuits'][] = [
             'name' => self::getCircuitName($circuit),
             'circuit' => $circuit,
@@ -297,7 +299,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     }
     // Single circuit
     else {
-      $circuits = self::isHeavyRain() ? CIRCUITS_EXP : CIRCUITS;
+      $circuits = array_values(self::isHeavyRain() ? CIRCUITS_EXP : CIRCUITS);
       shuffle($circuits);
 
       $map = [
