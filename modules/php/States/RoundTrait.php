@@ -372,8 +372,10 @@ trait RoundTrait
     // Check heat
     $flooded = in_array($constructor->getCarCell(), $this->getCircuit()->getFloodedSpaces());
     $heatCost = abs($newGear - $constructor->getGear()) > 1 ? 1 : 0;
+    $payForFlooded = false;
     if ($flooded && $newGear < $constructor->getGear()) {
       $heatCost++;
+      $payForFlooded = true;
     }
     if ($heatCost > 0) {
       $heats = $constructor->getEngine()->limit($heatCost);
@@ -396,7 +398,7 @@ trait RoundTrait
 
     Cards::move($cardIds, ['inplay', $constructor->getId()]);
     $cards = Cards::getMany($cardIds);
-    Notifications::reveal($constructor, $newGear, $cards, $heats, $flooded);
+    Notifications::reveal($constructor, $newGear, $cards, $heats, $payForFlooded);
 
     // Are we cluttered ??
     $clutteredHand = false;

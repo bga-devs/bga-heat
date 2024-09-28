@@ -65,11 +65,11 @@ class Notifications
     ]);
   }
 
-  public static function reveal($constructor, $newGear, $cards, $heats, $flooded)
+  public static function reveal($constructor, $newGear, $cards, $heats, $payForFlooded)
   {
     $msg = clienttranslate('${constructor_name} shifts gear to ${gear} and plays ${cards_images}');
     if ($heats->count() > 0) {
-      if ($flooded) {
+      if ($payForFlooded) {
         $msg = clienttranslate('${constructor_name} pays ${n} Heat card(s) to shift gear to ${gear} (flooded space) and plays ${cards_images}');
       } else {
         $msg = clienttranslate('${constructor_name} pays 1 Heat card to shift gear to ${gear} and plays ${cards_images}');
