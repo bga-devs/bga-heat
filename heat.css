@@ -873,6 +873,7 @@ height: 241px; */
 
 .map-indicator {
   position: absolute;
+  z-index: 3;
   left: -16px;
   top: -16px;
   width: 32px;
@@ -1782,5 +1783,3 @@ html, .mode_3d #game_play_area_background {
   margin-left: 5px;
   padding: 5px;
 }
-
-/*# sourceMappingURL=heat.css.map */
