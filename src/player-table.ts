@@ -203,7 +203,7 @@ class PlayerTable {
         const isReshuffled = this.deck.getCardNumber() < n;
         if (!isReshuffled) {
             const count = this.deck.getCardNumber() - n;
-            this.deck.setCardNumber(count);
+            this.deck.setCardNumber(deckCount ?? count);
             return Promise.resolve(true);
         } else {
             const before = this.deck.getCardNumber();

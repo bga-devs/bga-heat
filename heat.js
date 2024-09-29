@@ -3148,7 +3148,7 @@ var PlayerTable = /** @class */ (function () {
                         isReshuffled = this.deck.getCardNumber() < n;
                         if (!!isReshuffled) return [3 /*break*/, 1];
                         count = this.deck.getCardNumber() - n;
-                        this.deck.setCardNumber(count);
+                        this.deck.setCardNumber(deckCount !== null && deckCount !== void 0 ? deckCount : count);
                         return [2 /*return*/, Promise.resolve(true)];
                     case 1:
                         before = this.deck.getCardNumber();
