@@ -634,7 +634,7 @@ class Heat implements HeatGame {
 
   private getDirectPlayConfirmation(reactArgs: EnteringReactArgs, card: Card) {
     const willCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < card.speed;
-    const newHeatCost = Object.values(reactArgs.directPlayCosts[card.id])[0];
+    const newHeatCost = Object.values(reactArgs.directPlayCosts[card.id]).reduce((a, b) => a + b, 0);
 
     let confirmationMessage = null;
     if (reactArgs.currentHeatCost < newHeatCost) {
@@ -668,17 +668,14 @@ class Heat implements HeatGame {
     return confirmationMessage;
   }
 
-  private getSlipstreamConfirmation(reactArgs: EnteringSlipstreamArgs, speed: number) {
+  private getSlipstreamConfirmation(reactArgs: EnteringSlipstreamArgs, slipstream: number) {
     let confirmationMessage = null;
     const slipstreamWillCrossNextCorner =
-      this.cornerCounters[this.getConstructorId()].getValue() < speed && reactArgs.slipstreamWillCrossNextCorner[speed];
+      this.cornerCounters[this.getConstructorId()].getValue() < slipstream && reactArgs.slipstreamWillCrossNextCorner[slipstream];
     if (slipstreamWillCrossNextCorner) {
       const speed = this.speedCounters[this.getConstructorId()].getValue();
 
-      let newHeatCost = Math.max(0, speed - reactArgs.nextCornerSpeedLimit);
-      if (newHeatCost > 0 && reactArgs.nextCornerExtraHeatCost) {
-        newHeatCost++;
-      }
+      const newHeatCost = reactArgs.heatCosts[slipstream];
 
       if (newHeatCost > 0) {
         confirmationMessage =

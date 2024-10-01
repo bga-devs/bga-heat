@@ -4010,7 +4010,7 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.getDirectPlayConfirmation = function (reactArgs, card) {
         var willCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < card.speed;
-        var newHeatCost = Object.values(reactArgs.directPlayCosts[card.id])[0];
+        var newHeatCost = Object.values(reactArgs.directPlayCosts[card.id]).reduce(function (a, b) { return a + b; }, 0);
         var confirmationMessage = null;
         if (reactArgs.currentHeatCost < newHeatCost) {
             var newSpeed = this.speedCounters[this.getConstructorId()].getValue() + card.speed;
@@ -4035,19 +4035,16 @@ var Heat = /** @class */ (function () {
         }
         return confirmationMessage;
     };
-    Heat.prototype.getSlipstreamConfirmation = function (reactArgs, speed) {
+    Heat.prototype.getSlipstreamConfirmation = function (reactArgs, slipstream) {
         var confirmationMessage = null;
-        var slipstreamWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() < speed && reactArgs.slipstreamWillCrossNextCorner[speed];
+        var slipstreamWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() < slipstream && reactArgs.slipstreamWillCrossNextCorner[slipstream];
         if (slipstreamWillCrossNextCorner) {
-            var speed_1 = this.speedCounters[this.getConstructorId()].getValue();
-            var newHeatCost = Math.max(0, speed_1 - reactArgs.nextCornerSpeedLimit);
-            if (newHeatCost > 0 && reactArgs.nextCornerExtraHeatCost) {
-                newHeatCost++;
-            }
+            var speed = this.speedCounters[this.getConstructorId()].getValue();
+            var newHeatCost = reactArgs.heatCosts[slipstream];
             if (newHeatCost > 0) {
                 confirmationMessage =
                     _('The Slipstream move will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).')
-                        .replace('${speed}', "<strong>".concat(speed_1, "</strong>"))
+                        .replace('${speed}', "<strong>".concat(speed, "</strong>"))
                         .replace('${speedLimit}', "<strong>".concat(reactArgs.nextCornerSpeedLimit, "</strong>")) + "<br>";
                 if (reactArgs.currentHeatCost > 0) {
                     confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).')
