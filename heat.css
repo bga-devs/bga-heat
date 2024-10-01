@@ -477,7 +477,6 @@ body > .card {
   width: calc(var(--width) + (var(--tile-count) - 1) * var(--horizontal-shift));
   height: calc(var(--height) + (var(--tile-count) - 1) * var(--vertical-shift));
   transition: width 0.5s ease-in-out, height 0.5s ease-in-out, background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  opacity: var(--tile-count);
 }
 
 .card-stock.all-visible-deck > .card {
@@ -832,6 +831,7 @@ height: 241px; */
   bottom: 0;
   z-index: 2;
   background-image: url("img/circuits/japan-tunnel.png");
+  pointer-events: none;
 }
 #table-center .corner {
   --color: transparent;
@@ -1366,6 +1366,15 @@ height: 241px; */
 }
 #championship-table .championship-circuit:not(.current) .card {
   display: none;
+}
+
+#current-championship-card-text {
+  background: #353e52;
+  color: white;
+  padding: 2px;
+  border-radius: 20px;
+  font-size: 9pt;
+  text-align: center;
 }
 
 #scorepad-button {

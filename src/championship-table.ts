@@ -31,6 +31,7 @@ class ChampionshipTable {
             
         html += `
             </div>
+            <div id="current-championship-card-text"></div>
         </div>
         `;
 
@@ -46,12 +47,19 @@ class ChampionshipTable {
         gamedatas.championship.circuits.forEach(circuit => this.game.setTooltip(`event-card-${circuit.event}`, this.game.eventCardsManager.getTooltip(circuit.event)));
 
         document.getElementById('scorepad-button').addEventListener('click', e => this.showScorepad(e));
+        this.setCurrentChampionshipCardText(gamedatas.championship.index);
     }
     
     public newChampionshipRace(index: number) {
         this.setRaceFinished(index - 1);
         document.querySelectorAll('.championship-circuit').forEach((elem: HTMLElement) => elem.classList.toggle('current', Number(elem.dataset.index) == index));
         this.gamedatas.championship.index = index;
+        this.setCurrentChampionshipCardText(index);
+    }
+    
+    private setCurrentChampionshipCardText(index: number) {
+        const event = this.gamedatas.championship.circuits[index].event;
+        document.getElementById('current-championship-card-text').innerText = this.game.eventCardsManager.getTexts(event).rule;
     }
 
     public setRaceProgress(progress: number) {

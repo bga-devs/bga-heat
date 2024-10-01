@@ -3416,7 +3416,7 @@ var ChampionshipTable = /** @class */ (function () {
         gamedatas.championship.circuits.forEach(function (circuit, index) {
             return html += "\n            <div class=\"championship-circuit ".concat(gamedatas.championship.index == index ? 'current' : '', "\" data-index=\"").concat(index, "\">\n                <span class=\"circuit-name\">").concat(_(circuit.name), "</span>\n                ").concat(_this.game.eventCardsManager.getHtml(circuit.event), "\n            </div>\n            ");
         });
-        html += "\n            </div>\n        </div>\n        ";
+        html += "\n            </div>\n            <div id=\"current-championship-card-text\"></div>\n        </div>\n        ";
         document.getElementById('top').insertAdjacentHTML('afterbegin', html);
         var championshipCircuits = document.getElementById('championship-circuits');
         championshipCircuits.addEventListener('click', function () {
@@ -3425,11 +3425,17 @@ var ChampionshipTable = /** @class */ (function () {
         this.setRaceProgress(gamedatas.progress);
         gamedatas.championship.circuits.forEach(function (circuit) { return _this.game.setTooltip("event-card-".concat(circuit.event), _this.game.eventCardsManager.getTooltip(circuit.event)); });
         document.getElementById('scorepad-button').addEventListener('click', function (e) { return _this.showScorepad(e); });
+        this.setCurrentChampionshipCardText(gamedatas.championship.index);
     }
     ChampionshipTable.prototype.newChampionshipRace = function (index) {
         this.setRaceFinished(index - 1);
         document.querySelectorAll('.championship-circuit').forEach(function (elem) { return elem.classList.toggle('current', Number(elem.dataset.index) == index); });
         this.gamedatas.championship.index = index;
+        this.setCurrentChampionshipCardText(index);
+    };
+    ChampionshipTable.prototype.setCurrentChampionshipCardText = function (index) {
+        var event = this.gamedatas.championship.circuits[index].event;
+        document.getElementById('current-championship-card-text').innerText = this.game.eventCardsManager.getTexts(event).rule;
     };
     ChampionshipTable.prototype.setRaceProgress = function (progress) {
         document.getElementById("current-circuit-progress-".concat(this.gamedatas.championship.index)).style.width = "".concat(Math.min(100, progress * 100), "%");

@@ -2,7 +2,7 @@ class EventCardsManager {
     constructor (public game: HeatGame) {
     }
 
-    private getTexts(card: number): {
+    public getTexts(card: number): {
         title: string;
         rule: string;
         year: string;
