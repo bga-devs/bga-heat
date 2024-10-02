@@ -1,4 +1,5 @@
 <?php
+
 namespace HEAT\Helpers;
 
 /*
@@ -61,9 +62,7 @@ class Pieces extends DB_Manager
    * Overwritable function to add base filter to any query
    * => useful if two kind of "stuff" cohabitates
    */
-  protected static function addBaseFilter(&$query)
-  {
-  }
+  protected static function addBaseFilter(&$query) {}
 
   /****
    * Return the basic select query fetching basic fields and custom fields

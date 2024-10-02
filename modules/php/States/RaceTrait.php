@@ -340,11 +340,18 @@ trait RaceTrait
 
   function argsChooseUpgrade()
   {
-    return [
+    $data = [
       'market' => Cards::getInLocation('market'),
       'round' => Globals::getDraftRound(),
       'nRounds' => Globals::getNDraftRounds(),
     ];
+
+    // TMP WORKAROUND => TODO REMOVE
+    if ($data['market']->empty()) {
+      $data['market'] = Cards::drawMarket();
+    }
+
+    return $data;
   }
 
   function actChooseUpgrade($cardId)
