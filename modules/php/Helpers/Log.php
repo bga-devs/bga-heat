@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\Helpers;
+
 use HEAT\Core\Game;
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
@@ -189,17 +191,17 @@ class Log extends \APP_DbObject
     if (!empty($moveIds)) {
       $packets = $query->whereIn('gamelog_move_id', $moveIds)->get();
       $notifIds = self::extractNotifIds($packets);
-      Notifications::clearTurn(Players::getCurrent(), $notifIds);
+      //      Notifications::clearTurn(Players::getCurrent(), $notifIds);
     }
 
     // Force to clear cached informations
     Globals::fetch();
 
     // Notify
-    $datas = Game::get()->getAllDatas();
-    Notifications::refreshUI($datas);
-    $player = Players::getCurrent();
-    Notifications::refreshHand($player, $player->getHand()->ui());
+    // $datas = Game::get()->getAllDatas();
+    // Notifications::refreshUI($datas);
+    // $player = Players::getCurrent();
+    // Notifications::refreshHand($player, $player->getHand()->ui());
 
     // Force notif flush to be able to delete "restart turn" notif
     Game::get()->sendNotifications();

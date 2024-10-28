@@ -14,6 +14,11 @@ use HEAT\Helpers\Collection;
 
 trait DebugTrait
 {
+  function debug_undo($stepNumber)
+  {
+    Log::undoToStep($stepNumber);
+  }
+
   function debug_tp()
   {
     $circuit = $this->getCircuit();
