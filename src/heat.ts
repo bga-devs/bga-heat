@@ -677,7 +677,7 @@ class Heat implements HeatGame {
 
       const newHeatCost = reactArgs.heatCosts[slipstream];
 
-      if (newHeatCost > 0) {
+      if (newHeatCost > reactArgs.currentHeatCost) {
         confirmationMessage =
           _(
             'The Slipstream move will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).'
@@ -688,7 +688,7 @@ class Heat implements HeatGame {
         if (reactArgs.currentHeatCost > 0) {
           confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).')
             .replace('${heat}', `<strong>${reactArgs.currentHeatCost}</strong>`)
-            .replace('${newHeat}', `<strong>${reactArgs.currentHeatCost + newHeatCost}</strong>`);
+            .replace('${newHeat}', `<strong>${newHeatCost}</strong>`);
         } else {
           confirmationMessage += _('You will have to pay ${newHeat} Heat(s).').replace(
             '${newHeat}',

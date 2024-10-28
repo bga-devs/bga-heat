@@ -4047,7 +4047,7 @@ var Heat = /** @class */ (function () {
         if (slipstreamWillCrossNextCorner) {
             var speed = this.speedCounters[this.getConstructorId()].getValue();
             var newHeatCost = reactArgs.heatCosts[slipstream];
-            if (newHeatCost > 0) {
+            if (newHeatCost > reactArgs.currentHeatCost) {
                 confirmationMessage =
                     _('The Slipstream move will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).')
                         .replace('${speed}', "<strong>".concat(speed, "</strong>"))
@@ -4055,7 +4055,7 @@ var Heat = /** @class */ (function () {
                 if (reactArgs.currentHeatCost > 0) {
                     confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).')
                         .replace('${heat}', "<strong>".concat(reactArgs.currentHeatCost, "</strong>"))
-                        .replace('${newHeat}', "<strong>".concat(reactArgs.currentHeatCost + newHeatCost, "</strong>"));
+                        .replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
                 }
                 else {
                     confirmationMessage += _('You will have to pay ${newHeat} Heat(s).').replace('${newHeat}', "<strong>".concat(newHeatCost, "</strong>"));
