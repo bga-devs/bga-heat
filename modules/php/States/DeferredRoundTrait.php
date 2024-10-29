@@ -55,7 +55,6 @@ trait DeferredRoundTrait
       return true;
     }
 
-    die("testaze");
     return true;
   }
 

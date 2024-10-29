@@ -208,6 +208,9 @@ trait RoundTrait
         'flooded' => $flooded,
       ];
     }
+    if (empty($args['_private'])) {
+      $args['_no_notify'] = true;
+    }
 
     $args['nPlayersLeft'] = count($args['_private']);
     return $args;
