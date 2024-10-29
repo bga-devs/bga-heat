@@ -17,6 +17,7 @@ trait RoundTrait
 {
   function stStartRound()
   {
+    Globals::incRound();
     Globals::setPlanification([]);
     $t = [];
     foreach (Constructors::getAll() as $cId => $constructor) {
@@ -82,6 +83,10 @@ trait RoundTrait
 
       // Is this car finished ?
       if ($constructor->getTurn() >= $this->getNbrLaps()) {
+        $time = Globals::getRound() * 60 + (60 - ($constructor->getPosition() + 1));
+        $ftime = intdiv($time, 60) + ($time % 60) / 100;
+        $constructor->incStat('time', $ftime);
+
         $finished[] = $cId;
         $podium = count($finished);
         $constructor->setCarCell(-$podium);

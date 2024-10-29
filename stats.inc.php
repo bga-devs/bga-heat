@@ -31,6 +31,11 @@ $stats_type = [
       'name' => totranslate('Position at race end'),
       'type' => 'float',
     ],
+    'time' => [
+      'id' => STAT_CIRCUIT_TIME,
+      'name' => totranslate('Finish time'),
+      'type' => 'float',
+    ],
     'rounds' => [
       'id' => STAT_ROUNDS,
       'name' => totranslate('Rounds played'),

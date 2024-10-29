@@ -16,6 +16,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
   protected static $initialized = false;
   // Variables that should be stored on both table for deferredRounds feature
   protected static $syncVariables = [
+    'round',
     'customTurnOrders',
     'turnOrder',
     'activeConstructor',
@@ -35,6 +36,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'activeConstructor' => 'int', // store the id of active company
     'finishedConstructors' => 'obj', // how many cards are finished
 
+    'round' => 'int',
     'snakeDiscard' => 'obj',
     'planification' => 'obj',
     'planificationRevealed' => 'obj',
