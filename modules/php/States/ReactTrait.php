@@ -146,6 +146,9 @@ trait ReactTrait
         }
         $n = $m;
         $symbols[$symbol] -= $n;
+        if ($symbols[$symbol] <= 0) {
+          unset($symbols[$symbol]);
+        }
       } else {
         unset($symbols[$symbol]);
       }
