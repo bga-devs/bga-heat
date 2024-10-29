@@ -78,27 +78,28 @@ $game_options = [
     ],
   ],
 
-  // OPTION_HEAVY_RAIN_EXPANSION => [
-  //   'name' => totranslate('Expansion'),
-  //   'level' => "major",
-  //   'values' => [
-  //     OPTION_EXPANSION_DISABLED => [
-  //       'name' => clienttranslate('Base game only'),
-  //     ],
-  //     OPTION_EXPANSION_ENABLED => [
-  //       'name' => clienttranslate('Heavy Rain'),
-  //       'tmdisplay' => clienttranslate('((Heavy Rain))'),
-  //       'nobeginner' => true,
-  //     ],
-  //   ],
-  //   'displaycondition' => [
-  //     [
-  //       'type' => 'otheroptionisnot',
-  //       'id' => OPTION_SETUP,
-  //       'value' => [OPTION_SETUP_FIRST_GAME],
-  //     ],
-  //   ],
-  // ],
+  OPTION_HEAVY_RAIN_EXPANSION => [
+    'name' => totranslate('Expansion'),
+    'level' => "major",
+    'values' => [
+      OPTION_EXPANSION_DISABLED => [
+        'name' => clienttranslate('Base game only'),
+      ],
+      OPTION_EXPANSION_ENABLED => [
+        'name' => clienttranslate('Heavy Rain'),
+        'tmdisplay' => clienttranslate('((Heavy Rain))'),
+        'nobeginner' => true,
+        'alpha' => true,
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME],
+      ],
+    ],
+  ],
 
 
   OPTION_LEGEND => [
@@ -296,52 +297,52 @@ $game_options = [
       ],
     ],
   ],
-  // OPTION_CIRCUIT_EXP => [
-  //   'name' => totranslate('Circuit'),
-  //   'values' => [
-  //     OPTION_CIRCUIT_USA => [
-  //       'name' => clienttranslate('USA'),
-  //       'tmdisplay' => clienttranslate('[USA]'),
-  //     ],
-  //     OPTION_CIRCUIT_ITALIA => [
-  //       'name' => clienttranslate('Italia'),
-  //       'tmdisplay' => clienttranslate('[Italia]'),
-  //     ],
-  //     OPTION_CIRCUIT_GB => [
-  //       'name' => clienttranslate('Great Britain'),
-  //       'tmdisplay' => clienttranslate('[GB]'),
-  //     ],
-  //     OPTION_CIRCUIT_FRANCE => [
-  //       'name' => clienttranslate('France'),
-  //       'tmdisplay' => clienttranslate('[France]'),
-  //     ],
-  //     OPTION_CIRCUIT_MEXICO => [
-  //       'name' => clienttranslate('Mexico'),
-  //       'tmdisplay' => clienttranslate('[Mexico]'),
-  //     ],
-  //     OPTION_CIRCUIT_JAPAN => [
-  //       'name' => clienttranslate('Japan'),
-  //       'tmdisplay' => clienttranslate('[Japan]'),
-  //     ],
-  //     OPTION_CIRCUIT_RANDOM => [
-  //       'name' => clienttranslate('Random'),
-  //       'tmdisplay' => clienttranslate('[Random circuit]'),
-  //       'description' => clienttranslate('Random circuit among USA, Italia, Great Britain, France, Mexico and Japan'),
-  //     ],
-  //   ],
-  //   'displaycondition' => [
-  //     [
-  //       'type' => 'otheroptionisnot',
-  //       'id' => OPTION_SETUP,
-  //       'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_CHAMPIONSHIP],
-  //     ],
-  //     [
-  //       'type' => 'otheroption',
-  //       'id' => OPTION_HEAVY_RAIN_EXPANSION,
-  //       'value' => OPTION_EXPANSION_ENABLED,
-  //     ],
-  //   ],
-  // ],
+  OPTION_CIRCUIT_EXP => [
+    'name' => totranslate('Circuit'),
+    'values' => [
+      OPTION_CIRCUIT_USA => [
+        'name' => clienttranslate('USA'),
+        'tmdisplay' => clienttranslate('[USA]'),
+      ],
+      OPTION_CIRCUIT_ITALIA => [
+        'name' => clienttranslate('Italia'),
+        'tmdisplay' => clienttranslate('[Italia]'),
+      ],
+      OPTION_CIRCUIT_GB => [
+        'name' => clienttranslate('Great Britain'),
+        'tmdisplay' => clienttranslate('[GB]'),
+      ],
+      OPTION_CIRCUIT_FRANCE => [
+        'name' => clienttranslate('France'),
+        'tmdisplay' => clienttranslate('[France]'),
+      ],
+      OPTION_CIRCUIT_MEXICO => [
+        'name' => clienttranslate('Mexico'),
+        'tmdisplay' => clienttranslate('[Mexico]'),
+      ],
+      OPTION_CIRCUIT_JAPAN => [
+        'name' => clienttranslate('Japan'),
+        'tmdisplay' => clienttranslate('[Japan]'),
+      ],
+      OPTION_CIRCUIT_RANDOM => [
+        'name' => clienttranslate('Random'),
+        'tmdisplay' => clienttranslate('[Random circuit]'),
+        'description' => clienttranslate('Random circuit among USA, Italia, Great Britain, France, Mexico and Japan'),
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_CHAMPIONSHIP],
+      ],
+      [
+        'type' => 'otheroption',
+        'id' => OPTION_HEAVY_RAIN_EXPANSION,
+        'value' => OPTION_EXPANSION_ENABLED,
+      ],
+    ],
+  ],
 
   OPTION_GARAGE_MODULE => [
     'name' => totranslate('Garage module'),
@@ -490,48 +491,48 @@ $game_options = [
       ],
     ],
   ],
-  // OPTION_CHAMPIONSHIP_EXP => [
-  //   'name' => totranslate('Championship'),
-  //   'values' => [
-  //     OPTION_CHAMPIONSHIP_SEASON_61 => [
-  //       'name' => clienttranslate('Season 1961 (3 races)'),
-  //       'tmdisplay' => clienttranslate('[1961]'),
-  //     ],
-  //     OPTION_CHAMPIONSHIP_SEASON_62 => [
-  //       'name' => clienttranslate('Season 1962 (3 races)'),
-  //       'tmdisplay' => clienttranslate('[1962]'),
-  //     ],
-  //     OPTION_CHAMPIONSHIP_SEASON_63 => [
-  //       'name' => clienttranslate('Season 1963 (4 races)'),
-  //       'tmdisplay' => clienttranslate('[1963]'),
-  //     ],
-  //     OPTION_CHAMPIONSHIP_SEASON_64 => [
-  //       'name' => clienttranslate('Season 1964 (4 races)'),
-  //       'tmdisplay' => clienttranslate('[1964]'),
-  //     ],
-  //     OPTION_CHAMPIONSHIP_RANDOM => [
-  //       'name' => clienttranslate('Random championship'),
-  //       'tmdisplay' => clienttranslate('[Random championship]'),
-  //       'description' => clienttranslate('Play the 4 circuits in a random order with random events'),
-  //     ],
-  //     // OPTION_CHAMPIONSHIP_CUSTOM => [
-  //     //   'name' => ('Custom championship'),
-  //     //   'tmdisplay' => ('[Custom championship]'),
-  //     // ],
-  //   ],
-  //   'displaycondition' => [
-  //     [
-  //       'type' => 'otheroption',
-  //       'id' => OPTION_SETUP,
-  //       'value' => OPTION_SETUP_CHAMPIONSHIP,
-  //     ],
-  //     [
-  //       'type' => 'otheroption',
-  //       'id' => OPTION_HEAVY_RAIN_EXPANSION,
-  //       'value' => OPTION_EXPANSION_ENABLED,
-  //     ],
-  //   ],
-  // ],
+  OPTION_CHAMPIONSHIP_EXP => [
+    'name' => totranslate('Championship'),
+    'values' => [
+      OPTION_CHAMPIONSHIP_SEASON_61 => [
+        'name' => clienttranslate('Season 1961 (3 races)'),
+        'tmdisplay' => clienttranslate('[1961]'),
+      ],
+      OPTION_CHAMPIONSHIP_SEASON_62 => [
+        'name' => clienttranslate('Season 1962 (3 races)'),
+        'tmdisplay' => clienttranslate('[1962]'),
+      ],
+      OPTION_CHAMPIONSHIP_SEASON_63 => [
+        'name' => clienttranslate('Season 1963 (4 races)'),
+        'tmdisplay' => clienttranslate('[1963]'),
+      ],
+      OPTION_CHAMPIONSHIP_SEASON_64 => [
+        'name' => clienttranslate('Season 1964 (4 races)'),
+        'tmdisplay' => clienttranslate('[1964]'),
+      ],
+      OPTION_CHAMPIONSHIP_RANDOM => [
+        'name' => clienttranslate('Random championship'),
+        'tmdisplay' => clienttranslate('[Random championship]'),
+        'description' => clienttranslate('Play the 4 circuits in a random order with random events'),
+      ],
+      // OPTION_CHAMPIONSHIP_CUSTOM => [
+      //   'name' => ('Custom championship'),
+      //   'tmdisplay' => ('[Custom championship]'),
+      // ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroption',
+        'id' => OPTION_SETUP,
+        'value' => OPTION_SETUP_CHAMPIONSHIP,
+      ],
+      [
+        'type' => 'otheroption',
+        'id' => OPTION_HEAVY_RAIN_EXPANSION,
+        'value' => OPTION_EXPANSION_ENABLED,
+      ],
+    ],
+  ],
 ];
 
 $game_preferences = [
