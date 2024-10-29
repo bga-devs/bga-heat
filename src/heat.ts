@@ -17,7 +17,11 @@ const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
 const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321']; // copy of gameinfos
 
-const SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce'];
+const SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce', 'scrap'];
+const HAND_CARD_TYPE_FOR_EFFECT = {
+  reduce: 'stress',
+  cooldown: 'heat',
+};
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -781,16 +785,16 @@ class Heat implements HeatGame {
 
             let max = null;
             if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
-              const cardEffectType = {
-                reduce: 'stress',
-                cooldown: 'heat',
-              }[type];
-              max = Math.min(
-                entry[1] as number,
-                this.getCurrentPlayerTable()
-                  .hand.getCards()
-                  .filter((card) => card.effect == cardEffectType).length
-              );
+              max = entry[1] as number;
+              if (Object.keys(HAND_CARD_TYPE_FOR_EFFECT).includes(type)) {
+                const cardEffectType = HAND_CARD_TYPE_FOR_EFFECT[type];
+                max = Math.min(
+                  max,
+                  this.getCurrentPlayerTable()
+                    .hand.getCards()
+                    .filter((card) => card.effect == cardEffectType).length
+                );
+              }
               numbers = [];
               for (let i = max; i >= 1; i--) {
                 if (reactArgs.doable.includes(type) || i === max) {

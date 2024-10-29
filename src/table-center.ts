@@ -345,7 +345,6 @@ class Circuit {
   }
 
   public updateCarZIndex(car: HTMLElement, cellOrPath: number | number[]) {
-    console.log('TEST', cellOrPath, this.isPassingBelowTunnel(cellOrPath));
     // JAPAN TUNNEL
     if (this.isPassingBelowTunnel(cellOrPath)) {
       car.style.zIndex = '1';

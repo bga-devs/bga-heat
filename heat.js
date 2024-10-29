@@ -2782,7 +2782,6 @@ var Circuit = /** @class */ (function () {
         }
     };
     Circuit.prototype.updateCarZIndex = function (car, cellOrPath) {
-        console.log('TEST', cellOrPath, this.isPassingBelowTunnel(cellOrPath));
         // JAPAN TUNNEL
         if (this.isPassingBelowTunnel(cellOrPath)) {
             car.style.zIndex = '1';
@@ -3515,7 +3514,11 @@ var LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 var LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 var CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321']; // copy of gameinfos
-var SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce'];
+var SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce', 'scrap'];
+var HAND_CARD_TYPE_FOR_EFFECT = {
+    reduce: 'stress',
+    cooldown: 'heat',
+};
 function sleep(ms) {
     return new Promise(function (r) { return setTimeout(r, ms); });
 }
@@ -4126,13 +4129,13 @@ var Heat = /** @class */ (function () {
                         var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
                         var max = null;
                         if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
-                            var cardEffectType_1 = {
-                                reduce: 'stress',
-                                cooldown: 'heat',
-                            }[type];
-                            max = Math.min(entry[1], _this.getCurrentPlayerTable()
-                                .hand.getCards()
-                                .filter(function (card) { return card.effect == cardEffectType_1; }).length);
+                            max = entry[1];
+                            if (Object.keys(HAND_CARD_TYPE_FOR_EFFECT).includes(type)) {
+                                var cardEffectType_1 = HAND_CARD_TYPE_FOR_EFFECT[type];
+                                max = Math.min(max, _this.getCurrentPlayerTable()
+                                    .hand.getCards()
+                                    .filter(function (card) { return card.effect == cardEffectType_1; }).length);
+                            }
                             numbers = [];
                             for (var i = max; i >= 1; i--) {
                                 if (reactArgs_1.doable.includes(type) || i === max) {
