@@ -1195,11 +1195,11 @@ class Heat implements HeatGame {
                 `;
       case 'super-cool':
         return `
-                    <strong>${/*_TODOHR*/ 'Super cool'}</strong>
+                    <strong>${_('Super cool')}</strong>
                     <br>
-                    ${/*_TODOHR*/ ('You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.' as any).replace('${number}', number)}
+                    ${_('You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.' as any).replace('${number}', number)}
                     <br>
-                    <i>${/*_TODOHR*/ 'Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there).'}</i>
+                    <i>${_('Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there).')}</i>
                 `;
     }
   }
@@ -1485,7 +1485,7 @@ class Heat implements HeatGame {
               .join('<br><br>')}
 
             <h1>${_('Optional symbols')}</h1>
-            ${['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate'] // TODOHR add 'super-cool'
+            ${['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate', 'super-cool']
               .map((symbol) => this.getGarageModuleIconTooltipWithIcon(symbol, '#'))
               .join('<br><br>')}
 
