@@ -300,6 +300,8 @@ trait RaceTrait
   ////////////////////////////////////////////////////////////////////
   function stPrepareGarageDraft()
   {
+    Globals::setDeferredRoundsActive(false);
+
     $round = Globals::getDraftRound();
     $cards = Cards::drawMarket();
     $upgrades = null;
@@ -341,6 +343,9 @@ trait RaceTrait
 
   function argsChooseUpgrade()
   {
+    // TMP : TODO REMOVE
+    Globals::setDeferredRoundsActive(false);
+
     $data = [
       'market' => Cards::getInLocation('market'),
       'round' => Globals::getDraftRound(),
@@ -427,6 +432,9 @@ trait RaceTrait
   // CHAMPIONSHIP : swap
   function argsSwapUpgrade()
   {
+    // TMP : TODO REMOVE
+    Globals::setDeferredRoundsActive(false);
+
     $constructor = Constructors::getActive();
     return [
       'market' => Cards::getInLocation('market'),
@@ -439,10 +447,10 @@ trait RaceTrait
     self::checkAction('actSwapUpgrade');
     $args = $this->argsSwapUpgrade();
     if (!array_key_exists($cardId1, $args['market']->toAssoc())) {
-      throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
+      throw new \BgaVisibleSystemException('You cant select that update. Not in market. Should not happen');
     }
     if (!in_array($cardId2, $args['owned']->getIds())) {
-      throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
+      throw new \BgaVisibleSystemException('You cant select that update. Not owned. Should not happen');
     }
     $constructor = Constructors::getActive();
     $cId = $constructor->getId();
