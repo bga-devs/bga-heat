@@ -283,6 +283,9 @@ trait RoundTrait
     }
 
     $player = Players::getCurrent();
+    if (is_null($player)) {
+      throw new UserException('You are not part of the game. Should not happen');
+    }
     $planification = Globals::getPlanification();
     unset($planification[$player->getId()]);
     Globals::setPlanification($planification);

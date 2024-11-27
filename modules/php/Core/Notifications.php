@@ -61,7 +61,7 @@ class Notifications
   public static function updatePlanification($player, $args)
   {
     self::notify($player->getId(), 'updatePlanification', '', [
-      'args' => ['_private' => $args['_private'][$player->getId()]],
+      'args' => ['_private' => $args['_private'][$player->getId()] ?? []],
     ]);
   }
 

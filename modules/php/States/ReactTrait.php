@@ -64,7 +64,7 @@ trait ReactTrait
 
     // Check if heats need to be payed > heats in reserve
     if (($symbols[HEAT] ?? 0) > $constructor->getEngine()->count()) {
-      $doableSymbols = array_values(array_intersect($doableSymbols, [COOLDOWN, DIRECT, BOOST, ADRENALINE]));
+      $doableSymbols = array_values(array_intersect($doableSymbols, [COOLDOWN, DIRECT, BOOST, ADRENALINE, SUPER_COOL]));
     }
 
     // Current heat costs
