@@ -397,7 +397,9 @@ trait RoundTrait
       if ($newGear > $constructor->getGear()) {
         $constructor->incStat('heatPayedGearUp');
       } else {
-        $constructor->incStat('heatPayedGearDown');
+        if (($heatCost - ($payForFlooded ? 1 : 0)) > 0) {
+          $constructor->incStat('heatPayedGearDown');
+        }
       }
     }
 
