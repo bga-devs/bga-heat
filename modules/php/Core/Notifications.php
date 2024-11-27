@@ -369,7 +369,7 @@ class Notifications
 
   public static function payHeats($constructor, $heats)
   {
-    self::notifyAll('payHeats', clienttranslate('${constructor_name} pays ${n} heat(s) for its played card(s)'), [
+    self::notifyAll('payHeats', clienttranslate('${constructor_name} pays ${n} heat(s) for their played card(s)'), [
       'constructor' => $constructor,
       'cards' => $heats->toArray(),
       'n' => $heats->count(),
