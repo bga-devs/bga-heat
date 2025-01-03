@@ -397,7 +397,7 @@ class Notifications
 
   public static function superCoolCards($constructor, $cards)
   {
-    self::notifyAll(count($cards) > 0 ? 'superCoolCards' : 'log', /*clienttranslateTODOHR*/ ('${constructor_name} super cool ${n} Heat card(s)'), [
+    self::notifyAll(count($cards) > 0 ? 'superCoolCards' : 'log', clienttranslate('${constructor_name} super cool ${n} Heat card(s)'), [
       'constructor' => $constructor,
       'n' => count($cards),
       'cards' => $cards,

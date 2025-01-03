@@ -207,8 +207,8 @@ $machinestates = [
 
   ST_SUPER_COOL => [
     'name' => 'superCool',
-    'description' => /*clienttranslateTODOHR*/ ('${actplayer} may choose up to ${n} Heat card(s) in their discard to put back in their engine'),
-    'descriptionmyturn' => /*clienttranslateTODOHR*/ ('${you} may choose up to ${n} Heat card(s) in your discard to put back in your engine'),
+    'description' => clienttranslate('${actplayer} may choose up to ${n} Heat card(s) in their discard to put back in their engine'),
+    'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} Heat card(s) in your discard to put back in your engine'),
     'type' => 'activeplayer',
     'args' => 'argsSuperCool',
     'possibleactions' => ['actSuperCool', 'actPassReact'],
