@@ -73,7 +73,7 @@ class PlayerTable {
         this.currentGear = constructor.gear;
 
         let html = `
-        <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color}; --personal-card-background-y: ${constructor.id * 100 / 6}%;">
+        <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color}; --personal-card-background-y: ${constructor.id * 100 / 7}%;">
             <div id="player-table-${this.playerId}-name" class="name-wrapper">${player.name}</div>
         `;
         if (this.currentPlayer) {

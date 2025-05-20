@@ -139,6 +139,11 @@ $game_options = [
         'tmdisplay' => clienttranslate('[legends: fill to 7]'),
         'description' => clienttranslate('Add legends up to 7 cars in total'),
       ],
+      8 => [
+        'name' => clienttranslate('Fill to 8 cars'),
+        'tmdisplay' => clienttranslate('[legends: fill to 8]'),
+        'description' => clienttranslate('Add legends up to 8 cars in total'),
+      ],
     ],
     'default' => 6,
     // 'displaycondition' => [
@@ -539,7 +544,7 @@ $game_preferences = [
   OPTION_CONFIRM_HEAT_COST => [
     'name' => totranslate('Confirmation when heat cost increases'),
     'needReload' => false,
-    'default' => OPTION_CONFIRM_HEAT_COST,
+    'default' => OPTION_CONFIRM_HEAT_COST_ENABLED,
     'values' => [
       OPTION_CONFIRM_HEAT_COST_ENABLED => ['name' => totranslate('Enabled')],
       OPTION_CONFIRM_HEAT_COST_DISABLED => ['name' => totranslate('Disabled')],

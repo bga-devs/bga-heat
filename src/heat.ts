@@ -15,7 +15,7 @@ const LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 const LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
-const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321']; // copy of gameinfos
+const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321', '811b8f']; // copy of gameinfos
 
 const SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce', 'scrap'];
 const HAND_CARD_TYPE_FOR_EFFECT = {
@@ -272,7 +272,7 @@ class Heat implements HeatGame {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 6}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 7}%;"></div>
             `
       );
       this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
@@ -392,7 +392,7 @@ class Heat implements HeatGame {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 6}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 7}%;"></div>
             `
       );
       this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
@@ -412,7 +412,7 @@ class Heat implements HeatGame {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 6}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 7}%;"></div>
             `
       );
       this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
@@ -2367,7 +2367,7 @@ class Heat implements HeatGame {
     const constructorId =
       args.constructor_id ??
       Object.values(this.gamedatas.constructors).find((constructor) => constructor.pId == this.getPlayerId())?.id;
-    return `<div class="log-card-image" style="--personal-card-background-y: ${(constructorId * 100) / 6}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
+    return `<div class="log-card-image" style="--personal-card-background-y: ${(constructorId * 100) / 7}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
   }
 
   private cardsImagesHtml(cards: Card[], args: any) {

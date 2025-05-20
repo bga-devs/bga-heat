@@ -121,6 +121,7 @@ trait SetupTrait
       '7b7b7b' /* Gray */ => '979797',
       'ffa500' /* Yellow */ => 'face0d',
       'f07f16' /* Orange */ => 'f37321',
+      '982fff' /* Purple */ => '811b8f',
     ];
   }
 

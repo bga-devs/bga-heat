@@ -533,7 +533,7 @@ height: 241px; */
 .personal-card .card-sides .card-side {
   border-radius: 8px;
   background-image: url("img/personal-cards.jpg");
-  background-size: auto 700%;
+  background-size: auto 800%;
 }
 .personal-card .card-sides .card-side > * {
   pointer-events: all !important;
@@ -661,7 +661,7 @@ height: 241px; */
   height: 48px;
   background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--color) * 100% / 6);
+  background-position-y: calc(var(--color) * 100% / 7);
   color: white;
   text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
   text-align: center;
@@ -852,8 +852,8 @@ height: 241px; */
   height: 34px;
   z-index: 3;
   background: url("img/cars.png");
-  background-position-y: calc(var(--constructor-id) * 100% / 6);
-  background-size: 200% 700%;
+  background-position-y: calc(var(--constructor-id) * 100% / 7);
+  background-size: 200% 800%;
   transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 }
@@ -1079,7 +1079,7 @@ height: 241px; */
 .legend_avatar {
   background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 100% / 6);
+  background-position-y: calc(var(--constructor-id) * 100% / 7);
 }
 
 .player-table {
@@ -1134,6 +1134,9 @@ height: 241px; */
 }
 .player-table .player-board[data-color=f37321] {
   background-image: url("img/mats/player-board-f37321.jpg");
+}
+.player-table .player-board[data-color="811b8f"] {
+  background-image: url("img/mats/player-board-811b8f.jpg");
 }
 .player-table .player-board .bga-cards_deck-counter {
   --bga-cards-deck-counter-size: 40px;
@@ -1195,21 +1198,24 @@ height: 241px; */
   background-position-x: 0%;
 }
 .player-table .player-board .gear[data-color="376bbe"] {
-  background-position-x: 16.6666666667%;
+  background-position-x: 14.2857142857%;
 }
 .player-table .player-board .gear[data-color="26a54e"] {
-  background-position-x: 33.3333333333%;
+  background-position-x: 28.5714285714%;
 }
 .player-table .player-board .gear[data-color=e52927] {
-  background-position-x: 50%;
+  background-position-x: 42.8571428571%;
 }
 .player-table .player-board .gear[data-color="979797"] {
-  background-position-x: 66.6666666667%;
+  background-position-x: 57.1428571429%;
 }
 .player-table .player-board .gear[data-color=face0d] {
-  background-position-x: 83.3333333333%;
+  background-position-x: 71.4285714286%;
 }
 .player-table .player-board .gear[data-color=f37321] {
+  background-position-x: 85.7142857143%;
+}
+.player-table .player-board .gear[data-color="811b8f"] {
   background-position-x: 100%;
 }
 .player-table .player-board .gear[data-color="12151a"] {
@@ -1668,7 +1674,7 @@ html, .mode_3d #game_play_area_background {
 .constructor-avatar.legend {
   background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 100% / 6);
+  background-position-y: calc(var(--constructor-id) * 100% / 7);
 }
 .constructor-avatar.player {
   border-radius: 50%;
