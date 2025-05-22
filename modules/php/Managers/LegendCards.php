@@ -1,4 +1,5 @@
 <?php
+
 namespace HEAT\Managers;
 
 use BgaVisibleSystemException;
@@ -37,6 +38,21 @@ class LegendCards
       return null;
     } else {
       $datas = self::$cards[$cardId];
+
+      $cIds = Constructors::getAll()->filter(fn($constructor) => $constructor->isAI())->getIds();
+      // Handle other legends colors
+      foreach ($datas as &$column) {
+        foreach ($column as $cId => $speed) {
+          $column[$cId + 6] = $speed;
+        }
+      }
+      foreach ($datas as &$column) {
+        foreach ($column as $cId => $speed) {
+          if (!in_array($cId, $cIds)) {
+            unset($column[$cId]);
+          }
+        }
+      }
 
       // Legend pro module
       $n = Globals::getLegendPro();
