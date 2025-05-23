@@ -89,7 +89,6 @@ $game_options = [
         'name' => clienttranslate('Heavy Rain'),
         'tmdisplay' => clienttranslate('((Heavy Rain))'),
         'nobeginner' => true,
-        'alpha' => true,
       ],
     ],
     'displaycondition' => [
