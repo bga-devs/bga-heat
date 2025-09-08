@@ -203,8 +203,8 @@ var ZoomManager = /** @class */ (function () {
      */
     ZoomManager.prototype.zoomOrDimensionChanged = function () {
         var _a, _b;
-        this.settings.element.style.width = "".concat(this.wrapper.offsetWidth / this._zoom, "px");
-        this.wrapper.style.height = "".concat(this.settings.element.offsetHeight * this._zoom, "px");
+        this.settings.element.style.width = "".concat(this.wrapper.getBoundingClientRect().width / this._zoom, "px");
+        this.wrapper.style.height = "".concat(this.settings.element.getBoundingClientRect().height, "px");
         (_b = (_a = this.settings).onDimensionsChange) === null || _b === void 0 ? void 0 : _b.call(_a, this._zoom);
     };
     /**
@@ -751,8 +751,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -819,24 +819,24 @@ var AnimationManager = /** @class */ (function () {
      * @returns the animation promise.
      */
     AnimationManager.prototype.play = function (animation) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
         return __awaiter(this, void 0, void 0, function () {
-            var settings, _a;
-            var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+            var settings, _m;
             return __generator(this, function (_o) {
                 switch (_o.label) {
                     case 0:
                         animation.played = animation.playWhenNoAnimation || this.animationsActive();
                         if (!animation.played) return [3 /*break*/, 2];
                         settings = animation.settings;
-                        (_b = settings.animationStart) === null || _b === void 0 ? void 0 : _b.call(settings, animation);
-                        (_c = settings.element) === null || _c === void 0 ? void 0 : _c.classList.add((_d = settings.animationClass) !== null && _d !== void 0 ? _d : 'bga-animations_animated');
-                        animation.settings = __assign(__assign({}, animation.settings), { duration: (_f = (_e = this.settings) === null || _e === void 0 ? void 0 : _e.duration) !== null && _f !== void 0 ? _f : 500, scale: (_h = (_g = this.zoomManager) === null || _g === void 0 ? void 0 : _g.zoom) !== null && _h !== void 0 ? _h : undefined });
-                        _a = animation;
+                        (_a = settings.animationStart) === null || _a === void 0 ? void 0 : _a.call(settings, animation);
+                        (_b = settings.element) === null || _b === void 0 ? void 0 : _b.classList.add((_c = settings.animationClass) !== null && _c !== void 0 ? _c : 'bga-animations_animated');
+                        animation.settings = __assign(__assign({}, animation.settings), { duration: (_e = (_d = this.settings) === null || _d === void 0 ? void 0 : _d.duration) !== null && _e !== void 0 ? _e : 500, scale: (_g = (_f = this.zoomManager) === null || _f === void 0 ? void 0 : _f.zoom) !== null && _g !== void 0 ? _g : undefined });
+                        _m = animation;
                         return [4 /*yield*/, animation.animationFunction(this, animation)];
                     case 1:
-                        _a.result = _o.sent();
-                        (_k = (_j = animation.settings).animationEnd) === null || _k === void 0 ? void 0 : _k.call(_j, animation);
-                        (_l = settings.element) === null || _l === void 0 ? void 0 : _l.classList.remove((_m = settings.animationClass) !== null && _m !== void 0 ? _m : 'bga-animations_animated');
+                        _m.result = _o.sent();
+                        (_j = (_h = animation.settings).animationEnd) === null || _j === void 0 ? void 0 : _j.call(_h, animation);
+                        (_k = settings.element) === null || _k === void 0 ? void 0 : _k.classList.remove((_l = settings.animationClass) !== null && _l !== void 0 ? _l : 'bga-animations_animated');
                         return [3 /*break*/, 3];
                     case 2: return [2 /*return*/, Promise.resolve(animation)];
                     case 3: return [2 /*return*/];
@@ -1021,7 +1021,7 @@ var CardStock = /** @class */ (function () {
      */
     CardStock.prototype.addCard = function (card, animation, settings) {
         var _this = this;
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d;
         if (!this.canAddCard(card, settings)) {
             return Promise.resolve(false);
         }
@@ -1050,15 +1050,8 @@ var CardStock = /** @class */ (function () {
             }
         }
         if (needsCreation) {
-            var element = this.getCardElement(card);
-            if (needsCreation && element) {
-                console.warn("Card ".concat(this.manager.getId(card), " already exists, not re-created."));
-            }
-            // if the card comes from a stock but is not found in this stock, the card is probably hudden (deck with a fake top card)
-            var fromBackSide = !(settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) && !(animation === null || animation === void 0 ? void 0 : animation.originalSide) && (animation === null || animation === void 0 ? void 0 : animation.fromStock) && !((_d = animation === null || animation === void 0 ? void 0 : animation.fromStock) === null || _d === void 0 ? void 0 : _d.contains(card));
-            var createdVisible = fromBackSide ? false : (_e = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _e !== void 0 ? _e : this.manager.isCardVisible(card);
-            var newElement = element !== null && element !== void 0 ? element : this.manager.createCardElement(card, createdVisible);
-            promise = this.moveFromElement(card, newElement, animation, settingsWithIndex);
+            var element = this.manager.createCardElement(card, ((_d = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _d !== void 0 ? _d : this.manager.isCardVisible(card)));
+            promise = this.moveFromElement(card, element, animation, settingsWithIndex);
         }
         if (settingsWithIndex.index !== null && settingsWithIndex.index !== undefined) {
             this.cards.splice(index, 0, card);
@@ -1162,11 +1155,11 @@ var CardStock = /** @class */ (function () {
      * @param settings a `AddCardSettings` object
      * @param shift if number, the number of milliseconds between each card. if true, chain animations
      */
-    CardStock.prototype.addCards = function (cards_1, animation_1, settings_1) {
-        return __awaiter(this, arguments, void 0, function (cards, animation, settings, shift) {
+    CardStock.prototype.addCards = function (cards, animation, settings, shift) {
+        if (shift === void 0) { shift = false; }
+        return __awaiter(this, void 0, void 0, function () {
             var promises, result, others, _loop_2, i, results;
             var _this = this;
-            if (shift === void 0) { shift = false; }
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1187,9 +1180,7 @@ var CardStock = /** @class */ (function () {
                     case 4:
                         if (typeof shift === 'number') {
                             _loop_2 = function (i) {
-                                promises.push(new Promise(function (resolve) {
-                                    setTimeout(function () { return _this.addCard(cards[i], animation, settings).then(function (result) { return resolve(result); }); }, i * shift);
-                                }));
+                                setTimeout(function () { return promises.push(_this.addCard(cards[i], animation, settings)); }, i * shift);
                             };
                             for (i = 0; i < cards.length; i++) {
                                 _loop_2(i);
@@ -1267,13 +1258,9 @@ var CardStock = /** @class */ (function () {
      * @param settings a `RemoveCardSettings` object
      */
     CardStock.prototype.removeAll = function (settings) {
-        return __awaiter(this, void 0, void 0, function () {
-            var cards;
-            return __generator(this, function (_a) {
-                cards = this.getCards();
-                return [2 /*return*/, this.removeCards(cards, settings)];
-            });
-        });
+        var _this = this;
+        var cards = this.getCards(); // use a copy of the array as we iterate and modify it at the same time
+        cards.forEach(function (card) { return _this.removeCard(card, settings); });
     };
     /**
      * Set if the stock is selectable, and if yes if it can be multiple.
@@ -1392,7 +1379,7 @@ var CardStock = /** @class */ (function () {
         }
     };
     /**
-     * Unselect all cards
+     * Unelect all cards
      */
     CardStock.prototype.unselectAll = function (silent) {
         var _this = this;
@@ -1438,9 +1425,9 @@ var CardStock = /** @class */ (function () {
      * @param fromElement The HTMLElement to animate from.
      */
     CardStock.prototype.animationFromElement = function (element, fromRect, settings) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var side, cardSides_1, animation, result;
-            var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -1515,24 +1502,6 @@ var CardStock = /** @class */ (function () {
         var unselectableCardsClass = this.getUnselectableCardClass();
         var selectedCardsClass = this.getSelectedCardClass();
         cardElement === null || cardElement === void 0 ? void 0 : cardElement.classList.remove(selectableCardsClass, unselectableCardsClass, selectedCardsClass);
-    };
-    /**
-     * Changes the sort function of the stock.
-     *
-     * @param sort the new sort function. If defined, the stock will be sorted with this new function.
-     */
-    CardStock.prototype.setSort = function (sort) {
-        this.sort = sort;
-        if (this.sort && this.cards.length) {
-            this.cards.sort(this.sort);
-            var previouslyMovedCardDiv = this.getCardElement(this.cards[this.cards.length - 1]);
-            this.element.appendChild(previouslyMovedCardDiv);
-            for (var i = this.cards.length - 2; i >= 0; i--) {
-                var movedCardDiv = this.getCardElement(this.cards[i]);
-                this.element.insertBefore(movedCardDiv, previouslyMovedCardDiv);
-                previouslyMovedCardDiv = movedCardDiv;
-            }
-        }
     };
     return CardStock;
 }());
@@ -1628,17 +1597,9 @@ var Deck = /** @class */ (function (_super) {
     Deck.prototype.setCardNumber = function (cardNumber, topCard) {
         var _this = this;
         if (topCard === void 0) { topCard = undefined; }
-        var promise = Promise.resolve(false);
-        var oldTopCard = this.getTopCard();
-        if (topCard !== null && cardNumber > 0) {
-            var newTopCard = topCard || this.getFakeCard();
-            if (!oldTopCard || this.manager.getId(newTopCard) != this.manager.getId(oldTopCard)) {
-                promise = this.addCard(newTopCard, undefined, { autoUpdateCardNumber: false });
-            }
-        }
-        else if (cardNumber == 0 && oldTopCard) {
-            promise = this.removeCard(oldTopCard, { autoUpdateCardNumber: false });
-        }
+        var promise = topCard === null || cardNumber == 0 ?
+            Promise.resolve(false) :
+            _super.prototype.addCard.call(this, topCard || this.getFakeCard(), undefined, { autoUpdateCardNumber: false });
         this.cardNumber = cardNumber;
         this.element.dataset.empty = (this.cardNumber == 0).toString();
         var thickness = 0;
@@ -1676,19 +1637,6 @@ var Deck = /** @class */ (function (_super) {
         }
         _super.prototype.cardRemoved.call(this, card, settings);
     };
-    Deck.prototype.removeAll = function (settings) {
-        return __awaiter(this, void 0, void 0, function () {
-            var promise;
-            var _a, _b;
-            return __generator(this, function (_c) {
-                promise = _super.prototype.removeAll.call(this, __assign(__assign({}, settings), { autoUpdateCardNumber: (_a = settings === null || settings === void 0 ? void 0 : settings.autoUpdateCardNumber) !== null && _a !== void 0 ? _a : false }));
-                if ((_b = settings === null || settings === void 0 ? void 0 : settings.autoUpdateCardNumber) !== null && _b !== void 0 ? _b : true) {
-                    this.setCardNumber(0, null);
-                }
-                return [2 /*return*/, promise];
-            });
-        });
-    };
     Deck.prototype.getTopCard = function () {
         var cards = this.getCards();
         return cards.length ? cards[cards.length - 1] : null;
@@ -1701,10 +1649,10 @@ var Deck = /** @class */ (function (_super) {
      * @returns promise when animation ends
      */
     Deck.prototype.shuffle = function (settings) {
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function () {
             var animatedCardsMax, animatedCards, elements, getFakeCard, uid, i, newCard, newElement, pauseDelayAfterAnimation;
             var _this = this;
-            var _a, _b, _c;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
@@ -1838,11 +1786,11 @@ function sortFunction() {
             if (type === 'string') {
                 var compare = a[field].localeCompare(b[field]);
                 if (compare !== 0) {
-                    return compare * direction;
+                    return compare;
                 }
             }
             else if (type === 'number') {
-                var compare = (a[field] - b[field]);
+                var compare = (a[field] - b[field]) * direction;
                 if (compare !== 0) {
                     return compare * direction;
                 }
@@ -2623,7 +2571,7 @@ var Circuit = /** @class */ (function () {
     }
     Circuit.prototype.loadCircuit = function (circuitDatas) {
         var _this = this;
-        var _a;
+        var _a, _b;
         this.circuitDatas = circuitDatas;
         this.circuitDiv.style.backgroundImage = "url('".concat(this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : "".concat(g_gamethemeurl, "img/").concat(this.circuitDatas.jpgUrl), "')");
         this.createCorners(this.circuitDatas.corners);
@@ -2635,6 +2583,13 @@ var Circuit = /** @class */ (function () {
         }
         else {
             (_a = $('japan-tunnel')) === null || _a === void 0 ? void 0 : _a.remove();
+        }
+        // ESPANA TUNNEL
+        if (circuitDatas.id == 'Espana') {
+            this.circuitDiv.insertAdjacentHTML('beforeend', "<div id='espana-tunnel'></div>");
+        }
+        else {
+            (_b = $('espana-tunnel')) === null || _b === void 0 ? void 0 : _b.remove();
         }
     };
     Circuit.prototype.newCircuit = function (circuitDatas) {
@@ -2653,6 +2608,7 @@ var Circuit = /** @class */ (function () {
         (cornerDiv.id = "corner-".concat(corner.id)), cornerDiv.classList.add('corner');
         cornerDiv.style.setProperty('--x', "".concat(corner.x, "px"));
         cornerDiv.style.setProperty('--y', "".concat(corner.y, "px"));
+        cornerDiv.appendChild(document.createTextNode(String(corner.speed)));
         this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
     };
     Circuit.prototype.createPressTokens = function (pressCorners) {
@@ -3064,7 +3020,7 @@ var PlayerTable = /** @class */ (function () {
         var engineCards = Object.values(constructor.engine);
         this.engine = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-engine")), {
             cardNumber: engineCards.length,
-            topCard: engineCards[0], // TODO check if ordered
+            topCard: engineCards[0],
             counter: {
                 extraClasses: 'round',
             },
@@ -3079,7 +3035,7 @@ var PlayerTable = /** @class */ (function () {
         var discardCards = Object.values(constructor.discard);
         this.discard = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-discard")), {
             cardNumber: discardCards.length,
-            topCard: discardCards[0], // TODO check if ordered
+            topCard: discardCards[0],
             counter: {
                 extraClasses: 'round',
             }
@@ -4990,9 +4946,9 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.notif_moveCar = function (args) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
             var constructor_id, cell, path, totalSpeed, progress, distanceToCorner, isAi, orderCounter;
-            var _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -5025,9 +4981,9 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.payHeats = function (constructorId, cards) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var playerId, playerTable;
-            var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -5192,10 +5148,10 @@ var Heat = /** @class */ (function () {
             });
         });
     };
-    Heat.prototype.notif_finishRace = function (args_2) {
-        return __awaiter(this, arguments, void 0, function (args, eliminated) {
+    Heat.prototype.notif_finishRace = function (args, eliminated) {
+        if (eliminated === void 0) { eliminated = false; }
+        return __awaiter(this, void 0, void 0, function () {
             var constructor_id, pos, canLeave, carCell;
-            if (eliminated === void 0) { eliminated = false; }
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:

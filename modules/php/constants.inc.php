@@ -134,6 +134,11 @@ const EVENT_GOING_GLOBAL = 11;
 const EVENT_TURBULENT_WINDS = 12;
 const EVENT_CHICANES = 13;
 const EVENT_SUDDEN_RAIN = 14;
+// TV EXPANSION
+const EVENT_HOLD_TIGHT = 15;
+const EVENT_SMILE_WAVE = 16;
+const EVENT_TUNNEL_VISION = 17;
+const EVENT_PRESSURE_COOKER = 18;
 
 const EVENTS = [
   EVENT_INAUGURATION => ['sponsors' => 2, 'press' => [0]],
@@ -148,23 +153,20 @@ const EVENTS = [
   EVENT_FUTURE_UNKNOWN => ['sponsors' => 0, 'press' => [3]],
 ];
 
-const EVENTS_EXP = [
-  EVENT_INAUGURATION => ['sponsors' => 2, 'press' => [0]],
-  EVENT_NEW_RECORD => ['sponsors' => 1, 'press' => [1]],
-  EVENT_STRIKE => ['sponsors' => 1, 'press' => [2]],
-  EVENT_RESTRICTIONS_LIFTED => ['sponsors' => 2, 'press' => [4]],
-  EVENT_RECORD_CROWDS => ['sponsors' => 1, 'press' => [2, 4]],
-  EVENT_CORRUPTION => ['sponsors' => 1, 'press' => [2]],
-  EVENT_TITLE_SPONSOR => ['sponsors' => 3, 'press' => [0]],
-  EVENT_FIRST_LIVE_TV => ['sponsors' => 1, 'press' => [1, 3]],
-  EVENT_SAFETY_REGULATIONS => ['sponsors' => 1, 'press' => [3]],
-  EVENT_FUTURE_UNKNOWN => ['sponsors' => 0, 'press' => [3]],
-
+const EVENTS_EXP_HV = [
   EVENT_GOING_GLOBAL => ['sponsors' => 0, 'press' => [1, 2]],
   EVENT_TURBULENT_WINDS => ['sponsors' => 1, 'press' => [1]],
   EVENT_CHICANES => ['sponsors' => 1, 'press' => [2]],
   EVENT_SUDDEN_RAIN => ['sponsors' => 1, 'press' => []],
 ];
+
+const EVENTS_EXP_TV = [
+  EVENT_HOLD_TIGHT => ['sponsors' => 2, 'press' => [3]],
+  EVENT_SMILE_WAVE => ['sponsors' => 0, 'press' => [2]],
+  EVENT_TUNNEL_VISION => ['sponsors' => 0, 'press' => [0, 2]],
+  EVENT_PRESSURE_COOKER => ['sponsors' => 1, 'press' => [1]],
+];
+
 
 const CHAMPIONSHIP_SEASONS = [
   \HEAT\OPTION_CHAMPIONSHIP_SEASON_61 => [
@@ -201,10 +203,20 @@ const CHAMPIONSHIP_SEASONS = [
       ['circuit' => 'japan', 'event' => EVENT_SUDDEN_RAIN],
     ],
   ],
+  \HEAT\OPTION_CHAMPIONSHIP_SEASON_65 => [
+    'name' => 1965,
+    'circuits' => [
+      ['circuit' => 'gb', 'event' => EVENT_HOLD_TIGHT],
+      ['circuit' => 'usa', 'event' => EVENT_SMILE_WAVE],
+      ['circuit' => 'espana', 'event' => EVENT_TUNNEL_VISION],
+      ['circuit' => 'nederland', 'event' => EVENT_PRESSURE_COOKER],
+    ],
+  ],
 ];
 
 const CIRCUITS = ['usa', 'gb', 'italia', 'france'];
-const CIRCUITS_EXP = ['usa', 'gb', 'italia', 'france', 'japan', 'mexico'];
+const CIRCUITS_EXP_HV = ['japan', 'mexico'];
+const CIRCUITS_EXP_TV = ['nederland', 'espana'];
 
 /******************
  ****** STATS ******

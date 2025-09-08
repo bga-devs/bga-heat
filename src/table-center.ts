@@ -174,6 +174,13 @@ class Circuit {
     } else {
       $('japan-tunnel')?.remove();
     }
+
+    // ESPANA TUNNEL
+    if (circuitDatas.id == 'Espana') {
+      this.circuitDiv.insertAdjacentHTML('beforeend', "<div id='espana-tunnel'></div>");
+    } else {
+      $('espana-tunnel')?.remove();
+    }
   }
 
   public newCircuit(circuitDatas: CircuitDatas) {
@@ -191,6 +198,7 @@ class Circuit {
     (cornerDiv.id = `corner-${corner.id}`), cornerDiv.classList.add('corner');
     cornerDiv.style.setProperty('--x', `${corner.x}px`);
     cornerDiv.style.setProperty('--y', `${corner.y}px`);
+    cornerDiv.appendChild(document.createTextNode(String(corner.speed)));
     this.circuitDiv.insertAdjacentElement('beforeend', cornerDiv);
   }
 

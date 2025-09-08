@@ -477,6 +477,7 @@ body > .card {
   width: calc(var(--width) + (var(--tile-count) - 1) * var(--horizontal-shift));
   height: calc(var(--height) + (var(--tile-count) - 1) * var(--vertical-shift));
   transition: width 0.5s ease-in-out, height 0.5s ease-in-out, background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  opacity: var(--tile-count);
 }
 
 .card-stock.all-visible-deck > .card {
@@ -833,15 +834,32 @@ height: 241px; */
   background-image: url("img/circuits/japan-tunnel.png");
   pointer-events: none;
 }
+#table-center #circuit #espana-tunnel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  background-image: url("img/circuits/espana-tunnels.png");
+  pointer-events: none;
+}
 #table-center .corner {
   --color: transparent;
   position: absolute;
-  left: calc(var(--x) - 24px);
-  top: calc(var(--y) - 24px);
-  width: 48px;
-  height: 48px;
+  left: calc(var(--x) - 26px);
+  top: calc(var(--y) - 26px);
+  width: 52px;
+  height: 52px;
   box-shadow: 0 0 5px 5px var(--color);
   border-radius: 50%;
+  background-image: url("img/corner.jpg");
+  background-size: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Barlow";
+  font-size: 35px;
 }
 
 .car {
@@ -873,7 +891,7 @@ height: 241px; */
 
 .map-indicator {
   position: absolute;
-  z-index: 3;
+  z-index: 5;
   left: -16px;
   top: -16px;
   width: 32px;
@@ -1528,14 +1546,22 @@ height: 241px; */
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: "Barlow";
+  src: url("img/BarlowCondensed-Medium.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
 /* make space between buttons on touch devices */
 @media (hover: none) {
-  #page-title .action-button.bgabutton, #page-title .bgabutton {
+  #page-title .action-button.bgabutton,
+  #page-title .bgabutton {
     margin-bottom: 8px;
     margin-top: 8px;
   }
 }
-html, .mode_3d #game_play_area_background {
+html,
+.mode_3d #game_play_area_background {
   background: url("img/rules-background.jpg");
   background-size: 100% auto;
   background-repeat: repeat;
@@ -1631,7 +1657,8 @@ html, .mode_3d #game_play_area_background {
   margin: 10px;
 }
 
-.action-button .icon, .log .icon {
+.action-button .icon,
+.log .icon {
   width: 24px;
   height: 24px;
 }
@@ -1694,7 +1721,8 @@ html, .mode_3d #game_play_area_background {
   display: block;
 }
 
-#logs .log.notif_newUndoableStep .roundedbox:after, #logs .log.notif_newUndoableStep .roundedbox:before {
+#logs .log.notif_newUndoableStep .roundedbox:after,
+#logs .log.notif_newUndoableStep .roundedbox:before {
   content: "\f0e2";
   font: normal normal normal 12px/1 FontAwesome;
   margin: 0 10px;
@@ -1715,7 +1743,8 @@ html, .mode_3d #game_play_area_background {
   text-align: center;
 }
 
-.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:after, .chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:before {
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:after,
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:before {
   content: "\f0e2";
   font: normal normal normal 12px/1 FontAwesome;
   margin: 0 10px;
@@ -1773,7 +1802,8 @@ html, .mode_3d #game_play_area_background {
   margin-left: -168px;
 }
 
-.press-corner-ul, .press-corner-ul li {
+.press-corner-ul,
+.press-corner-ul li {
   list-style: disc;
   list-style-type: disc;
   list-style-position: inside;
@@ -1798,3 +1828,5 @@ html, .mode_3d #game_play_area_background {
   margin-left: 5px;
   padding: 5px;
 }
+
+/*# sourceMappingURL=heat.css.map */

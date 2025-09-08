@@ -3,7 +3,7 @@ let DATAS = null;
 let CELLS = [];
 
 // Sections
-const SECTIONS = ['centers', 'directions', 'neighbours', 'lanes', 'flooded'];
+const SECTIONS = ['centers', 'directions', 'neighbours', 'lanes', 'flooded', 'tunnels'];
 
 ////// HELP //////
 
@@ -366,6 +366,7 @@ function exportCompressedJSON() {
       : { x: 0, y: 0 },
     corners: DATAS.corners || [],
     floodedSpaces: DATAS.flooded || [],
+    tunnelsSpaces: DATAS.tunels || [],
     cells: {},
   };
 
@@ -500,6 +501,7 @@ function updateStatus() {
 
   // Always optional
   DATAS.computed.flooded = true;
+  DATAS.computed.tunnels = true;
 
   SECTIONS.forEach((section) => {
     $(`section-${section}`).classList.toggle('computed', DATAS.computed[section] || false);
@@ -698,6 +700,20 @@ function onMouseClickCell(id, cell, evt) {
     updateFloodedSpaces();
     return;
   }
+
+  if (modes.tunnels.edit) {
+    if (DATAS.tunnels === undefined) DATAS.tunnels = [];
+
+    const index = DATAS.tunnels.indexOf(id);
+    if (index > -1) {
+      DATAS.tunnels.splice(index, 1);
+    } else {
+      DATAS.tunnels.push(id);
+    }
+    saveCircuit();
+    updateTunnelsSpaces();
+    return;
+  }
 }
 
 let clickCallback = null;
@@ -768,6 +784,7 @@ function updateCenters() {
     $(`center-${cellId}`).dataset.position = DATAS.cells[cellId].position ?? 0;
 
     $(`center-${cellId}`).dataset.flooded = (DATAS.flooded ?? []).includes(cellId) ? 1 : 0;
+    $(`center-${cellId}`).dataset.tunnels = (DATAS.tunnels ?? []).includes(cellId) ? 1 : 0;
   });
 }
 
@@ -1062,6 +1079,10 @@ function generateLanes() {
 //////////////////////////////////////////////
 
 function updateFloodedSpaces() {
+  updateCenters();
+}
+
+function updateTunnelsSpaces() {
   updateCenters();
 }
 

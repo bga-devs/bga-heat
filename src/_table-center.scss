@@ -31,17 +31,35 @@
       background-image: url("img/circuits/japan-tunnel.png");
       pointer-events: none;
     }
+    // ESPANA TUNNEL
+    #espana-tunnel {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 4;
+      background-image: url("img/circuits/espana-tunnels.png");
+      pointer-events: none;
+    }
   }
 
   .corner {
     --color: transparent;
     position: absolute;
-    left: calc(var(--x) - 24px);
-    top: calc(var(--y) - 24px);
-    width: 48px;
-    height: 48px;
+    left: calc(var(--x) - 26px);
+    top: calc(var(--y) - 26px);
+    width: 52px;
+    height: 52px;
     box-shadow: 0 0 5px 5px var(--color);
     border-radius: 50%;
+    background-image: url("img/corner.jpg");
+    background-size: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Barlow";
+    font-size: 35px;
   }
 }
 
@@ -75,7 +93,7 @@
 
 .map-indicator {
   position: absolute;
-  z-index: 3;
+  z-index: 5;
   left: -16px;
   top: -16px;
   width: 32px;

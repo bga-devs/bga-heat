@@ -34,6 +34,7 @@ class Circuit
         'tentY' => $infos['tentY'],
         'sectorTentX' => $infos['sectorTentX'],
         'sectorTentY' => $infos['sectorTentY'],
+        'speed' => $infos['speed'],
       ];
 
       if (isset($infos['chicane'])) {

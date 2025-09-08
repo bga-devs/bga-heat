@@ -1,44 +1,55 @@
-$playerColors: '12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321', '811b8f';
+$playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f37321", "811b8f";
 
-@import '../node_modules/bga-help/bga-help';
-@import '../node_modules/bga-zoom/bga-zoom';
-@import '../node_modules/bga-jump-to/bga-jump-to';
-@import '../node_modules/bga-cards/bga-cards';
-@import 'cards';
-@import 'legend-cards';
-@import 'event-cards';
-@import 'table-center';
-@import 'playerboards';
-@import 'player-table';
-@import 'legend-table';
-@import 'championship-table';
-@import 'help';
-@import 'upload-form';
+@import "../node_modules/bga-help/bga-help";
+@import "../node_modules/bga-zoom/bga-zoom";
+@import "../node_modules/bga-jump-to/bga-jump-to";
+@import "../node_modules/bga-cards/bga-cards";
+@import "cards";
+@import "legend-cards";
+@import "event-cards";
+@import "table-center";
+@import "playerboards";
+@import "player-table";
+@import "legend-table";
+@import "championship-table";
+@import "help";
+@import "upload-form";
 
 @font-face {
-  font-family: 'Aachen Bold';
+  font-family: "Aachen Bold";
   font-style: normal;
   font-weight: normal;
-  src: local('Aachen Bold'), url('img/aachen-bold-opentype.woff') format('woff');
+  src:
+    local("Aachen Bold"),
+    url("img/aachen-bold-opentype.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'roboto_slabbold';
-  src: url('img/RobotoSlab-Bold-webfont.woff') format('woff');
+  font-family: "roboto_slabbold";
+  src: url("img/RobotoSlab-Bold-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("img/BarlowCondensed-Medium.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 /* make space between buttons on touch devices */
 @media (hover: none) {
-  #page-title .action-button.bgabutton, #page-title .bgabutton {
+  #page-title .action-button.bgabutton,
+  #page-title .bgabutton {
     margin-bottom: 8px;
     margin-top: 8px;
   }
 }
 
-html, .mode_3d #game_play_area_background {
-  background: url('img/rules-background.jpg');
+html,
+.mode_3d #game_play_area_background {
+  background: url("img/rules-background.jpg");
   background-size: 100% auto;
   background-repeat: repeat;
   background-position: top;
@@ -48,7 +59,7 @@ html, .mode_3d #game_play_area_background {
   display: inline-block;
   width: 32px;
   height: 32px;
-  background-image: url('img/icons.png');
+  background-image: url("img/icons.png");
   background-size: auto 100%;
   background-repeat: no-repeat;
   background-position: center;
@@ -56,9 +67,12 @@ html, .mode_3d #game_play_area_background {
   font-size: 18px;
   line-height: 24px;
   color: white;
-  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
+  text-shadow:
+    0 0 1px black,
+    0 0 2px black,
+    0 0 3px black;
   text-align: center;
-  
+
   &.flag {
     background-position-x: #{0 * 100% / 22};
   }
@@ -83,7 +97,8 @@ html, .mode_3d #game_play_area_background {
   &.podium {
     background-position-x: #{7 * 100% / 22};
   }
-  &.reduce-stress, &.reduce {
+  &.reduce-stress,
+  &.reduce {
     background-position-x: #{8 * 100% / 22};
   }
   &.scrap {
@@ -134,7 +149,8 @@ html, .mode_3d #game_play_area_background {
   margin: 10px;
 }
 
-.action-button, .log {
+.action-button,
+.log {
   .icon {
     width: 24px;
     height: 24px;
@@ -179,8 +195,8 @@ html, .mode_3d #game_play_area_background {
   height: 32px;
   vertical-align: middle;
 
-  &.legend {  
-    background: url('img/legend-icons.png');
+  &.legend {
+    background: url("img/legend-icons.png");
     background-size: 100% auto;
     background-position-y: calc(var(--constructor-id) * 100% / 7);
   }
@@ -199,7 +215,7 @@ html, .mode_3d #game_play_area_background {
     // TODO!!! display: none;
     font-size: 12px;
     padding: 2px 5px;
-    text-align: center
+    text-align: center;
   }
 
   &.selectable .roundedbox {
@@ -207,8 +223,8 @@ html, .mode_3d #game_play_area_background {
   }
 }
 
-
-#logs .log.notif_newUndoableStep .roundedbox:after,#logs .log.notif_newUndoableStep .roundedbox:before {
+#logs .log.notif_newUndoableStep .roundedbox:after,
+#logs .log.notif_newUndoableStep .roundedbox:before {
   content: "\f0e2";
   font: normal normal normal 12px/1 FontAwesome;
   margin: 0 10px;
@@ -220,19 +236,20 @@ html, .mode_3d #game_play_area_background {
   padding: 0;
 
   &.selectable {
-    display: block !important; 
-    
+    display: block !important;
+
     .roundedboxinner {
       background-color: #c4c2c2;
       cursor: pointer;
       font-size: 12px;
       padding: 2px 5px;
-      text-align: center
+      text-align: center;
     }
   }
 }
 
-.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:after,.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:before {
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:after,
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:before {
   content: "\f0e2";
   font: normal normal normal 12px/1 FontAwesome;
   margin: 0 10px;
@@ -267,7 +284,7 @@ html, .mode_3d #game_play_area_background {
   vertical-align: middle;
 
   @for $symbols from 1 through 4 {
-    &[data-symbols="#{$symbols}"]  {
+    &[data-symbols="#{$symbols}"] {
       max-height: #{54px + ($symbols * 66px)};
     }
   }
@@ -288,7 +305,8 @@ html, .mode_3d #game_play_area_background {
   }
 }
 
-.press-corner-ul, .press-corner-ul li {
+.press-corner-ul,
+.press-corner-ul li {
   list-style: disc;
   list-style-type: disc;
   list-style-position: inside;

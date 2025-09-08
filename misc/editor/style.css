@@ -620,6 +620,11 @@ object {
 #main-frame.show-flooded .center-indicator[data-flooded="1"]::before {
     background: rgb(8, 133, 182);
 }
+#main-frame.show-tunnels .center-indicator[data-tunnels="1"]::before {
+    background: rgb(77, 77, 77);
+    color: white;
+    border: 1px solid white;
+}
 
 .direction-indicator {
     position: absolute;
