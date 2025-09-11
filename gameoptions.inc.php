@@ -29,6 +29,51 @@ namespace HEAT;
 require_once 'modules/php/gameoptions.inc.php';
 
 $game_options = [
+  OPTION_EXPANSION_TUNNEL_VISION => [
+    'name' => totranslate('Tunnel Vision expansion'),
+    'level' => "major",
+    'values' => [
+      OPTION_EXPANSION_DISABLED => [
+        'name' => clienttranslate('Disabled'),
+      ],
+      OPTION_EXPANSION_ENABLED => [
+        'name' => clienttranslate('Enabled'),
+        'tmdisplay' => clienttranslate('((Tunnel Vision))'),
+        'nobeginner' => true,
+        'alpha' => true,
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME],
+      ],
+    ],
+  ],
+
+  OPTION_EXPANSION_HEAVY_RAIN => [
+    'name' => totranslate('Heavy Rain expansion'),
+    'values' => [
+      OPTION_EXPANSION_DISABLED => [
+        'name' => clienttranslate('Disabled'),
+      ],
+      OPTION_EXPANSION_ENABLED => [
+        'name' => clienttranslate('Enabled'),
+        'tmdisplay' => clienttranslate('((Tunnel Vision))'),
+        'nobeginner' => true,
+        'alpha' => true,
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME],
+      ],
+    ],
+  ],
+
   OPTION_TB_MODE => [
     'name' => totranslate('Turn-based mode'),
     'default' => OPTION_TB_STANDARD,
@@ -74,34 +119,6 @@ $game_options = [
         'name' => clienttranslate('Championship'),
         'tmdisplay' => clienttranslate('[Championship]'),
         'nobeginner' => true,
-      ],
-    ],
-  ],
-
-  OPTION_EXPANSION => [
-    'name' => totranslate('Expansion'),
-    'level' => "major",
-    'values' => [
-      OPTION_EXPANSION_DISABLED => [
-        'name' => clienttranslate('Base game only'),
-      ],
-      OPTION_EXPANSION_HEAVY_RAIN => [
-        'name' => clienttranslate('Heavy Rain'),
-        'tmdisplay' => clienttranslate('((Heavy Rain))'),
-        'nobeginner' => true,
-      ],
-      OPTION_EXPANSION_TUNNEL_VISION => [
-        'name' => clienttranslate('Tunnel Vision'),
-        'tmdisplay' => clienttranslate('((Tunnel Vision))'),
-        'nobeginner' => true,
-        'alpha' => true,
-      ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroptionisnot',
-        'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_FIRST_GAME],
       ],
     ],
   ],
@@ -283,10 +300,26 @@ $game_options = [
         'name' => clienttranslate('France'),
         'tmdisplay' => clienttranslate('[France]'),
       ],
+      OPTION_CIRCUIT_MEXICO => [
+        'name' => clienttranslate('Mexico (Heavy Rain)'),
+        'tmdisplay' => clienttranslate('[Mexico]'),
+      ],
+      OPTION_CIRCUIT_JAPAN => [
+        'name' => clienttranslate('Japan (Heavy Rain)'),
+        'tmdisplay' => clienttranslate('[Japan]'),
+      ],
+      OPTION_CIRCUIT_NEDERLAND => [
+        'name' => clienttranslate('Nederland (Tunnel Vision)'),
+        'tmdisplay' => clienttranslate('[Nederland]'),
+      ],
+      OPTION_CIRCUIT_ESPANA => [
+        'name' => clienttranslate('España (Tunnel Vision)'),
+        'tmdisplay' => clienttranslate('[España]'),
+      ],
       OPTION_CIRCUIT_RANDOM => [
         'name' => clienttranslate('Random'),
         'tmdisplay' => clienttranslate('[Random circuit]'),
-        'description' => clienttranslate('Random circuit among USA, Italia, Great Britain and France'),
+        'description' => clienttranslate('Random circuit among available ones'),
       ],
       //   OPTION_CIRCUIT_CUSTOM => [
       //     'name' => ('Custom'),
@@ -299,103 +332,6 @@ $game_options = [
         'type' => 'otheroptionisnot',
         'id' => OPTION_SETUP,
         'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_CHAMPIONSHIP],
-      ],
-      [
-        'type' => 'otheroption',
-        'id' => OPTION_EXPANSION,
-        'value' => OPTION_EXPANSION_DISABLED,
-      ],
-    ],
-  ],
-  OPTION_CIRCUIT_EXP_HV => [
-    'name' => totranslate('Circuit'),
-    'values' => [
-      OPTION_CIRCUIT_USA => [
-        'name' => clienttranslate('USA'),
-        'tmdisplay' => clienttranslate('[USA]'),
-      ],
-      OPTION_CIRCUIT_ITALIA => [
-        'name' => clienttranslate('Italia'),
-        'tmdisplay' => clienttranslate('[Italia]'),
-      ],
-      OPTION_CIRCUIT_GB => [
-        'name' => clienttranslate('Great Britain'),
-        'tmdisplay' => clienttranslate('[GB]'),
-      ],
-      OPTION_CIRCUIT_FRANCE => [
-        'name' => clienttranslate('France'),
-        'tmdisplay' => clienttranslate('[France]'),
-      ],
-      OPTION_CIRCUIT_MEXICO => [
-        'name' => clienttranslate('Mexico'),
-        'tmdisplay' => clienttranslate('[Mexico]'),
-      ],
-      OPTION_CIRCUIT_JAPAN => [
-        'name' => clienttranslate('Japan'),
-        'tmdisplay' => clienttranslate('[Japan]'),
-      ],
-      OPTION_CIRCUIT_RANDOM => [
-        'name' => clienttranslate('Random'),
-        'tmdisplay' => clienttranslate('[Random circuit]'),
-        'description' => clienttranslate('Random circuit among USA, Italia, Great Britain, France, Mexico and Japan'),
-      ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroptionisnot',
-        'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_CHAMPIONSHIP],
-      ],
-      [
-        'type' => 'otheroption',
-        'id' => OPTION_EXPANSION,
-        'value' => OPTION_EXPANSION_HEAVY_RAIN,
-      ],
-    ],
-  ],
-  OPTION_CIRCUIT_EXP_TV => [
-    'name' => totranslate('Circuit'),
-    'values' => [
-      OPTION_CIRCUIT_USA => [
-        'name' => clienttranslate('USA'),
-        'tmdisplay' => clienttranslate('[USA]'),
-      ],
-      OPTION_CIRCUIT_ITALIA => [
-        'name' => clienttranslate('Italia'),
-        'tmdisplay' => clienttranslate('[Italia]'),
-      ],
-      OPTION_CIRCUIT_GB => [
-        'name' => clienttranslate('Great Britain'),
-        'tmdisplay' => clienttranslate('[GB]'),
-      ],
-      OPTION_CIRCUIT_FRANCE => [
-        'name' => clienttranslate('France'),
-        'tmdisplay' => clienttranslate('[France]'),
-      ],
-      OPTION_CIRCUIT_NEDERLAND => [
-        'name' => clienttranslate('Nederland'),
-        'tmdisplay' => clienttranslate('[Nederland]'),
-      ],
-      OPTION_CIRCUIT_ESPANA => [
-        'name' => clienttranslate('España'),
-        'tmdisplay' => clienttranslate('[España]'),
-      ],
-      OPTION_CIRCUIT_RANDOM => [
-        'name' => clienttranslate('Random'),
-        'tmdisplay' => clienttranslate('[Random circuit]'),
-        'description' => clienttranslate('Random circuit among USA, Italia, Great Britain, France, Nederland and España'),
-      ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroptionisnot',
-        'id' => OPTION_SETUP,
-        'value' => [OPTION_SETUP_FIRST_GAME, OPTION_SETUP_CHAMPIONSHIP],
-      ],
-      [
-        'type' => 'otheroption',
-        'id' => OPTION_EXPANSION,
-        'value' => OPTION_EXPANSION_TUNNEL_VISION,
       ],
     ],
   ],
@@ -524,94 +460,18 @@ $game_options = [
         'name' => clienttranslate('Season 1963 (4 races)'),
         'tmdisplay' => clienttranslate('[1963]'),
       ],
-      OPTION_CHAMPIONSHIP_RANDOM => [
-        'name' => clienttranslate('Random championship'),
-        'tmdisplay' => clienttranslate('[Random championship]'),
-        'description' => clienttranslate('Play the 4 circuits in a random order with random events'),
-      ],
-      // OPTION_CHAMPIONSHIP_CUSTOM => [
-      //   'name' => ('Custom championship'),
-      //   'tmdisplay' => ('[Custom championship]'),
-      // ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroption',
-        'id' => OPTION_SETUP,
-        'value' => OPTION_SETUP_CHAMPIONSHIP,
-      ],
-      [
-        'type' => 'otheroption',
-        'id' => OPTION_EXPANSION,
-        'value' => OPTION_EXPANSION_DISABLED,
-      ],
-    ],
-  ],
-  OPTION_CHAMPIONSHIP_EXP_HV => [
-    'name' => totranslate('Championship'),
-    'values' => [
-      OPTION_CHAMPIONSHIP_SEASON_61 => [
-        'name' => clienttranslate('Season 1961 (3 races)'),
-        'tmdisplay' => clienttranslate('[1961]'),
-      ],
-      OPTION_CHAMPIONSHIP_SEASON_62 => [
-        'name' => clienttranslate('Season 1962 (3 races)'),
-        'tmdisplay' => clienttranslate('[1962]'),
-      ],
-      OPTION_CHAMPIONSHIP_SEASON_63 => [
-        'name' => clienttranslate('Season 1963 (4 races)'),
-        'tmdisplay' => clienttranslate('[1963]'),
-      ],
       OPTION_CHAMPIONSHIP_SEASON_64 => [
-        'name' => clienttranslate('Season 1964 (4 races)'),
+        'name' => clienttranslate('Season 1964 (4 races) (Heavy Rain)'),
         'tmdisplay' => clienttranslate('[1964]'),
       ],
-      OPTION_CHAMPIONSHIP_RANDOM => [
-        'name' => clienttranslate('Random championship'),
-        'tmdisplay' => clienttranslate('[Random championship]'),
-        'description' => clienttranslate('Play the 4 circuits in a random order with random events'),
-      ],
-      // OPTION_CHAMPIONSHIP_CUSTOM => [
-      //   'name' => ('Custom championship'),
-      //   'tmdisplay' => ('[Custom championship]'),
-      // ],
-    ],
-    'displaycondition' => [
-      [
-        'type' => 'otheroption',
-        'id' => OPTION_SETUP,
-        'value' => OPTION_SETUP_CHAMPIONSHIP,
-      ],
-      [
-        'type' => 'otheroption',
-        'id' => OPTION_EXPANSION,
-        'value' => OPTION_EXPANSION_HEAVY_RAIN,
-      ],
-    ],
-  ],
-  OPTION_CHAMPIONSHIP_EXP_TV => [
-    'name' => totranslate('Championship'),
-    'values' => [
-      OPTION_CHAMPIONSHIP_SEASON_61 => [
-        'name' => clienttranslate('Season 1961 (3 races)'),
-        'tmdisplay' => clienttranslate('[1961]'),
-      ],
-      OPTION_CHAMPIONSHIP_SEASON_62 => [
-        'name' => clienttranslate('Season 1962 (3 races)'),
-        'tmdisplay' => clienttranslate('[1962]'),
-      ],
-      OPTION_CHAMPIONSHIP_SEASON_63 => [
-        'name' => clienttranslate('Season 1963 (4 races)'),
-        'tmdisplay' => clienttranslate('[1963]'),
-      ],
       OPTION_CHAMPIONSHIP_SEASON_65 => [
-        'name' => clienttranslate('Season 1965 (4 races)'),
+        'name' => clienttranslate('Season 1965 (4 races) (Tunnel Vision)'),
         'tmdisplay' => clienttranslate('[1965]'),
       ],
       OPTION_CHAMPIONSHIP_RANDOM => [
         'name' => clienttranslate('Random championship'),
         'tmdisplay' => clienttranslate('[Random championship]'),
-        'description' => clienttranslate('Play the 4 circuits in a random order with random events'),
+        'description' => clienttranslate('Play 4 circuits in a random order with random events'),
       ],
       // OPTION_CHAMPIONSHIP_CUSTOM => [
       //   'name' => ('Custom championship'),
@@ -623,11 +483,6 @@ $game_options = [
         'type' => 'otheroption',
         'id' => OPTION_SETUP,
         'value' => OPTION_SETUP_CHAMPIONSHIP,
-      ],
-      [
-        'type' => 'otheroption',
-        'id' => OPTION_EXPANSION,
-        'value' => OPTION_EXPANSION_TUNNEL_VISION,
       ],
     ],
   ],

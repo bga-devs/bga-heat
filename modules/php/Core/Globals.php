@@ -266,15 +266,19 @@ class Globals extends \HEAT\Helpers\DB_Manager
     self::setNbrLaps($options[\HEAT\OPTION_NBR_LAPS] ?? 0);
     self::setGarageModuleMode($options[\HEAT\OPTION_GARAGE_CHOICE] ?? \HEAT\OPTION_GARAGE_RANDOM);
     self::setWeatherModule(($options[\HEAT\OPTION_WEATHER_MODULE] ?? \HEAT\OPTION_DISABLED) == \HEAT\OPTION_WEATHER_ENABLED);
-    self::setHeavyRain(($options[\HEAT\OPTION_EXPANSION] ?? \HEAT\OPTION_EXPANSION_DISABLED) == \HEAT\OPTION_EXPANSION_HEAVY_RAIN);
-    self::setTunnelVision(($options[\HEAT\OPTION_EXPANSION] ?? \HEAT\OPTION_EXPANSION_DISABLED) == \HEAT\OPTION_EXPANSION_TUNNEL_VISION);
+    self::setHeavyRain(($options[\HEAT\OPTION_EXPANSION_HEAVY_RAIN] ?? \HEAT\OPTION_EXPANSION_DISABLED) == \HEAT\OPTION_EXPANSION_ENABLED);
+    self::setTunnelVision(($options[\HEAT\OPTION_EXPANSION_TUNNEL_VISION] ?? \HEAT\OPTION_EXPANSION_DISABLED) == \HEAT\OPTION_EXPANSION_ENABLED);
     self::setDeferredRounds(($options[\HEAT\OPTION_TB_MODE] ?? \HEAT\OPTION_TB_STANDARD) == \HEAT\OPTION_TB_ENHANCED);
 
     self::setChampionship($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP);
     if (self::isChampionship()) {
-      $championship = $options[\HEAT\OPTION_CHAMPIONSHIP] ?? $options[\HEAT\OPTION_CHAMPIONSHIP_EXP_HV] ?? $options[\HEAT\OPTION_CHAMPIONSHIP_EXP_TV];
+      $championship = $options[\HEAT\OPTION_CHAMPIONSHIP];
       // Pre set seasons
       if (!in_array($championship, [\HEAT\OPTION_CHAMPIONSHIP_CUSTOM, \HEAT\OPTION_CHAMPIONSHIP_RANDOM])) {
+        // Fallback for incompatible gameoptions
+        if ($championship == \HEAT\OPTION_CHAMPIONSHIP_SEASON_64) Globals::setHeavyRain(true);
+        if ($championship == \HEAT\OPTION_CHAMPIONSHIP_SEASON_65) Globals::setTunnelVision(true);
+
         $datas = CHAMPIONSHIP_SEASONS[$championship];
         $datas['index'] = 0;
         foreach ($datas['circuits'] as &$race) {
@@ -303,6 +307,11 @@ class Globals extends \HEAT\Helpers\DB_Manager
     }
     // Single circuit
     else {
+      $opt = $options[\HEAT\OPTION_CIRCUIT];
+      // Fallback for incompatible gameoptions
+      if (in_array($opt, [\HEAT\OPTION_CIRCUIT_JAPAN, \HEAT\OPTION_CIRCUIT_MEXICO])) Globals::setHeavyRain(true);
+      if (in_array($opt, [\HEAT\OPTION_CIRCUIT_NEDERLAND, \HEAT\OPTION_CIRCUIT_ESPANA])) Globals::setTunnelVision(true);
+
       $circuits = self::getPossibleCircuits();
       shuffle($circuits);
 
@@ -319,7 +328,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
         \HEAT\OPTION_CIRCUIT_RANDOM => $circuits[0],
         \HEAT\OPTION_CIRCUIT_CUSTOM => 'custom',
       ];
-      $circuit = $map[$options[\HEAT\OPTION_CIRCUIT] ?? $options[\HEAT\OPTION_CIRCUIT_EXP_HV]] ?? $options[\HEAT\OPTION_CIRCUIT_EXP_TV];
+      $circuit = $map[$opt];
       self::setCircuit($circuit);
       if ($circuit != 'custom') {
         self::loadCircuitDatas();
