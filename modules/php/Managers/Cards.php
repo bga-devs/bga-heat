@@ -11,6 +11,9 @@ use HEAT\Helpers\UserException;
 use HEAT\Helpers\Collection;
 use HEAT\Managers\Constructors;
 
+const HV = 1;
+const TV = 2;
+
 /* Class to manage all the cards for Heat */
 
 class Cards extends \HEAT\Helpers\Pieces
@@ -90,8 +93,21 @@ class Cards extends \HEAT\Helpers\Pieces
   /* Creation of the cards */
   public static function setupNewGame($options)
   {
-    $cards = [];
+    ////////////////////////////
+    $cardsData = self::getDatas();
+    function isSupported($cardId, $cardsData)
+    {
+      $card = $cardsData[$cardId] ?? null;
+      if (is_null($card)) return false;
 
+      if ($card['set'] == 0) return true;
+      if ($card['set'] == HV) return Globals::isHeavyRain();
+      if ($card['set'] == TV) return Globals::isTunnelVision();
+      return false;
+    }
+    ////////////////////////////
+
+    $cards = [];
     foreach (Constructors::getAll() as $cId => $constructor) {
       if ($constructor->isAI()) {
         continue;
@@ -117,8 +133,9 @@ class Cards extends \HEAT\Helpers\Pieces
       $withAdvanced = in_array($garage, [\HEAT\OPTION_GARAGE_ADVANCED, \HEAT\OPTION_GARAGE_MIXED]);
       $withBasic = in_array($garage, [\HEAT\OPTION_GARAGE_BASIC, \HEAT\OPTION_GARAGE_MIXED]);
 
-      $max = Globals::isHeavyRain() ? 54 : 48;
-      for ($i = 1; $i <= $max; $i++) {
+      for ($i = 1; $i < 80; $i++) {
+        if (!isSupported($i, $cardsData)) continue;
+
         $advanced = $i >= 18;
         if ((!$advanced && $withBasic) || ($advanced && $withAdvanced)) {
           $cards[] = ['type' => $i, 'nbr' => 2, 'location' => 'upgrades'];
@@ -128,8 +145,10 @@ class Cards extends \HEAT\Helpers\Pieces
 
     // Create deck of sponsors
     if (Globals::isChampionship()) {
-      $max = Globals::isHeavyRain() ? 85 : 84;
-      for ($i = 80; $i <= $max; $i++) {
+      $max = 100;
+      for ($i = 80; $i < $max; $i++) {
+        if (!isSupported($i, $cardsData)) continue;
+
         $cards[] = ['type' => $i, 'nbr' => 7, 'location' => 'sponsors'];
       }
     }
@@ -293,12 +312,13 @@ class Cards extends \HEAT\Helpers\Pieces
   ////////////////////////////////
   public static function getDatas()
   {
-    $f = function ($type, $speed, $symbols = [], $text = '') {
+    $f = function ($type, $speed, $symbols = [], $text = '', $set = 0) {
       return [
         'effect' => $type,
         'speed' => $speed,
         'symbols' => $symbols,
         'text' => $text,
+        'set' => $set,
       ];
     };
 
@@ -385,12 +405,19 @@ class Cards extends \HEAT\Helpers\Pieces
       48 => $f(HEAT, 0),
 
       // Heavy Rain expansion
-      49 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, SALVAGE => 4, ADJUST => -1], clienttranslate('Air intake')),
-      50 => $f(ADVANCED_UPGRADE, 0, [SUPER_COOL => 1, SLIPSTREAM => 1, REDUCE => 1], clienttranslate('Air intake')),
-      51 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, COOLDOWN => 1, SCRAP => 1], clienttranslate('Air intake')),
-      52 => $f(ADVANCED_UPGRADE, 3, [SUPER_COOL => 1, SCRAP => 3], clienttranslate('Air intake')),
-      53 => $f(ADVANCED_UPGRADE, 4, [SUPER_COOL => 1, SCRAP => 4], clienttranslate('Air intake')),
-      54 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, SUPER_COOL => 1, REFRESH => 1, ADJUST => -1], clienttranslate('Air intake')),
+      49 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, SALVAGE => 4, ADJUST => -1], clienttranslate('Air intake'), HV),
+      50 => $f(ADVANCED_UPGRADE, 0, [SUPER_COOL => 1, SLIPSTREAM => 1, REDUCE => 1], clienttranslate('Air intake'), HV),
+      51 => $f(ADVANCED_UPGRADE, 1, [SUPER_COOL => 1, COOLDOWN => 1, SCRAP => 1], clienttranslate('Air intake'), HV),
+      52 => $f(ADVANCED_UPGRADE, 3, [SUPER_COOL => 1, SCRAP => 3], clienttranslate('Air intake'), HV),
+      53 => $f(ADVANCED_UPGRADE, 4, [SUPER_COOL => 1, SCRAP => 4], clienttranslate('Air intake'), HV),
+      54 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, SUPER_COOL => 1, REFRESH => 1, ADJUST => -1], clienttranslate('Air intake'), HV),
+      // Tunnel Vision expansion
+      55 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, DRAFT => 3], clienttranslate('Front Wing'), TV),
+      56 => $f(ADVANCED_UPGRADE, 0, [DRAFT => 1, DIRECT => 1, REFRESH => 1], clienttranslate('Front Wing'), TV),
+      57 => $f(ADVANCED_UPGRADE, 2, [DRAFT => 2, SALVAGE => 2, SCRAP => 5], clienttranslate('Front Wing'), TV),
+      58 => $f(ADVANCED_UPGRADE, 3, [DRAFT => 1, ADJUST => 1, SCRAP => 3], clienttranslate('Front Wing'), TV),
+      59 => $f(ADVANCED_UPGRADE, 4, [DRAFT => 1, REFRESH => 1, SCRAP => 4], clienttranslate('Front Wing'), TV),
+      60 => $f(ADVANCED_UPGRADE, 6, [DRAFT => 2, HEAT => 1], clienttranslate('Front Wing'), TV),
 
       // SPONSORS
       80 => $f(SPONSOR, [1, 2, 3, 4], [], clienttranslate('Dramdo Brakes')),
@@ -399,7 +426,9 @@ class Cards extends \HEAT\Helpers\Pieces
       83 => $f(SPONSOR, 6, [], clienttranslate('Lord&Co. T.B.')),
       84 => $f(SPONSOR, 3, [ADJUST => 1], clienttranslate('De Angeli Wings Inc.')),
       // Heavy Rain expansion
-      85 => $f(SPONSOR, 0, [SUPER_COOL => 2], clienttranslate('E.Mercury air system')),
+      85 => $f(SPONSOR, 0, [SUPER_COOL => 2], clienttranslate('E.Mercury air system'), HV),
+      // Tunnel Vision expansion
+      86 => $f(SPONSOR, 5, [DRAFT => 2], clienttranslate('Eole Wings Industries'), TV),
     ];
   }
 }
