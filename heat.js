@@ -3938,7 +3938,7 @@ var Heat = /** @class */ (function () {
             : 0;
         if (mayCrossCorner || reactArgs.currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
             var newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
-            var newHeatCostMax = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 4 : paid ? 1 : 0;
+            var newHeatCostMax = boostCostOnCurrentCorner + (paid ? 1 : 0);
             var newCornerCostMax = 0;
             if (mayCrossCorner) {
                 newCornerCostMax = Math.max(0, newSpeedMax - reactArgs.nextCornerSpeedLimit);
@@ -3946,9 +3946,6 @@ var Heat = /** @class */ (function () {
                     newCornerCostMax++;
                 }
                 newHeatCostMax += newCornerCostMax;
-            }
-            else if (boostCostOnCurrentCorner) {
-                newHeatCostMax = boostCostOnCurrentCorner + (paid ? 1 : 0);
             }
             if (newHeatCostMax > 0) {
                 if (mayCrossCorner) {

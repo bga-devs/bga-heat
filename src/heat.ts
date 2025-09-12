@@ -594,7 +594,7 @@ class Heat implements HeatGame {
     if (mayCrossCorner || reactArgs.currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
       const newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
 
-      let newHeatCostMax = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 4 : paid ? 1 : 0;
+      let newHeatCostMax = boostCostOnCurrentCorner + (paid ? 1 : 0);
       let newCornerCostMax = 0;
       if (mayCrossCorner) {
         newCornerCostMax = Math.max(0, newSpeedMax - reactArgs.nextCornerSpeedLimit);
@@ -602,8 +602,6 @@ class Heat implements HeatGame {
           newCornerCostMax++;
         }
         newHeatCostMax += newCornerCostMax;
-      } else if (boostCostOnCurrentCorner) {
-        newHeatCostMax = boostCostOnCurrentCorner + (paid ? 1 : 0);
       }
 
       if (newHeatCostMax > 0) {
