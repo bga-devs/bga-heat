@@ -161,7 +161,7 @@ class Circuit
     return $this->datas['floodedSpaces'] ?? [];
   }
 
-  public function getTunnelSpaces(): array
+  public function getTunnelsSpaces(): array
   {
     return $this->datas['tunnelSpaces'] ?? [];
   }

@@ -156,7 +156,7 @@ class Constructor extends \HEAT\Helpers\DB_Model
   public function isInTunnelSpace(): bool
   {
     return in_array($this->getCarCell(), Game::get()
-      ->getCircuit()->getTunnelSpaces());
+      ->getCircuit()->getTunnelsSpaces());
   }
 
   public function getDeck()

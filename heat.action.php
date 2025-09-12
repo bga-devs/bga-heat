@@ -100,6 +100,61 @@ class action_heat extends APP_GameAction
     self::ajaxResponse();
   }
 
+
+  ///////////////////////////////////
+  /// LEGACY
+  public function actOldPassReact()
+  {
+    self::setAjaxMode();
+    $this->game->actOldPassReact();
+    self::ajaxResponse();
+  }
+
+  public function actOldReact()
+  {
+    self::setAjaxMode();
+    $symbol = self::getArg('symbol', AT_alphanum_dash, true);
+    $arg = self::getArg('arg', AT_alphanum_dash, false, '');
+    $this->game->actOldReact($symbol, $arg);
+    self::ajaxResponse();
+  }
+
+  public function actOldCryCauseNotEnoughHeatToPay()
+  {
+    self::setAjaxMode();
+    $this->game->actOldCryCauseNotEnoughHeatToPay();
+    self::ajaxResponse();
+  }
+
+  public function actOldSalvage()
+  {
+    self::setAjaxMode();
+    $cardIds = self::getArg('cardIds', AT_json, true);
+    $this->validateJSonAlphaNum($cardIds, 'cardIds');
+    $this->game->actOldSalvage($cardIds);
+    self::ajaxResponse();
+  }
+
+  public function actOldSuperCool()
+  {
+    self::setAjaxMode();
+    $n = self::getArg('n', AT_posint, true);
+    $this->game->actOldSuperCool($n);
+    self::ajaxResponse();
+  }
+
+
+  public function actOldPayHeats()
+  {
+    self::setAjaxMode();
+    $cardIds = self::getArg('cardIds', AT_json, true);
+    $this->validateJSonAlphaNum($cardIds, 'cardIds');
+    $this->game->actOldPayHeats($cardIds);
+    self::ajaxResponse();
+  }
+  ///////////////////////////////////
+  ///////////////////////////////////
+
   public function actPassReact()
   {
     self::setAjaxMode();
@@ -148,6 +203,7 @@ class action_heat extends APP_GameAction
     $this->game->actSuperCool($n);
     self::ajaxResponse();
   }
+
 
   public function actRefresh()
   {
