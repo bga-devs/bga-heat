@@ -188,6 +188,9 @@ class Heat implements HeatGame {
       case 'react':
         this.onEnteringReact(args.args);
         break;
+      case 'oldReact':
+        this.onEnteringOldReact(args.args);
+        break;
       case 'gameEnd':
         document.getElementById('leave-text-action')?.remove();
         break;
@@ -322,7 +325,14 @@ class Heat implements HeatGame {
     }
   }
 
-  private onEnteringReact(args: EnteringReactArgs) {
+  private onEnteringReact(args: EnteringOldReactArgs) {
+    this.circuit.removeCornerHeatIndicators();
+    if (args.heatCosts) {
+      Object.entries(args.heatCosts).forEach(([cornerId, heat]) => this.circuit.addCornerHeatIndicator(Number(cornerId), heat));
+    }
+  }
+
+  private onEnteringOldReact(args: EnteringOldReactArgs) {
     this.circuit.removeCornerHeatIndicators();
     if (args.heatCosts) {
       Object.entries(args.heatCosts).forEach(([cornerId, heat]) => this.circuit.addCornerHeatIndicator(Number(cornerId), heat));
@@ -532,7 +542,7 @@ class Heat implements HeatGame {
     return !(this as any).prefs[201]?.value;
   }
 
-  private getAdrenalineConfirmation(reactArgs: EnteringReactArgs) {
+  private getAdrenalineConfirmation(reactArgs: EnteringOldReactArgs) {
     let confirmationMessage = null;
     const adrenalineWillCrossNextCorner =
       this.cornerCounters[this.getConstructorId()].getValue() == 0 && reactArgs.adrenalineWillCrossNextCorner;
@@ -584,7 +594,7 @@ class Heat implements HeatGame {
     return confirmationMessage;
   }
 
-  private getBoostConfirmation(reactArgs: EnteringReactArgs, paid: boolean) {
+  private getBoostConfirmation(reactArgs: EnteringOldReactArgs, paid: boolean) {
     const mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
 
     let confirmationMessage = null;
@@ -634,7 +644,7 @@ class Heat implements HeatGame {
     return confirmationMessage;
   }
 
-  private getDirectPlayConfirmation(reactArgs: EnteringReactArgs, card: Card) {
+  private getDirectPlayConfirmation(reactArgs: EnteringOldReactArgs, card: Card) {
     const willCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < card.speed;
     const newHeatCost = Object.values(reactArgs.directPlayCosts[card.id]).reduce((a, b) => a + b, 0);
 
@@ -957,6 +967,200 @@ class Heat implements HeatGame {
           }
           if ((reactArgs.symbols['heat'] as number) > 0 && !reactArgs.doable.includes('heat')) {
             const confirmationMessage = reactArgs.doable.includes('cooldown')
+              ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
+              : null;
+
+            const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
+            const callback = confirmationMessage
+              ? () => (this as any).confirmationDialog(confirmationMessage, finalAction)
+              : finalAction;
+
+            (this as any).addActionButton(`actCryCauseNotEnoughHeatToPay_button`, _("I can't pay Heat(s)"), callback);
+          }
+          break;
+        case 'oldReact':
+          const oldReactArgs = args as EnteringOldReactArgs;
+
+          Object.entries(oldReactArgs.symbols).forEach((entry, index) => {
+            const type = entry[0];
+            let numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
+
+            let max = null;
+            if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
+              max = entry[1] as number;
+              if (Object.keys(HAND_CARD_TYPE_FOR_EFFECT).includes(type)) {
+                const cardEffectType = HAND_CARD_TYPE_FOR_EFFECT[type];
+                max = Math.min(
+                  max,
+                  this.getCurrentPlayerTable()
+                    .hand.getCards()
+                    .filter((card) => card.effect == cardEffectType).length
+                );
+              }
+              numbers = [];
+              for (let i = max; i >= 1; i--) {
+                if (oldReactArgs.doable.includes(type) || i === max) {
+                  // only the max button if disabled
+                  numbers.push(i);
+                }
+              }
+            }
+            numbers.forEach((number) => {
+              let label = ``;
+              let tooltip = ``;
+              let confirmationMessage = null;
+              let enabled = oldReactArgs.doable.includes(type);
+              switch (type) {
+                case 'accelerate':
+                  const accelerateCard = this.getCurrentPlayerTable()
+                    .inplay.getCards()
+                    .find((card) => card.id == number);
+                  label = `+${oldReactArgs.flippedCards} [Speed]<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
+                  //label = `+${oldReactArgs.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
+                  tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', oldReactArgs.flippedCards);
+                  break;
+                case 'adjust':
+                  label = `<div class="icon adjust" style="color: #${number > 0 ? '438741' : 'a93423'};">${number > 0 ? `+${number}` : number}</div>`;
+                  tooltip = this.getGarageModuleIconTooltipWithIcon('adjust', number);
+                  break;
+                case 'adrenaline':
+                  label = `+${number} [Speed]`;
+                  tooltip = `
+                                    <strong>${_('Adrenaline')}</strong>
+                                    <br><br>
+                                    ${_('Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).')}
+                                    <br><br>
+                                    <i>${_('Note: Adrenaline cannot be saved for future rounds')}</i>`;
+
+                  confirmationMessage = oldReactArgs.crossedFinishLine ? null : this.getAdrenalineConfirmation(oldReactArgs);
+                  break;
+                case 'cooldown':
+                  label = `${number} [Cooldown]`;
+                  const heats = this.getCurrentPlayerTable()
+                    .hand.getCards()
+                    .filter((card) => card.effect == 'heat').length;
+                  if (heats < number) {
+                    label += `(- ${heats} [Heat])`;
+                  }
+                  tooltip =
+                    this.getGarageModuleIconTooltipWithIcon('cooldown', number) +
+                    _(
+                      'You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).'
+                    );
+                  break;
+                case 'direct':
+                  const directCard = this.getCurrentPlayerTable()
+                    .hand.getCards()
+                    .find((card) => card.id == number);
+                  label = `<div class="icon direct"></div>${_('Play from hand')}`;
+                  if (directCard) {
+                    label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+                  } else {
+                    console.warn('card not found in hand to display direct card', number, directCard);
+                  }
+                  //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
+                  tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
+
+                  confirmationMessage =
+                    oldReactArgs.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(oldReactArgs, directCard);
+                  break;
+                case 'heat':
+                  label = `<div class="icon forced-heat">${number}</div>`;
+                  tooltip = this.getGarageModuleIconTooltipWithIcon('heat', number);
+                  break;
+                case 'boost':
+                case 'heated-boost':
+                  const paid = type == 'heated-boost';
+                  label = `[Boost] > [Speed]`;
+                  if (paid) {
+                    label += ` (1[Heat])`;
+                  }
+                  tooltip = `
+                                    <strong>${_('Boost')}</strong>
+                                    <br><br>
+                                    ${paid ? _('Regardless of which gear you are in you may pay 1 Heat to boost once per turn.') : ''}
+                                    ${_('Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly.')}
+                                    <br><br>
+                                    <i>${_('Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.')}</i>`;
+
+                  confirmationMessage = oldReactArgs.crossedFinishLine ? null : this.getBoostConfirmation(oldReactArgs, paid);
+                  break;
+                case 'reduce':
+                  label = `<div class="icon reduce-stress">${number}</div>`;
+                  tooltip = this.getGarageModuleIconTooltipWithIcon('reduce', number);
+                  break;
+                case 'salvage':
+                  label = `<div class="icon salvage">${number}</div>`;
+                  tooltip = this.getGarageModuleIconTooltipWithIcon('salvage', number);
+
+                  enabled = enabled && this.getCurrentPlayerTable().discard.getCardNumber() > 0;
+                  break;
+                case 'scrap':
+                  label = `<div class="icon scrap">${number}</div>`;
+                  tooltip = this.getGarageModuleIconTooltipWithIcon('scrap', number);
+                  break;
+                case 'super-cool':
+                  label = `<div class="icon super-cool">${number}</div>`;
+                  tooltip = this.getGarageModuleIconTooltipWithIcon('super-cool', number);
+                  break;
+              }
+
+              const finalAction = () =>
+                this.actOldReact(
+                  type,
+                  Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined
+                );
+              const callback = confirmationMessage
+                ? () =>
+                    this.showHeatCostConfirmations()
+                      ? (this as any).confirmationDialog(confirmationMessage, finalAction)
+                      : finalAction()
+                : finalAction;
+              const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
+
+              (this as any).addActionButton(
+                `actOldReact${type}_${number}_button`,
+                formatTextIcons(label),
+                callback,
+                null,
+                null,
+                SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'gray' : undefined
+              );
+
+              if (mandatory) {
+                let mandatoryZone = document.getElementById('mandatory-buttons');
+                if (!mandatoryZone) {
+                  mandatoryZone = document.createElement('div');
+                  mandatoryZone.id = 'mandatory-buttons';
+                  mandatoryZone.innerHTML = `<div class="mandatory icon"></div>`;
+                  document.getElementById('generalactions').appendChild(mandatoryZone);
+                }
+                mandatoryZone.appendChild(document.getElementById(`actOldReact${type}_${number}_button`));
+              }
+
+              this.setTooltip(`actOldReact${type}_${number}_button`, formatTextIcons(tooltip));
+              if (!enabled) {
+                document.getElementById(`actOldReact${type}_${number}_button`).classList.add('disabled');
+                if (type === 'cooldown') {
+                  document.getElementById(`actOldReact${type}_${number}_button`).insertAdjacentHTML(
+                    'beforeend',
+                    `
+                                        <div class="no-cooldown-warning">
+                                            <div class="no-cooldown icon"></div>
+                                        </div>
+                                    `
+                  );
+                }
+              }
+            });
+          });
+
+          (this as any).addActionButton(`actPassOldReact_button`, _('Pass'), () => this.actPassOldReact());
+          if (!oldReactArgs.canPass) {
+            document.getElementById(`actPassReact_button`).classList.add('disabled');
+          }
+          if ((oldReactArgs.symbols['heat'] as number) > 0 && !oldReactArgs.doable.includes('heat')) {
+            const confirmationMessage = oldReactArgs.doable.includes('cooldown')
               ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
               : null;
 
@@ -1607,7 +1811,7 @@ class Heat implements HeatGame {
       const buttonDiscard = document.getElementById('actDiscard_button');
       const buttonNoDiscard = document.getElementById('actNoDiscard_button');
       buttonDiscard.innerHTML = label;
-      buttonDiscard.classList.toggle('disabled', !selection.length);
+      buttonDiscard.classList.toggle('disabled', !selection.length || selection.length > this.gamedatas.gamestate.args._private.max);
       buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
     } else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
       this.checkSwapUpgradeSelectionState();
@@ -1703,12 +1907,23 @@ class Heat implements HeatGame {
     (this as any).bgaPerformAction('actPassReact');
   }
 
+  private actPassOldReact() {
+    (this as any).bgaPerformAction('actPassOldReact');
+  }
+
   private actCryCauseNotEnoughHeatToPay() {
     (this as any).bgaPerformAction('actCryCauseNotEnoughHeatToPay');
   }
 
   public actReact(symbol: string, arg?: number) {
     (this as any).bgaPerformAction('actReact', {
+      symbol,
+      arg,
+    });
+  }
+
+  public actOldReact(symbol: string, arg?: number) {
+    (this as any).bgaPerformAction('actOldReact', {
       symbol,
       arg,
     });

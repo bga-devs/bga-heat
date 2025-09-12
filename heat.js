@@ -203,8 +203,8 @@ var ZoomManager = /** @class */ (function () {
      */
     ZoomManager.prototype.zoomOrDimensionChanged = function () {
         var _a, _b;
-        this.settings.element.style.width = "".concat(this.wrapper.getBoundingClientRect().width / this._zoom, "px");
-        this.wrapper.style.height = "".concat(this.settings.element.getBoundingClientRect().height, "px");
+        this.settings.element.style.width = "".concat(this.wrapper.offsetWidth / this._zoom, "px");
+        this.wrapper.style.height = "".concat(this.settings.element.offsetHeight * this._zoom, "px");
         (_b = (_a = this.settings).onDimensionsChange) === null || _b === void 0 ? void 0 : _b.call(_a, this._zoom);
     };
     /**
@@ -751,8 +751,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -819,24 +819,24 @@ var AnimationManager = /** @class */ (function () {
      * @returns the animation promise.
      */
     AnimationManager.prototype.play = function (animation) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
         return __awaiter(this, void 0, void 0, function () {
-            var settings, _m;
+            var settings, _a;
+            var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
             return __generator(this, function (_o) {
                 switch (_o.label) {
                     case 0:
                         animation.played = animation.playWhenNoAnimation || this.animationsActive();
                         if (!animation.played) return [3 /*break*/, 2];
                         settings = animation.settings;
-                        (_a = settings.animationStart) === null || _a === void 0 ? void 0 : _a.call(settings, animation);
-                        (_b = settings.element) === null || _b === void 0 ? void 0 : _b.classList.add((_c = settings.animationClass) !== null && _c !== void 0 ? _c : 'bga-animations_animated');
-                        animation.settings = __assign(__assign({}, animation.settings), { duration: (_e = (_d = this.settings) === null || _d === void 0 ? void 0 : _d.duration) !== null && _e !== void 0 ? _e : 500, scale: (_g = (_f = this.zoomManager) === null || _f === void 0 ? void 0 : _f.zoom) !== null && _g !== void 0 ? _g : undefined });
-                        _m = animation;
+                        (_b = settings.animationStart) === null || _b === void 0 ? void 0 : _b.call(settings, animation);
+                        (_c = settings.element) === null || _c === void 0 ? void 0 : _c.classList.add((_d = settings.animationClass) !== null && _d !== void 0 ? _d : 'bga-animations_animated');
+                        animation.settings = __assign(__assign({}, animation.settings), { duration: (_f = (_e = this.settings) === null || _e === void 0 ? void 0 : _e.duration) !== null && _f !== void 0 ? _f : 500, scale: (_h = (_g = this.zoomManager) === null || _g === void 0 ? void 0 : _g.zoom) !== null && _h !== void 0 ? _h : undefined });
+                        _a = animation;
                         return [4 /*yield*/, animation.animationFunction(this, animation)];
                     case 1:
-                        _m.result = _o.sent();
-                        (_j = (_h = animation.settings).animationEnd) === null || _j === void 0 ? void 0 : _j.call(_h, animation);
-                        (_k = settings.element) === null || _k === void 0 ? void 0 : _k.classList.remove((_l = settings.animationClass) !== null && _l !== void 0 ? _l : 'bga-animations_animated');
+                        _a.result = _o.sent();
+                        (_k = (_j = animation.settings).animationEnd) === null || _k === void 0 ? void 0 : _k.call(_j, animation);
+                        (_l = settings.element) === null || _l === void 0 ? void 0 : _l.classList.remove((_m = settings.animationClass) !== null && _m !== void 0 ? _m : 'bga-animations_animated');
                         return [3 /*break*/, 3];
                     case 2: return [2 /*return*/, Promise.resolve(animation)];
                     case 3: return [2 /*return*/];
@@ -1021,7 +1021,7 @@ var CardStock = /** @class */ (function () {
      */
     CardStock.prototype.addCard = function (card, animation, settings) {
         var _this = this;
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         if (!this.canAddCard(card, settings)) {
             return Promise.resolve(false);
         }
@@ -1050,8 +1050,15 @@ var CardStock = /** @class */ (function () {
             }
         }
         if (needsCreation) {
-            var element = this.manager.createCardElement(card, ((_d = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _d !== void 0 ? _d : this.manager.isCardVisible(card)));
-            promise = this.moveFromElement(card, element, animation, settingsWithIndex);
+            var element = this.getCardElement(card);
+            if (needsCreation && element) {
+                console.warn("Card ".concat(this.manager.getId(card), " already exists, not re-created."));
+            }
+            // if the card comes from a stock but is not found in this stock, the card is probably hudden (deck with a fake top card)
+            var fromBackSide = !(settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) && !(animation === null || animation === void 0 ? void 0 : animation.originalSide) && (animation === null || animation === void 0 ? void 0 : animation.fromStock) && !((_d = animation === null || animation === void 0 ? void 0 : animation.fromStock) === null || _d === void 0 ? void 0 : _d.contains(card));
+            var createdVisible = fromBackSide ? false : (_e = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _e !== void 0 ? _e : this.manager.isCardVisible(card);
+            var newElement = element !== null && element !== void 0 ? element : this.manager.createCardElement(card, createdVisible);
+            promise = this.moveFromElement(card, newElement, animation, settingsWithIndex);
         }
         if (settingsWithIndex.index !== null && settingsWithIndex.index !== undefined) {
             this.cards.splice(index, 0, card);
@@ -1155,11 +1162,11 @@ var CardStock = /** @class */ (function () {
      * @param settings a `AddCardSettings` object
      * @param shift if number, the number of milliseconds between each card. if true, chain animations
      */
-    CardStock.prototype.addCards = function (cards, animation, settings, shift) {
-        if (shift === void 0) { shift = false; }
-        return __awaiter(this, void 0, void 0, function () {
+    CardStock.prototype.addCards = function (cards_1, animation_1, settings_1) {
+        return __awaiter(this, arguments, void 0, function (cards, animation, settings, shift) {
             var promises, result, others, _loop_2, i, results;
             var _this = this;
+            if (shift === void 0) { shift = false; }
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1180,7 +1187,9 @@ var CardStock = /** @class */ (function () {
                     case 4:
                         if (typeof shift === 'number') {
                             _loop_2 = function (i) {
-                                setTimeout(function () { return promises.push(_this.addCard(cards[i], animation, settings)); }, i * shift);
+                                promises.push(new Promise(function (resolve) {
+                                    setTimeout(function () { return _this.addCard(cards[i], animation, settings).then(function (result) { return resolve(result); }); }, i * shift);
+                                }));
                             };
                             for (i = 0; i < cards.length; i++) {
                                 _loop_2(i);
@@ -1258,9 +1267,13 @@ var CardStock = /** @class */ (function () {
      * @param settings a `RemoveCardSettings` object
      */
     CardStock.prototype.removeAll = function (settings) {
-        var _this = this;
-        var cards = this.getCards(); // use a copy of the array as we iterate and modify it at the same time
-        cards.forEach(function (card) { return _this.removeCard(card, settings); });
+        return __awaiter(this, void 0, void 0, function () {
+            var cards;
+            return __generator(this, function (_a) {
+                cards = this.getCards();
+                return [2 /*return*/, this.removeCards(cards, settings)];
+            });
+        });
     };
     /**
      * Set if the stock is selectable, and if yes if it can be multiple.
@@ -1379,7 +1392,7 @@ var CardStock = /** @class */ (function () {
         }
     };
     /**
-     * Unelect all cards
+     * Unselect all cards
      */
     CardStock.prototype.unselectAll = function (silent) {
         var _this = this;
@@ -1425,9 +1438,9 @@ var CardStock = /** @class */ (function () {
      * @param fromElement The HTMLElement to animate from.
      */
     CardStock.prototype.animationFromElement = function (element, fromRect, settings) {
-        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var side, cardSides_1, animation, result;
+            var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -1502,6 +1515,24 @@ var CardStock = /** @class */ (function () {
         var unselectableCardsClass = this.getUnselectableCardClass();
         var selectedCardsClass = this.getSelectedCardClass();
         cardElement === null || cardElement === void 0 ? void 0 : cardElement.classList.remove(selectableCardsClass, unselectableCardsClass, selectedCardsClass);
+    };
+    /**
+     * Changes the sort function of the stock.
+     *
+     * @param sort the new sort function. If defined, the stock will be sorted with this new function.
+     */
+    CardStock.prototype.setSort = function (sort) {
+        this.sort = sort;
+        if (this.sort && this.cards.length) {
+            this.cards.sort(this.sort);
+            var previouslyMovedCardDiv = this.getCardElement(this.cards[this.cards.length - 1]);
+            this.element.appendChild(previouslyMovedCardDiv);
+            for (var i = this.cards.length - 2; i >= 0; i--) {
+                var movedCardDiv = this.getCardElement(this.cards[i]);
+                this.element.insertBefore(movedCardDiv, previouslyMovedCardDiv);
+                previouslyMovedCardDiv = movedCardDiv;
+            }
+        }
     };
     return CardStock;
 }());
@@ -1597,9 +1628,17 @@ var Deck = /** @class */ (function (_super) {
     Deck.prototype.setCardNumber = function (cardNumber, topCard) {
         var _this = this;
         if (topCard === void 0) { topCard = undefined; }
-        var promise = topCard === null || cardNumber == 0 ?
-            Promise.resolve(false) :
-            _super.prototype.addCard.call(this, topCard || this.getFakeCard(), undefined, { autoUpdateCardNumber: false });
+        var promise = Promise.resolve(false);
+        var oldTopCard = this.getTopCard();
+        if (topCard !== null && cardNumber > 0) {
+            var newTopCard = topCard || this.getFakeCard();
+            if (!oldTopCard || this.manager.getId(newTopCard) != this.manager.getId(oldTopCard)) {
+                promise = this.addCard(newTopCard, undefined, { autoUpdateCardNumber: false });
+            }
+        }
+        else if (cardNumber == 0 && oldTopCard) {
+            promise = this.removeCard(oldTopCard, { autoUpdateCardNumber: false });
+        }
         this.cardNumber = cardNumber;
         this.element.dataset.empty = (this.cardNumber == 0).toString();
         var thickness = 0;
@@ -1637,6 +1676,19 @@ var Deck = /** @class */ (function (_super) {
         }
         _super.prototype.cardRemoved.call(this, card, settings);
     };
+    Deck.prototype.removeAll = function (settings) {
+        return __awaiter(this, void 0, void 0, function () {
+            var promise;
+            var _a, _b;
+            return __generator(this, function (_c) {
+                promise = _super.prototype.removeAll.call(this, __assign(__assign({}, settings), { autoUpdateCardNumber: (_a = settings === null || settings === void 0 ? void 0 : settings.autoUpdateCardNumber) !== null && _a !== void 0 ? _a : false }));
+                if ((_b = settings === null || settings === void 0 ? void 0 : settings.autoUpdateCardNumber) !== null && _b !== void 0 ? _b : true) {
+                    this.setCardNumber(0, null);
+                }
+                return [2 /*return*/, promise];
+            });
+        });
+    };
     Deck.prototype.getTopCard = function () {
         var cards = this.getCards();
         return cards.length ? cards[cards.length - 1] : null;
@@ -1649,10 +1701,10 @@ var Deck = /** @class */ (function (_super) {
      * @returns promise when animation ends
      */
     Deck.prototype.shuffle = function (settings) {
-        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function () {
             var animatedCardsMax, animatedCards, elements, getFakeCard, uid, i, newCard, newElement, pauseDelayAfterAnimation;
             var _this = this;
+            var _a, _b, _c;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
@@ -1786,11 +1838,11 @@ function sortFunction() {
             if (type === 'string') {
                 var compare = a[field].localeCompare(b[field]);
                 if (compare !== 0) {
-                    return compare;
+                    return compare * direction;
                 }
             }
             else if (type === 'number') {
-                var compare = (a[field] - b[field]) * direction;
+                var compare = (a[field] - b[field]);
                 if (compare !== 0) {
                     return compare * direction;
                 }
@@ -3020,7 +3072,7 @@ var PlayerTable = /** @class */ (function () {
         var engineCards = Object.values(constructor.engine);
         this.engine = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-engine")), {
             cardNumber: engineCards.length,
-            topCard: engineCards[0],
+            topCard: engineCards[0], // TODO check if ordered
             counter: {
                 extraClasses: 'round',
             },
@@ -3035,7 +3087,7 @@ var PlayerTable = /** @class */ (function () {
         var discardCards = Object.values(constructor.discard);
         this.discard = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-discard")), {
             cardNumber: discardCards.length,
-            topCard: discardCards[0],
+            topCard: discardCards[0], // TODO check if ordered
             counter: {
                 extraClasses: 'round',
             }
@@ -3608,6 +3660,9 @@ var Heat = /** @class */ (function () {
             case 'react':
                 this.onEnteringReact(args.args);
                 break;
+            case 'oldReact':
+                this.onEnteringOldReact(args.args);
+                break;
             case 'gameEnd':
                 (_e = document.getElementById('leave-text-action')) === null || _e === void 0 ? void 0 : _e.remove();
                 break;
@@ -3703,6 +3758,16 @@ var Heat = /** @class */ (function () {
         }
     };
     Heat.prototype.onEnteringReact = function (args) {
+        var _this = this;
+        this.circuit.removeCornerHeatIndicators();
+        if (args.heatCosts) {
+            Object.entries(args.heatCosts).forEach(function (_a) {
+                var cornerId = _a[0], heat = _a[1];
+                return _this.circuit.addCornerHeatIndicator(Number(cornerId), heat);
+            });
+        }
+    };
+    Heat.prototype.onEnteringOldReact = function (args) {
         var _this = this;
         this.circuit.removeCornerHeatIndicators();
         if (args.heatCosts) {
@@ -4226,6 +4291,157 @@ var Heat = /** @class */ (function () {
                         this.addActionButton("actCryCauseNotEnoughHeatToPay_button", _("I can't pay Heat(s)"), callback);
                     }
                     break;
+                case 'oldReact':
+                    var oldReactArgs_1 = args;
+                    Object.entries(oldReactArgs_1.symbols).forEach(function (entry, index) {
+                        var type = entry[0];
+                        var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
+                        var max = null;
+                        if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
+                            max = entry[1];
+                            if (Object.keys(HAND_CARD_TYPE_FOR_EFFECT).includes(type)) {
+                                var cardEffectType_2 = HAND_CARD_TYPE_FOR_EFFECT[type];
+                                max = Math.min(max, _this.getCurrentPlayerTable()
+                                    .hand.getCards()
+                                    .filter(function (card) { return card.effect == cardEffectType_2; }).length);
+                            }
+                            numbers = [];
+                            for (var i = max; i >= 1; i--) {
+                                if (oldReactArgs_1.doable.includes(type) || i === max) {
+                                    // only the max button if disabled
+                                    numbers.push(i);
+                                }
+                            }
+                        }
+                        numbers.forEach(function (number) {
+                            var label = "";
+                            var tooltip = "";
+                            var confirmationMessage = null;
+                            var enabled = oldReactArgs_1.doable.includes(type);
+                            switch (type) {
+                                case 'accelerate':
+                                    var accelerateCard = _this.getCurrentPlayerTable()
+                                        .inplay.getCards()
+                                        .find(function (card) { return card.id == number; });
+                                    label = "+".concat(oldReactArgs_1.flippedCards, " [Speed]<br>").concat(_this.cardImageHtml(accelerateCard, { constructor_id: _this.getConstructorId() }));
+                                    //label = `+${oldReactArgs.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('accelerate', oldReactArgs_1.flippedCards);
+                                    break;
+                                case 'adjust':
+                                    label = "<div class=\"icon adjust\" style=\"color: #".concat(number > 0 ? '438741' : 'a93423', ";\">").concat(number > 0 ? "+".concat(number) : number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('adjust', number);
+                                    break;
+                                case 'adrenaline':
+                                    label = "+".concat(number, " [Speed]");
+                                    tooltip = "\n                                    <strong>".concat(_('Adrenaline'), "</strong>\n                                    <br><br>\n                                    ").concat(_('Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).'), "\n                                    <br><br>\n                                    <i>").concat(_('Note: Adrenaline cannot be saved for future rounds'), "</i>");
+                                    confirmationMessage = oldReactArgs_1.crossedFinishLine ? null : _this.getAdrenalineConfirmation(oldReactArgs_1);
+                                    break;
+                                case 'cooldown':
+                                    label = "".concat(number, " [Cooldown]");
+                                    var heats = _this.getCurrentPlayerTable()
+                                        .hand.getCards()
+                                        .filter(function (card) { return card.effect == 'heat'; }).length;
+                                    if (heats < number) {
+                                        label += "(- ".concat(heats, " [Heat])");
+                                    }
+                                    tooltip =
+                                        _this.getGarageModuleIconTooltipWithIcon('cooldown', number) +
+                                            _('You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).');
+                                    break;
+                                case 'direct':
+                                    var directCard = _this.getCurrentPlayerTable()
+                                        .hand.getCards()
+                                        .find(function (card) { return card.id == number; });
+                                    label = "<div class=\"icon direct\"></div>".concat(_('Play from hand'));
+                                    if (directCard) {
+                                        label = "<br>".concat(_this.cardImageHtml(directCard, { constructor_id: _this.getConstructorId() }));
+                                    }
+                                    else {
+                                        console.warn('card not found in hand to display direct card', number, directCard);
+                                    }
+                                    //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
+                                    confirmationMessage =
+                                        oldReactArgs_1.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(oldReactArgs_1, directCard);
+                                    break;
+                                case 'heat':
+                                    label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('heat', number);
+                                    break;
+                                case 'boost':
+                                case 'heated-boost':
+                                    var paid = type == 'heated-boost';
+                                    label = "[Boost] > [Speed]";
+                                    if (paid) {
+                                        label += " (1[Heat])";
+                                    }
+                                    tooltip = "\n                                    <strong>".concat(_('Boost'), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _('Regardless of which gear you are in you may pay 1 Heat to boost once per turn.') : '', "\n                                    ").concat(_('Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly.'), "\n                                    <br><br>\n                                    <i>").concat(_('Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.'), "</i>");
+                                    confirmationMessage = oldReactArgs_1.crossedFinishLine ? null : _this.getBoostConfirmation(oldReactArgs_1, paid);
+                                    break;
+                                case 'reduce':
+                                    label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('reduce', number);
+                                    break;
+                                case 'salvage':
+                                    label = "<div class=\"icon salvage\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('salvage', number);
+                                    enabled = enabled && _this.getCurrentPlayerTable().discard.getCardNumber() > 0;
+                                    break;
+                                case 'scrap':
+                                    label = "<div class=\"icon scrap\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('scrap', number);
+                                    break;
+                                case 'super-cool':
+                                    label = "<div class=\"icon super-cool\">".concat(number, "</div>");
+                                    tooltip = _this.getGarageModuleIconTooltipWithIcon('super-cool', number);
+                                    break;
+                            }
+                            var finalAction = function () {
+                                return _this.actOldReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined);
+                            };
+                            var callback = confirmationMessage
+                                ? function () {
+                                    return _this.showHeatCostConfirmations()
+                                        ? _this.confirmationDialog(confirmationMessage, finalAction)
+                                        : finalAction();
+                                }
+                                : finalAction;
+                            var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
+                            _this.addActionButton("actOldReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback, null, null, SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'gray' : undefined);
+                            if (mandatory) {
+                                var mandatoryZone = document.getElementById('mandatory-buttons');
+                                if (!mandatoryZone) {
+                                    mandatoryZone = document.createElement('div');
+                                    mandatoryZone.id = 'mandatory-buttons';
+                                    mandatoryZone.innerHTML = "<div class=\"mandatory icon\"></div>";
+                                    document.getElementById('generalactions').appendChild(mandatoryZone);
+                                }
+                                mandatoryZone.appendChild(document.getElementById("actOldReact".concat(type, "_").concat(number, "_button")));
+                            }
+                            _this.setTooltip("actOldReact".concat(type, "_").concat(number, "_button"), formatTextIcons(tooltip));
+                            if (!enabled) {
+                                document.getElementById("actOldReact".concat(type, "_").concat(number, "_button")).classList.add('disabled');
+                                if (type === 'cooldown') {
+                                    document.getElementById("actOldReact".concat(type, "_").concat(number, "_button")).insertAdjacentHTML('beforeend', "\n                                        <div class=\"no-cooldown-warning\">\n                                            <div class=\"no-cooldown icon\"></div>\n                                        </div>\n                                    ");
+                                }
+                            }
+                        });
+                    });
+                    this.addActionButton("actPassOldReact_button", _('Pass'), function () { return _this.actPassOldReact(); });
+                    if (!oldReactArgs_1.canPass) {
+                        document.getElementById("actPassReact_button").classList.add('disabled');
+                    }
+                    if (oldReactArgs_1.symbols['heat'] > 0 && !oldReactArgs_1.doable.includes('heat')) {
+                        var confirmationMessage_2 = oldReactArgs_1.doable.includes('cooldown')
+                            ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
+                            : null;
+                        var finalAction_2 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
+                        var callback = confirmationMessage_2
+                            ? function () { return _this.confirmationDialog(confirmationMessage_2, finalAction_2); }
+                            : finalAction_2;
+                        this.addActionButton("actCryCauseNotEnoughHeatToPay_button", _("I can't pay Heat(s)"), callback);
+                    }
+                    break;
                 case 'payHeats':
                     this.onEnteringPayHeats(args);
                     this.addActionButton("actPayHeats_button", formatTextIcons(_('Keep selected cards (max: ${number} [Heat])').replace('${number}', args.heatInReserve)), function () { return _this.actPayHeats(_this.getCurrentPlayerTable().inplay.getSelection()); });
@@ -4593,7 +4809,7 @@ var Heat = /** @class */ (function () {
             var buttonDiscard = document.getElementById('actDiscard_button');
             var buttonNoDiscard = document.getElementById('actNoDiscard_button');
             buttonDiscard.innerHTML = label;
-            buttonDiscard.classList.toggle('disabled', !selection.length);
+            buttonDiscard.classList.toggle('disabled', !selection.length || selection.length > this.gamedatas.gamestate.args._private.max);
             buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
         }
         else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
@@ -4679,11 +4895,20 @@ var Heat = /** @class */ (function () {
     Heat.prototype.actPassReact = function () {
         this.bgaPerformAction('actPassReact');
     };
+    Heat.prototype.actPassOldReact = function () {
+        this.bgaPerformAction('actPassOldReact');
+    };
     Heat.prototype.actCryCauseNotEnoughHeatToPay = function () {
         this.bgaPerformAction('actCryCauseNotEnoughHeatToPay');
     };
     Heat.prototype.actReact = function (symbol, arg) {
         this.bgaPerformAction('actReact', {
+            symbol: symbol,
+            arg: arg,
+        });
+    };
+    Heat.prototype.actOldReact = function (symbol, arg) {
+        this.bgaPerformAction('actOldReact', {
             symbol: symbol,
             arg: arg,
         });
@@ -4943,9 +5168,9 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.notif_moveCar = function (args) {
-        var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
             var constructor_id, cell, path, totalSpeed, progress, distanceToCorner, isAi, orderCounter;
+            var _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -4978,9 +5203,9 @@ var Heat = /** @class */ (function () {
         });
     };
     Heat.prototype.payHeats = function (constructorId, cards) {
-        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var playerId, playerTable;
+            var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -5145,10 +5370,10 @@ var Heat = /** @class */ (function () {
             });
         });
     };
-    Heat.prototype.notif_finishRace = function (args, eliminated) {
-        if (eliminated === void 0) { eliminated = false; }
-        return __awaiter(this, void 0, void 0, function () {
+    Heat.prototype.notif_finishRace = function (args_2) {
+        return __awaiter(this, arguments, void 0, function (args, eliminated) {
             var constructor_id, pos, canLeave, carCell;
+            if (eliminated === void 0) { eliminated = false; }
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
