@@ -22,10 +22,16 @@ const ST_START_ROUND = 11;
 const ST_PLANIFICATION = 12;
 const ST_REVEAL = 13;
 const ST_CHOOSE_SPEED = 14;
-const ST_REACT = 15;
-const ST_SALVAGE = 18;
-const ST_PAY_HEATS = 19;
-const ST_SUPER_COOL = 21;
+// Kept for not breaking ongoing tables
+const ST_OLD_REACT = 15;
+const ST_OLD_SALVAGE = 18;
+const ST_OLD_PAY_HEATS = 19;
+const ST_OLD_SUPER_COOL = 21;
+// New code
+const ST_REACT = 22;
+const ST_SALVAGE = 23;
+const ST_PAY_HEATS = 24;
+const ST_SUPER_COOL = 25;
 
 const ST_SLIPSTREAM = 16;
 const ST_DISCARD = 17;

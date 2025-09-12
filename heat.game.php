@@ -49,6 +49,7 @@ class Heat extends Table
   use HEAT\States\SetupTrait;
   use HEAT\States\RaceTrait;
   use HEAT\States\RoundTrait;
+  use HEAT\States\OldReactTrait;
   use HEAT\States\ReactTrait;
   use HEAT\States\LegendTrait;
   use HEAT\States\DeferredRoundTrait;

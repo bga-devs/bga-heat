@@ -699,7 +699,7 @@ trait RoundTrait
 
     // Save all the symbols and proceed to React phase
     Globals::setSymbols($symbols);
-    $this->gamestate->jumpToState(ST_REACT);
+    $this->gamestate->jumpToState(ST_OLD_REACT);
   }
 
   ///////////////////////////////////////////
