@@ -645,6 +645,15 @@ class Notifications
           'You gain extra sponsor ${cards_images} (event\'s effect)'
         );
       }
+      // EVENT: SMILE AND WAVE
+      elseif ($reason == EVENT_SMILE_WAVE) {
+        $msg = clienttranslate(
+          '${constructor_name} gain 1 extra sponsor card for driving slower thant the speed limit on a press corner (event\'s effect)'
+        );
+        $pmsg = clienttranslate(
+          'You drove  slower thant the speed limit on a press corner and gain extra sponsor ${cards_images} (event\'s effect)'
+        );
+      }
 
 
       self::notifyAll('draw', $msg, ['constructor' => $constructor, 'n' => 1, 'areSponsors' => true]);

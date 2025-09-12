@@ -832,8 +832,11 @@ trait RoundTrait
 
   public function stCheckCorner()
   {
+    $event = Globals::getCurrentEvent();
+
     // Compute corners between the two positions
     $constructor = Constructors::getActive();
+    $speed = $constructor->getSpeed();
     $prevPosition = Globals::getPreviousPosition();
     $prevTurn = Globals::getPreviousTurn();
     $position = $constructor->getPosition();
@@ -854,6 +857,11 @@ trait RoundTrait
     foreach ($slipstreamedCorners as $infos) {
       $cornerPos = $infos['cornerPos'];
       if ($this->getCircuit()->isPressCorner($cornerPos)) {
+        // EVENT SMILE AND WAVE: only gain cards if not going too fast
+        if ($event == EVENT_SMILE_WAVE && $speed >= $this->getCircuit()->getCornerMaxSpeed($cornerPos)) {
+          continue;
+        }
+
         $sponsorsGained[] = 'slipstream';
         $slipstreamedCorners[] = $cornerPos;
       }
@@ -861,7 +869,6 @@ trait RoundTrait
 
     // For each corner, check speed against max speed of corner
     $spinOut = false;
-    $speed = $constructor->getSpeed();
     list('heatCosts' => $corners, 'speedLimits' => $limits) = $this->getCircuit()->getCrossedCornersHeatCosts($constructor, $speed, $prevTurn, $prevPosition, $turn, $position);
 
     if (!empty($corners)) {
@@ -901,10 +908,18 @@ trait RoundTrait
           }
         }
 
-        $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
-        if ($speed >= 2 + $rawLimit && $this->getCircuit()->isPressCorner($cornerPos)) {
-          // At most 1 sponsor card by corner
-          if (!in_array($cornerPos, $slipstreamedCorners)) {
+        // At most 1 sponsor card by corner => check if already gained one from slipstream
+        if ($this->getCircuit()->isPressCorner($cornerPos) && !in_array($cornerPos, $slipstreamedCorners)) {
+          $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
+
+          // EVENT SMILE AND WAVE: only gain cards if not going too fast
+          if ($event == EVENT_SMILE_WAVE) {
+            if ($speed < $rawLimit) {
+              $sponsorsGained[] = EVENT_SMILE_WAVE;
+            }
+          }
+          // Base rule: get one sponsor if overspeed by at least 2
+          else if ($speed >= 2 + $rawLimit) {
             $sponsorsGained[] = 'exceed';
           }
         }
@@ -912,7 +927,6 @@ trait RoundTrait
     }
 
     ////// EVENTS /////
-    $event = Globals::getCurrentEvent();
     // New record : must reach speed of 15
     if ($event == EVENT_NEW_RECORD && $speed >= 15) {
       $sponsorsGained[] = EVENT_NEW_RECORD;
@@ -980,13 +994,24 @@ trait RoundTrait
   public function argsDiscard()
   {
     $constructor = Constructors::getActive();
+
+    // Filter out non-discardable cards
     $event = Globals::getCurrentEvent();
-    $prohibited = $event == EVENT_CHICANES ? [STRESS] : [HEAT, STRESS];
+    $prohibited = [HEAT, STRESS];
+    if ($event == EVENT_CHICANES) $prohibited = [STRESS];
+    if ($event == EVENT_TUNNEL_VISION) $prohibited = [HEAT];
     $cards = $constructor->getHand()->filter(fn($card) => !in_array($card['effect'], $prohibited));
+    $maxDiscardable = count($cards);
 
     // Tunnel Vision exp => no discard in tunnel
     if ($constructor->isInTunnelSpace()) {
       $cards = [];
+      $maxDiscardable = 0;
+    }
+
+    // EVENT HOLD ON TIGHT
+    if ($event == EVENT_HOLD_TIGHT) {
+      $maxDiscardable = 1;
     }
 
     // Any card to refresh ?
@@ -998,6 +1023,7 @@ trait RoundTrait
         'active' => [
           'cardIds' => $cards->getIds(),
           'refreshedIds' => $refreshedIds,
+          'max' => $maxDiscardable
         ],
       ],
     ];
@@ -1055,6 +1081,9 @@ trait RoundTrait
       $ids = $args['cardIds'];
       if (!empty(array_diff($cardIds, $ids))) {
         throw new \BgaVisibleSystemException('Invalid cards to discard. Should not happen');
+      }
+      if (count($ids) > $args['max']) {
+        throw new \BgaVisibleSystemException('Too many cards to discard. Should not happen');
       }
 
       Cards::move($cardIds, ['discard', $constructor->getId()]);
