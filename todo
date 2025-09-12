@@ -1,6 +1,4 @@
 GUY :
-
-- sprite for new cards
 - duplicate "react" into "react" and "oldReact" to make sure ongoing table will work
 - handle the "max" argument of DiscardPhase (can be set to 1 by one event)
 - add undo
