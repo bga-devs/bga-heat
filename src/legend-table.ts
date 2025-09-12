@@ -12,7 +12,8 @@ class LegendTable {
         </div>
         `;
 
-        dojo.place(html, document.getElementById('tables'));
+
+        document.getElementById('tables').insertAdjacentHTML('beforeend', html);
         
         this.deck = new Deck<LegendCard>(this.game.legendCardsManager, document.getElementById(`legend-deck`), {
             cardNumber: 10,

@@ -99,7 +99,7 @@ class PlayerTable {
         </div>
         `;
 
-        dojo.place(html, document.getElementById('tables'));
+        document.getElementById('tables').insertAdjacentHTML('beforeend', html);
 
         if (this.currentPlayer) {
             this.hand = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-hand`), {

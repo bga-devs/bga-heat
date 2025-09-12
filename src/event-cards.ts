@@ -138,7 +138,7 @@ class EventCardsManager {
                     <div class="bottom-line">
                         <span class="year">${texts.year}</span>
                         •
-                        <span class="race">${_('RACE ${number}').replace('${number}', texts.race)}</span>
+                        <span class="race">${_('RACE ${number}').replace('${number}', ''+texts.race)}</span>
                         •
                         <span class="country">${texts.country}</span>
                     </div>
@@ -159,7 +159,7 @@ class EventCardsManager {
             <div class="bottom-line">
                 <span class="year">${texts.year}</span>
                 •
-                <span class="race">${_('RACE ${number}').replace('${number}', texts.race)}</span>
+                <span class="race">${_('RACE ${number}').replace('${number}', ''+texts.race)}</span>
                 •
                 <span class="country">${texts.country}</span>
             </div>

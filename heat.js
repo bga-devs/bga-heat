@@ -1021,7 +1021,7 @@ var CardStock = /** @class */ (function () {
      */
     CardStock.prototype.addCard = function (card, animation, settings) {
         var _this = this;
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d;
         if (!this.canAddCard(card, settings)) {
             return Promise.resolve(false);
         }
@@ -1054,10 +1054,7 @@ var CardStock = /** @class */ (function () {
             if (needsCreation && element) {
                 console.warn("Card ".concat(this.manager.getId(card), " already exists, not re-created."));
             }
-            // if the card comes from a stock but is not found in this stock, the card is probably hudden (deck with a fake top card)
-            var fromBackSide = !(settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) && !(animation === null || animation === void 0 ? void 0 : animation.originalSide) && (animation === null || animation === void 0 ? void 0 : animation.fromStock) && !((_d = animation === null || animation === void 0 ? void 0 : animation.fromStock) === null || _d === void 0 ? void 0 : _d.contains(card));
-            var createdVisible = fromBackSide ? false : (_e = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _e !== void 0 ? _e : this.manager.isCardVisible(card);
-            var newElement = element !== null && element !== void 0 ? element : this.manager.createCardElement(card, createdVisible);
+            var newElement = element !== null && element !== void 0 ? element : this.manager.createCardElement(card, ((_d = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _d !== void 0 ? _d : this.manager.isCardVisible(card)));
             promise = this.moveFromElement(card, newElement, animation, settingsWithIndex);
         }
         if (settingsWithIndex.index !== null && settingsWithIndex.index !== undefined) {
@@ -1187,9 +1184,7 @@ var CardStock = /** @class */ (function () {
                     case 4:
                         if (typeof shift === 'number') {
                             _loop_2 = function (i) {
-                                promises.push(new Promise(function (resolve) {
-                                    setTimeout(function () { return _this.addCard(cards[i], animation, settings).then(function (result) { return resolve(result); }); }, i * shift);
-                                }));
+                                setTimeout(function () { return promises.push(_this.addCard(cards[i], animation, settings)); }, i * shift);
                             };
                             for (i = 0; i < cards.length; i++) {
                                 _loop_2(i);
@@ -1392,7 +1387,7 @@ var CardStock = /** @class */ (function () {
         }
     };
     /**
-     * Unselect all cards
+     * Unelect all cards
      */
     CardStock.prototype.unselectAll = function (silent) {
         var _this = this;
@@ -1515,24 +1510,6 @@ var CardStock = /** @class */ (function () {
         var unselectableCardsClass = this.getUnselectableCardClass();
         var selectedCardsClass = this.getSelectedCardClass();
         cardElement === null || cardElement === void 0 ? void 0 : cardElement.classList.remove(selectableCardsClass, unselectableCardsClass, selectedCardsClass);
-    };
-    /**
-     * Changes the sort function of the stock.
-     *
-     * @param sort the new sort function. If defined, the stock will be sorted with this new function.
-     */
-    CardStock.prototype.setSort = function (sort) {
-        this.sort = sort;
-        if (this.sort && this.cards.length) {
-            this.cards.sort(this.sort);
-            var previouslyMovedCardDiv = this.getCardElement(this.cards[this.cards.length - 1]);
-            this.element.appendChild(previouslyMovedCardDiv);
-            for (var i = this.cards.length - 2; i >= 0; i--) {
-                var movedCardDiv = this.getCardElement(this.cards[i]);
-                this.element.insertBefore(movedCardDiv, previouslyMovedCardDiv);
-                previouslyMovedCardDiv = movedCardDiv;
-            }
-        }
     };
     return CardStock;
 }());
@@ -1838,11 +1815,11 @@ function sortFunction() {
             if (type === 'string') {
                 var compare = a[field].localeCompare(b[field]);
                 if (compare !== 0) {
-                    return compare * direction;
+                    return compare;
                 }
             }
             else if (type === 'number') {
-                var compare = (a[field] - b[field]);
+                var compare = (a[field] - b[field]) * direction;
                 if (compare !== 0) {
                     return compare * direction;
                 }
@@ -2472,12 +2449,12 @@ var EventCardsManager = /** @class */ (function () {
     };
     EventCardsManager.prototype.getHtml = function (card) {
         var texts = this.getTexts(card);
-        var html = "<div id=\"event-card-".concat(card, "\" class=\"card event-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\" data-index=\"").concat(card, "\">\n                    <div class=\"title-and-rule\">\n                        <div class=\"title\">").concat(texts.title, "</div>\n                        <div class=\"rule\">").concat(texts.rule, "</div>\n                    </div>\n                    <div class=\"bottom-line\">\n                        <span class=\"year\">").concat(texts.year, "</span>\n                        \u2022\n                        <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', texts.race), "</span>\n                        \u2022\n                        <span class=\"country\">").concat(texts.country, "</span>\n                    </div>\n                </div>\n            </div>\n        </div>");
+        var html = "<div id=\"event-card-".concat(card, "\" class=\"card event-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\" data-index=\"").concat(card, "\">\n                    <div class=\"title-and-rule\">\n                        <div class=\"title\">").concat(texts.title, "</div>\n                        <div class=\"rule\">").concat(texts.rule, "</div>\n                    </div>\n                    <div class=\"bottom-line\">\n                        <span class=\"year\">").concat(texts.year, "</span>\n                        \u2022\n                        <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', '' + texts.race), "</span>\n                        \u2022\n                        <span class=\"country\">").concat(texts.country, "</span>\n                    </div>\n                </div>\n            </div>\n        </div>");
         return html;
     };
     EventCardsManager.prototype.getTooltip = function (card) {
         var texts = this.getTexts(card);
-        var html = "\n            <div><strong>".concat(texts.title, "</strong></div><br>\n\n            <div>").concat(texts.rule, "</div><br>\n            \n            <div class=\"bottom-line\">\n                <span class=\"year\">").concat(texts.year, "</span>\n                \u2022\n                <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', texts.race), "</span>\n                \u2022\n                <span class=\"country\">").concat(texts.country, "</span>\n            </div>\n        ");
+        var html = "\n            <div><strong>".concat(texts.title, "</strong></div><br>\n\n            <div>").concat(texts.rule, "</div><br>\n            \n            <div class=\"bottom-line\">\n                <span class=\"year\">").concat(texts.year, "</span>\n                \u2022\n                <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', '' + texts.race), "</span>\n                \u2022\n                <span class=\"country\">").concat(texts.country, "</span>\n            </div>\n        ");
         return html;
     };
     return EventCardsManager;
@@ -3055,7 +3032,7 @@ var PlayerTable = /** @class */ (function () {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
         }
         html += "\n            <div id=\"player-table-".concat(this.playerId, "-board\" class=\"player-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-deck\" class=\"deck\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-engine\" class=\"engine\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discard\" class=\"discard\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-gear\" class=\"gear\" data-color=\"").concat(player.color, "\" data-gear=\"").concat(this.currentGear, "\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-inplay-wrapper\" class=\"inplay-wrapper\">\n                <div class=\"hand-wrapper\">\n                    <div class=\"block-label\">").concat(_('Cards in play'), "</div>\n                        <div id=\"player-table-").concat(this.playerId, "-inplay\" class=\"inplay\"></div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        ");
-        dojo.place(html, document.getElementById('tables'));
+        document.getElementById('tables').insertAdjacentHTML('beforeend', html);
         if (this.currentPlayer) {
             this.hand = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-hand")), {
                 sort: PERSONAL_CARDS_SORTING,
@@ -3381,7 +3358,7 @@ var LegendTable = /** @class */ (function () {
     function LegendTable(game, legendCard) {
         this.game = game;
         var html = "\n        <div id=\"legend-table\">\n            <div id=\"legend-board\" class=\"player-board\">\n                <div id=\"legend-deck\" class=\"deck\"></div>\n                <div id=\"legend-discard\" class=\"discard\"></div>\n            </div>\n        </div>\n        ";
-        dojo.place(html, document.getElementById('tables'));
+        document.getElementById('tables').insertAdjacentHTML('beforeend', html);
         this.deck = new Deck(this.game.legendCardsManager, document.getElementById("legend-deck"), {
             cardNumber: 10,
             autoUpdateCardNumber: false,
@@ -3530,15 +3507,23 @@ var HAND_CARD_TYPE_FOR_EFFECT = {
 function sleep(ms) {
     return new Promise(function (r) { return setTimeout(r, ms); });
 }
-var Heat = /** @class */ (function () {
+// @ts-ignore
+GameGui = (function () {
+    function GameGui() { }
+    return GameGui;
+})();
+var Heat = /** @class */ (function (_super) {
+    __extends(Heat, _super);
     function Heat() {
-        this.playersTables = [];
-        this.cornerCounters = [];
-        this.gearCounters = [];
-        this.engineCounters = [];
-        this.speedCounters = [];
-        this.lapCounters = [];
-        this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
+        var _this = _super.call(this) || this;
+        _this.playersTables = [];
+        _this.cornerCounters = [];
+        _this.gearCounters = [];
+        _this.engineCounters = [];
+        _this.speedCounters = [];
+        _this.lapCounters = [];
+        _this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
+        return _this;
     }
     /*
           setup:
@@ -3561,8 +3546,8 @@ var Heat = /** @class */ (function () {
         }
         //g_img_preload.push(...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
         // Create a new div for buttons to avoid BGA auto clearing it
-        dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
-        dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
+        dojo.place("<div id='customActions' style='display:inline-block'></div>", 'generalactions', 'after');
+        dojo.place("<div id='restartAction' style='display:inline-block'></div>", 'customActions', 'after');
         log('gamedatas', gamedatas);
         this.animationManager = new AnimationManager(this);
         this.cardsManager = new CardsManager(this);
@@ -3626,7 +3611,6 @@ var Heat = /** @class */ (function () {
             ],
         });
         this.setupNotifications();
-        this.setupPreferences();
         log('Ending game setup');
     };
     ///////////////////////////////////////////////////
@@ -3713,7 +3697,9 @@ var Heat = /** @class */ (function () {
         reader.addEventListener('load', function (e) {
             var content = e.target.result;
             var circuit = JSON.parse(content);
-            _this.ajaxcall("/".concat(_this.game_name, "/").concat(_this.game_name, "/actUploadCircuit.html"), { circuit: JSON.stringify(circuit), lock: true }, _this, function () { }, undefined, 'post');
+            _this.ajaxcall(// @ts-ignore
+            "/".concat(_this.game_name, "/").concat(_this.game_name, "/actUploadCircuit.html"), { circuit: JSON.stringify(circuit), lock: true }, _this, function () { }, undefined, // @ts-ignore
+            'post');
         });
     };
     Heat.prototype.initMarketStock = function () {
@@ -3852,7 +3838,7 @@ var Heat = /** @class */ (function () {
     };
     Heat.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
-        this.removeActionButtons();
+        this.statusBar.removeActionButtons();
         document.getElementById('customActions').innerHTML = '';
         document.getElementById('restartAction').innerHTML = '';
         switch (stateName) {
@@ -3925,8 +3911,8 @@ var Heat = /** @class */ (function () {
             if (args.heatCosts[speed]) {
                 label += " (".concat(args.heatCosts[speed], "[Heat])");
             }
-            _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), formatTextIcons(label), function () { return _this.actChooseSpeed(speed); });
-            _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
+            var button = _this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actChooseSpeed(speed); });
+            _this.linkButtonHoverToMapIndicator(button, entry[1]);
         });
     };
     Heat.prototype.createSlipstreamButtons = function (args) {
@@ -3942,13 +3928,12 @@ var Heat = /** @class */ (function () {
             var callback = confirmationMessage
                 ? function () { return _this.confirmationDialog(confirmationMessage, finalAction); }
                 : finalAction;
-            _this.addActionButton("chooseSpeed".concat(entry[0], "_button"), formatTextIcons(label), callback);
-            _this.linkButtonHoverToMapIndicator(document.getElementById("chooseSpeed".concat(entry[0], "_button")), entry[1]);
+            var button = _this.statusBar.addActionButton(formatTextIcons(label), callback);
+            _this.linkButtonHoverToMapIndicator(button, entry[1]);
         });
     };
     Heat.prototype.showHeatCostConfirmations = function () {
-        var _a;
-        return !((_a = this.prefs[201]) === null || _a === void 0 ? void 0 : _a.value);
+        return !this.getGameUserPreference(201);
     };
     Heat.prototype.getAdrenalineConfirmation = function (reactArgs) {
         var _a;
@@ -4545,35 +4530,35 @@ var Heat = /** @class */ (function () {
     Heat.prototype.getGarageModuleIconTooltip = function (symbol, number) {
         switch (symbol) {
             case 'accelerate':
-                return "\n                    <strong>".concat(_('Accelerate'), "</strong>\n                    <br>\n                    ").concat(_('You may increase your Speed by ${number} for every [+] symbol used by you this turn (from Upgrades, Stress, Boost, etc). If you do, you must increase it for all [+] symbols used and this counts for corner checks.').replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Accelerate'), "</strong>\n                    <br>\n                    ").concat(_('You may increase your Speed by ${number} for every [+] symbol used by you this turn (from Upgrades, Stress, Boost, etc). If you do, you must increase it for all [+] symbols used and this counts for corner checks.').replace('${number}', '' + number), "\n                ");
             case 'adjust':
                 return "\n                    <strong>".concat(_('Adjust Speed Limit'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(isNaN(number)
                     ? _('If you cross a corner this turn, your Speed Limit is modified by # for you; “+” means you can move faster, “-” means you must move slower.')
                     : (Number(number) < 0
                         ? _('Speed limit is ${number} lower.')
-                        : _('Speed limit is ${number} higher.')).replace('${number}', Math.abs(Number(number))), "\n                ");
+                        : _('Speed limit is ${number} higher.')).replace('${number}', '' + Math.abs(Number(number))), "\n                ");
             case 'boost':
                 return "\n                    <strong>".concat(_('Boost'), "</strong>\n                    <br>\n                    ").concat(_('Flip the top card of your draw deck until you draw a Speed card (discard all other cards as you do when playing Stress cards). Move your car accordingly.'), "\n                    <br>\n                    <i>").concat(_('Note: Boost increases your Speed value for the purpose of the Check Corner step.'), "</i>\n                ");
             case 'cooldown':
-                return "\n                    <strong>".concat(_('Cooldown'), "</strong>\n                    <br>\n                    ").concat(_('Cooldown allows you to take ${number} Heat card(s) from your hand and put it back in your Engine (so you can use the Heat card again). ').replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Cooldown'), "</strong>\n                    <br>\n                    ").concat(_('Cooldown allows you to take ${number} Heat card(s) from your hand and put it back in your Engine (so you can use the Heat card again). ').replace('${number}', '' + number), "\n                ");
             case 'direct':
                 return "\n                    <strong>".concat(_('Direct Play'), "</strong>\n                    <br>\n                    ").concat(_('You may play this card from your hand in the React step. If you do, it applies as if you played it normally, including Speed value and mandatory/optional icons.'), "\n                ");
             case 'heat':
-                return "\n                    <strong>".concat(_('Heat'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_('Take ${number} Heat cards from the Engine and move them to your discard pile.').replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Heat'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_('Take ${number} Heat cards from the Engine and move them to your discard pile.').replace('${number}', '' + number), "\n                ");
             case 'one-time':
                 return "\n                    <strong>".concat(_('One-time use'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_('During the discard step, this card is removed instead of going to the discard.'), "\n                ");
             case 'reduce':
-                return "\n                    <strong>".concat(_('Reduce Stress'), "</strong>\n                    <br>\n                    ").concat(_('You may immediately discard up to ${number} Stress cards from your hand to the discard pile.').replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Reduce Stress'), "</strong>\n                    <br>\n                    ").concat(_('You may immediately discard up to ${number} Stress cards from your hand to the discard pile.').replace('${number}', '' + number), "\n                ");
             case 'refresh':
                 return "\n                    <strong>".concat(_('Refresh'), "</strong>\n                    <br>\n                    ").concat(_('You may place this card back on top of your draw deck instead of discarding it, when discarding cards.'), "\n                ");
             case 'salvage':
-                return "\n                    <strong>".concat(_('Salvage'), "</strong>\n                    <br>\n                    ").concat(_('You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.').replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Salvage'), "</strong>\n                    <br>\n                    ").concat(_('You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.').replace('${number}', '' + number), "\n                ");
             case 'scrap':
-                return "\n                    <strong>".concat(_('Scrap'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_('Discard the top card of your draw deck ${number} times.').replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Scrap'), "</strong> <div class=\"mandatory icon\"></div>\n                    <br>\n                    ").concat(_('Discard the top card of your draw deck ${number} times.').replace('${number}', '' + number), "\n                ");
             case 'slipstream':
-                return "\n                    <strong>".concat(_('Slipstream boost'), "</strong>\n                    <br>\n                    ").concat(_('If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.').replace('${number}', number), "\n                ");
+                return "\n                    <strong>".concat(_('Slipstream boost'), "</strong>\n                    <br>\n                    ").concat(_('If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.').replace('${number}', '' + number), "\n                ");
             case 'super-cool':
-                return "\n                    <strong>".concat(_('Super cool'), "</strong>\n                    <br>\n                    ").concat(_('You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.').replace('${number}', number), "\n                    <br>\n                    <i>").concat(_('Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there).'), "</i>\n                ");
+                return "\n                    <strong>".concat(_('Super cool'), "</strong>\n                    <br>\n                    ").concat(_('You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.').replace('${number}', '' + number), "\n                    <br>\n                    <i>").concat(_('Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there).'), "</i>\n                ");
         }
     };
     Heat.prototype.getWeatherCardSetupTooltip = function (type) {
@@ -4621,23 +4606,6 @@ var Heat = /** @class */ (function () {
             case 5:
                 return "\n                    <strong>".concat(_('Slipstream boost'), "</strong>\n                    <br>\n                    ").concat(_('If you choose to Slipstream, you may add one extra Space to the usual 2 Spaces. Your car must be located in this sector before you slipstream.'), "\n                ");
         }
-    };
-    Heat.prototype.setupPreferences = function () {
-        var _this = this;
-        // Extract the ID and value from the UI control
-        var onchange = function (e) {
-            var match = e.target.id.match(/^preference_[cf]ontrol_(\d+)$/);
-            if (!match) {
-                return;
-            }
-            var prefId = +match[1];
-            var prefValue = +e.target.value;
-            _this.prefs[prefId].value = prefValue;
-        };
-        // Call onPreferenceChange() when any value changes
-        dojo.query('.preference_control').connect('onchange', onchange);
-        // Call onPreferenceChange() now
-        dojo.forEach(dojo.query('#ingame_menu_content .preference_control'), function (el) { return onchange({ target: el }); });
     };
     Heat.prototype.getOrderedPlayers = function (gamedatas) {
         var _this = this;
@@ -5050,7 +5018,7 @@ var Heat = /** @class */ (function () {
                 }
             });
         }
-        /*(this as any).notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) =>
+        /*this.notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) =>
                 this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
             );*/
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) { return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId(); });
@@ -5565,47 +5533,6 @@ var Heat = /** @class */ (function () {
         document.getElementById("podium-wrapper-".concat(constructorId)).classList.add('finished');
         document.getElementById("podium-counter-".concat(constructorId)).innerHTML = "".concat(eliminated ? '❌' : pos);
     };
-    /**
-     * Load production bug report handler
-     */
-    Heat.prototype.notif_loadBug = function (args) {
-        var that = this;
-        function fetchNextUrl() {
-            var url = args.urls.shift();
-            console.log('Fetching URL', url, '...');
-            // all the calls have to be made with ajaxcall in order to add the csrf token, otherwise you'll get "Invalid session information for this action. Please try reloading the page or logging in again"
-            that.ajaxcall(url, {
-                lock: true,
-            }, that, function (success) {
-                console.log('=> Success ', success);
-                if (args.urls.length > 1) {
-                    fetchNextUrl();
-                }
-                else if (args.urls.length > 0) {
-                    //except the last one, clearing php cache
-                    url = args.urls.shift();
-                    dojo.xhrGet({
-                        url: url,
-                        headers: {
-                            'X-Request-Token': bgaConfig.requestToken,
-                        },
-                        load: function (success) {
-                            console.log('Success for URL', url, success);
-                            console.log('Done, reloading page');
-                            window.location.reload();
-                        },
-                        handleAs: 'text',
-                        error: function (error) { return console.log('Error while loading : ', error); },
-                    });
-                }
-            }, function (error) {
-                if (error)
-                    console.log('=> Error ', error);
-            });
-        }
-        console.log('Notif: load bug', args);
-        fetchNextUrl();
-    };
     Heat.prototype.coloredConstructorName = function (constructorName) {
         return "<span style=\"font-weight: bold; color: #".concat(CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.name == constructorName; }).id], "\">").concat(_(constructorName), "</span>");
     };
@@ -5671,7 +5598,7 @@ var Heat = /** @class */ (function () {
         return this.inherited(arguments);
     };
     return Heat;
-}());
+}(GameGui));
 define([
     "dojo", "dojo/_base/declare",
     "ebg/core/gamegui",
