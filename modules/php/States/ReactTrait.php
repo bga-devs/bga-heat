@@ -49,8 +49,8 @@ trait ReactTrait
 
       // Get some infos
       for ($i = 1; $i <= 4; $i++) {
-        list(,,,,,, $boostHeatCosts) = $this->getCircuit()->getReachedCell($constructor, $i, true, true);
-        $boostInfos[$i] = $boostHeatCosts;
+        $boostResult = $this->getCircuit()->getReachedCell($constructor, $i, FLAG_COMPUTE_HEAT_COSTS);
+        $boostInfos[$i] = $boostResult['heatCosts'];
       }
     }
 
@@ -68,14 +68,14 @@ trait ReactTrait
     }
 
     // Current heat costs
-    list($currentHeatCost, $currentHeatCosts, $spinOut) = $this->getCurrentHeatCosts($constructor);
+    list('heatCost' => $currentHeatCost, 'heatCosts' => $currentHeatCosts, 'spinOut' => $spinOut) = $this->getCurrentHeatCosts($constructor);
     // Next corner infos
-    list($speedLimit, $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
+    list('speedLimit' => $speedLimit, 'extraHeat' => $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
 
     // Adrenaline extra info
     $adrenalineWillCrossNextCorner = false;
     if (in_array(ADRENALINE, $doableSymbols)) {
-      list(, $nSpacesForward,,,,, $heatCosts) = $this->getCircuit()->getReachedCell($constructor, 1, true, true);
+      list('heatCosts' => $heatCosts, 'distance' => $nSpacesForward) = $this->getCircuit()->getReachedCell($constructor, 1, FLAG_COMPUTE_HEAT_COSTS);
       if ($nSpacesForward == 0) {
         Utils::filter($doableSymbols, fn($symbol) => $symbol != ADRENALINE);
       }
@@ -87,7 +87,7 @@ trait ReactTrait
     foreach ($symbols[DIRECT] ?? [] as $cardId) {
       $card = Cards::getSingle($cardId);
       $speed = $card['speed'];
-      list(,,,,,, $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, true, true);
+      list('heatCosts' => $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, true, true);
 
       $directPlayCosts[$cardId] = $heatCosts;
     }

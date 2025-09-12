@@ -1,5 +1,7 @@
 <?php
+
 namespace HEAT\States;
+
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
 use HEAT\Core\Stats;
@@ -34,13 +36,13 @@ trait LegendTrait
     if ($deltaLine == 0 || $deltaCorner < $deltaLine) {
       // Try to move at corner speed + "slot cell" number
       $speed = $this->getCircuit()->getCornerMaxSpeed($cornerPos) + $slot;
-      list($newCell, $nSpacesForward, $extraTurns, $path, ,) = $this->getCircuit()->getReachedCell($constructor, $speed, true);
+      list($newCell, $nSpacesForward, $extraTurns, $path,,) = $this->getCircuit()->getReachedCell($constructor, $speed, true);
       // Check if that makes the car cross AT MOST one corner
       $cornersCrossed = $this->getCircuit()->getCornersInBetween($turn, $pos, $turn + $extraTurns, $pos + $nSpacesForward);
 
       $maxCornerCrossed = 1;
       if (boolval(Globals::getAggressiveLegends())) {
-        $aggressiveLegends = $this->getCircuit()->getCornerAggressiveLegends($cornerPos);
+        $aggressiveLegends = $this->getCircuit()->getAgressiveLegendDistance($cornerPos);
         if ($aggressiveLegends !== null && $deltaCorner <= $aggressiveLegends) {
           $maxCornerCrossed = 2;
         }

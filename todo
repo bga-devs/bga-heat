@@ -1,2 +1,4 @@
 - handle different podium shapes : include podium shape into circuit's data + allow for adhoc placement for extra podium slot for base circuits
   => reconstruct rectangles in frontend with matching font ?
+- handle double agressive legend!
+- user pref for auto move when only one speed

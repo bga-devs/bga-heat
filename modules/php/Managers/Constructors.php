@@ -85,7 +85,7 @@ class Constructors extends \HEAT\Helpers\CachedDB_Manager
   /*
    * getUiData : get all ui data of all players
    */
-  public static function getUiData($cId): array
+  public static function getUiData($cId): Collection
   {
     return self::getAll()->map(function ($constructor) use ($cId) {
       return $constructor->getUiData($cId);

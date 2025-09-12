@@ -7,17 +7,82 @@ use HEAT\Core\Globals;
 
 class Circuit
 {
-  protected $id = null;
-  protected $name = null;
-  protected $datas = null;
-  protected $corners = [];
-  protected $chicanes = [];
-  protected $legendLines = [];
-  protected $raceLanes = [];
-  protected $startingCells = [];
-  protected $cells = [];
-  protected $posToCells = [];
-  public function getUiData()
+  /////////////////////////////
+  //  ____        _        
+  // |  _ \  __ _| |_ __ _ 
+  // | | | |/ _` | __/ _` |
+  // | |_| | (_| | || (_| |
+  // |____/ \__,_|\__\__,_|
+  /////////////////////////////
+
+
+  // CONSTRUCTOR: given a json representing the circuit, initialize the circuit
+  protected ?string $id = null;
+  protected ?string $name = null;
+  protected ?array $datas = null;
+  protected array $corners = [];
+  protected array $chicanes = [];
+  protected array $legendLines = [];
+  protected array $agressiveLegendDistances = [];
+  protected array $raceLanes = [];
+  protected array $startingCells = [];
+  protected array $cells = [];
+  protected array $uPosToCells = [];
+  protected ?array $pressCornersPositions = null;
+
+  public function isInitialized(): bool
+  {
+    return !is_null($this->datas);
+  }
+  public function __construct($datas)
+  {
+    if (empty($datas)) {
+      return;
+    }
+    $this->datas = $datas;
+    $this->id = $datas['id'];
+    $this->name = $datas['name'];
+
+    $lane = null;
+    foreach ($datas['corners'] as $pos => $info) {
+      if (isset($info['position'])) {
+        $pos = $info['position'];
+      }
+      if (isset($info['chicane'])) {
+        $this->chicanes[$pos] = $datas['corners'][$info['chicane']]['position'];
+      }
+      $this->corners[$pos] = $info['speed'];
+      $this->legendLines[$pos] = $info['legend'];
+      $this->agressiveLegendDistances[$pos] = $info['agressiveLegend'] ?? null;
+      $lane = $info['lane'];
+      $this->raceLanes[] = $lane;
+    }
+    array_unshift($this->raceLanes, $lane);
+    $this->startingCells = $datas['startingCells'];
+    $this->nbrLaps = $datas['nbrLaps'];
+    $this->stressCards = $datas['stressCards'];
+    $this->heatCards = $datas['heatCards'];
+    $this->pressCornersPositions = $datas['pressCornersPositions'] ?? null;
+
+    foreach ($datas['cells'] as $cellId => $info) {
+      $this->cells[(int) $cellId] = [
+        'pos' => $info['position'] - 1, // OFFSET OF 1 !
+        'lane' => $info['lane'],
+      ];
+    }
+
+    foreach ($this->cells as $cellId => $cellPos) {
+      $uPos = 2 * $cellPos['pos'] + $cellPos['lane'];
+      $this->uPosToCells[$uPos] = $cellId;
+    }
+  }
+
+
+  /**
+   * getUiData: send all the info the front need to place the cars and corners accordingly
+   *  filter out useless informations
+   */
+  public function getUiData(): array
   {
     if (is_null($this->datas)) {
       return [];
@@ -75,66 +140,50 @@ class Circuit
     ];
   }
 
-  public function isInitialized()
-  {
-    return !is_null($this->datas);
-  }
-  public function __construct($datas)
-  {
-    if (empty($datas)) {
-      return;
-    }
-    $this->datas = $datas;
-    $this->id = $datas['id'];
-    $this->name = $datas['name'];
-
-    $lane = null;
-    foreach ($datas['corners'] as $pos => $info) {
-      if (isset($info['position'])) {
-        $pos = $info['position'];
-      }
-      if (isset($info['chicane'])) {
-        $this->chicanes[$pos] = $datas['corners'][$info['chicane']]['position'];
-      }
-      $this->corners[$pos] = $info['speed'];
-      $this->legendLines[$pos] = $info['legend'];
-      $lane = $info['lane'];
-      $this->raceLanes[] = $lane;
-    }
-    array_unshift($this->raceLanes, $lane);
-    $this->startingCells = $datas['startingCells'];
-    $this->nbrLaps = $datas['nbrLaps'];
-    $this->stressCards = $datas['stressCards'];
-    $this->heatCards = $datas['heatCards'];
-
-    foreach ($datas['cells'] as $cellId => $info) {
-      $this->cells[(int) $cellId] = [
-        'pos' => $info['position'] - 1, // OFFSET OF 1 !
-        'lane' => $info['lane'],
-      ];
-    }
-
-    foreach ($this->cells as $cellId => $cellPos) {
-      $this->posToCells[2 * $cellPos['pos'] + $cellPos['lane']] = $cellId;
-    }
-  }
-  public function getId()
+  /**
+   * DATA ACCESS
+   */
+  public function getId(): string
   {
     return $this->id;
   }
-  public function getName()
+  public function getName(): string
   {
     return $this->name;
   }
-  public function getCorners()
+  public function getCorners(): array
   {
     return $this->corners;
   }
 
-  protected $nbrLaps = 0;
-  protected $stressCards = 0;
-  protected $heatCards = 0;
-  public function getNbrLaps()
+  public function getFloodedSpaces(): array
+  {
+    return $this->datas['floodedSpaces'] ?? [];
+  }
+
+  public function getTunnelSpaces(): array
+  {
+    return $this->datas['tunnelSpaces'] ?? [];
+  }
+
+  public function getStartingCells(): array
+  {
+    return $this->startingCells;
+  }
+
+  public function getLength(): int
+  {
+    return count($this->cells) / 2;
+  }
+
+
+  /**
+   * DATA ACCESS : these piece of data can be modified by events!
+   */
+  protected int $nbrLaps = 0;
+  protected int $stressCards = 0;
+  protected int $heatCards = 0;
+  public function getNbrLaps(): int
   {
     $n = $this->nbrLaps;
     $optionNbrLaps = Globals::getNbrLaps();
@@ -152,7 +201,7 @@ class Circuit
     return $n;
   }
 
-  public function getStressCards()
+  public function getStressCards(): int
   {
     $value = $this->stressCards;
 
@@ -175,7 +224,7 @@ class Circuit
     return $value;
   }
 
-  public function getHeatCards()
+  public function getHeatCards(): int
   {
     $value = $this->heatCards;
 
@@ -198,34 +247,72 @@ class Circuit
     return $value;
   }
 
-  public function getStartingCells()
+  ///////////////////////////////////////////////////////
+  //   ____     _ _            _       _           _ 
+  //  / ___|___| | |  _ __ ___| | __ _| |_ ___  __| |
+  // | |   / _ \ | | | '__/ _ \ |/ _` | __/ _ \/ _` |
+  // | |__|  __/ | | | | |  __/ | (_| | ||  __/ (_| |
+  //  \____\___|_|_| |_|  \___|_|\__,_|\__\___|\__,_|
+  ///////////////////////////////////////////////////////
+
+  /**
+   * In all this file, there are several ways to represent a position:
+   *   - $cell will always be the unique cellId of the svg file
+   *   - $position will always be only an integer representing how far we are from the starting mark
+   *      => there are two cells at each positions (one for each lane)!
+   *      => careful: position might be greater than circuit length!
+   *   - $uPosition will always be a UniquePosition computed by doing : 2 * $pos + lane
+   *      => there is a one-one mapping linking uPos to cells in $this->uPosToCells
+   */
+
+  public function getUPos(int $position, int $lane): int
   {
-    return $this->startingCells;
+    $pos = $position % $this->getLength();
+    return 2 * $pos + $lane;
   }
 
-  public function getLength()
+  public function getCell(int $position, int $lane): int
   {
-    return count($this->cells) / 2;
+    $uPos = $this->getUPos($position, $lane);
+    return $this->uPosToCells[$uPos];
   }
 
-  public function isFree($position, $lane, $exclude = null)
+  // Syntaxic sugar for accessing Constructor information
+  public function getPosition(Constructor $constructor): int
   {
-    $position = $position % $this->getLength();
-    foreach (Constructors::getAll() as $cId => $constructor) {
-      if ((!is_null($exclude) && $cId == $exclude) || $constructor->isFinished()) {
-        continue;
-      }
-
-      $cell = $constructor->getCarCell();
-      $cellPos = $this->cells[$cell];
-      if ($cellPos['pos'] == $position && $cellPos['lane'] == $lane) {
-        return false;
-      }
+    if (!$this->isInitialized()) {
+      return 0;
     }
-    return true;
+    $currentCell = $constructor->getCarCell();
+    return $this->cells[$currentCell]['pos'] ?? 0;
   }
 
-  public function getRaceLane($position)
+  // Syntaxic sugar for accessing Constructor information
+  public function getUPosition(Constructor $constructor): int
+  {
+    if (!$this->isInitialized()) {
+      return 0;
+    }
+    $currentCell = $constructor->getCarCell();
+    $cellInfos = $this->cells[$currentCell];
+    return $this->getUPos($cellInfos['pos'], $cellInfos['lane']);
+  }
+
+  // Syntaxic sugar for accessing Constructor information
+  public function getLane(Constructor $constructor): int
+  {
+    if (!$this->isInitialized()) {
+      return 0;
+    }
+    $currentCell = $constructor->getCarCell();
+    return $this->cells[$currentCell]['lane'];
+  }
+
+  /**
+   * Given a position, compute what is the race lane at this position
+   *  => this depends on the current "corner section" and possible values are 1 or 2
+   */
+  public function getRaceLane(int $position): int
   {
     $position = $position % $this->getLength();
     $i = 0;
@@ -239,9 +326,34 @@ class Circuit
     return $this->raceLanes[$i];
   }
 
-  public function getFreeLane($position, $exclude = null)
+
+  /**
+   * Check whether a given unique position is free or not
+   *  => exclude: optional constructor id parameter to ignore in collision detection
+   */
+  public function isFree(int $position, int $lane, ?int $exclude = null): bool
   {
-    // Try racelane first
+    $uPos = $this->getUPos($position, $lane);
+    foreach (Constructors::getAll() as $cId => $constructor) {
+      if ((!is_null($exclude) && $cId == $exclude) || $constructor->isFinished()) {
+        continue;
+      }
+
+      $uPos2 = $this->getUPosition($constructor);
+      if ($uPos == $uPos2) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Given a position, return the lane that is free at that position, prioritizing the race line first
+   *  => return 0 if none of the two cells at this position are available
+   */
+  public function getFreeLane(int $position, ?int $exclude = null): int
+  {
+    // Try raceLane first
     $raceLane = $this->getRaceLane($position);
     if ($this->isFree($position, $raceLane, $exclude)) {
       return $raceLane;
@@ -255,7 +367,11 @@ class Circuit
     return 0;
   }
 
-  public function getFreeCell($position, $exclude = null, $error = true)
+  /**
+   * Given a position, return the cell that is free at that position, prioritizing the race line first
+   *  => we should never call this function with both cells as empty, but we allow to bypass this with boolean parameter that will just return the lane 1
+   */
+  public function getFreeCell(int $position, ?int $exclude = null, bool $error = true): int
   {
     $lane = $this->getFreeLane($position, $exclude);
     if ($lane == 0) {
@@ -268,29 +384,12 @@ class Circuit
     return $this->getCell($position, $lane);
   }
 
-  public function getPosition($constructor)
-  {
-    if (!$this->isInitialized()) {
-      return 0;
-    }
 
-    $currentCell = $constructor->getCarCell();
-    return $this->cells[$currentCell]['pos'] ?? 0;
-  }
-
-  public function getLane($constructor)
-  {
-    $currentCell = $constructor->getCarCell();
-    return $this->cells[$currentCell]['lane'];
-  }
-
-  public function getCell($position, $lane)
-  {
-    $pos = $position % $this->getLength();
-    return $this->posToCells[2 * $pos + $lane];
-  }
-
-  public function getFirstFreePosition($position, $cId)
+  /**
+   * Given a position, find the first free position where at least one cell is free, going backward until it's found
+   *  => upper bound for $avoidInfiniteLoop is 10 because that would mean that the 10*2 = 20 cells are full, which is currently impossible
+   */
+  public function getFirstFreePosition(int $position, int $cId): int
   {
     $avoidInfiniteLoop = 0;
     while ($this->getFreeLane($position, $cId) == 0 && $avoidInfiniteLoop++ < 10) {
@@ -302,18 +401,49 @@ class Circuit
     return $position;
   }
 
-  public function getFirstFreeCell($position, $cId)
+  public function getFirstFreeCell(int $position, int $cId): int
   {
     $position = $this->getFirstFreePosition($position, $cId);
     return $this->getFreeCell($position);
   }
 
-  public function getReachedCell($constructor, $speed, $computePath = false, $computeHeatCost = false, $isSlipstream = false)
+  /**
+   * Core logic part: getReachedCell allow to compute where a car would land if it moves by $speed cells forward
+   * Possible flags:
+   *  - compute paths: do we want to compute the path from starting cell to reached cell? (useful for animation only)
+   *  - compute heat costs: do we want to compute the corresponding heat cost ?
+   *  - is slipstream: is it a slipstream move ? (change heat computation)
+   * Return an assoc array:
+   *  - int cell
+   *  - int distance: how many space forward? (that might be less than $speed if cells are full)
+   *  - int extraTurn: have we crossed the finish line?
+   *  - ?array path
+   *  - ?int heatCost
+   *  - ?array heatCosts: ???
+   *  - ?bool spinOut
+   */
+  public function getReachedCell(Constructor $constructor, int $speed, int $flags = 0): array
   {
+    $computePath = ($flags & FLAG_COMPUTE_PATHS) == FLAG_COMPUTE_PATHS;
+    $computeHeatCost = ($flags & FLAG_COMPUTE_HEAT_COSTS) == FLAG_COMPUTE_HEAT_COSTS;
+    $isSlipstream = ($flags & FLAG_IS_SLIPSTREAM) == FLAG_IS_SLIPSTREAM;
+
+    // Not moving => return
     if ($speed == 0) {
-      return [$constructor->getCarCell(), 0, 0, [], 0, 0];
+      return [
+        'cell' => $constructor->getCarCell(),
+        'distance' => 0,
+        'extraTurn' => 0,
+        'paths' => [],
+        'heatCost' => 0,
+        'heatCosts' => [],
+        'spinOut' => false
+      ];
     }
 
+    $result = [];
+
+    // Current information about the constructor
     $cId = $constructor->getId();
     $currentTurn = $constructor->getTurn();
     $currentPosition = $this->getPosition($constructor);
@@ -337,7 +467,7 @@ class Circuit
           $currentLane = 3 - $currentLane;
           $path[] = $this->getCell($pos, $currentLane);
         } else {
-          $currentLane = 1.5;
+          $currentLane = 1.5; // If no cell are free, just move through the middle of them (only allowed because the car does not stop here)
           $path[] = [$this->getCell($pos, 1), $this->getCell($pos, 2)];
         }
       }
@@ -345,7 +475,8 @@ class Circuit
 
     // Compute potential extra turns
     $extraTurn = intdiv($newPosition, $this->getLength());
-    $nSpacesForward = $newPosition - $currentPosition;
+    $result['extraTurn'] = $extraTurn;
+    $result['distance'] = $newPosition - $currentPosition;
     $newPosition = $newPosition % $this->getLength();
 
     // Now get the cell
@@ -355,37 +486,45 @@ class Circuit
     } else {
       $cellId = $path[0];
     }
+    $result['cell'] = $cellId;
 
     // Compute the heat cost
-    if ($isSlipstream) {
-      $speed = max(0, $constructor->getSpeed());
-    } else {
-      $speed += max(0, $constructor->getSpeed());
-    }
-    $prevPosition = Globals::getPreviousPosition();
-    $prevTurn = Globals::getPreviousTurn();
-    list($heatCosts, $spinOut) = $this->getCrossedCornersHeatCosts(
-      $constructor,
-      $speed,
-      $prevTurn,
-      $prevPosition,
-      $currentTurn + $extraTurn,
-      $newPosition
-    );
-    $heatCost = array_sum($heatCosts);
+    if ($computeHeatCost) {
+      if ($isSlipstream) {
+        $speed = max(0, $constructor->getSpeed());
+      } else {
+        $speed += max(0, $constructor->getSpeed());
+      }
+      $prevPosition = Globals::getPreviousPosition();
+      $prevTurn = Globals::getPreviousTurn();
+      $infos = $this->getCrossedCornersHeatCosts(
+        $constructor,
+        $speed,
+        $prevTurn,
+        $prevPosition,
+        $currentTurn + $extraTurn,
+        $newPosition
+      );
+      $heatCosts = $infos['heatCosts'];
+      $heatCost = array_sum($heatCosts);
 
-    return [
-      $cellId,
-      $nSpacesForward,
-      $extraTurn,
-      $computePath ? $path : null,
-      $computeHeatCost ? $heatCost : null,
-      $computeHeatCost ? $spinOut : null,
-      $computeHeatCost ? $heatCosts : null,
-    ];
+      $result['heatCost'] = $heatCost;
+      $result['heatCosts'] = $heatCosts;
+      $result['spinOut'] = $infos['spinOut'];
+    }
+
+    if ($computePath) {
+      $result['path'] = $path;
+    }
+
+    return $result;
   }
 
-  public function getSlipstreamResult($constructor, $n)
+  /**
+   * Given a contructor and a value for slipstream, compute information where the car would land with that slipstream
+   *  => return false is not slipstream is possible
+   */
+  public function getSlipstreamResult(Constructor $constructor, int $n): array|bool
   {
     $currentPosition = $this->getPosition($constructor);
 
@@ -404,37 +543,30 @@ class Circuit
     }
 
     // Check that you move at least one cell forward
-    list($cell, $nSpacesForward,, $path, $heatCost, $spinOut, $heatCosts) = $this->getReachedCell(
-      $constructor,
-      $n,
-      true,
-      true,
-      true
-    );
-    if ($nSpacesForward == 0) {
+    $result = $this->getReachedCell($constructor, $n, FLAG_COMPUTE_PATHS | FLAG_COMPUTE_HEAT_COSTS | FLAG_IS_SLIPSTREAM);
+    if ($result['distance'] == 0) {
       return false;
     }
 
-    return [$cell, $path, $heatCost, $spinOut, $heatCosts];
+    return $result;
   }
 
-  public function getCornersInBetween($turn1, $pos1, $turn2, $pos2)
-  {
-    $length = $this->getLength();
-    $uid1 = $length * $turn1 + $pos1;
-    $uid2 = $length * $turn2 + $pos2;
-    $corners = [];
-    for ($pos = $uid1 + 1; $pos <= min($uid2, $length * $this->getNbrLaps()); $pos++) {
-      $position = $pos % $length;
-      if (array_key_exists($position, $this->corners)) {
-        $corners[] = [$position, intdiv($pos, $length)];
-      }
-    }
 
-    return $corners;
-  }
 
-  public function getCornerMaxSpeed($cornerPos)
+  /////////////////////////////////////////////////////////////////////////////
+  //   ____                                          _       _           _ 
+  //  / ___|___  _ __ _ __   ___ _ __ ___   _ __ ___| | __ _| |_ ___  __| |
+  // | |   / _ \| '__| '_ \ / _ \ '__/ __| | '__/ _ \ |/ _` | __/ _ \/ _` |
+  // | |__| (_) | |  | | | |  __/ |  \__ \ | | |  __/ | (_| | ||  __/ (_| |
+  //  \____\___/|_|  |_| |_|\___|_|  |___/ |_|  \___|_|\__,_|\__\___|\__,_|
+  /////////////////////////////////////////////////////////////////////////////
+  /**
+   * Corners information are stored in $this->corners array in the following form: cornerPos => speedLimit
+   *  => cornerPos will always represent the position of the first cell AFTER the corner
+   */
+
+  // Max speed of a corner might be changed by weather
+  public function getCornerMaxSpeed(int $cornerPos): int
   {
     $limit = $this->corners[$cornerPos];
     $weather = $this->getCornerWeather($cornerPos);
@@ -447,21 +579,106 @@ class Circuit
     return $limit;
   }
 
-  // return the ma
-  public function getCornerAggressiveLegends(int $cornerPos)
+  /**
+   * Legend information:
+   *  - what is the line for a given corner
+   *  - what is the distance from given corner that would allow for double corner crossing for agressive legends
+   */
+  public function getLegendLine(int $cornerPos): int
   {
-    $corner = null;
-    foreach ($this->datas['corners'] as $i => $infos) {
-      $pos = $infos['position'] ?? $i;
-      if ($pos == $cornerPos) {
-        $corner = $infos;
+    return $this->legendLines[$cornerPos];
+  }
+
+  public function getAgressiveLegendDistance(int $cornerPos): ?int
+  {
+    return $this->agressiveLegendDistances[$cornerPos];
+  }
+
+  /**
+   * Expansion chicanes: an assoc array stored the link : secondChicaneCorner => mainChicaneCorner
+   */
+  public function getChicaneMainCorner(int $cornerPos): int
+  {
+    return $this->chicanes[$cornerPos];
+  }
+
+  public function isChicane(int $cornerPos): bool
+  {
+    return !is_null($this->chicanes[$cornerPos] ?? null);
+  }
+
+
+
+  // Get corner ahead
+  public function getNextCorner(int $position): int
+  {
+    foreach ($this->corners as $pos => $infos) {
+      if ($pos > $position) {
+        return $pos;
       }
     }
 
-    return $corner != null && array_key_exists('aggressiveLegends', $corner) ? $corner['aggressiveLegends'] : null;
+    // If we are here, we are after the final corner but before the finish line
+    // => next corner is still the first one on the circuit
+    return array_keys($this->corners)[0];
   }
 
-  public function getCrossedCornersHeatCosts($constructor, $speed, $turn1, $pos1, $turn2, $pos2)
+  // Get distance to next corner
+  public function getDistanceToCorner(int $position): int
+  {
+    $cornerPos = $this->getNextCorner($position);
+    $length = $this->getLength();
+    return ($cornerPos - $position - 1 + $length) % $length;
+  }
+
+  // Get previous corner => useful for weather
+  public function getPrevCorner(int $position): int
+  {
+    $prevPos = array_keys($this->corners)[count($this->corners) - 1];
+    foreach ($this->corners as $pos => $infos) {
+      if ($pos > $position) {
+        return $prevPos;
+      }
+      $prevPos = $pos;
+    }
+
+    return $prevPos;
+  }
+
+
+
+  /**
+   * Given two positions with associated turns, compute the set of corners crossed by going from 1st pos to 2nd pos
+   *  => return an array where each entry has 'cornerPos' and 'turn'
+   */
+  public function getCornersInBetween(int $turn1, int $pos1, int $turn2, int $pos2): array
+  {
+    $length = $this->getLength();
+    $position1 = $length * $turn1 + $pos1;
+    $position2 = $length * $turn2 + $pos2;
+    $maxPosition = min($position2, $length * $this->getNbrLaps()); // Corners after the end of the race never count!
+    $corners = [];
+    for ($pos = $position1 + 1; $pos <= $maxPosition; $pos++) {
+      $position = ($pos + $length) % $length;
+      if (array_key_exists($position, $this->corners)) {
+        $corners[] = [
+          'cornerPos' => $position,
+          'turn' => intdiv($pos, $length)
+        ];
+      }
+    }
+
+    return $corners;
+  }
+
+
+  /**
+   * Core logic part: given a constructor, a speed, a strarting and ending pos, return the following informations about corner crossed
+   *  - array heatCosts: cornerPos => heatCost
+   *  - bool spinOut
+   *  - array speedLimits: cornerPos => speedLimit
+   */
+  public function getCrossedCornersHeatCosts(Constructor $constructor, int $speed, int $turn1, int $pos1, int $turn2, int $pos2): array
   {
     $corners = $this->getCornersInBetween($turn1, $pos1, $turn2, $pos2);
 
@@ -475,11 +692,11 @@ class Circuit
     $spinOut = false;
     $costs = [];
     $limits = [];
-    $available = $constructor->getEngine()->count();
+    $availableHeats = $constructor->getEngine()->count();
 
     if (!empty($corners)) {
       foreach ($corners as $infos) {
-        list($cornerPos, $cornerTurn) = $infos;
+        $cornerPos = $infos['cornerPos'];
         $costs[$cornerPos] = 0;
         $rawLimit = $this->getCornerMaxSpeed($cornerPos);
         $limit = $rawLimit + $speedLimitModifier;
@@ -496,52 +713,48 @@ class Circuit
 
           // Are we spinning out ??
           $costs[$cornerPos] = $nHeatsToPay;
-          if ($nHeatsToPay > $available) {
+          if ($nHeatsToPay > $availableHeats) {
             $spinOut = true;
             break;
           } else {
-            $available -= $nHeatsToPay;
+            $availableHeats -= $nHeatsToPay;
           }
         }
       }
     }
 
-    return [$costs, $spinOut, $limits];
+    return [
+      'heatCost' => array_sum($costs),
+      'heatCosts' => $costs,
+      'spinOut' => $spinOut,
+      'speedLimits' => $limits
+    ];
   }
 
-  // Get corner ahead
-  public function getNextCorner($position)
+
+  ///////////////////////////////////////////////
+  // __        __         _   _               
+  // \ \      / /__  __ _| |_| |__   ___ _ __ 
+  //  \ \ /\ / / _ \/ _` | __| '_ \ / _ \ '__|
+  //   \ V  V /  __/ (_| | |_| | | |  __/ |   
+  //    \_/\_/ \___|\__,_|\__|_| |_|\___|_|   
+  ///////////////////////////////////////////////
+
+  // Get current corner sector => corner behind
+  public function getSector(int $position): int
   {
-    foreach ($this->corners as $pos => $infos) {
-      if ($pos > $position) {
-        return $pos;
-      }
-    }
-
-    return array_keys($this->corners)[0];
+    return $this->getPrevCorner($position);
   }
 
-  // Get "current" corner = corner behind
-  public function getSector($position)
-  {
-    $prevPos = array_keys($this->corners)[count($this->corners) - 1];
-    foreach ($this->corners as $pos => $infos) {
-      if ($pos > $position) {
-        return $prevPos;
-      }
-      $prevPos = $pos;
-    }
-
-    return $prevPos;
-  }
-
-  public function getCornerWeather($corner)
+  // Get the weather token associated to that corner
+  public function getCornerWeather(int $corner): ?int
   {
     $weather = Globals::getWeather();
     return $weather['tokens'][$corner] ?? null;
   }
 
-  public function getRoadCondition($position)
+  // Get the road condition at that position
+  public function getRoadCondition(int $position): ?int
   {
     $corner = $this->getSector($position);
     $token = $this->getCornerWeather($corner);
@@ -559,47 +772,78 @@ class Circuit
     return $token;
   }
 
-  public function getLegendLine($cornerPos)
+
+  /////////////////////////////////
+  // ____                    
+  // |  _ \ _ __ ___  ___ ___ 
+  // | |_) | '__/ _ \/ __/ __|
+  // |  __/| | |  __/\__ \__ \
+  // |_|   |_|  \___||___/___/
+  /////////////////////////////////
+
+  /**
+   * Compute the mapping for press : corner position => n° of corner
+   *  => usual computation just ignore chicane and take all the corners from starting positions
+   *  => this is NOT TRUE for Espana that can overwrite this!
+   */
+  public function getPressCornersMapping(): array
   {
-    return $this->legendLines[$cornerPos];
+    $nCorners = 0;
+    $map = [];
+
+    // Adhoc case => array of corner positions in the datas
+    if (!is_null($this->pressCornersPositions)) {
+      foreach ($this->pressCornersPositions as $cornerPos) {
+        $map[$cornerPos] = $nCorners;
+        $nCorners++;
+      }
+    }
+    // Standard case: compute them by skipping chicane
+    else {
+      foreach ($this->corners as $cornerPos => $maxSpeed) {
+        if ($this->isChicane($cornerPos)) {
+          $nCorners--;
+          unset($map[$this->getChicaneMainCorner($cornerPos)]);
+        }
+
+        $map[$cornerPos] = $nCorners;
+        $nCorners++;
+      }
+    }
+
+    return $map;
   }
 
-  public function isChicane($cornerPos)
-  {
-    return !is_null($this->chicanes[$cornerPos] ?? null);
-  }
-  public function getChicaneMainCorner($cornerPos)
-  {
-    return $this->chicanes[$cornerPos];
-  }
 
-  public function isPressCorner($cornerPos)
+  // Is a given corner a press corner FOR THE CURRENT GAME
+  public function isPressCorner(int $cornerPos): bool
   {
     if (!Globals::isChampionship()) {
       return false;
     }
 
-    $nCorners = 0;
-    $map = [];
-    foreach ($this->corners as $pos => $maxSpeed) {
-      if ($this->isChicane($pos)) {
-        $nCorners--;
-        unset($map[$this->getChicaneMainCorner($pos)]);
-      }
-
-      $map[$pos] = $nCorners;
-      $nCorners++;
-    }
+    $map = $this->getPressCornersMapping();
+    $nCorners = count($map);
     $i = $map[$cornerPos] ?? null;
     if (is_null($i)) return false;
+
     $event = Globals::getCurrentEvent();
     $allEvents = Globals::getPossibleEvents();
     $pressCorners = array_map(fn($j) => $j % $nCorners, $allEvents[$event]['press']);
     return in_array($i, $pressCorners);
   }
 
+
+  /////////////////////////
+  // __  __ _          
+  // |  \/  (_)___  ___ 
+  // | |\/| | / __|/ __|
+  // | |  | | \__ \ (__ 
+  // |_|  |_|_|___/\___|
+  /////////////////////////
+
   // USEFUL FOR LIVE TV EVENT
-  public function getCarsInBetween($turn1, $pos1, $turn2, $pos2)
+  public function getCarsInBetween(int $turn1, int $pos1, int $turn2, int $pos2): int
   {
     $length = $this->getLength();
     $uid1 = $length * $turn1 + $pos1;
@@ -615,22 +859,5 @@ class Circuit
     }
 
     return $cars;
-  }
-
-  public function getDistanceToCorner($position)
-  {
-    $cornerPos = $this->getNextCorner($position);
-    $length = $this->getLength();
-    return ($cornerPos - $position - 1 + $length) % $length;
-  }
-
-  public function getFloodedSpaces()
-  {
-    return $this->datas['floodedSpaces'] ?? [];
-  }
-
-  public function getTunnelSpaces()
-  {
-    return $this->datas['tunnelSpaces'] ?? [];
   }
 }

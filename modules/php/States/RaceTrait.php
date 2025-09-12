@@ -6,17 +6,15 @@ use \Bga\GameFramework\Actions\CheckAction;
 
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
-use HEAT\Core\Stats;
-use HEAT\Helpers\Log;
-use HEAT\Helpers\Utils;
 use HEAT\Managers\Constructors;
 use HEAT\Managers\Players;
 use HEAT\Managers\Cards;
 use HEAT\Helpers\UserException;
+use HEAT\Models\Circuit;
 
 trait RaceTrait
 {
-  function stSetupRace()
+  public function stSetupRace(): void
   {
     // Championship
     if (Globals::isChampionship()) {
@@ -76,7 +74,7 @@ trait RaceTrait
     }
   }
 
-  function setWeatherAndSetupCards()
+  public function setWeatherAndSetupCards(): void
   {
     // Weather
     if (Globals::isWeatherModule()) {
@@ -116,7 +114,7 @@ trait RaceTrait
     Cards::setupRace();
   }
 
-  function stStartRace()
+  public function stStartRace(): void
   {
     if (Globals::isChampionship()) {
       $this->setWeatherAndSetupCards();
@@ -135,7 +133,7 @@ trait RaceTrait
     $this->gamestate->nextState('startRound');
   }
 
-  function stFinishRace()
+  public function stFinishRace(): void
   {
     $scores = Globals::getScores();
     $score = [];
@@ -204,14 +202,14 @@ trait RaceTrait
     }
   }
 
-  function actConfirmResults()
+  public function actConfirmResults(): void
   {
     self::checkAction('actConfirmResults');
     $pId = $this->getCurrentPId();
     $this->gamestate->setPlayerNonMultiactive($pId, 'done');
   }
 
-  function stProceedToNextRace()
+  public function stProceedToNextRace(): void
   {
     $datas = Globals::getChampionshipDatas();
     $datas['index'] = $datas['index'] + 1;
@@ -219,7 +217,7 @@ trait RaceTrait
     $this->gamestate->jumpToState(ST_SETUP_RACE);
   }
 
-  function stPreEndOfGame()
+  public function stPreEndOfGame(): void
   {
     if (Players::count() == 1) {
       $player = null;
@@ -242,7 +240,7 @@ trait RaceTrait
     $this->gamestate->nextState();
   }
 
-  function actQuitGame()
+  public function actQuitGame(): void
   {
     $pId = (int) $this->getCurrentPId();
     $constructor = Constructors::getOfPlayer($pId);
@@ -254,42 +252,6 @@ trait RaceTrait
     $this->eliminatePlayer($pId);
   }
 
-  ///////////////////////////////////
-  //   ____ _                _ _
-  //  / ___(_)_ __ ___ _   _(_) |_
-  // | |   | | '__/ __| | | | | __|
-  // | |___| | | | (__| |_| | | |_
-  //  \____|_|_|  \___|\__,_|_|\__|
-  ///////////////////////////////////
-
-  function getCircuit()
-  {
-    if (!isset($this->circuit)) {
-      $circuitDatas = Globals::getCircuitDatas();
-      $this->circuit = new \HEAT\Models\Circuit($circuitDatas);
-    }
-
-    return $this->circuit;
-  }
-
-  function getNbrLaps()
-  {
-    $circuit = $this->getCircuit();
-    return is_null($circuit) ? 0 : $circuit->getNbrLaps();
-  }
-
-  function getHandSizeLimit()
-  {
-    $event = Globals::getCurrentEvent();
-    if ($event == EVENT_RECORD_CROWDS) {
-      return 8;
-    } elseif ($event == EVENT_SAFETY_REGULATIONS) {
-      return 6;
-    } else {
-      return 7;
-    }
-  }
-
   ////////////////////////////////////////////////////////////////////
   //    ____                              ____             __ _
   //   / ___| __ _ _ __ __ _  __ _  ___  |  _ \ _ __ __ _ / _| |_
@@ -298,7 +260,7 @@ trait RaceTrait
   //   \____|\__,_|_|  \__,_|\__, |\___| |____/|_|  \__,_|_|  \__|
   //                         |___/
   ////////////////////////////////////////////////////////////////////
-  function stPrepareGarageDraft()
+  public function stPrepareGarageDraft(): void
   {
     Globals::setDeferredRoundsActive(false);
 
@@ -341,7 +303,7 @@ trait RaceTrait
     $this->initCustomTurnOrder('draft', $cIds, ST_DRAFT_GARAGE, 'stEndDraftRound');
   }
 
-  function argsChooseUpgrade()
+  public function argsChooseUpgrade(): array
   {
     // TMP : TODO REMOVE
     Globals::setDeferredRoundsActive(false);
@@ -360,7 +322,7 @@ trait RaceTrait
     return $data;
   }
 
-  function actChooseUpgrade($cardId)
+  public function actChooseUpgrade(int $cardId): void
   {
     self::checkAction('actChooseUpgrade');
     $args = $this->argsChooseUpgrade();
@@ -377,7 +339,7 @@ trait RaceTrait
     $this->nextPlayerCustomOrder('draft');
   }
 
-  function stEndDraftRound()
+  public function stEndDraftRound(): void
   {
     if (Globals::isChampionship()) {
       $turnOrder = Globals::getCustomTurnOrders()['draft'];
@@ -413,7 +375,7 @@ trait RaceTrait
     }
   }
 
-  function stFinishDraft()
+  public function stFinishDraft(): void
   {
     foreach (Constructors::getAll() as $cId => $constructor) {
       if (!$constructor->isAI()) {
@@ -430,7 +392,7 @@ trait RaceTrait
   }
 
   // CHAMPIONSHIP : swap
-  function argsSwapUpgrade()
+  public function argsSwapUpgrade(): array
   {
     // TMP : TODO REMOVE
     Globals::setDeferredRoundsActive(false);
@@ -442,7 +404,7 @@ trait RaceTrait
     ];
   }
 
-  function actSwapUpgrade($cardId1, $cardId2)
+  public function actSwapUpgrade(int $cardId1, int $cardId2): void
   {
     self::checkAction('actSwapUpgrade');
     $args = $this->argsSwapUpgrade();
@@ -463,13 +425,13 @@ trait RaceTrait
     $this->stFinishChampionshipDraft();
   }
 
-  function actPassSwapUpgrade()
+  public function actPassSwapUpgrade(): void
   {
     self::checkAction('actPassSwapUpgrade');
     $this->stFinishChampionshipDraft();
   }
 
-  function stFinishChampionshipDraft()
+  public function stFinishChampionshipDraft(): void
   {
     // Clear market
     $cardIds = Cards::getInLocation('market')->getIds();
@@ -479,11 +441,12 @@ trait RaceTrait
   }
 
   // CHAMPIONSHIP : draw sponsors
-  function stDrawSponsors()
+  public function stDrawSponsors(): void
   {
     Cards::shuffle('sponsors');
     $event = Globals::getCurrentEvent();
-    $n = EVENTS_EXP[$event]['sponsors'];
+    $allEvents = Globals::getPossibleEvents();
+    $n = $allEvents[$event]['sponsors'];
     if ($n > 0) {
       foreach (Constructors::getAll() as $cId => $constructor) {
         if ($constructor->isAI()) {
@@ -500,7 +463,7 @@ trait RaceTrait
 
 
   // SNAKE DRAFT DISCARD
-  public function argsSnakeDiscard()
+  public function argsSnakeDiscard(): array
   {
     $discards = Globals::getSnakeDiscard();
     $args = ['_private' => []];
@@ -519,7 +482,7 @@ trait RaceTrait
     return $args;
   }
 
-  public function actSnakeDiscard($cardId)
+  public function actSnakeDiscard(int $cardId): void
   {
     self::checkAction('actSnakeDiscard');
     $player = Players::getCurrent();
@@ -537,7 +500,7 @@ trait RaceTrait
   }
 
   #[CheckAction(false)]
-  public function actCancelSnakeDiscard()
+  public function actCancelSnakeDiscard(): void
   {
     $this->gamestate->checkPossibleAction('actCancelSnakeDiscard');
 
@@ -550,7 +513,7 @@ trait RaceTrait
     $this->updateActivePlayersSnakeDiscard();
   }
 
-  public function updateActivePlayersSnakeDiscard()
+  public function updateActivePlayersSnakeDiscard(): void
   {
     // Compute players that still need to select their card
     // => use that instead of BGA framework feature because in some rare case a player
@@ -576,7 +539,7 @@ trait RaceTrait
     }
   }
 
-  public function stEndOfSnakeDraft()
+  public function stEndOfSnakeDraft(): void
   {
     $discard = Globals::getSnakeDiscard();
     foreach ($discard as $pId => $cardId) {

@@ -4,20 +4,64 @@ namespace HEAT\States;
 
 use HEAT\Core\Globals;
 use HEAT\Core\Notifications;
-use HEAT\Core\Stats;
 use HEAT\Helpers\Collection;
-use HEAT\Helpers\Log;
-use HEAT\Helpers\Utils;
 use HEAT\Helpers\UserException;
 use HEAT\Managers\Constructors;
 use HEAT\Managers\Players;
 use HEAT\Managers\Cards;
+use HEAT\Models\Circuit;
 
 trait RoundTrait
 {
+  ///////////////////////////////////
+  //   ____ _                _ _
+  //  / ___(_)_ __ ___ _   _(_) |_
+  // | |   | | '__/ __| | | | | __|
+  // | |___| | | | (__| |_| | | |_
+  //  \____|_|_|  \___|\__,_|_|\__|
+  ///////////////////////////////////
+
+  public function getCircuit(): Circuit
+  {
+    if (!isset($this->circuit)) {
+      $circuitDatas = Globals::getCircuitDatas();
+      $this->circuit = new \HEAT\Models\Circuit($circuitDatas);
+    }
+
+    return $this->circuit;
+  }
+
+  public function getNbrLaps(): int
+  {
+    $circuit = $this->getCircuit();
+    return is_null($circuit) ? 0 : $circuit->getNbrLaps();
+  }
+
+  public function getHandSizeLimit(): int
+  {
+    $event = Globals::getCurrentEvent();
+    if ($event == EVENT_RECORD_CROWDS) {
+      return 8;
+    } elseif ($event == EVENT_SAFETY_REGULATIONS) {
+      return 6;
+    } else {
+      return 7;
+    }
+  }
+
+  //////////////////////////////
+  //  ____  _             _   
+  // / ___|| |_ __ _ _ __| |_ 
+  // \___ \| __/ _` | '__| __|
+  //  ___) | || (_| | |  | |_ 
+  // |____/ \__\__,_|_|   \__|
+  //////////////////////////////
+
   function stStartRound()
   {
     Globals::incRound();
+
+    // Reset planification
     Globals::setPlanification([]);
     $t = [];
     foreach (Constructors::getAll() as $cId => $constructor) {
@@ -25,6 +69,10 @@ trait RoundTrait
     }
     Globals::setPlanificationRevealed($t);
 
+    // Reset legend card
+    Globals::setLegendCardDrawn(false);
+
+    // Compute players that still need to play that round
     $skipped = Globals::getSkippedPlayers();
     $pIds = Constructors::getAll()
       ->filter(function ($constructor) use ($skipped) {
@@ -34,8 +82,6 @@ trait RoundTrait
         return $constructor->getPId();
       })
       ->toArray();
-
-    Globals::setLegendCardDrawn(false);
 
     if (empty($pIds)) {
       $this->gamestate->nextState('planification');
@@ -55,6 +101,14 @@ trait RoundTrait
       $this->gamestate->nextState('planification');
     }
   }
+
+  /////////////////////////
+  //  _____           _ 
+  // | ____|_ __   __| |
+  // |  _| | '_ \ / _` |
+  // | |___| | | | (_| |
+  // |_____|_| |_|\__,_|
+  /////////////////////////
 
   function stEndRound()
   {
@@ -159,9 +213,7 @@ trait RoundTrait
         $pos = $constructor->getPosition();
         $cells = [$this->getCircuit()->getFreeCell($pos, $constructor->getId(), false)];
         $hand = $constructor->getHand();
-        $speeds = $hand->map(function ($card) {
-          return 0;
-        });
+        $speeds = $hand->map(fn($card) => 0);
       }
       // Compute how far can he go
       else {
@@ -506,9 +558,9 @@ trait RoundTrait
     $speeds = [];
     $heatCosts = [];
     foreach ($possibleSpeeds as $speed) {
-      list($newCell,,,, $heatCost, $spinOut) = $this->getCircuit()->getReachedCell($constructor, $speed, false, true);
-      $speeds[$speed] = $newCell;
-      $heatCosts[$speed] = $heatCost;
+      $moveResult = $this->getCircuit()->getReachedCell($constructor, $speed, FLAG_COMPUTE_HEAT_COSTS);
+      $speeds[$speed] = $moveResult['cell'];
+      $heatCosts[$speed] = $moveResult['heatCost'];
     }
 
     return [
@@ -547,29 +599,29 @@ trait RoundTrait
     $this->stAdrenaline();
   }
 
-  public function moveCar($constructor, $n, $slipstream = false, $legendSlot = null)
+  public function moveCar($constructor, $n, $slipstream = false, $legendSlot = null): int
   {
     $circuit = $this->getCircuit();
-    list($newCell, $nSpacesForward, $extraTurns, $path,,) = $circuit->getReachedCell($constructor, $n, true, false);
-    $constructor->setCarCell($newCell);
-    $constructor->incTurn($extraTurns);
+    $moveResult = $circuit->getReachedCell($constructor, $n, FLAG_COMPUTE_PATHS);
+    $constructor->setCarCell($moveResult['cell']);
+    $constructor->incTurn($moveResult['extraTurn']);
     $distanceToCorner = $constructor->getDistanceToCorner();
     Notifications::moveCar(
       $constructor,
-      $newCell,
+      $moveResult['cell'],
       $n,
-      $nSpacesForward,
-      $extraTurns,
+      $moveResult['distance'],
+      $moveResult['extraTurn'],
       $distanceToCorner,
-      $path,
+      $moveResult['path'],
       $slipstream,
       $legendSlot
     );
 
     $paths = $constructor->getPaths() ?? [];
-    $paths[] = $path;
+    $paths[] = $moveResult['path'];
     $constructor->setPaths($paths);
-    return $nSpacesForward;
+    return $moveResult['distance'];
   }
 
   public function getCurrentHeatCosts($constructor)
@@ -579,7 +631,7 @@ trait RoundTrait
     $position = $constructor->getPosition();
     $turn = $constructor->getTurn();
     $speed = $constructor->getSpeed();
-    list($heatCosts, $spinOut) = $this->getCircuit()->getCrossedCornersHeatCosts(
+    return $this->getCircuit()->getCrossedCornersHeatCosts(
       $constructor,
       $speed,
       $prevTurn,
@@ -587,8 +639,6 @@ trait RoundTrait
       $turn,
       $position
     );
-    $previousHeatCost = array_sum($heatCosts);
-    return [$previousHeatCost, $heatCosts, $spinOut];
   }
 
   public function getNextCornerInfos($constructor)
@@ -605,7 +655,7 @@ trait RoundTrait
     $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
     $limit = $rawLimit + $speedLimitModifier;
 
-    return [$limit, $extraHeat];
+    return ['speedLimit' => $limit, 'extraHeat' => $extraHeat];
   }
 
   //////////////////////////////////////////////////////////////////
@@ -715,9 +765,9 @@ trait RoundTrait
     }
 
     // Current heat costs
-    list($currentHeatCost, $currentHeatCosts, $spinOut) = $this->getCurrentHeatCosts($constructor);
+    list('heatCost' => $currentHeatCost, 'heatCosts' => $currentHeatCosts, 'spinOut' => $spinOut) = $this->getCurrentHeatCosts($constructor);
     // Next corner infos
-    list($speedLimit, $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
+    list('speedLimit' => $speedLimit, 'extraHeat' => $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
 
     // Reached cells and heat costs
     $speeds = [];
@@ -726,10 +776,9 @@ trait RoundTrait
     foreach ($slipstreams as $n) {
       $res = $this->getCircuit()->getSlipstreamResult($constructor, $n);
       if ($res !== false) {
-        list($cell, $path, $heatCost,, $costs) = $res;
-        $speeds[$n] = $cell;
-        $heatCosts[$n] = $heatCost;
-        $slipstreamWillCrossNextCorner[$n] = count($costs) > count($currentHeatCosts);
+        $speeds[$n] = $res['cell'];
+        $heatCosts[$n] = $res['heatCost'];
+        $slipstreamWillCrossNextCorner[$n] = count($res['heatCosts']) > count($currentHeatCosts);
       }
     }
 
@@ -804,7 +853,7 @@ trait RoundTrait
       $position
     );
     foreach ($slipstreamedCorners as $infos) {
-      list($cornerPos, $cornerTurn) = $infos;
+      $cornerPos = $infos['cornerPos'];
       if ($this->getCircuit()->isPressCorner($cornerPos)) {
         $sponsorsGained[] = 'slipstream';
         $slipstreamedCorners[] = $cornerPos;
@@ -814,8 +863,7 @@ trait RoundTrait
     // For each corner, check speed against max speed of corner
     $spinOut = false;
     $speed = $constructor->getSpeed();
-    // prettier-ignore
-    list($corners,, $limits) = $this->getCircuit()->getCrossedCornersHeatCosts($constructor, $speed, $prevTurn, $prevPosition, $turn, $position);
+    list('heatCosts' => $corners, 'speedLimits' => $limits) = $this->getCircuit()->getCrossedCornersHeatCosts($constructor, $speed, $prevTurn, $prevPosition, $turn, $position);
 
     if (!empty($corners)) {
       foreach ($corners as $cornerPos => $nHeatsToPay) {
