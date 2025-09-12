@@ -139,7 +139,7 @@ trait RoundTrait
         return $card['effect'] != HEAT;
       });
 
-      $flooded = in_array($constructor->getCarCell(), $this->getCircuit()->getFloodedSpaces());
+      $flooded = $constructor->isInFloodedSpace();
 
       // Do we have a cluttered hand ?
       $clutteredHand = false;
@@ -381,7 +381,7 @@ trait RoundTrait
       throw new \BgaVisibleSystemException('You cant change gear more than 2. Should not happen');
     }
     // Check heat
-    $flooded = in_array($constructor->getCarCell(), $this->getCircuit()->getFloodedSpaces());
+    $flooded = $constructor->isInFloodedSpace();
     $heatCost = abs($newGear - $constructor->getGear()) > 1 ? 1 : 0;
     $payForFlooded = false;
     if ($flooded && $newGear < $constructor->getGear()) {
@@ -936,6 +936,11 @@ trait RoundTrait
     $event = Globals::getCurrentEvent();
     $prohibited = $event == EVENT_CHICANES ? [STRESS] : [HEAT, STRESS];
     $cards = $constructor->getHand()->filter(fn($card) => !in_array($card['effect'], $prohibited));
+
+    // Tunnel Vision exp => no discard in tunnel
+    if ($constructor->isInTunnelSpace()) {
+      $cards = [];
+    }
 
     // Any card to refresh ?
     $symbols = Globals::getSymbols();

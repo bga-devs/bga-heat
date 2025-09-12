@@ -593,7 +593,8 @@ class Circuit
     $i = $map[$cornerPos] ?? null;
     if (is_null($i)) return false;
     $event = Globals::getCurrentEvent();
-    $pressCorners = array_map(fn($j) => $j % $nCorners, EVENTS_EXP[$event]['press']);
+    $allEvents = Globals::getPossibleEvents();
+    $pressCorners = array_map(fn($j) => $j % $nCorners, $allEvents[$event]['press']);
     return in_array($i, $pressCorners);
   }
 
@@ -626,5 +627,10 @@ class Circuit
   public function getFloodedSpaces()
   {
     return $this->datas['floodedSpaces'] ?? [];
+  }
+
+  public function getTunnelSpaces()
+  {
+    return $this->datas['tunnelSpaces'] ?? [];
   }
 }

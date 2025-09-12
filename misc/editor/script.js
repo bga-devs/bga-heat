@@ -366,7 +366,7 @@ function exportCompressedJSON() {
       : { x: 0, y: 0 },
     corners: DATAS.corners || [],
     floodedSpaces: DATAS.flooded || [],
-    tunnelsSpaces: DATAS.tunels || [],
+    tunnelsSpaces: DATAS.tunnels || [],
     cells: {},
   };
 

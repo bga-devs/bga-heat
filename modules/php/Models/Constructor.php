@@ -147,6 +147,18 @@ class Constructor extends \HEAT\Helpers\DB_Model
       ->getRoadCondition($this->getPosition());
   }
 
+  public function isInFloodedSpace(): bool
+  {
+    return in_array($this->getCarCell(), Game::get()
+      ->getCircuit()->getFloodedSpaces());
+  }
+
+  public function isInTunnelSpace(): bool
+  {
+    return in_array($this->getCarCell(), Game::get()
+      ->getCircuit()->getTunnelSpaces());
+  }
+
   public function getDeck()
   {
     return Cards::getDeck($this->id);

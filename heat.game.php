@@ -53,7 +53,7 @@ class Heat extends Table
   use HEAT\States\LegendTrait;
   use HEAT\States\DeferredRoundTrait;
 
-  public static $instance = null;
+  public static ?Heat $instance = null;
   function __construct()
   {
     parent::__construct();
@@ -68,7 +68,7 @@ class Heat extends Table
     $this->bSelectGlobalsForUpdate = true;
   }
 
-  public static function get()
+  public static function get(): ?Heat
   {
     return self::$instance;
   }
