@@ -103,6 +103,9 @@ const DRAFT = 'draft';
  * MISC
  */
 
+const GEAR = 'gear';
+const WEATHER = 'weather';
+
 const WEATHER_CLOUD = 0;
 const WEATHER_FOG = 1;
 const WEATHER_STORM = 2;

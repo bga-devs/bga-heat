@@ -485,39 +485,37 @@ trait RoundTrait
     Globals::setPreviousPosition($constructor->getPosition());
     Globals::setPreviousTurn($constructor->getTurn());
     Globals::setUsedBoost(false);
+    Globals::setUsedSymbols([]);
     $symbols = [];
-    foreach ($cards as $card) {
+    foreach ($cards as $cardId => $card) {
       foreach ($card['symbols'] as $symbol => $n) {
-        if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
-          $symbols[$symbol][] = $card['id'];
-        } else {
-          $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
-        }
+        $symbols[$symbol][$cardId] = $n;
       }
+
       if ($card['type'] == 110) {
         $constructor->incStat('stressPlayed');
       }
     }
 
     // Resolve + symbols
-    $n = $symbols[BOOST] ?? 0;
-    for ($i = 0; $i < $n; $i++) {
-      list($cards, $card) = $constructor->resolveBoost();
-      Notifications::resolveBoost($constructor, $cards, $card, $i + 1, $n);
+    $usedSymbols = [];
+    $boosts = $symbols[BOOST] ?? [];
+    $totalBoost = array_sum($boosts);
+    $i = 0;
+    foreach ($boosts as $cardId => $n) {
+      $usedSymbols[] = $cardId . "-" . BOOST;
+      for ($j = 0; $j < $n; $j++) {
+        $i++;
+        list($cards, $card) = $constructor->resolveBoost();
+        Notifications::resolveBoost($constructor, $cards, $card, $i, $totalBoost);
+      }
     }
-    Globals::setFlippedCards($n);
+    Globals::setFlippedCards($i);
     unset($symbols[BOOST]);
     unset($symbols[ADJUST]);
 
-    // Direct play
-    unset($symbols[DIRECT]);
-    foreach ($constructor->getHand() as $cardId => $card) {
-      if (isset($card['symbols'][DIRECT])) {
-        $symbols[DIRECT][] = $cardId;
-      }
-    }
-
-    Globals::setSymbols($symbols);
+    Globals::setCardSymbols($symbols);
+    Globals::setUsedSymbols($usedSymbols);
 
     $this->gamestate->jumpToState(ST_CHOOSE_SPEED);
   }
@@ -566,6 +564,7 @@ trait RoundTrait
     return [
       'speeds' => $speeds,
       'heatCosts' => $heatCosts,
+      'usedSymbols' => Globals::getUsedSymbols(),
       'descSuffix' => count($speeds) == 1 ? 'SingleChoice' : '',
     ];
   }
@@ -669,7 +668,7 @@ trait RoundTrait
   public function stAdrenaline()
   {
     $constructor = Constructors::getActive();
-    $symbols = Globals::getSymbols();
+    $symbols = Globals::getCardSymbols();
     $roadCondition = $constructor->getRoadCondition();
     $event = Globals::getCurrentEvent();
 
@@ -678,8 +677,8 @@ trait RoundTrait
     $notFinished = array_unique(array_merge(Constructors::getTurnOrder(), Globals::getGiveUpPlayers()));
     $maxNo = count($notFinished);
     if ($event != EVENT_SUDDEN_RAIN && ($no == $maxNo - 1 || ($no == $maxNo - 2 && $maxNo >= 5))) {
-      $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
-      $symbols[ADRENALINE] = 1;
+      $symbols[COOLDOWN][ADRENALINE] = 1;
+      $symbols[ADRENALINE][ADRENALINE] = 1;
       Notifications::gainAdrenaline($constructor, $no == $maxNo - 1);
       $constructor->incStat('roundsAdrenaline');
     }
@@ -688,18 +687,18 @@ trait RoundTrait
     $gear = $constructor->getGear();
     if ($gear <= 2) {
       $n = $gear == 1 ? 3 : 1;
-      $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + $n;
+      $symbols[COOLDOWN][GEAR] = $n;
       Notifications::gainGearCooldown($constructor, $gear, $n);
     }
 
     // Weather might add 1 cooldown
     if ($roadCondition == ROAD_CONDITION_COOLING_BONUS) {
-      $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
+      $symbols[COOLDOWN][WEATHER] = 1;
     }
 
     // Save all the symbols and proceed to React phase
-    Globals::setSymbols($symbols);
-    $this->gamestate->jumpToState(ST_OLD_REACT);
+    Globals::setCardSymbols($symbols);
+    $this->gamestate->jumpToState(ST_REACT);
   }
 
   ///////////////////////////////////////////

@@ -1021,7 +1021,7 @@ var CardStock = /** @class */ (function () {
      */
     CardStock.prototype.addCard = function (card, animation, settings) {
         var _this = this;
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         if (!this.canAddCard(card, settings)) {
             return Promise.resolve(false);
         }
@@ -1054,7 +1054,10 @@ var CardStock = /** @class */ (function () {
             if (needsCreation && element) {
                 console.warn("Card ".concat(this.manager.getId(card), " already exists, not re-created."));
             }
-            var newElement = element !== null && element !== void 0 ? element : this.manager.createCardElement(card, ((_d = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _d !== void 0 ? _d : this.manager.isCardVisible(card)));
+            // if the card comes from a stock but is not found in this stock, the card is probably hudden (deck with a fake top card)
+            var fromBackSide = !(settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) && !(animation === null || animation === void 0 ? void 0 : animation.originalSide) && (animation === null || animation === void 0 ? void 0 : animation.fromStock) && !((_d = animation === null || animation === void 0 ? void 0 : animation.fromStock) === null || _d === void 0 ? void 0 : _d.contains(card));
+            var createdVisible = fromBackSide ? false : (_e = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _e !== void 0 ? _e : this.manager.isCardVisible(card);
+            var newElement = element !== null && element !== void 0 ? element : this.manager.createCardElement(card, createdVisible);
             promise = this.moveFromElement(card, newElement, animation, settingsWithIndex);
         }
         if (settingsWithIndex.index !== null && settingsWithIndex.index !== undefined) {
@@ -1184,7 +1187,9 @@ var CardStock = /** @class */ (function () {
                     case 4:
                         if (typeof shift === 'number') {
                             _loop_2 = function (i) {
-                                setTimeout(function () { return promises.push(_this.addCard(cards[i], animation, settings)); }, i * shift);
+                                promises.push(new Promise(function (resolve) {
+                                    setTimeout(function () { return _this.addCard(cards[i], animation, settings).then(function (result) { return resolve(result); }); }, i * shift);
+                                }));
                             };
                             for (i = 0; i < cards.length; i++) {
                                 _loop_2(i);
@@ -1387,7 +1392,7 @@ var CardStock = /** @class */ (function () {
         }
     };
     /**
-     * Unelect all cards
+     * Unselect all cards
      */
     CardStock.prototype.unselectAll = function (silent) {
         var _this = this;
@@ -1510,6 +1515,24 @@ var CardStock = /** @class */ (function () {
         var unselectableCardsClass = this.getUnselectableCardClass();
         var selectedCardsClass = this.getSelectedCardClass();
         cardElement === null || cardElement === void 0 ? void 0 : cardElement.classList.remove(selectableCardsClass, unselectableCardsClass, selectedCardsClass);
+    };
+    /**
+     * Changes the sort function of the stock.
+     *
+     * @param sort the new sort function. If defined, the stock will be sorted with this new function.
+     */
+    CardStock.prototype.setSort = function (sort) {
+        this.sort = sort;
+        if (this.sort && this.cards.length) {
+            this.cards.sort(this.sort);
+            var previouslyMovedCardDiv = this.getCardElement(this.cards[this.cards.length - 1]);
+            this.element.appendChild(previouslyMovedCardDiv);
+            for (var i = this.cards.length - 2; i >= 0; i--) {
+                var movedCardDiv = this.getCardElement(this.cards[i]);
+                this.element.insertBefore(movedCardDiv, previouslyMovedCardDiv);
+                previouslyMovedCardDiv = movedCardDiv;
+            }
+        }
     };
     return CardStock;
 }());
@@ -1815,11 +1838,11 @@ function sortFunction() {
             if (type === 'string') {
                 var compare = a[field].localeCompare(b[field]);
                 if (compare !== 0) {
-                    return compare;
+                    return compare * direction;
                 }
             }
             else if (type === 'number') {
-                var compare = (a[field] - b[field]) * direction;
+                var compare = (a[field] - b[field]);
                 if (compare !== 0) {
                     return compare * direction;
                 }
@@ -2115,15 +2138,17 @@ var CardsManager = /** @class */ (function (_super) {
             }
         }
         else {
-            if (type < 80) { // upgrade
+            if (type < 80) {
+                // upgrade
                 var imagePosition = type - 1;
                 var image_items_per_row = 10;
                 var row = Math.floor(imagePosition / image_items_per_row);
-                var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+                var xBackgroundPercent = (imagePosition - row * image_items_per_row) * 100;
                 var yBackgroundPercent = row * 100;
                 div.style.backgroundPosition = "-".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%");
             }
-            else { // sponsor
+            else {
+                // sponsor
                 var imagePosition = type - 80;
                 var xBackgroundPercent = imagePosition * 100;
                 div.style.backgroundPositionX = "-".concat(xBackgroundPercent, "%");
@@ -2133,6 +2158,17 @@ var CardsManager = /** @class */ (function (_super) {
         if (!ignoreTooltip) {
             this.game.setTooltip(div.id, this.getTooltip(card));
         }
+        if (card.symbols && !div.querySelector('.card-symbols')) {
+            div.insertAdjacentHTML('beforeend', "<div class='card-symbols'></div>");
+            var div2_1 = div.querySelector('.card-symbols');
+            if (card.speed > 0 || card.symbols.boost === undefined) {
+                div2_1.insertAdjacentHTML('beforeend', "<div class='card-symbol symbol-speed' id ='".concat(card.id, "-speed'></div>"));
+            }
+            Object.entries(card.symbols).forEach(function (_a) {
+                var symbol = _a[0], n = _a[1];
+                div2_1.insertAdjacentHTML('beforeend', "<div class='card-symbol symbol-".concat(symbol, "' id ='").concat(card.id, "-").concat(symbol, "'></div>"));
+            });
+        }
     };
     CardsManager.prototype.getGarageModuleTextTooltip = function (card) {
         switch (card.type) {
@@ -2141,7 +2177,7 @@ var CardsManager = /** @class */ (function (_super) {
             case 2:
             case 3:
             case 47:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they add [+] symbols."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('This early system was designed to transfer all the force from the engine into the tarmac through all four wheels but it resulted in poor handling. These cards have the potential of high Speed or Cooldown but also reduce control because they add [+] symbols.'));
             // Body
             case 4:
             case 5:
@@ -2149,19 +2185,19 @@ var CardsManager = /** @class */ (function (_super) {
             case 18:
             case 19:
             case 20:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("A safer car with better balance that does not understeer. These cards allow you to discard Stress cards."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('A safer car with better balance that does not understeer. These cards allow you to discard Stress cards.'));
             // Brakes
             case 7:
             case 8:
             case 9:
             case 10:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Brakes are all about how late you can make a decision to overtake or step on the brake, and still stay on the track. These cards have variable speed where you make a decision as you reveal the cards."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('Brakes are all about how late you can make a decision to overtake or step on the brake, and still stay on the track. These cards have variable speed where you make a decision as you reveal the cards.'));
             // Cooling systems
             case 11:
             case 12:
             case 13:
             case 21:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Provides a more stable and clean drive ; a better fuel economy and less stress to the car. These are cooldown cards."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('Provides a more stable and clean drive ; a better fuel economy and less stress to the car. These are cooldown cards.'));
             // R.P.M.
             case 14:
             case 15:
@@ -2170,24 +2206,24 @@ var CardsManager = /** @class */ (function (_super) {
             case 29:
             case 30:
             case 31:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("A powerful engine allows your car to respond faster. When played at key moments, those cards make it easier for you to accelerate past opponents. They are cards that help you slipstream and overtake all over the track, but are most effective in and around corners."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('A powerful engine allows your car to respond faster. When played at key moments, those cards make it easier for you to accelerate past opponents. They are cards that help you slipstream and overtake all over the track, but are most effective in and around corners.'));
             // Fuel
             case 22:
             case 23:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Racing fuel is highly regulated. These are the super fuel “illegal“ cards."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('Racing fuel is highly regulated. These are the super fuel “illegal“ cards.'));
             // Gas pedal
             case 24:
             case 25:
             case 26:
             case 27:
             case 28:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("The car reacts more quickly to pressure on the accelerator. These cards increase your overall speed."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('The car reacts more quickly to pressure on the accelerator. These cards increase your overall speed.'));
             // Suspension
             case 32:
             case 33:
             case 34:
             case 35:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Giving you a smoother drive, these cards can be played round after round."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('Giving you a smoother drive, these cards can be played round after round.'));
             // tires
             case 36:
             case 37:
@@ -2195,16 +2231,16 @@ var CardsManager = /** @class */ (function (_super) {
             case 39:
             case 40:
             case 41:
-                return "<strong>".concat(_(card.text), "</strong><br>\n            ").concat(_("It is about grip through width and durability. These cards allow you to go faster on corners or sacrifice the grip for a lot of cooldown."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n            ").concat(_('It is about grip through width and durability. These cards allow you to go faster on corners or sacrifice the grip for a lot of cooldown.'));
             // turbocharger
             case 42:
             case 43:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("A bigger engine giving you more horsepower and a higher top speed but also increasing weight and wear. These are the highest valued cards and require you to pay Heat."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('A bigger engine giving you more horsepower and a higher top speed but also increasing weight and wear. These are the highest valued cards and require you to pay Heat.'));
             // wings
             case 44:
             case 45:
             case 46:
-                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_("Creates downforce in corners but it lowers the top speed. These cards help you drive faster in corners but they are also unreliable, thus requiring Heat."));
+                return "<strong>".concat(_(card.text), "</strong><br>\n                ").concat(_('Creates downforce in corners but it lowers the top speed. These cards help you drive faster in corners but they are also unreliable, thus requiring Heat.'));
             case 101:
             case 102:
             case 103:
@@ -2220,15 +2256,19 @@ var CardsManager = /** @class */ (function (_super) {
     CardsManager.prototype.getTooltip = function (card) {
         var _this = this;
         switch (card.effect) {
-            case 'heat': return "<strong>".concat(_('Heat card'), "</strong>");
-            case 'stress': return "<strong>".concat(_('Stress card'), "</strong>");
+            case 'heat':
+                return "<strong>".concat(_('Heat card'), "</strong>");
+            case 'stress':
+                return "<strong>".concat(_('Stress card'), "</strong>");
             case 'basic_upgrade':
             case 'advanced_upgrade':
                 var tooltip = this.getGarageModuleTextTooltip(card);
-                var icons = Object.entries(card.symbols).map(function (_a) {
+                var icons = Object.entries(card.symbols)
+                    .map(function (_a) {
                     var symbol = _a[0], number = _a[1];
                     return _this.game.getGarageModuleIconTooltipWithIcon(symbol, number);
-                }).join('<br>');
+                })
+                    .join('<br>');
                 if (icons != '') {
                     tooltip += "<br><br>".concat(icons);
                 }
@@ -2236,10 +2276,12 @@ var CardsManager = /** @class */ (function (_super) {
             case 'sponsor':
                 var symbols = structuredClone(card.symbols);
                 symbols['one-time'] = 1;
-                return "<strong>".concat(_(card.text), "</strong>\n                <br><br>\n                ").concat(Object.entries(symbols).map(function (_a) {
+                return "<strong>".concat(_(card.text), "</strong>\n                <br><br>\n                ").concat(Object.entries(symbols)
+                    .map(function (_a) {
                     var symbol = _a[0], number = _a[1];
                     return _this.game.getGarageModuleIconTooltipWithIcon(symbol, number);
-                }).join('<br>'), "\n                ");
+                })
+                    .join('<br>'), "\n                ");
             default:
                 switch (card.type) {
                     case 101:
@@ -2273,16 +2315,18 @@ var CardsManager = /** @class */ (function (_super) {
             }
         }
         else {
-            if (type < 80) { // upgrade
+            if (type < 80) {
+                // upgrade
                 className = 'upgrade-card';
                 var imagePosition = type - 1;
                 var image_items_per_row = 10;
                 var row = Math.floor(imagePosition / image_items_per_row);
-                var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+                var xBackgroundPercent = (imagePosition - row * image_items_per_row) * 100;
                 var yBackgroundPercent = row * 100;
                 style = "background-position: -".concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%;");
             }
-            else { // sponsor
+            else {
+                // sponsor
                 className = 'sponsor-card';
                 var imagePosition = type - 80;
                 var xBackgroundPercent = imagePosition * 100;

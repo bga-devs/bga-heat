@@ -44,7 +44,9 @@ class Globals extends \HEAT\Helpers\DB_Manager
     'positionBeforeSlipstream' => 'int',
     'turnBeforeSlipstream' => 'int',
     'previousTurn' => 'int',
-    'symbols' => 'obj',
+    'symbols' => 'obj', // Old, kept for legacy
+    'cardSymbols' => 'obj',
+    'usedSymbols' => 'obj',
     'scores' => 'obj',
     'flippedCards' => 'int',
     'salvage' => 'int',

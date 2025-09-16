@@ -477,7 +477,6 @@ body > .card {
   width: calc(var(--width) + (var(--tile-count) - 1) * var(--horizontal-shift));
   height: calc(var(--height) + (var(--tile-count) - 1) * var(--vertical-shift));
   transition: width 0.5s ease-in-out, height 0.5s ease-in-out, background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  opacity: var(--tile-count);
 }
 
 .card-stock.all-visible-deck > .card {
@@ -597,6 +596,48 @@ height: 241px; */
   word-break: break-word;
   text-transform: uppercase;
 }
+.personal-card .card-sides .card-side.front .card-symbols {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 53px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol {
+  width: 53px;
+  height: 60px;
+  margin-bottom: 4px;
+  background: rgba(255, 0, 0, 0.5);
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-speed {
+  height: 60px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-cooldown {
+  height: 68px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-boost {
+  height: 53px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-salvage {
+  height: 90px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-direct {
+  height: 70px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-refresh {
+  height: 65px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-slipstream {
+  height: 70px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-draft {
+  height: 65px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-heat {
+  height: 75px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-accelerate {
+  height: 80px;
+}
 .personal-card.bga-cards_selectable-card:not(.bga-cards_disabled-card):not(.bga-cards_selected-card) {
   animation: selectable-card-animation 1s alternate infinite ease-in-out;
 }
@@ -685,9 +726,6 @@ height: 241px; */
   pointer-events: all !important;
   user-select: none;
 }
-.event-card .card-sides .card-side.front {
-  text-shadow: 0 0 1px black, 0 0 2px black;
-}
 .event-card .card-sides .card-side.front[data-index="1"] {
   background-position: 0% 0%;
 }
@@ -747,6 +785,9 @@ height: 241px; */
 }
 .event-card .card-sides .card-side.front[data-index="20"] {
   background-position: 100% 211.1111111111%;
+}
+.event-card .card-sides .card-side.front {
+  text-shadow: 0 0 1px black, 0 0 2px black;
 }
 .event-card .card-sides .card-side.front .title-and-rule {
   position: absolute;
@@ -1828,5 +1869,3 @@ html,
   margin-left: 5px;
   padding: 5px;
 }
-
-/*# sourceMappingURL=heat.css.map */

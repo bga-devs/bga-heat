@@ -9,34 +9,34 @@
     border-radius: 8px;
     font-family: "calgary-script-ot", sans-serif;
     font-weight: 400;
-    font-style: normal;   
+    font-style: normal;
 
     .card-sides {
         .card-side {
             border-radius: 8px;
-            background-image: url('img/personal-cards.jpg');  
-            background-size: auto 800%; 
+            background-image: url("img/personal-cards.jpg");
+            background-size: auto 800%;
 
-            &>* {
+            & > * {
                 pointer-events: all !important;
                 user-select: none;
             }
 
             &.back {
-                background-image: url('img/common-cards.jpg');  
-                background-size: auto 100%; 
+                background-image: url("img/common-cards.jpg");
+                background-size: auto 100%;
                 background-position-x: 100%;
             }
 
             &.front {
                 &.stress {
-                    background-image: url('img/common-cards.jpg');  
-                    background-size: auto 100%; 
+                    background-image: url("img/common-cards.jpg");
+                    background-size: auto 100%;
                     background-position-x: 0%;
                 }
                 &.heat {
-                    background-image: url('img/common-cards.jpg');  
-                    background-size: auto 100%; 
+                    background-image: url("img/common-cards.jpg");
+                    background-size: auto 100%;
                     background-position-x: 50%;
                 }
 
@@ -45,19 +45,19 @@
                 }
 
                 @for $col from 0 through 6 {
-                    &[data-col="#{$col}"]  {
+                    &[data-col="#{$col}"] {
                         background-position-x: #{$col * 100% / 6};
                     }
                 }
 
-                &.upgrade-card {        
-                    background-image: url('img/upgrade-cards.jpg');  
-                    background-size: auto 600%; 
+                &.upgrade-card {
+                    background-image: url("img/upgrade-cards.jpg");
+                    background-size: auto 600%;
                 }
 
-                &.sponsor-card {        
-                    background-image: url('img/sponsor-cards.jpg');  
-                    background-size: auto 100%; 
+                &.sponsor-card {
+                    background-image: url("img/sponsor-cards.jpg");
+                    background-size: auto 100%;
                 }
 
                 .text {
@@ -69,6 +69,51 @@
                     font-size: 32px;
                     word-break: break-word;
                     text-transform: uppercase;
+                }
+
+                .card-symbols {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 53px;
+
+                    .card-symbol {
+                        width: 53px;
+                        height: 60px;
+                        margin-bottom: 4px;
+                        background: rgba(255, 0, 0, 0.5);
+
+                        &.symbol-speed {
+                            height: 60px;
+                        }
+                        &.symbol-cooldown {
+                            height: 68px;
+                        }
+                        &.symbol-boost {
+                            height: 53px;
+                        }
+                        &.symbol-salvage {
+                            height: 90px;
+                        }
+                        &.symbol-direct {
+                            height: 70px;
+                        }
+                        &.symbol-refresh {
+                            height: 65px;
+                        }
+                        &.symbol-slipstream {
+                            height: 70px;
+                        }
+                        &.symbol-draft {
+                            height: 65px;
+                        }
+                        &.symbol-heat {
+                            height: 75px;
+                        }
+                        &.symbol-accelerate {
+                            height: 80px;
+                        }
+                    }
                 }
             }
         }
@@ -82,7 +127,7 @@
         .card-side {
             box-shadow: unset;
         }
-    }    
+    }
 
     &.bga-cards_selected-card:not(.bga-cards_disabled-card) {
         box-shadow: 0 0 5px 5px orange;
@@ -90,7 +135,7 @@
         .card-side {
             box-shadow: unset;
         }
-    } 
+    }
 
     &.planned-card {
         outline: 5px solid orange;
@@ -103,10 +148,10 @@
 
 @keyframes selectable-card-animation {
     0% {
-      box-shadow: 0 0 3px 2px white;
+        box-shadow: 0 0 3px 2px white;
     }
-    100% { 
-      box-shadow: 0 0 5px 3px white;
+    100% {
+        box-shadow: 0 0 5px 3px white;
     }
 }
 
