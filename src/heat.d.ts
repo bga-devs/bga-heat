@@ -160,12 +160,17 @@ interface EnteringSlipstreamArgs extends EnteringChooseSpeedArgs {
     slipstreamWillCrossNextCorner: { [cornerId: number]: boolean };
 }
 
+interface ReactSymbol {
+    doable: any;
+    used: any;
+    mandatory: boolean;
+    coalescable: boolean; // true means can be grouped, false means done 1 by 1
+}
+
 interface EnteringReactArgs {
     canPass: boolean;
-    symbols: { [symbol: string]: number | number[] };
+    symbols: { [symbol: string]: ReactSymbol };
     flippedCards: number;
-    doable: string[];
-
     adrenalineWillCrossNextCorner: boolean;
     currentHeatCost: number;
     heatCosts: { [cornerId: number]: number };
