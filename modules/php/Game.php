@@ -17,44 +17,39 @@
  *
  */
 
-$swdNamespaceAutoload = function ($class) {
-  $classParts = explode('\\', $class);
-  if ($classParts[0] == 'HEAT') {
-    array_shift($classParts);
-    $file = dirname(__FILE__) . '/modules/php/' . implode(DIRECTORY_SEPARATOR, $classParts) . '.php';
-    if (file_exists($file)) {
-      require_once $file;
-    } else {
-      var_dump('Cannot find file : ' . $file);
-    }
-  }
-};
-spl_autoload_register($swdNamespaceAutoload, true, true);
+declare(strict_types=1);
+
+namespace Bga\Games\Heat;
 
 require_once APP_GAMEMODULE_PATH . 'module/table/table.game.php';
 
-use HEAT\Managers\Cards;
-use HEAT\Managers\Players;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\LegendCards;
-use HEAT\Helpers\Log;
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Core\Preferences;
-use HEAT\Core\Stats;
+use Bga\GameFramework\Table;
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\LegendCards;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Preferences;
+use Bga\Games\Heat\Core\Stats;
+use Bga\Games\Heat\States\DeferredRoundTrait;
+use Bga\Games\Heat\States\LegendTrait;
+use Bga\Games\Heat\States\OldReactTrait;
+use Bga\Games\Heat\States\RaceTrait;
+use Bga\Games\Heat\States\ReactTrait;
+use Bga\Games\Heat\States\RoundTrait;
+use Bga\Games\Heat\States\SetupTrait;
 
-class Heat extends Table
+class Game extends Table
 {
-  use HEAT\DebugTrait;
-  use HEAT\States\SetupTrait;
-  use HEAT\States\RaceTrait;
-  use HEAT\States\RoundTrait;
-  use HEAT\States\OldReactTrait;
-  use HEAT\States\ReactTrait;
-  use HEAT\States\LegendTrait;
-  use HEAT\States\DeferredRoundTrait;
+  use DebugTrait;
+  use SetupTrait;
+  use RaceTrait;
+  use RoundTrait;
+  use OldReactTrait;
+  use ReactTrait;
+  use LegendTrait;
+  use DeferredRoundTrait;
 
-  public static ?Heat $instance = null;
+  public static ?Game $instance = null;
   function __construct()
   {
     parent::__construct();
@@ -69,7 +64,7 @@ class Heat extends Table
     $this->bSelectGlobalsForUpdate = true;
   }
 
-  public static function get(): ?Heat
+  public static function get(): ?Game
   {
     return self::$instance;
   }
@@ -82,7 +77,7 @@ class Heat extends Table
   /*
    * getAllDatas:
    */
-  public function getAllDatas()
+  public function getAllDatas(): array
   {
     $pId = self::getCurrentPId();
     return [
@@ -173,7 +168,7 @@ class Heat extends Table
   {
     $turnOrders = Globals::getCustomTurnOrders();
     if (!isset($turnOrders[$key])) {
-      throw new BgaVisibleSystemException('Asking for the next player of a custom turn order not initialized : ' . $key);
+      throw new \BgaVisibleSystemException('Asking for the next player of a custom turn order not initialized : ' . $key);
     }
 
     // Increase index and save
@@ -205,7 +200,7 @@ class Heat extends Table
   {
     $turnOrders = Globals::getCustomTurnOrders();
     if (!isset($turnOrders[$key])) {
-      throw new BgaVisibleSystemException('Asking for ending a custom turn order not initialized : ' . $key);
+      throw new \BgaVisibleSystemException('Asking for ending a custom turn order not initialized : ' . $key);
     }
 
     $o = $turnOrders[$key];
@@ -223,7 +218,7 @@ class Heat extends Table
       $method = $mixed;
       $this->$method($args);
     } else {
-      throw new BgaVisibleSystemException('Failing to jumpToOrCall  : ' . $mixed);
+      throw new \BgaVisibleSystemException('Failing to jumpToOrCall  : ' . $mixed);
     }
   }
 
@@ -235,7 +230,7 @@ class Heat extends Table
    *   This method is called each time it is the turn of a player who has quit the game (= "zombie" player).
    *   You can do whatever you want in order to make sure the turn of this player ends appropriately
    */
-  public function zombieTurn($state, $activePlayer)
+  public function zombieTurn($state, $activePlayer): void
   {
     $pId = (int) $activePlayer;
     $skipped = Globals::getSkippedPlayers();

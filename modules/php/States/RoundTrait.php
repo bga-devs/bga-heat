@@ -1,15 +1,17 @@
 <?php
 
-namespace HEAT\States;
+namespace Bga\Games\Heat\States;
 
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Helpers\Collection;
-use HEAT\Helpers\UserException;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\Players;
-use HEAT\Managers\Cards;
-use HEAT\Models\Circuit;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Helpers\Collection;
+use Bga\Games\Heat\Helpers\UserException;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Managers\Cards;
+use Bga\Games\Heat\Models\Circuit;
+
+use \Bga\GameFramework\Actions\Types\JsonParam;
 
 trait RoundTrait
 {
@@ -25,7 +27,7 @@ trait RoundTrait
   {
     if (!isset($this->circuit)) {
       $circuitDatas = Globals::getCircuitDatas();
-      $this->circuit = new \HEAT\Models\Circuit($circuitDatas);
+      $this->circuit = new \Bga\Games\Heat\Models\Circuit($circuitDatas);
     }
 
     return $this->circuit;
@@ -273,7 +275,7 @@ trait RoundTrait
     return $args;
   }
 
-  public function actPlan($cardIds)
+  public function actPlan(#[JsonParam()] $cardIds)
   {
     self::checkAction('actPlan');
     $player = Players::getCurrent();
@@ -588,6 +590,7 @@ trait RoundTrait
 
     return [
       'speeds' => $speeds,
+      'symbols' => $symbols,
       'descSuffix' => count($speeds) == 1 ? 'SingleChoice' : '',
     ];
   }
@@ -825,7 +828,7 @@ trait RoundTrait
     }
   }
 
-  public function actSlipstream($n)
+  public function actSlipstream(int $speed)
   {
     self::checkAction('actSlipstream');
 
@@ -833,13 +836,13 @@ trait RoundTrait
     Globals::setPositionBeforeSlipstream($constructor->getPosition());
     Globals::setTurnBeforeSlipstream($constructor->getTurn());
 
-    if ($n > 0) {
-      if (!array_key_exists($n, $this->argsSlipstream()['speeds'])) {
+    if ($speed > 0) {
+      if (!array_key_exists($speed, $this->argsSlipstream()['speeds'])) {
         throw new \BgaVisibleSystemException('Invalid slipstream. Should not happen');
       }
 
       // Compute the new cell
-      $nForward = $this->moveCar($constructor, $n, true);
+      $nForward = $this->moveCar($constructor, $speed, true);
       $constructor->incStat('slipstreamGains', $nForward);
     }
 
@@ -1072,7 +1075,7 @@ trait RoundTrait
     }
   }
 
-  public function actRefresh($cardId)
+  public function actRefresh(int $cardId)
   {
     self::checkAction('actRefresh');
     $constructor = Constructors::getActive();
@@ -1094,7 +1097,7 @@ trait RoundTrait
     $this->gamestate->jumpToState(ST_DISCARD);
   }
 
-  public function actDiscard($cardIds)
+  public function actDiscard(#[JsonParam()] array $cardIds)
   {
     self::checkAction('actDiscard');
     $constructor = Constructors::getActive();

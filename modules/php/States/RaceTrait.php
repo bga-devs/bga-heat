@@ -1,16 +1,15 @@
 <?php
 
-namespace HEAT\States;
+namespace Bga\Games\Heat\States;
 
 use \Bga\GameFramework\Actions\CheckAction;
 
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\Players;
-use HEAT\Managers\Cards;
-use HEAT\Helpers\UserException;
-use HEAT\Models\Circuit;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Managers\Cards;
+use Bga\Games\Heat\Helpers\UserException;
 
 trait RaceTrait
 {
@@ -66,7 +65,7 @@ trait RaceTrait
     Globals::setSkippedPlayers([]);
     Globals::setGiveUpPlayers([]);
     Globals::setRound(0);
-    if (in_array(Globals::getGarageModuleMode(), [\HEAT\OPTION_GARAGE_DRAFT, \HEAT\OPTION_GARAGE_SNAKE_DRAFT])) {
+    if (in_array(Globals::getGarageModuleMode(), [\Bga\Games\Heat\OPTION_GARAGE_DRAFT, \Bga\Games\Heat\OPTION_GARAGE_SNAKE_DRAFT])) {
       Globals::setDraftRound(1);
       $this->gamestate->nextState('draft');
     } else {
@@ -404,8 +403,10 @@ trait RaceTrait
     ];
   }
 
-  public function actSwapUpgrade(int $cardId1, int $cardId2): void
+  public function actSwapUpgrade(int $marketCardId, int $ownedCardId): void
   {
+    $cardId1 = $marketCardId;
+    $cardId2 = $ownedCardId;
     self::checkAction('actSwapUpgrade');
     $args = $this->argsSwapUpgrade();
     if (!array_key_exists($cardId1, $args['market']->toAssoc())) {
@@ -416,7 +417,7 @@ trait RaceTrait
     }
     $constructor = Constructors::getActive();
     $cId = $constructor->getId();
-    Cards::move($cardId1, "inPlay-${cId}");
+    Cards::move($cardId1, "inPlay-$cId");
     Cards::move($cardId2, 'market');
     $card1 = Cards::get($cardId1);
     $card2 = Cards::get($cardId2);

@@ -1,15 +1,15 @@
 <?php
 
-namespace HEAT\Managers;
+namespace Bga\Games\Heat\Managers;
 
 use BgaVisibleSystemException;
-use HEAT\Core\Stats;
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Core\Game;
-use HEAT\Helpers\UserException;
-use HEAT\Helpers\Collection;
-use HEAT\Managers\Constructors;
+use Bga\Games\Heat\Core\Stats;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Core\Game;
+use Bga\Games\Heat\Helpers\UserException;
+use Bga\Games\Heat\Helpers\Collection;
+use Bga\Games\Heat\Managers\Constructors;
 
 const BLACK = 0;
 const BLUE = 1;

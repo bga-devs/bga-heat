@@ -1,11 +1,14 @@
 <?php
-namespace HEAT\Core;
-use HEAT\Core\Game;
+
+namespace Bga\Games\Heat\Core;
+
+use Bga\Games\Heat\Game;
 
 /*
  * User preferences
  */
-class Preferences extends \HEAT\Helpers\DB_Manager
+
+class Preferences extends \Bga\Games\Heat\Helpers\DB_Manager
 {
   protected static $table = 'user_preferences';
   protected static $primary = 'id';

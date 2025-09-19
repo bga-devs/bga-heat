@@ -1,17 +1,19 @@
 <?php
-namespace HEAT\Models;
-use HEAT\Core\Stats;
-use HEAT\Core\Notifications;
-use HEAT\Core\Preferences;
-use HEAT\Managers\Cards;
-use HEAT\Core\Globals;
-use HEAT\Helpers\Utils;
+
+namespace Bga\Games\Heat\Models;
+
+use Bga\Games\Heat\Core\Stats;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Core\Preferences;
+use Bga\Games\Heat\Managers\Cards;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Helpers\Utils;
 
 /*
  * Player: all utility functions concerning a player
  */
 
-class Player extends \HEAT\Helpers\DB_Model
+class Player extends \Bga\Games\Heat\Helpers\DB_Model
 {
   protected $table = 'player';
   protected $primary = 'player_id';
@@ -25,6 +27,7 @@ class Player extends \HEAT\Helpers\DB_Model
     'scoreAux' => ['player_score_aux', 'int'],
     'zombie' => 'player_zombie',
   ];
+  protected int $id;
 
   public function getUiData($currentPlayerId = null)
   {

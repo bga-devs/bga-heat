@@ -1,11 +1,9 @@
 <?php
 
-namespace HEAT\Helpers;
+namespace Bga\Games\Heat\Helpers;
 
-use HEAT\Core\Game;
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Managers\Players;
+use Bga\Games\Heat\Game;
+use Bga\Games\Heat\Core\Globals;
 
 /**
  * Class that allows to log DB change: useful for undo feature

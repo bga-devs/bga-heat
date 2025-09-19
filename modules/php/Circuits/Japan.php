@@ -1,6 +1,6 @@
 <?php
 
-namespace HEAT\Circuits;
+namespace Bga\Games\Heat\Circuits;
 
 $circuitDatas = [
   "id"             => "Japan",

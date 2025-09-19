@@ -1,6 +1,8 @@
 <?php
-namespace HEAT\Helpers;
-use HEAT\Core\Game;
+
+namespace Bga\Games\Heat\Helpers;
+
+use Bga\Games\Heat\Game;
 
 class UserException extends \BgaUserException
 {
@@ -9,4 +11,3 @@ class UserException extends \BgaUserException
     parent::__construct(Game::get()->translate($str));
   }
 }
-?>

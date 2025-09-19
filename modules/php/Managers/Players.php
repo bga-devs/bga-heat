@@ -1,22 +1,23 @@
 <?php
-namespace HEAT\Managers;
-use HEAT\Core\Game;
-use HEAT\Core\Globals;
-use HEAT\Core\Stats;
-use HEAT\Helpers\Utils;
-use HEAT\Core\Notifications;
+
+namespace Bga\Games\Heat\Managers;
+
+use Bga\Games\Heat\Game;
+use Bga\Games\Heat\Core\Globals;
+
 
 /*
  * Players manager : allows to easily access players ...
  *  a player is an instance of Player class
  */
-class Players extends \HEAT\Helpers\DB_Manager
+
+class Players extends \Bga\Games\Heat\Helpers\DB_Manager
 {
   protected static $table = 'player';
   protected static $primary = 'player_id';
   protected static function cast($row)
   {
-    return new \HEAT\Models\Player($row);
+    return new \Bga\Games\Heat\Models\Player($row);
   }
 
   public static function setupNewGame($players, $options)

@@ -1,15 +1,15 @@
 <?php
 
-namespace HEAT\States;
+namespace Bga\Games\Heat\States;
 
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Core\Stats;
-use HEAT\Helpers\Log;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\Players;
-use HEAT\Managers\Cards;
-use HEAT\Managers\LegendCards;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Core\Stats;
+use Bga\Games\Heat\Helpers\Log;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Managers\Cards;
+use Bga\Games\Heat\Managers\LegendCards;
 
 trait LegendTrait
 {

@@ -1,11 +1,13 @@
 <?php
-namespace HEAT\Helpers;
+
+namespace Bga\Games\Heat\Helpers;
 
 class CachedDB_Manager extends DB_Manager
 {
   protected static $table = null;
   protected static $primary = null;
   protected static $log = null;
+  protected static $datas = null;
   protected static function cast($row)
   {
     return $row;

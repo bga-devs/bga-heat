@@ -1,16 +1,18 @@
 <?php
 
-namespace HEAT\States;
+namespace Bga\Games\Heat\States;
 
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Core\Stats;
-use HEAT\Helpers\Log;
-use HEAT\Helpers\Utils;
-use HEAT\Helpers\UserException;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\Players;
-use HEAT\Managers\Cards;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Core\Stats;
+use Bga\Games\Heat\Helpers\Log;
+use Bga\Games\Heat\Helpers\Utils;
+use Bga\Games\Heat\Helpers\UserException;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Managers\Cards;
+
+use \Bga\GameFramework\Actions\Types\JsonParam;
 
 ///////////////////////////////////////////
 //    ____     ____                 _
@@ -366,7 +368,7 @@ trait ReactTrait
     ];
   }
 
-  public function actSalvage($cardIds)
+  public function actSalvage(#[JsonParam()] array $cardIds)
   {
     self::checkAction('actSalvage');
     $args = $this->argsSalvage();
@@ -410,7 +412,7 @@ trait ReactTrait
     ];
   }
 
-  public function actSuperCool($n)
+  public function actSuperCool(int $n)
   {
     self::checkAction('actSuperCool');
     $args = $this->argsSuperCool();
@@ -492,7 +494,7 @@ trait ReactTrait
     }
   }
 
-  public function actPayHeats($cardIds)
+  public function actPayHeats(#[JsonParam()] array $cardIds)
   {
     self::checkAction('actPayHeats');
     $args = $this->argsPayHeats();

@@ -1,22 +1,19 @@
 <?php
 
-namespace HEAT\Managers;
+namespace Bga\Games\Heat\Managers;
 
-use BgaVisibleSystemException;
-use HEAT\Core\Stats;
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Core\Game;
-use HEAT\Helpers\UserException;
-use HEAT\Helpers\Collection;
-use HEAT\Managers\Constructors;
+use Bga\Games\Heat\Game;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Helpers\Pieces;
+use Bga\Games\Heat\Managers\Constructors;
 
 const HV = 1;
 const TV = 2;
 
 /* Class to manage all the cards for Heat */
 
-class Cards extends \HEAT\Helpers\Pieces
+class Cards extends Pieces
 {
   public static $table = 'cards';
   protected static $prefix = 'card_';
@@ -119,7 +116,7 @@ class Cards extends \HEAT\Helpers\Pieces
       $cards[] = ['type' => 103, 'nbr' => 3, 'location' => "deck-$cId"];
       $cards[] = ['type' => 104, 'nbr' => 3, 'location' => "deck-$cId"];
 
-      if ($options[\HEAT\OPTION_GARAGE_MODULE] == \HEAT\OPTION_DISABLED) {
+      if ($options[\Bga\Games\Heat\OPTION_GARAGE_MODULE] == \Bga\Games\Heat\OPTION_DISABLED) {
         // Starting upgrades : 0, 5, pesonalized Heat
         $cards[] = ['type' => 100, 'nbr' => 1, 'location' => "deck-$cId"];
         $cards[] = ['type' => 105, 'nbr' => 1, 'location' => "deck-$cId"];
@@ -128,10 +125,10 @@ class Cards extends \HEAT\Helpers\Pieces
     }
 
     // Create deck of upgrades
-    $garage = $options[\HEAT\OPTION_GARAGE_MODULE];
-    if ($garage != \HEAT\OPTION_DISABLED) {
-      $withAdvanced = in_array($garage, [\HEAT\OPTION_GARAGE_ADVANCED, \HEAT\OPTION_GARAGE_MIXED]);
-      $withBasic = in_array($garage, [\HEAT\OPTION_GARAGE_BASIC, \HEAT\OPTION_GARAGE_MIXED]);
+    $garage = $options[\Bga\Games\Heat\OPTION_GARAGE_MODULE];
+    if ($garage != \Bga\Games\Heat\OPTION_DISABLED) {
+      $withAdvanced = in_array($garage, [\Bga\Games\Heat\OPTION_GARAGE_ADVANCED, \Bga\Games\Heat\OPTION_GARAGE_MIXED]);
+      $withBasic = in_array($garage, [\Bga\Games\Heat\OPTION_GARAGE_BASIC, \Bga\Games\Heat\OPTION_GARAGE_MIXED]);
 
       for ($i = 1; $i < 80; $i++) {
         if (!isSupported($i, $cardsData)) continue;
@@ -159,7 +156,7 @@ class Cards extends \HEAT\Helpers\Pieces
     self::shuffle('sponsors');
 
     // Draw them if random mode is selected
-    if ($garage != \HEAT\OPTION_DISABLED && $options[\HEAT\OPTION_GARAGE_CHOICE] == \HEAT\OPTION_GARAGE_RANDOM) {
+    if ($garage != \Bga\Games\Heat\OPTION_DISABLED && $options[\Bga\Games\Heat\OPTION_GARAGE_CHOICE] == \Bga\Games\Heat\OPTION_GARAGE_RANDOM) {
       foreach (Constructors::getAll() as $cId => $constructor) {
         if ($constructor->isAI()) {
           continue;

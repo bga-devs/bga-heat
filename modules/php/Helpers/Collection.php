@@ -1,5 +1,6 @@
 <?php
-namespace HEAT\Helpers;
+
+namespace Bga\Games\Heat\Helpers;
 
 class Collection extends \ArrayObject
 {

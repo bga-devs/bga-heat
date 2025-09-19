@@ -1,11 +1,15 @@
 <?php
-namespace HEAT\Core;
-use HEAT\Managers\Players;
+
+namespace Bga\Games\Heat\Core;
+
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Game;
 
 /*
  * Statistics
  */
-class Stats extends \HEAT\Helpers\CachedDB_Manager
+
+class Stats extends \Bga\Games\Heat\Helpers\CachedDB_Manager
 {
   protected static $table = 'stats';
   protected static $primary = 'stats_id';
@@ -185,5 +189,3 @@ class Stats extends \HEAT\Helpers\CachedDB_Manager
     return null;
   }
 }
-
-?>

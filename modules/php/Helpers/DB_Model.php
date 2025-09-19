@@ -1,8 +1,8 @@
 <?php
 
-namespace HEAT\Helpers;
+namespace Bga\Games\Heat\Helpers;
 
-use HEAT\Core\Game;
+use Bga\Games\Heat\Game;
 
 abstract class DB_Model extends \APP_DbObject implements \JsonSerializable
 {
@@ -148,7 +148,7 @@ abstract class DB_Model extends \APP_DbObject implements \JsonSerializable
   /**
    * Return an array of attributes
    */
-  public function jsonSerialize()
+  public function jsonSerialize(): mixed
   {
     $data = [];
     foreach ($this->attributes as $attribute => $field) {

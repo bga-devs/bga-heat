@@ -185,7 +185,7 @@ const EVENTS_EXP_TV = [
 
 
 const CHAMPIONSHIP_SEASONS = [
-  \HEAT\OPTION_CHAMPIONSHIP_SEASON_61 => [
+  Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_61 => [
     'name' => 1961,
     'circuits' => [
       ['circuit' => 'gb', 'event' => EVENT_INAUGURATION],
@@ -193,7 +193,7 @@ const CHAMPIONSHIP_SEASONS = [
       ['circuit' => 'italia', 'event' => EVENT_STRIKE],
     ],
   ],
-  \HEAT\OPTION_CHAMPIONSHIP_SEASON_62 => [
+  Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_62 => [
     'name' => 1962,
     'circuits' => [
       ['circuit' => 'italia', 'event' => EVENT_RESTRICTIONS_LIFTED],
@@ -201,7 +201,7 @@ const CHAMPIONSHIP_SEASONS = [
       ['circuit' => 'france', 'event' => EVENT_CORRUPTION],
     ],
   ],
-  \HEAT\OPTION_CHAMPIONSHIP_SEASON_63 => [
+  Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_63 => [
     'name' => 1963,
     'circuits' => [
       ['circuit' => 'usa', 'event' => EVENT_TITLE_SPONSOR],
@@ -210,7 +210,7 @@ const CHAMPIONSHIP_SEASONS = [
       ['circuit' => 'italia', 'event' => EVENT_FUTURE_UNKNOWN],
     ],
   ],
-  \HEAT\OPTION_CHAMPIONSHIP_SEASON_64 => [
+  Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_64 => [
     'name' => 1964,
     'circuits' => [
       ['circuit' => 'japan', 'event' => EVENT_GOING_GLOBAL],
@@ -219,7 +219,7 @@ const CHAMPIONSHIP_SEASONS = [
       ['circuit' => 'japan', 'event' => EVENT_SUDDEN_RAIN],
     ],
   ],
-  \HEAT\OPTION_CHAMPIONSHIP_SEASON_65 => [
+  Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_65 => [
     'name' => 1965,
     'circuits' => [
       ['circuit' => 'gb', 'event' => EVENT_HOLD_TIGHT],

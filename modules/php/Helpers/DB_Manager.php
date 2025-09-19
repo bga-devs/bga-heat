@@ -1,8 +1,8 @@
 <?php
 
-namespace HEAT\Helpers;
+namespace Bga\Games\Heat\Helpers;
 
-use HEAT\Core\Game;
+use Bga\Games\Heat\Game;
 
 class DB_Manager extends \APP_DbObject
 {

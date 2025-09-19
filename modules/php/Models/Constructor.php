@@ -1,21 +1,19 @@
 <?php
 
-namespace HEAT\Models;
+namespace Bga\Games\Heat\Models;
 
-use HEAT\Managers\Players;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\Cards;
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Core\Preferences;
-use HEAT\Core\Stats;
-use HEAT\Core\Game;
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Cards;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Game;
 
 /*
  * Constructor: all utility functions concerning a player, real or not
  */
 
-class Constructor extends \HEAT\Helpers\DB_Model
+class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
 {
   protected $table = 'constructors';
   protected $primary = 'id';
@@ -31,6 +29,8 @@ class Constructor extends \HEAT\Helpers\DB_Model
     'speed' => ['speed', 'int'],
     'paths' => ['paths', 'obj'],
   ];
+  protected int $id;
+  protected int $pId;
 
   public function getUiData($currentPlayerId = null)
   {

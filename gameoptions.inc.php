@@ -24,7 +24,7 @@
  *
  */
 
-namespace HEAT;
+namespace Bga\Games\Heat;
 
 require_once 'modules/php/gameoptions.inc.php';
 

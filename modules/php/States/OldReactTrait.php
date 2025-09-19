@@ -1,16 +1,18 @@
 <?php
 
-namespace HEAT\States;
+namespace Bga\Games\Heat\States;
 
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Core\Stats;
-use HEAT\Helpers\Log;
-use HEAT\Helpers\Utils;
-use HEAT\Helpers\UserException;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\Players;
-use HEAT\Managers\Cards;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Core\Stats;
+use Bga\Games\Heat\Helpers\Log;
+use Bga\Games\Heat\Helpers\Utils;
+use Bga\Games\Heat\Helpers\UserException;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Managers\Cards;
+
+use \Bga\GameFramework\Actions\Types\JsonParam;
 
 ///////////////////////////////////////////////////
 //   ___  _     _   ____                 _   
@@ -361,7 +363,7 @@ trait OldReactTrait
     ];
   }
 
-  public function actOldSalvage($cardIds)
+  public function actOldSalvage(#[JsonParam()] array $cardIds)
   {
     self::checkAction('actOldSalvage');
     $args = $this->argsOldSalvage();
@@ -405,7 +407,7 @@ trait OldReactTrait
     ];
   }
 
-  public function actOldSuperCool($n)
+  public function actOldSuperCool(int $n)
   {
     self::checkAction('actOldSuperCool');
     $args = $this->argsOldSuperCool();
@@ -487,7 +489,7 @@ trait OldReactTrait
     }
   }
 
-  public function actOldPayHeats($cardIds)
+  public function actOldPayHeats(#[JsonParam()] array $cardIds)
   {
     self::checkAction('actOldPayHeats');
     $args = $this->argsOldPayHeats();

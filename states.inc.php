@@ -180,7 +180,6 @@ $machinestates = [
     'descriptionmyturnSingleChoice' => clienttranslate('${you} must move according to your speed'),
     'type' => 'activeplayer',
     'args' => 'argsChooseSpeed',
-    'action' => 'stChooseSpeed',
     'possibleactions' => ['actChooseSpeed'],
   ],
 

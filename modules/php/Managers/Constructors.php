@@ -1,26 +1,26 @@
 <?php
 
-namespace HEAT\Managers;
+namespace Bga\Games\Heat\Managers;
 
 use BgaVisibleSystemException;
-use HEAT\Core\Stats;
-use HEAT\Core\Globals;
-use HEAT\Core\Game;
-use HEAT\Core\Notifications;
-use HEAT\Helpers\UserException;
-use HEAT\Helpers\Collection;
-use HEAT\Models\Constructor;
+use Bga\Games\Heat\Core\Stats;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Game;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Helpers\UserException;
+use Bga\Games\Heat\Helpers\Collection;
+use Bga\Games\Heat\Models\Constructor;
 
 /* Class to manage all the constructors for Heat (and handle legend) */
 
-class Constructors extends \HEAT\Helpers\CachedDB_Manager
+class Constructors extends \Bga\Games\Heat\Helpers\CachedDB_Manager
 {
   public static $table = 'constructors';
   protected static $primary = 'id';
   protected static $datas = null;
   protected static function cast($row): Constructor
   {
-    return new \HEAT\Models\Constructor($row);
+    return new \Bga\Games\Heat\Models\Constructor($row);
   }
 
   ///////////////////////////////////

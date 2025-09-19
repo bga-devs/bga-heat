@@ -1,13 +1,10 @@
 <?php
 
-namespace HEAT\Core;
+namespace Bga\Games\Heat\Core;
 
-use HEAT\Managers\Players;
-use HEAT\Helpers\Utils;
-use HEAT\Helpers\Collection;
-use HEAT\Core\Globals;
-use HEAT\Managers\Effects;
-use HEAT\Managers\Constructors;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Game;
 
 class Notifications
 {

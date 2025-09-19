@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
@@ -24,21 +25,8 @@
  *
  */
 
- $swdNamespaceAutoload = function ($class) {
-  $classParts = explode('\\', $class);
-  if ($classParts[0] == 'HEAT') {
-    array_shift($classParts);
-    $file = dirname(__FILE__) . '/modules/php/' . implode(DIRECTORY_SEPARATOR, $classParts) . '.php';
-    if (file_exists($file)) {
-      require_once $file;
-    } else {
-      var_dump('Cannot find file : ' . $file);
-    }
-  }
-};
-spl_autoload_register($swdNamespaceAutoload, true, true);
 
-use HEAT\Core\Globals;
+use Bga\Games\Heat\Core\Globals;
 
 require_once APP_BASE_PATH . 'view/common/game.view.php';
 

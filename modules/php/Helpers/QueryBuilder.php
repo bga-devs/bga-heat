@@ -1,5 +1,6 @@
 <?php
-namespace HEAT\Helpers;
+
+namespace Bga\Games\Heat\Helpers;
 
 class QueryBuilder extends \APP_DbObject
 {

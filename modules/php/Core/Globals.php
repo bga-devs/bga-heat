@@ -1,17 +1,16 @@
 <?php
 
-namespace HEAT\Core;
+namespace Bga\Games\Heat\Core;
 
-use HEAT\Core\Game;
-use HEAT\Helpers\Utils;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\Cards;
+use Bga\Games\Heat\Game;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Cards;
 
 /*
  * Globals
  */
 
-class Globals extends \HEAT\Helpers\DB_Manager
+class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
 {
   protected static $initialized = false;
   // Variables that should be stored on both table for deferredRounds feature
@@ -258,27 +257,27 @@ class Globals extends \HEAT\Helpers\DB_Manager
    */
   public static function setupNewGame($players, $options)
   {
-    $legendFill = $options[\HEAT\OPTION_LEGEND] ?? 0;
+    $legendFill = $options[\Bga\Games\Heat\OPTION_LEGEND] ?? 0;
     $nLegends = $legendFill == 0 ? 0 : max(0, $legendFill - count($players));
     self::setCountConstructors(count($players) + $nLegends);
     self::setLegend($nLegends > 0);
-    self::setLegendPro($options[\HEAT\OPTION_LEGEND_PRO] ?? 0);
-    self::setAggressiveLegends($options[\HEAT\OPTION_AGGRESSIVE_LEGENDS] ?? 0);
-    self::setNbrLaps($options[\HEAT\OPTION_NBR_LAPS] ?? 0);
-    self::setGarageModuleMode($options[\HEAT\OPTION_GARAGE_CHOICE] ?? \HEAT\OPTION_GARAGE_RANDOM);
-    self::setWeatherModule(($options[\HEAT\OPTION_WEATHER_MODULE] ?? \HEAT\OPTION_DISABLED) == \HEAT\OPTION_WEATHER_ENABLED);
-    self::setHeavyRain(($options[\HEAT\OPTION_EXPANSION_HEAVY_RAIN] ?? \HEAT\OPTION_EXPANSION_DISABLED) == \HEAT\OPTION_EXPANSION_ENABLED);
-    self::setTunnelVision(($options[\HEAT\OPTION_EXPANSION_TUNNEL_VISION] ?? \HEAT\OPTION_EXPANSION_DISABLED) == \HEAT\OPTION_EXPANSION_ENABLED);
-    self::setDeferredRounds(($options[\HEAT\OPTION_TB_MODE] ?? \HEAT\OPTION_TB_STANDARD) == \HEAT\OPTION_TB_ENHANCED);
+    self::setLegendPro($options[\Bga\Games\Heat\OPTION_LEGEND_PRO] ?? 0);
+    self::setAggressiveLegends($options[\Bga\Games\Heat\OPTION_AGGRESSIVE_LEGENDS] ?? 0);
+    self::setNbrLaps($options[\Bga\Games\Heat\OPTION_NBR_LAPS] ?? 0);
+    self::setGarageModuleMode($options[\Bga\Games\Heat\OPTION_GARAGE_CHOICE] ?? \Bga\Games\Heat\OPTION_GARAGE_RANDOM);
+    self::setWeatherModule(($options[\Bga\Games\Heat\OPTION_WEATHER_MODULE] ?? \Bga\Games\Heat\OPTION_DISABLED) == \Bga\Games\Heat\OPTION_WEATHER_ENABLED);
+    self::setHeavyRain(($options[\Bga\Games\Heat\OPTION_EXPANSION_HEAVY_RAIN] ?? \Bga\Games\Heat\OPTION_EXPANSION_DISABLED) == \Bga\Games\Heat\OPTION_EXPANSION_ENABLED);
+    self::setTunnelVision(($options[\Bga\Games\Heat\OPTION_EXPANSION_TUNNEL_VISION] ?? \Bga\Games\Heat\OPTION_EXPANSION_DISABLED) == \Bga\Games\Heat\OPTION_EXPANSION_ENABLED);
+    self::setDeferredRounds(($options[\Bga\Games\Heat\OPTION_TB_MODE] ?? \Bga\Games\Heat\OPTION_TB_STANDARD) == \Bga\Games\Heat\OPTION_TB_ENHANCED);
 
-    self::setChampionship($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP);
+    self::setChampionship($options[\Bga\Games\Heat\OPTION_SETUP] == \Bga\Games\Heat\OPTION_SETUP_CHAMPIONSHIP);
     if (self::isChampionship()) {
-      $championship = $options[\HEAT\OPTION_CHAMPIONSHIP];
+      $championship = $options[\Bga\Games\Heat\OPTION_CHAMPIONSHIP];
       // Pre set seasons
-      if (!in_array($championship, [\HEAT\OPTION_CHAMPIONSHIP_CUSTOM, \HEAT\OPTION_CHAMPIONSHIP_RANDOM])) {
+      if (!in_array($championship, [\Bga\Games\Heat\OPTION_CHAMPIONSHIP_CUSTOM, \Bga\Games\Heat\OPTION_CHAMPIONSHIP_RANDOM])) {
         // Fallback for incompatible gameoptions
-        if ($championship == \HEAT\OPTION_CHAMPIONSHIP_SEASON_64) Globals::setHeavyRain(true);
-        if ($championship == \HEAT\OPTION_CHAMPIONSHIP_SEASON_65) Globals::setTunnelVision(true);
+        if ($championship == \Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_64) Globals::setHeavyRain(true);
+        if ($championship == \Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_65) Globals::setTunnelVision(true);
 
         $datas = CHAMPIONSHIP_SEASONS[$championship];
         $datas['index'] = 0;
@@ -288,7 +287,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
         self::setChampionshipDatas($datas);
       }
       // Random championship
-      elseif ($championship == \HEAT\OPTION_CHAMPIONSHIP_RANDOM) {
+      elseif ($championship == \Bga\Games\Heat\OPTION_CHAMPIONSHIP_RANDOM) {
         $datas = ['name' => clienttranslate('Custom'), 'circuits' => [], 'index' => 0];
         $circuits = array_values(self::getPossibleCircuits());
         $events = array_keys(self::getPossibleEvents());
@@ -308,26 +307,26 @@ class Globals extends \HEAT\Helpers\DB_Manager
     }
     // Single circuit
     else {
-      $opt = $options[\HEAT\OPTION_CIRCUIT];
+      $opt = $options[\Bga\Games\Heat\OPTION_CIRCUIT];
       // Fallback for incompatible gameoptions
-      if (in_array($opt, [\HEAT\OPTION_CIRCUIT_JAPAN, \HEAT\OPTION_CIRCUIT_MEXICO])) Globals::setHeavyRain(true);
-      if (in_array($opt, [\HEAT\OPTION_CIRCUIT_NEDERLAND, \HEAT\OPTION_CIRCUIT_ESPANA])) Globals::setTunnelVision(true);
+      if (in_array($opt, [\Bga\Games\Heat\OPTION_CIRCUIT_JAPAN, \Bga\Games\Heat\OPTION_CIRCUIT_MEXICO])) Globals::setHeavyRain(true);
+      if (in_array($opt, [\Bga\Games\Heat\OPTION_CIRCUIT_NEDERLAND, \Bga\Games\Heat\OPTION_CIRCUIT_ESPANA])) Globals::setTunnelVision(true);
 
       $circuits = self::getPossibleCircuits();
       shuffle($circuits);
 
       $map = [
-        \HEAT\OPTION_CIRCUIT_USA => 'usa',
-        \HEAT\OPTION_CIRCUIT_ITALIA => 'italia',
-        \HEAT\OPTION_CIRCUIT_GB => 'gb',
-        \HEAT\OPTION_CIRCUIT_FRANCE => 'france',
-        \HEAT\OPTION_CIRCUIT_JAPAN => 'japan',
-        \HEAT\OPTION_CIRCUIT_MEXICO => 'mexico',
-        \HEAT\OPTION_CIRCUIT_NEDERLAND => 'nederland',
-        \HEAT\OPTION_CIRCUIT_ESPANA => 'espana',
+        \Bga\Games\Heat\OPTION_CIRCUIT_USA => 'usa',
+        \Bga\Games\Heat\OPTION_CIRCUIT_ITALIA => 'italia',
+        \Bga\Games\Heat\OPTION_CIRCUIT_GB => 'gb',
+        \Bga\Games\Heat\OPTION_CIRCUIT_FRANCE => 'france',
+        \Bga\Games\Heat\OPTION_CIRCUIT_JAPAN => 'japan',
+        \Bga\Games\Heat\OPTION_CIRCUIT_MEXICO => 'mexico',
+        \Bga\Games\Heat\OPTION_CIRCUIT_NEDERLAND => 'nederland',
+        \Bga\Games\Heat\OPTION_CIRCUIT_ESPANA => 'espana',
 
-        \HEAT\OPTION_CIRCUIT_RANDOM => $circuits[0],
-        \HEAT\OPTION_CIRCUIT_CUSTOM => 'custom',
+        \Bga\Games\Heat\OPTION_CIRCUIT_RANDOM => $circuits[0],
+        \Bga\Games\Heat\OPTION_CIRCUIT_CUSTOM => 'custom',
       ];
       $circuit = $map[$opt];
       self::setCircuit($circuit);
@@ -364,7 +363,7 @@ class Globals extends \HEAT\Helpers\DB_Manager
 
   public static function isSnakeDraft()
   {
-    return self::getGarageModuleMode() == \HEAT\OPTION_GARAGE_SNAKE_DRAFT;
+    return self::getGarageModuleMode() == \Bga\Games\Heat\OPTION_GARAGE_SNAKE_DRAFT;
   }
 
   public static function getCircuitName($circuitId)

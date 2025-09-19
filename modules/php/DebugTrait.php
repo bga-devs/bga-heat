@@ -1,16 +1,16 @@
 <?php
 
-namespace HEAT;
+namespace Bga\Games\Heat;
 
-use HEAT\Managers\Players;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\Cards;
-use HEAT\Core\Globals;
-use HEAT\Core\Game;
-use HEAT\Core\Notifications;
-use HEAT\Helpers\Utils;
-use HEAT\Helpers\Log;
-use HEAT\Helpers\Collection;
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Cards;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Game;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Helpers\Utils;
+use Bga\Games\Heat\Helpers\Log;
+use Bga\Games\Heat\Helpers\Collection;
 
 trait DebugTrait
 {

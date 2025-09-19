@@ -1,6 +1,6 @@
 <?php
 
-namespace HEAT\Helpers;
+namespace Bga\Games\Heat\Helpers;
 
 /*
  * This is a generic class to manage game pieces.

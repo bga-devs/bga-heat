@@ -4,613 +4,210 @@
 /** @noinspection PhpInconsistentReturnPointsInspection */
 /** @noinspection PhpUnreachableStatementInspection */
 
-namespace Bga\GameFramework\Actions\Types {
+namespace Bga\GameFramework\Actions {
     #[\Attribute]
-    class IntParam {
+    class CheckAction
+    {
         public function __construct(
-            ?string $name = null,
-            public ?int $min = null, 
-            public ?int $max = null,
+            public bool $enabled = true,
         ) {}
-
-        public function getValue(string $paramName): int {}
-    }
-
-    #[\Attribute]
-    class BoolParam  {
-        public function __construct(
-            ?string $name = null,
-        ) {}
-
-        public function getValue(string $paramName): bool {}
-    }
-
-    #[\Attribute]
-    class FloatParam {
-        public function __construct(
-            ?string $name = null,
-            public ?float $min = null, 
-            public ?float $max = null,
-        ) {}
-
-        public function getValue(string $paramName): float {}
-    }
-
-    #[\Attribute]
-    class IntArrayParam {
-        public function __construct(
-            ?string $name = null,
-            public ?int $min = null, 
-            public ?int $max = null,
-        ) {}
-
-        public function getValue(string $paramName): array {}
-    }
-
-    #[\Attribute]
-    class StringParam {
-        public function __construct(
-            ?string $name = null,
-            public ?bool $alphanum = false, 
-            public ?bool $alphanum_dash = false, 
-            public ?bool $base64 = false, 
-            public ?array $enum = null,
-        ) {}
-    
-        public function getValue(string $paramName): string {}
-    }
-
-    #[\Attribute]
-    class JsonParam {
-        public function __construct(
-            ?string $name = null,
-            public ?bool $associative = true,
-            public ?bool $alphanum = true, 
-        ) {}
-    
-        public function getValue(string $paramName): mixed {}    
     }
 }
 
-namespace {
-    exit("This file should not be included, only analyzed by your IDE");
-
-    /**
-     * Dummy value, for autocomplete.
-     */
-    const APP_GAMEMODULE_PATH = "";
-
-    /**
-     * Dummy value, for autocomplete.
-     */
-    const APP_BASE_PATH = "";
-
-    /**
-     * This function is transparent: it will return the original English string without any change. Its only purpose is
-     * to mark this string as "must be translated", and to make sure the translated version of the string will be
-     * available on client side.
-     *
-     * **Do not put any HTML tag inside the `$text` argument. Use notification argument, instead.**
-     */
-    function clienttranslate(string $text): string
+namespace Bga\GameFramework\Actions\Types {
+    #[\Attribute]
+    class IntParam
     {
-        //
-    }
+        public function __construct(
+            ?string $name = null,
+            public ?int $min = null,
+            public ?int $max = null,
+        ) {}
 
-    /**
-     * This function works exactly like 'clienttranslate', except it tells BGA that the string is not needed on client
-     * side.
-     */
-    function totranslate(string $text): string
-    {
-        //
-    }
-
-    abstract class APP_Object
-    {
-        /**
-         * Debug message. Appear only if needed.
-         */
-        final public function debug(string $message): void
+        public function getValue(string $paramName): int
         {
-            //
-        }
-
-        /**
-         * Dump an object with a custom prefix.
-         */
-        final public function dump(string $prefix, mixed $object): void
-        {
-            //
-        }
-
-        /**
-         * Error message. Appear in production.
-         */
-        final public function error(string $message): void
-        {
-            //
-        }
-
-        /**
-         * Standard log message (INFO level).
-         */
-        final public function trace(string $message): void
-        {
-            //
-        }
-
-        /**
-         * Warning message. Appear in production.
-         */
-        final public function warn(string $message): void
-        {
-            //
+            return 0;
         }
     }
 
-    abstract class APP_Template
+    #[\Attribute]
+    class BoolParam
     {
-        /**
-         * TBD.
-         */
-        final public function begin_block(string $template_name, string $block_name): void
-        {
-            //
-        }
+        public function __construct(
+            ?string $name = null,
+        ) {}
 
-        /**
-         * TBD.
-         */
-        final public function begin_subblock(string $template_name, string $block_name): void
+        public function getValue(string $paramName): bool
         {
-            //
-        }
-
-        /**
-         * TBD.
-         */
-        final public function insert_block(string $block_name, array $tpl = []): void
-        {
-            //
-        }
-
-        /**
-         * TBD.
-         */
-        final public function insert_subblock(string $block_name, array $tpl = []): void
-        {
-            //
+            return false;
         }
     }
 
-    abstract class game_view
+    #[\Attribute]
+    class FloatParam
+    {
+        public function __construct(
+            ?string $name = null,
+            public ?float $min = null,
+            public ?float $max = null,
+        ) {}
+
+        public function getValue(string $paramName): float
+        {
+            return 0;
+        }
+    }
+
+    #[\Attribute]
+    class IntArrayParam
+    {
+        public function __construct(
+            ?string $name = null,
+            public ?int $min = null,
+            public ?int $max = null,
+        ) {}
+
+        public function getValue(string $paramName): array
+        {
+            return [];
+        }
+    }
+
+    #[\Attribute]
+    class StringParam
+    {
+        public function __construct(
+            ?string $name = null,
+            public ?bool $alphanum = false,
+            public ?bool $alphanum_dash = false,
+            public ?bool $base64 = false,
+            public ?array $enum = null,
+        ) {}
+
+        public function getValue(string $paramName): string
+        {
+            return '';
+        }
+    }
+
+    #[\Attribute]
+    class JsonParam
+    {
+        public function __construct(
+            ?string $name = null,
+            public ?bool $associative = true,
+            public ?bool $alphanum = true,
+        ) {}
+
+        public function getValue(string $paramName): mixed
+        {
+            return [];
+        }
+    }
+}
+
+namespace Bga\GameFramework {
+    abstract class Notify
     {
         /**
-         * Underlying access to the table game.
+         * Add a decorator function, to be applied on args when a notif function is called.
          */
-        readonly protected Table $game;
+        public function addDecorator(callable $fn)
+        {
+            //
+        }
 
         /**
-         * Underlying access to the template.
-         */
-        readonly protected APP_Template $page;
-
-        /**
-         * Variables to inject into the template.
+         * Send a notification to a single player of the game.
          *
-         * @var array<string, mixed>
+         * @param int $playerId the player ID to send the notification to.
+         * @param string $notifName a comprehensive string code that explain what is the notification for.
+         * @param string $message some text that can be displayed on player's log window (should be surrounded by clienttranslate if not empty).
+         * @param array $args notification arguments.
          */
-        protected array $tpl;
-
-        /**
-         * @param array $viewArgs
-         * @return void
-         */
-        abstract public function build_page($viewArgs);
-
-        /**
-         * Translation function using appropriate gettext domain.
-         */
-        final protected function _(string $text): string
+        public function player(int $playerId, string $notifName, ?string $message = '', array $args = []): void
         {
             //
         }
 
         /**
-         * @return string
+         * Send a notification to all players of the game and spectators (public).
+         *
+         * @param string $notifName a comprehensive string code that explain what is the notification for.
+         * @param string $message some text that can be displayed on player's log window (should be surrounded by clienttranslate if not empty).
+         * @param array $args notification arguments.
          */
-        abstract protected function getGameName();
-
-        final protected function raw(string $string): array
+        public function all(string $notifName, ?string $message = '', array $args = []): void
         {
             //
         }
     }
 
-    abstract class GameState extends APP_Object
+    abstract class TableOptions
     {
         /**
-         * You can call this method to make any player active.
-         *
-         * NOTE: you CANNOT use this method in an "activeplayer" or "multipleactiveplayer" state. You must use a "game"
-         * type game state for this.
+         * Get the value of a table option.
          */
-        final public function changeActivePlayer(int $playerId): void
+        public function get(int $optionId): int
         {
-            //
+            return 0;
         }
 
         /**
-         * This works exactly like `Table::checkAction()`, except that it does NOT check if the current player is
-         * active.
+         * Indicates if the table is Turn-based.
          */
-        final public function checkPossibleAction(string $actionName): void
+        function isTurnBased(): bool
         {
-            //
+            return false;
         }
 
         /**
-         * With this method you can retrieve the list of the active player at any time.
-         *
-         * - During a "game" type game state, it will return a void array.
-         * - During an "activeplayer" type game state, it will return an array with one value (the active player id).
-         * - During a "multipleactiveplayer" type game state, it will return an array of the active players' id.
-         *
-         * NOTE: You should only use this method in the latter case.
+         * Indicates if the table is Real-time.
          */
-        final public function getActivePlayerList(): array
+        function isRealTime(): bool
         {
-            //
-        }
-
-        /**
-         * This return the private state or null if not initialized or not in private state.
-         */
-        final public function getPrivateState(int $playerId): array
-        {
-            //
-        }
-
-        /**
-         * Player with the specified id is entering a first private state defined in the master state initial private
-         * parameter.
-         *
-         * Everytime you need to start a private parallel states you need to call this or similar methods above
-         *
-         * - Note: player needs to be active (see above) and current game state must be a multiactive state with initial
-         * private parameter defined
-         * - Note: initial private parameter of master state should be set to the id of the first private state. This
-         * private state needs to be defined in states.php with the type set to 'private'.
-         * - Note: this method is usually preceded with activating that player
-         * - Note: initializing private state can run action or args methods of the initial private state
-         */
-        final public function initializePrivateState(int $playerId): void
-        {
-            //
-        }
-
-        /**
-         * All active players in a multiactive state are entering a first private state defined in the master state's
-         * initialprivate parameter.
-         *
-         * Every time you need to start a private parallel states you need to call this or similar methods below.
-         *
-         * - Note: at least one player needs to be active (see above) and current game state must be a multiactive state
-         * with initialprivate parameter defined
-         * - Note: initialprivate parameter of master state should be set to the id of the first private state. This
-         * private state needs to be defined in states.php with the type set to 'private'.
-         * - Note: this method is usually preceded with activating some or all players
-         * - Note: initializing private state can run action or args methods of the initial private state
-         */
-        final public function initializePrivateStateForAllActivePlayers(): void
-        {
-            //
-        }
-
-        /**
-         * Players with specified ids are entering a first private state defined in the master state initialprivate
-         * parameter.
-         *
-         * @param array<int> $playerIds
-         */
-        final public function initializePrivateStateForPlayers(array $playerIds): void
-        {
-            //
-        }
-
-        /**
-         * Return true if we are in multipleactiveplayer state, false otherwise.
-         */
-        final public function isMutiactiveState(): bool
-        {
-            //
-        }
-
-        /**
-         * Return true if specified player is active right now.
-         *
-         * This method take into account game state type, ie nobody is active if game state is "game" and several
-         * players can be active if game state is "multiplayer".
-         */
-        final public function isPlayerActive(int $player_id): bool
-        {
-            //
-        }
-
-        /**
-         * Change current state to a new state. Important: the $stateNum parameter is the key of the state.
-         *
-         * NOTE: This is very advanced method, it should not be used in normal cases. Specific advanced cases
-         * include - jumping to specific state from "do_anytime" actions, jumping to dispatcher state or jumping to
-         * recovery state from zombie player function.
-         */
-        final public function jumpToState(int $nextState, bool $bWithActions = true): void
-        {
-            //
-        }
-
-        /**
-         * Player with specified id will transition to next private state specified by provided transition.
-         *
-         * - Note: game needs to be in a master state which allows private parallel states
-         * - Note: transition should lead to another private state (i.e. a state with type defined as 'private'
-         * - Note: transition should be defined in private state in which the players currently are.
-         * - Note: this method can run action or args methods of the target state for specified player
-         * - Note: this is usually used after some player actions to move to next private state
-         */
-        final public function nextPrivateState(int $playerId, string $transition): void
-        {
-            //
-        }
-
-        /**
-         * All active players will transition to next private state by specified transition.
-         *
-         * - Note: game needs to be in a master state which allows private parallel states
-         * - Note: transition should lead to another private state (i.e. a state with type defined as 'private'
-         * - Note: transition should be defined in private state in which the players currently are.
-         * - Note: this method can run action or args methods of the target state
-         * - Note: this is usually used after initializing the private state to move players to specific private state
-         * according to the game logic
-         */
-        final public function nextPrivateStateForAllActivePlayers(string $transition): void
-        {
-            //
-        }
-
-        /**
-         * Players with specified ids will transition to next private state specified by provided transition.
-         * Same considerations apply as for the method above.
-         *
-         * @param array<int> $playerIds
-         */
-        final public function nextPrivateStateForPlayers(array $playerIds, string $transition): void
-        {
-            //
-        }
-
-        /**
-         * Change current state to a new state.
-         *
-         * NOTE: the `$transition` parameter is the name of the transition, and NOT the name of the target game state.
-         *
-         * @see states.inc.php
-         */
-        final public function nextState(string $transition): void
-        {
-            //
-        }
-
-        /**
-         * Reload the current state.
-         */
-        final public function reloadState(): void
-        {
-            //
-        }
-
-        /**
-         * All playing players are made active. Update notification is sent to all players (this will trigger
-         * `onUpdateActionButtons`).
-         *
-         * Usually, you use this method at the beginning of a game state (e.g., `stGameState`) which transitions to a
-         * `multipleactiveplayer` state in which multiple players have to perform some action. Do not use this method if
-         * you're going to make some more changes in the active player list. (I.e., if you want to take away
-         * `multipleactiveplayer` status immediately afterward, use `setPlayersMultiactive` instead).
-         */
-        final public function setAllPlayersMultiactive(): void
-        {
-            //
-        }
-
-        /**
-         * All playing players are made inactive. Transition to next state.
-         */
-        final public function setAllPlayersNonMultiactive(string $nextState): void
-        {
-            //
-        }
-
-        /**
-         * During a multi-active game state, make the specified player inactive.
-         *
-         * Usually, you call this method during a multi-active game state after a player did his action. It is also
-         * possible to call it directly from multiplayer action handler. If this player was the last active player, the
-         * method trigger the "next_state" transition to go to the next game state.
-         */
-        final public function setPlayerNonMultiactive(int $player, string $nextState): bool
-        {
-            //
-        }
-
-        /**
-         * Make a specific list of players active during a multiactive game state. Update notification is sent to all
-         * players whose state changed.
-         *
-         * - "players" is the array of player id that should be made active. If "players" is not empty the value of
-         * "next_state" will be ignored (you can put whatever you want).
-         * - If "bExclusive" parameter is not set or false it doesn't deactivate other previously active players. If
-         * it's set to true, the players who will be multiactive at the end are only these in "$players" array.
-         * - In case "players" is empty, the method trigger the "next_state" transition to go to the next game state.
-         *
-         * Returns true if state transition happened, false otherwise.
-         */
-        final public function setPlayersMultiactive(array $players, string $nextState, bool $bInactivePlayersNotOnTheList = false): bool
-        {
-            //
-        }
-
-        /**
-         * For player with specified id a new private state would be set.
-         *
-         * - Note: game needs to be in a master state which allows private parallel states
-         * - Note: this should be rarely used as it doesn't check if the transition is allowed (it doesn't even specify
-         * transition). This can be useful in very complex cases when standard state machine is not adequate (i.e.
-         * specific cards can lead to some micro action in various states where defining transitions back and forth can
-         * become very tedious.)
-         * - Note: this method can run action or args methods of the target state for specified player
-         */
-        final public function setPrivateState(int $playerId, int $newStateId): void
-        {
-            //
-        }
-
-        /**
-         * Get an associative array of current game state attributes.
-         *
-         * @see states.inc.php
-         */
-        final public function state(bool $bSkipStateArgs = false, bool $bOnlyVariableContent = false, bool $bSkipReflexionTimeLoad = false): array
-        {
-            //
-        }
-
-        /**
-         * Get the id of the current game state (rarely useful, it's best to use name, unless you use constants for
-         * state ids).
-         */
-        final public function state_id(): string|int
-        {
-            //
-        }
-
-        /**
-         * For player with specified id private state will be reset to null, which means they will get out of private
-         * parallel states and be in a master state like the private states are not used.
-         *
-         * - Note: game needs to be in a master state which allows private parallel states
-         * - Note: this is usually used when deactivating player to clean up their parallel state
-         * - Note: After unseating private state only actions on master state are possible
-         * - Note: Usually it is not necessary to unset private state as it will be initialized to first private state
-         * when private states are needed again. Nevertheless, it is generally better to clean private state when not
-         * needed to avoid bugs.
-         */
-        final public function unsetPrivateState(int $playerId): void
-        {
-            //
-        }
-
-        /**
-         * All players private state will be reset to null, which means they will get out of private parallel states and
-         * be in a master state like the private states are not used.
-         *
-         * - Note: game needs to be in a master state which allows private parallel states
-         * - Note: this is usually used to clean up after leaving a master state in which private states were used, but
-         * can be used in other cases when we want to exit private parallel states and use a regular multiactive state
-         * for all players
-         * - Note: After unseating private state only actions on master state are possible
-         * - Note: Usually it is not necessary to unset private states as they will be initialized to first private
-         * state when private states are needed again. Nevertheless, it is generally better to clean private state after
-         * exiting private parallel states to avoid bugs.
-         */
-        final public function unsetPrivateStateForAllPlayers(): void
-        {
-            //
-        }
-
-        /**
-         * For players with specified ids private state will be reset to null, which means they will get out of private
-         * parallel states and be in a master state like the private states are not used.
-         *
-         * @param array<int> $playerIds
-         */
-        final public function unsetPrivateStateForPlayers(array $playerIds): void
-        {
-            //
-        }
-
-        /**
-         * Sends update notification about multiplayer changes. All multiactive set* functions above do that, however if
-         * you want to change state manually using db queries for complex calculations, you have to call this yourself
-         * after.
-         *
-         * Do not call this if you're calling one of the other setters above.
-         */
-        final public function updateMultiactiveOrNextState(string $nextStateIfNone): void
-        {
-            //
+            return false;
         }
     }
 
-    abstract class Globals
+    abstract class UserPreferences
     {
         /**
-         * Delete global variables.
-         *
-         * @param string[] ...$names
+         * Gets the value of a user preference for a player (cached in game DB). Null if unset.
          */
-        public function delete(...$names): void
+        function get(int $playerId, int $prefId): ?int
         {
-            //
-        }
-
-        /**
-         * Returns the value of `$name` if it exists. Otherwise, fallback on `$defaultValue`.
-         */
-        public function get(string $name, mixed $defaultValue = null): mixed
-        {
-            //
-        }
-
-        /**
-         * Returns true if globals has a key `$name`.
-         */
-        public function has(string $name): bool
-        {
-            //
-        }
-
-        /**
-         * Increment the global `$name` by `$step`.
-         *
-         * @throws BgaSystemException if the global `$name` is not a numeric value.
-         */
-        public function inc(string $name, int $step): int
-        {
-            //
-        }
-
-        /**
-         * Set `$name` with the value `$value`.
-         */
-        public function set(string $name, mixed $value): void
-        {
-            //
+            return null;
         }
     }
 
-    abstract class Table extends APP_Object
+
+    abstract class Table extends \APP_Object
     {
         /**
          * Access the underlying game state object.
          */
-        readonly public GameState $gamestate;
+        readonly public \GameState $gamestate;
 
         /**
          * Access the underlying global values.
          */
-        readonly public Globals $globals;
+        readonly public \Bga\GameFramework\Db\Globals $globals;
+
+        /**
+         * Access the underlying Notify object.
+         */
+        readonly public \Bga\GameFramework\Notify $notify;
+
+        /**
+         * Access the underlying TableOptions object.
+         */
+        readonly public \Bga\GameFramework\TableOptions $tableOptions;
+
+        /**
+         * Access the underlying UserPreferences object.
+         */
+        readonly public \Bga\GameFramework\UserPreferences $userPreferences;
 
         /**
          * Default constructor.
@@ -628,7 +225,7 @@ namespace {
          */
         final static public function DbAffectedRow(): int
         {
-            //
+            return 0;
         }
 
         /**
@@ -639,7 +236,7 @@ namespace {
          */
         final static public function DbGetLastId(): int
         {
-            //
+            return 0;
         }
 
         /**
@@ -647,9 +244,9 @@ namespace {
          *
          * @see https://en.doc.boardgamearena.com/Main_game_logic:_yourgamename.game.php#Accessing_the_database
          */
-        final static public function DbQuery(string $sql): null|mysqli_result|bool
+        final static public function DbQuery(string $sql): null|\mysqli_result|bool
         {
-            //
+            return null;
         }
 
         /**
@@ -665,7 +262,7 @@ namespace {
          */
         final static public function escapeStringForDB(string $string): string
         {
-            //
+            return '';
         }
 
         /**
@@ -680,18 +277,18 @@ namespace {
          */
         final static public function getObjectListFromDB(string $sql, bool $bUniqueValue = false): array
         {
-            //
+            return [];
         }
 
         /**
          * Returns a unique value from the database, or `null` if no value is found.
          *
-         * @throws BgaSystemException Raise an exception if more than 1 row is returned.
+         * @throws \BgaSystemException Raise an exception if more than 1 row is returned.
          * @see https://en.doc.boardgamearena.com/Main_game_logic:_yourgamename.game.php#Accessing_the_database
          */
         final static public function getUniqueValueFromDB(string $sql): mixed
         {
-            //
+            return null;
         }
 
         /**
@@ -700,11 +297,11 @@ namespace {
          * NOTE: You **cannot** use this method in an `activeplayer` or `multipleactiveplayer` state. You must use a
          * `game` type game state for this.
          *
-         * @return void
+         * @return int the new active player id
          */
-        final public function activeNextPlayer(): void
+        final public function activeNextPlayer(): int|string
         {
-            //
+            return '0';
         }
 
         /**
@@ -721,11 +318,11 @@ namespace {
          * exception. This is useful when several actions are possible, in order to test each of them without throwing
          * exceptions.
          *
-         * @throws BgaSystemException if `$bThrowException` is true and a failure occurs
+         * @throws \BgaSystemException if `$bThrowException` is true and a failure occurs
          */
         final public function checkAction(string $actionName, bool $bThrowException = true): mixed
         {
-            //
+            return null;
         }
 
         /**
@@ -749,7 +346,7 @@ namespace {
          */
         final public function getActivePlayerId(): string|int
         {
-            //
+            return '0';
         }
 
         /**
@@ -759,7 +356,7 @@ namespace {
          */
         final public function getActivePlayerName(): string
         {
-            //
+            return '';
         }
 
         /**
@@ -786,7 +383,7 @@ namespace {
          */
         final public function getCollectionFromDB(string $sql, bool $bSingleValue = false): array
         {
-            //
+            return [];
         }
 
         /**
@@ -799,7 +396,7 @@ namespace {
          */
         final public function getCurrentPlayerId(bool $bReturnNullIfNotLogged = false): string|int
         {
-            //
+            return '0';
         }
 
         /**
@@ -812,7 +409,7 @@ namespace {
          */
         final public function getDoubleKeyCollectionFromDB(string $sql, bool $bSingleValue = false): array
         {
-            //
+            return [];
         }
 
         /**
@@ -820,7 +417,7 @@ namespace {
          */
         final public function getGameLanguage(): string
         {
-            //
+            return '';
         }
 
         /**
@@ -845,18 +442,19 @@ namespace {
          * NOTE: this method use globals "cache" if you directly manipulated globals table OR call this function after
          * `undoRestorePoint()` - it won't work as expected.
          */
-        final public function getGameStateValue(string $label, int $default = 0): int
+        final public function getGameStateValue(string $label, ?int $default = null): int|string
         {
-            //
+            return '0';
         }
 
         /**
          * Returns the value of a user preference for a player. It will return the value currently selected in the
          * select combo box, in the top-right menu.
+         * @deprecated use $this->userPreferences->get(int $playerId, int $prefId)
          */
         final public function getGameUserPreference(int $playerId, int $prefId): ?int
         {
-            //
+            return 0;
         }
 
         /**
@@ -893,7 +491,7 @@ namespace {
          */
         final public function getGameinfos(): array
         {
-            //
+            return [];
         }
 
         /**
@@ -905,44 +503,44 @@ namespace {
          */
         final public function getNextPlayerTable(): array
         {
-            //
+            return [];
         }
 
         /**
          * Same as `getCollectionFromDB`, but raises an exception if the collection is empty.
          *
-         * @throws BgaSystemException if the collection is empty.
+         * @throws \BgaSystemException if the collection is empty.
          * @see Table::getCollectionFromDB()
          * @see https://en.doc.boardgamearena.com/Main_game_logic:_yourgamename.game.php#Accessing_the_database
          */
         final public function getNonEmptyCollectionFromDB(string $sql): array
         {
-            //
+            return [];
         }
 
         /**
          * Returns one row for the sql SELECT query as an associative array or null if there is no result (where fields
          * are keys mapped to values).
          *
-         * @throws BgaSystemException if the query return no row.
+         * @throws \BgaSystemException if the query return no row.
          * @see Table::getObjectFromDB()
          * @see https://en.doc.boardgamearena.com/Main_game_logic:_yourgamename.game.php#Accessing_the_database
          */
         final public function getNonEmptyObjectFromDB(string $sql): array
         {
-            //
+            return [];
         }
 
         /**
          * Returns one row for the sql SELECT query as an associative array or null if there is no result (where fields
          * are keys mapped to values).
          *
-         * @throws BgaSystemException if the query return more than one row.
+         * @throws \BgaSystemException if the query return more than one row.
          * @see https://en.doc.boardgamearena.com/Main_game_logic:_yourgamename.game.php#Accessing_the_database
          */
         final public function getObjectFromDB(string $sql): array
         {
-            //
+            return [];
         }
 
         /**
@@ -950,7 +548,7 @@ namespace {
          */
         final public function getPlayerAfter(int $playerId): int
         {
-            //
+            return 0;
         }
 
         /**
@@ -958,7 +556,7 @@ namespace {
          */
         final public function getPlayerBefore(int $playerId): int
         {
-            //
+            return 0;
         }
 
         /**
@@ -966,7 +564,7 @@ namespace {
          */
         final public function getPlayerColorById(int $playerId): string
         {
-            //
+            return '';
         }
 
         /**
@@ -974,7 +572,7 @@ namespace {
          */
         final public function getPlayerNameById(int $playerId): string
         {
-            //
+            return '';
         }
 
         /**
@@ -982,7 +580,7 @@ namespace {
          */
         final public function getPlayerNoById(int $playerId): int
         {
-            //
+            return 0;
         }
 
         /**
@@ -1016,7 +614,7 @@ namespace {
          */
         public function getSpecificColorPairings(): array
         {
-            //
+            return [];
         }
 
         /**
@@ -1024,7 +622,7 @@ namespace {
          */
         final public function getStat(string $name, ?int $playerId = null): int
         {
-            return Table::getStat($name, $playerId);
+            return 0;
         }
 
         /**
@@ -1045,7 +643,7 @@ namespace {
          */
         final public function incGameStateValue(string $label, int $increment): int
         {
-            //
+            return 0;
         }
 
         /**
@@ -1078,18 +676,20 @@ namespace {
 
         /**
          * Returns true if game is turn based, false if it is realtime
+         * @deprecated use $this->tableOptions->isTurnBased()
          */
         final public function isAsync(): bool
         {
-            //
+            return false;
         }
 
         /**
          * Returns true if game is realtime, false if it is async.
+         * @deprecated use $this->tableOptions->isRealTime()
          */
         final public function isRealtime(): bool
         {
-            //
+            return false;
         }
 
         /**
@@ -1101,7 +701,7 @@ namespace {
          */
         final public function isSpectator(): bool
         {
-            //
+            return false;
         }
 
         /**
@@ -1126,6 +726,9 @@ namespace {
         /**
          * Send a notification to all players of the game and spectators (public).
          *
+         * @param string $notification_type a comprehensive string code that explain what is the notification for.
+         * @param string $notification_log some text that can be displayed on player's log window (should be surrounded by clienttranslate if not empty).
+         * @param array $notification_args notification arguments.
          * @see https://en.doc.boardgamearena.com/Main_game_logic:_yourgamename.game.php#NotifyAllPlayers
          */
         final public function notifyAllPlayers(string $notificationType, string $notificationLog, array $notificationArgs): void
@@ -1134,9 +737,13 @@ namespace {
         }
 
         /**
-         * Send a notification to a single players of the game.
+         * Send a notification to a single player of the game.
          *
-         * @see https://en.doc.boardgamearena.com/Main_game_logic:_yourgamename.game.php#NotifyPlayer
+         * @param int $player_id the player ID to send the notification to.
+         * @param string $notification_type a comprehensive string code that explain what is the notification for.
+         * @param string $notification_log some text that can be displayed on player's log window (should be surrounded by clienttranslate if not empty).
+         * @param array $notification_args notification arguments.
+         * @see https://en.doc.boardgamearena.com/Main_game_logic:_yourgamename.game.php#NotifyAllPlayers
          */
         final public function notifyPlayer(int $playerId, string $notificationType, string $notificationLog, array $notificationArgs): void
         {
@@ -1187,7 +794,7 @@ namespace {
          */
         final public function retrieveLegacyData($playerId, $key): array
         {
-            //
+            return [];
         }
 
         /**
@@ -1196,7 +803,7 @@ namespace {
          */
         final public function retrieveLegacyTeamData(): array
         {
-            //
+            return [];
         }
 
         /**
@@ -1303,11 +910,16 @@ namespace {
          */
         protected function _(string $text): string
         {
-            //
+            return '';
         }
 
         /**
          * Make the previous player active (in the natural player order).
+         *
+         * NOTE: You **cannot** use this method in an `activeplayer` or `multipleactiveplayer` state. You must use a
+         * `game` type game state for this.
+         *
+         * @return int the new active player id
          */
         final protected function activePrevPlayer(): void
         {
@@ -1335,18 +947,18 @@ namespace {
          *
          * @return array
          */
-        abstract protected function getAllDatas();
+        abstract protected function getAllDatas(): array;
 
         /**
          * Get the "current_player" color.
          *
          * Note: avoid using this method in a "multiplayer" state because it does not mean anything.
          *
-         * @throws BgaSystemException if the current player is not at the table (i.e. spectator).
+         * @throws \BgaSystemException if the current player is not at the table (i.e. spectator).
          */
         final protected function getCurrentPlayerColor(): string
         {
-            //
+            return '';
         }
 
         /**
@@ -1354,11 +966,11 @@ namespace {
          *
          * Note: avoid using this method in a "multiplayer" state because it does not mean anything.
          *
-         * @throws BgaSystemException if the current player is not at the table (i.e. spectator).
+         * @throws \BgaSystemException if the current player is not at the table (i.e. spectator).
          */
         final protected function getCurrentPlayerName($bReturnEmptyIfNotLogged = false): string
         {
-            //
+            return '';
         }
 
         /**
@@ -1372,10 +984,12 @@ namespace {
 
         /**
          * Return an associative array which associate each player with the previous player around the table.
+         *
+         * @return array<int, int>
          */
         final protected function getPrevPlayerTable($players): array
         {
-            //
+            return [];
         }
 
         /**
@@ -1410,11 +1024,11 @@ namespace {
         /**
          * Check the "current_player" zombie status. If true, player is zombie, i.e. left or was kicked out of the game.
          *
-         * @throws BgaSystemException if the current player is not at the table (i.e. spectator).
+         * @throws \BgaSystemException if the current player is not at the table (i.e. spectator).
          */
         final protected function isCurrentPlayerZombie(): bool
         {
-            //
+            return false;
         }
 
         /**
@@ -1443,7 +1057,587 @@ namespace {
          * @return void
          */
         abstract protected function zombieTurn(array $state, int $active_player): void;
+
+        /**
+         * To get a Deck instance with `$this->getNew("module.common.deck")`
+         */
+        protected function getNew(string $objectName): mixed
+        {
+            return null;
+        }
+
+        /**
+         * Apply an SQL upgrade of the tables.
+         * Use DBPREFIX_<table_name> for all tables in the $sql parameter.
+         */
+        function applyDbUpgradeToAllDB(string $sql): void {}
+
+        /**
+         * For authorized games using external API only.
+         */
+        function getGenericGameInfos(string $api, array $args = []): array
+        {
+            return [];
+        }
+
+        /**
+         * Return the BGA environment this table is running on.
+         * This should be used for debug purpose only.
+         * 
+         * @return string "studio" or "prod"
+         */
+        static function getBgaEnvironment(): string
+        {
+            return '';
+        }
     }
+}
+
+namespace Bga\GameFramework\Db {
+    abstract class Globals
+    {
+        /**
+         * Delete global variables.
+         */
+        public function delete(string ...$names): void
+        {
+            //
+        }
+
+        /**
+         * Returns the value of `$name` if it exists. Otherwise, fallback on `$defaultValue`.
+         */
+        public function get(string $name, mixed $defaultValue = null): mixed
+        {
+            return null;
+        }
+
+        /**
+         * Retrieve all variables stored in DB (or a selected subset, if the function is called with parameters).
+         */
+        public function getAll(string ...$names): array
+        {
+            return [];
+        }
+
+        /**
+         * Returns true if globals has a key `$name`.
+         */
+        public function has(string $name): bool
+        {
+            return false;
+        }
+
+        /**
+         * Increment the global `$name` by `$step`.
+         *
+         * @throws BgaSystemException if the global `$name` is not a numeric value.
+         */
+        public function inc(string $name, int $step): int
+        {
+            return 0;
+        }
+
+        /**
+         * Set `$name` with the value `$value`.
+         */
+        public function set(string $name, mixed $value): void
+        {
+            //
+        }
+    }
+}
+
+namespace {
+    exit("This file should not be included, only analyzed by your IDE");
+
+    /**
+     * Dummy value, for autocomplete.
+     */
+    const APP_GAMEMODULE_PATH = "";
+
+    /**
+     * Dummy value, for autocomplete.
+     */
+    const APP_BASE_PATH = "";
+
+    /**
+     * This function is transparent: it will return the original English string without any change. Its only purpose is
+     * to mark this string as "must be translated", and to make sure the translated version of the string will be
+     * available on client side.
+     *
+     * **Do not put any HTML tag inside the `$text` argument. Use notification argument, instead.**
+     */
+    function clienttranslate(string $text): string
+    {
+        return '';
+    }
+
+    /**
+     * This function works exactly like 'clienttranslate', except it tells BGA that the string is not needed on client
+     * side.
+     */
+    function totranslate(string $text): string
+    {
+        return '';
+    }
+
+    function bga_rand(int $min, int $max): int
+    {
+        return 0;
+    }
+
+    abstract class APP_Object
+    {
+        /**
+         * Debug message. Appear only if needed.
+         */
+        final public function debug(string $message): void
+        {
+            //
+        }
+
+        /**
+         * Dump an object with a custom prefix.
+         */
+        final public function dump(string $prefix, mixed $object): void
+        {
+            //
+        }
+
+        /**
+         * Error message. Appear in production.
+         */
+        final public function error(string $message): void
+        {
+            //
+        }
+
+        /**
+         * Standard log message (INFO level).
+         */
+        final public function trace(string $message): void
+        {
+            //
+        }
+
+        /**
+         * Warning message. Appear in production.
+         */
+        final public function warn(string $message): void
+        {
+            //
+        }
+    }
+
+    abstract class APP_Template
+    {
+        /**
+         * TBD.
+         */
+        final public function begin_block(string $template_name, string $block_name): void
+        {
+            //
+        }
+
+        /**
+         * TBD.
+         */
+        final public function begin_subblock(string $template_name, string $block_name): void
+        {
+            //
+        }
+
+        /**
+         * TBD.
+         */
+        final public function insert_block(string $block_name, array $tpl = []): void
+        {
+            //
+        }
+
+        /**
+         * TBD.
+         */
+        final public function insert_subblock(string $block_name, array $tpl = []): void
+        {
+            //
+        }
+    }
+
+    abstract class game_view
+    {
+        /**
+         * Underlying access to the table game.
+         */
+        readonly protected \Bga\GameFramework\Table $game;
+
+        /**
+         * Underlying access to the template.
+         */
+        readonly protected APP_Template $page;
+
+        /**
+         * Variables to inject into the template.
+         *
+         * @var array<string, mixed>
+         */
+        protected array $tpl;
+
+        /**
+         * @param array $viewArgs
+         * @return void
+         */
+        abstract public function build_page($viewArgs);
+
+        /**
+         * Translation function using appropriate gettext domain.
+         */
+        final protected function _(string $text): string
+        {
+            return '';
+        }
+
+        /**
+         * @return string
+         */
+        abstract protected function getGameName();
+
+        final protected function raw(string $string): array
+        {
+            return [];
+        }
+    }
+
+    abstract class GameState extends APP_Object
+    {
+        /**
+         * You can call this method to make any player active.
+         *
+         * NOTE: you CANNOT use this method in an "activeplayer" or "multipleactiveplayer" state. You must use a "game"
+         * type game state for this.
+         */
+        final public function changeActivePlayer(int $playerId): void
+        {
+            //
+        }
+
+        /**
+         * This works exactly like `Table::checkAction()`, except that it does NOT check if the current player is
+         * active.
+         */
+        final public function checkPossibleAction(string $actionName): void
+        {
+            //
+        }
+
+        /**
+         * With this method you can retrieve the list of the active player at any time.
+         *
+         * - During a "game" type game state, it will return a void array.
+         * - During an "activeplayer" type game state, it will return an array with one value (the active player id).
+         * - During a "multipleactiveplayer" type game state, it will return an array of the active players' id.
+         *
+         * NOTE: You should only use this method in the latter case.
+         */
+        final public function getActivePlayerList(): array
+        {
+            return [];
+        }
+
+        /**
+         * This return the private state or null if not initialized or not in private state.
+         */
+        final public function getPrivateState(int $playerId): array
+        {
+            return [];
+        }
+
+        /**
+         * Player with the specified id is entering a first private state defined in the master state initial private
+         * parameter.
+         *
+         * Everytime you need to start a private parallel states you need to call this or similar methods above
+         *
+         * - Note: player needs to be active (see above) and current game state must be a multiactive state with initial
+         * private parameter defined
+         * - Note: initial private parameter of master state should be set to the id of the first private state. This
+         * private state needs to be defined in states.php with the type set to 'private'.
+         * - Note: this method is usually preceded with activating that player
+         * - Note: initializing private state can run action or args methods of the initial private state
+         */
+        final public function initializePrivateState(int $playerId): void
+        {
+            //
+        }
+
+        /**
+         * All active players in a multiactive state are entering a first private state defined in the master state's
+         * initialprivate parameter.
+         *
+         * Every time you need to start a private parallel states you need to call this or similar methods below.
+         *
+         * - Note: at least one player needs to be active (see above) and current game state must be a multiactive state
+         * with initialprivate parameter defined
+         * - Note: initialprivate parameter of master state should be set to the id of the first private state. This
+         * private state needs to be defined in states.php with the type set to 'private'.
+         * - Note: this method is usually preceded with activating some or all players
+         * - Note: initializing private state can run action or args methods of the initial private state
+         */
+        final public function initializePrivateStateForAllActivePlayers(): void
+        {
+            //
+        }
+
+        /**
+         * Players with specified ids are entering a first private state defined in the master state initialprivate
+         * parameter.
+         *
+         * @param array<int> $playerIds
+         */
+        final public function initializePrivateStateForPlayers(array $playerIds): void
+        {
+            //
+        }
+
+        /**
+         * Return true if we are in multipleactiveplayer state, false otherwise.
+         */
+        final public function isMutiactiveState(): bool
+        {
+            return false;
+        }
+
+        /**
+         * Return true if specified player is active right now.
+         *
+         * This method take into account game state type, ie nobody is active if game state is "game" and several
+         * players can be active if game state is "multiplayer".
+         */
+        final public function isPlayerActive(int $player_id): bool
+        {
+            return false;
+        }
+
+        /**
+         * Change current state to a new state. Important: the $stateNum parameter is the key of the state.
+         *
+         * NOTE: This is very advanced method, it should not be used in normal cases. Specific advanced cases
+         * include - jumping to specific state from "do_anytime" actions, jumping to dispatcher state or jumping to
+         * recovery state from zombie player function.
+         */
+        final public function jumpToState(int $nextState, bool $bWithActions = true): void
+        {
+            //
+        }
+
+        /**
+         * Player with specified id will transition to next private state specified by provided transition.
+         *
+         * - Note: game needs to be in a master state which allows private parallel states
+         * - Note: transition should lead to another private state (i.e. a state with type defined as 'private'
+         * - Note: transition should be defined in private state in which the players currently are.
+         * - Note: this method can run action or args methods of the target state for specified player
+         * - Note: this is usually used after some player actions to move to next private state
+         */
+        final public function nextPrivateState(int $playerId, string $transition): void
+        {
+            //
+        }
+
+        /**
+         * All active players will transition to next private state by specified transition.
+         *
+         * - Note: game needs to be in a master state which allows private parallel states
+         * - Note: transition should lead to another private state (i.e. a state with type defined as 'private'
+         * - Note: transition should be defined in private state in which the players currently are.
+         * - Note: this method can run action or args methods of the target state
+         * - Note: this is usually used after initializing the private state to move players to specific private state
+         * according to the game logic
+         */
+        final public function nextPrivateStateForAllActivePlayers(string $transition): void
+        {
+            //
+        }
+
+        /**
+         * Players with specified ids will transition to next private state specified by provided transition.
+         * Same considerations apply as for the method above.
+         *
+         * @param array<int> $playerIds
+         */
+        final public function nextPrivateStateForPlayers(array $playerIds, string $transition): void
+        {
+            //
+        }
+
+        /**
+         * Change current state to a new state.
+         *
+         * NOTE: the `$transition` parameter is the name of the transition, and NOT the name of the target game state.
+         *
+         * @see states.inc.php
+         */
+        final public function nextState(string $transition = ''): void
+        {
+            //
+        }
+
+        /**
+         * Reload the current state.
+         */
+        final public function reloadState(): void
+        {
+            //
+        }
+
+        /**
+         * All playing players are made active. Update notification is sent to all players (this will trigger
+         * `onUpdateActionButtons`).
+         *
+         * Usually, you use this method at the beginning of a game state (e.g., `stGameState`) which transitions to a
+         * `multipleactiveplayer` state in which multiple players have to perform some action. Do not use this method if
+         * you're going to make some more changes in the active player list. (I.e., if you want to take away
+         * `multipleactiveplayer` status immediately afterward, use `setPlayersMultiactive` instead).
+         */
+        final public function setAllPlayersMultiactive(): void
+        {
+            //
+        }
+
+        /**
+         * All playing players are made inactive. Transition to next state.
+         */
+        final public function setAllPlayersNonMultiactive(string $nextState): bool
+        {
+            return false;
+        }
+
+        /**
+         * During a multi-active game state, make the specified player inactive.
+         *
+         * Usually, you call this method during a multi-active game state after a player did his action. It is also
+         * possible to call it directly from multiplayer action handler. If this player was the last active player, the
+         * method trigger the "next_state" transition to go to the next game state.
+         */
+        final public function setPlayerNonMultiactive(int $player, string $nextState): bool
+        {
+            return false;
+        }
+
+        /**
+         * Make a specific list of players active during a multiactive game state. Update notification is sent to all
+         * players whose state changed.
+         *
+         * - "players" is the array of player id that should be made active. If "players" is not empty the value of
+         * "next_state" will be ignored (you can put whatever you want).
+         * - If "bExclusive" parameter is not set or false it doesn't deactivate other previously active players. If
+         * it's set to true, the players who will be multiactive at the end are only these in "$players" array.
+         * - In case "players" is empty, the method trigger the "next_state" transition to go to the next game state.
+         *
+         * Returns true if state transition happened, false otherwise.
+         */
+        final public function setPlayersMultiactive(array $players, string $nextState, bool $bInactivePlayersNotOnTheList = false): bool
+        {
+            return false;
+        }
+
+        /**
+         * For player with specified id a new private state would be set.
+         *
+         * - Note: game needs to be in a master state which allows private parallel states
+         * - Note: this should be rarely used as it doesn't check if the transition is allowed (it doesn't even specify
+         * transition). This can be useful in very complex cases when standard state machine is not adequate (i.e.
+         * specific cards can lead to some micro action in various states where defining transitions back and forth can
+         * become very tedious.)
+         * - Note: this method can run action or args methods of the target state for specified player
+         */
+        final public function setPrivateState(int $playerId, int $newStateId): void
+        {
+            //
+        }
+
+        /**
+         * Get an associative array of current game state attributes.
+         *
+         * @see states.inc.php
+         */
+        final public function state(bool $bSkipStateArgs = false, bool $bOnlyVariableContent = false, bool $bSkipReflexionTimeLoad = false): array
+        {
+            return [];
+        }
+
+        /**
+         * Get the id of the current game state (rarely useful, it's best to use name, unless you use constants for
+         * state ids).
+         */
+        final public function state_id(): string|int
+        {
+            return '0';
+        }
+
+        /**
+         * For player with specified id private state will be reset to null, which means they will get out of private
+         * parallel states and be in a master state like the private states are not used.
+         *
+         * - Note: game needs to be in a master state which allows private parallel states
+         * - Note: this is usually used when deactivating player to clean up their parallel state
+         * - Note: After unseating private state only actions on master state are possible
+         * - Note: Usually it is not necessary to unset private state as it will be initialized to first private state
+         * when private states are needed again. Nevertheless, it is generally better to clean private state when not
+         * needed to avoid bugs.
+         */
+        final public function unsetPrivateState(int $playerId): void
+        {
+            //
+        }
+
+        /**
+         * All players private state will be reset to null, which means they will get out of private parallel states and
+         * be in a master state like the private states are not used.
+         *
+         * - Note: game needs to be in a master state which allows private parallel states
+         * - Note: this is usually used to clean up after leaving a master state in which private states were used, but
+         * can be used in other cases when we want to exit private parallel states and use a regular multiactive state
+         * for all players
+         * - Note: After unseating private state only actions on master state are possible
+         * - Note: Usually it is not necessary to unset private states as they will be initialized to first private
+         * state when private states are needed again. Nevertheless, it is generally better to clean private state after
+         * exiting private parallel states to avoid bugs.
+         */
+        final public function unsetPrivateStateForAllPlayers(): void
+        {
+            //
+        }
+
+        /**
+         * For players with specified ids private state will be reset to null, which means they will get out of private
+         * parallel states and be in a master state like the private states are not used.
+         *
+         * @param array<int> $playerIds
+         */
+        final public function unsetPrivateStateForPlayers(array $playerIds): void
+        {
+            //
+        }
+
+        /**
+         * Sends update notification about multiplayer changes. All multiactive set* functions above do that, however if
+         * you want to change state manually using db queries for complex calculations, you have to call this yourself
+         * after.
+         *
+         * Do not call this if you're calling one of the other setters above.
+         */
+        final public function updateMultiactiveOrNextState(string $nextStateIfNone): void
+        {
+            //
+        }
+    }
+
+    /**
+     * Only for compatibility, use directly \Bga\GameFramework\Table
+     */
+    abstract class Table extends \Bga\GameFramework\Table {}
 
     /** An integer. */
     const AT_int = 0;
@@ -1486,7 +1680,7 @@ namespace {
         /**
          * The associated table game instance.
          */
-        protected Table $game;
+        protected \Bga\GameFramework\Table $game;
 
         /**
          * The underlying view to process.
@@ -1525,7 +1719,7 @@ namespace {
          */
         final protected function getArg(string $argName, int $argType, bool $bMandatory = false, mixed $default = null, array $argTypeDetails = [], bool $bCanFail = false): mixed
         {
-            //
+            return null;
         }
 
         /**
@@ -1537,7 +1731,7 @@ namespace {
          */
         final protected function isArg($argName): bool
         {
-            //
+            return false;
         }
 
         /**
@@ -1618,5 +1812,225 @@ namespace {
     class BgaUserException extends BgaVisibleSystemException
     {
         //
+    }
+
+    class Deck
+    {
+        var $autoreshuffle;
+        var $autoreshuffle_trigger;
+
+        /**
+         * Set the databasetable name.
+         * MUST be called before any other method.
+         */
+        function init(string $table) {}
+
+        /**
+         * This is the way cards are created and should not be called during the game.
+         * Cards are added to the deck (not shuffled)
+         * Cards is an array of "card types" with at least the followin fields:
+         * array( 
+         *      array(                              // This is my first card type
+         *          "type" => "name of this type"   // Note: <10 caracters
+         *          "type_arg" => <type arg>        // Argument that should be applied to all card of this card type
+         *          "nbr" => <nbr>                  // Number of cards with this card type to create in game
+         *
+         * If location_arg is not specified, cards are placed at location extreme position
+         */
+        function createCards(array $cards, string $location = 'deck', ?int $location_arg = null) {}
+
+        /**
+         * Get position of extreme cards (top or back) on the specific location.
+         */
+        function getExtremePosition(bool $getMax, string $location): int
+        {
+            return false;
+        }
+
+        /**
+         * Shuffle cards of a specified location.
+         */
+        function shuffle(string $location) {}
+
+        /**
+         * Pick the first card on top of specified deck and give it to specified player.
+         * Return card infos or null if no card in the specified location.
+         */
+        function pickCard(string $location, int $player_id): ?array
+        {
+            return [];
+        }
+
+        /**
+         * Pick the "nbr" first cards on top of specified deck and give it to specified player.
+         * Return card infos (array) or null if no card in the specified location.
+         */
+        function pickCards(int $nbr, string $location, int $player_id): ?array
+        {
+            return [];
+        }
+
+        /**
+         * Pick the first card on top of specified deck and place it in target location.
+         * Return card infos or null if no card in the specified location.
+         */
+        function pickCardForLocation(string $from_location, string $to_location, int $location_arg = 0): ?array
+        {
+            return [];
+        }
+
+        /**
+         * Pick the first "$nbr" cards on top of specified deck and place it in target location.
+         * Return cards infos or void array if no card in the specified location.
+         */
+        function pickCardsForLocation(int $nbr, string $from_location, string $to_location, int $location_arg = 0, bool $no_deck_reform = false): ?array
+        {
+            return [];
+        }
+
+        /**
+         * Return card on top of this location.
+         */
+        function getCardOnTop(string $location): ?array
+        {
+            return [];
+        }
+
+        /**
+         * Return "$nbr" cards on top of this location.
+         */
+        function getCardsOnTop(int $nbr, string $location): ?array
+        {
+            return [];
+        }
+
+        /**
+         * Move a card to specific location.
+         */
+        function moveCard(int $card_id, string $location, int $location_arg = 0): void {}
+
+        /**
+         * Move cards to specific location.
+         */
+        function moveCards(array $cards, string $location, int $location_arg = 0): void {}
+
+        /**
+         * Move a card to a specific location where card are ordered. If location_arg place is already taken, increment
+         * all cards after location_arg in order to insert new card at this precise location.
+         */
+        function insertCard(int $card_id, string $location, int $location_arg): void {}
+
+        /**
+         * Move a card on top or at bottom of given "pile" type location. (Lower numbers: bottom of the deck. Higher numbers: top of the deck.)
+         */
+        function insertCardOnExtremePosition(int $card_id, string $location, bool $bOnTop): void {}
+
+        /**
+         * Move all cards from a location to another.
+         * !!! location arg is reseted to 0 or specified value !!!
+         * if "from_location" and "from_location_arg" are null: move ALL cards to specific location
+         */
+        function moveAllCardsInLocation(?string $from_location, ?string $to_location, ?int $from_location_arg = null, int $to_location_arg = 0): void {}
+
+        /**
+         * Move all cards from a location to another.
+         * location arg stays with the same value
+         */
+        function moveAllCardsInLocationKeepOrder(string $from_location, string $to_location): void {}
+
+        /**
+         * Return all cards in specific location.
+         * note: if "order by" is used, result object is NOT indexed by card ids
+         */
+        function getCardsInLocation(string|array $location, ?int $location_arg = null, ?string $order_by = null): array
+        {
+            return [];
+        }
+
+        /**
+         * Get all cards in given player hand.
+         * Note: This is an alias for: getCardsInLocation( "hand", $player_id ) 
+         */
+        function getPlayerHand(int $player_id): array
+        {
+            return [];
+        }
+
+        /**
+         * Get specific card infos
+         */
+        function getCard(int $card_id): ?array
+        {
+            return [];
+        }
+
+        /**
+         * Get specific cards infos
+         */
+        function getCards(array $cards_array): array
+        {
+            return [];
+        }
+
+        /**
+         * Get cards from their IDs (same as getCards), but with a location specified. Raises an exception if the cards are not in the specified location.
+         */
+        function getCardsFromLocation(array $cards_array, string $location, ?int $location_arg = null): array
+        {
+            return [];
+        }
+
+        /**
+         * Get card of a specific type.
+         */
+        function getCardsOfType(mixed $type, ?int $type_arg = null): array
+        {
+            return [];
+        }
+
+        /**
+         * Get cards of a specific type in a specific location.
+         */
+        function getCardsOfTypeInLocation(mixed $type, ?int $type_arg = null, string $location, ?int $location_arg = null): array
+        {
+            return [];
+        }
+
+        /**
+         * Move a card to discard pile.
+         */
+        function playCard(int $card_id): void {}
+
+        /**
+         * Return the number of cards in specified location. 
+         */
+        function countCardInLocation(string $location, ?int $location_arg = null): int|string
+        {
+            return '0';
+        }
+
+        /**
+         * Return the number of cards in specified location. 
+         */
+        function countCardsInLocation(string $location, ?int $location_arg = null): int|string
+        {
+            return '0';
+        }
+
+        /**
+         * Return an array "location" => number of cards.
+         */
+        function countCardsInLocations(): array
+        {
+            return [];
+        }
+
+        /**
+         * Return an array "location_arg" => number of cards (for this location).
+         */
+        function countCardsByLocationArgs(string $location): array
+        {
+            return [];
+        }
     }
 }

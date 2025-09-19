@@ -1,9 +1,9 @@
 <?php
 
-namespace HEAT\Models;
+namespace Bga\Games\Heat\Models;
 
-use HEAT\Managers\Constructors;
-use HEAT\Core\Globals;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Core\Globals;
 
 class Circuit
 {

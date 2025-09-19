@@ -1,20 +1,22 @@
 <?php
 
-namespace HEAT\States;
+namespace Bga\Games\Heat\States;
 
-use HEAT\Core\Globals;
-use HEAT\Core\Notifications;
-use HEAT\Core\Engine;
-use HEAT\Core\Stats;
-use HEAT\Core\Preferences;
-use HEAT\Managers\Players;
-use HEAT\Managers\Cards;
-use HEAT\Managers\LegendCards;
-use HEAT\Managers\Constructors;
-use HEAT\Managers\Actions;
-use HEAT\Helpers\Utils;
-use HEAT\Helpers\Log;
-use HEAT\Models\Constructor;
+use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Core\Engine;
+use Bga\Games\Heat\Core\Stats;
+use Bga\Games\Heat\Core\Preferences;
+use Bga\Games\Heat\Managers\Players;
+use Bga\Games\Heat\Managers\Cards;
+use Bga\Games\Heat\Managers\LegendCards;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Actions;
+use Bga\Games\Heat\Helpers\Utils;
+use Bga\Games\Heat\Helpers\Log;
+use Bga\Games\Heat\Models\Constructor;
+
+use \Bga\GameFramework\Actions\Types\JsonParam;
 
 trait SetupTrait
 {
@@ -24,29 +26,29 @@ trait SetupTrait
   protected function setupNewGame($players, $options = [])
   {
     // First game : USA with 1 lap
-    if ($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_FIRST_GAME) {
-      $options[\HEAT\OPTION_CIRCUIT] = \HEAT\OPTION_CIRCUIT_USA;
-      $options[\HEAT\OPTION_NBR_LAPS] = 1;
-      $options[\HEAT\OPTION_GARAGE_MODULE] = \HEAT\OPTION_DISABLED;
-      $options[\HEAT\OPTION_GARAGE_CHOICE] = \HEAT\OPTION_DISABLED;
-      $options[\HEAT\OPTION_WEATHER_MODULE] = \HEAT\OPTION_DISABLED;
-      $options[\HEAT\OPTION_LEGEND_PRO] = 0;
+    if ($options[\Bga\Games\Heat\OPTION_SETUP] == \Bga\Games\Heat\OPTION_SETUP_FIRST_GAME) {
+      $options[\Bga\Games\Heat\OPTION_CIRCUIT] = \Bga\Games\Heat\OPTION_CIRCUIT_USA;
+      $options[\Bga\Games\Heat\OPTION_NBR_LAPS] = 1;
+      $options[\Bga\Games\Heat\OPTION_GARAGE_MODULE] = \Bga\Games\Heat\OPTION_DISABLED;
+      $options[\Bga\Games\Heat\OPTION_GARAGE_CHOICE] = \Bga\Games\Heat\OPTION_DISABLED;
+      $options[\Bga\Games\Heat\OPTION_WEATHER_MODULE] = \Bga\Games\Heat\OPTION_DISABLED;
+      $options[\Bga\Games\Heat\OPTION_LEGEND_PRO] = 0;
     }
     // Beginner: default number of laps + no garage + no weather
-    elseif ($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_BEGINNER) {
-      $options[\HEAT\OPTION_NBR_LAPS] = 0;
-      $options[\HEAT\OPTION_GARAGE_MODULE] = \HEAT\OPTION_DISABLED;
-      $options[\HEAT\OPTION_GARAGE_CHOICE] = \HEAT\OPTION_DISABLED;
-      $options[\HEAT\OPTION_WEATHER_MODULE] = \HEAT\OPTION_DISABLED;
-      $options[\HEAT\OPTION_LEGEND_PRO] = 0;
+    elseif ($options[\Bga\Games\Heat\OPTION_SETUP] == \Bga\Games\Heat\OPTION_SETUP_BEGINNER) {
+      $options[\Bga\Games\Heat\OPTION_NBR_LAPS] = 0;
+      $options[\Bga\Games\Heat\OPTION_GARAGE_MODULE] = \Bga\Games\Heat\OPTION_DISABLED;
+      $options[\Bga\Games\Heat\OPTION_GARAGE_CHOICE] = \Bga\Games\Heat\OPTION_DISABLED;
+      $options[\Bga\Games\Heat\OPTION_WEATHER_MODULE] = \Bga\Games\Heat\OPTION_DISABLED;
+      $options[\Bga\Games\Heat\OPTION_LEGEND_PRO] = 0;
     }
     // Championship
-    elseif ($options[\HEAT\OPTION_SETUP] == \HEAT\OPTION_SETUP_CHAMPIONSHIP) {
-      $options[\HEAT\OPTION_NBR_LAPS] = 0;
-      $options[\HEAT\OPTION_GARAGE_MODULE] = \HEAT\OPTION_GARAGE_MIXED;
-      $options[\HEAT\OPTION_GARAGE_MODULE] = $options[\HEAT\OPTION_GARAGE_MODULE_CHAMPIONSHIP];
-      $options[\HEAT\OPTION_GARAGE_CHOICE] = \HEAT\OPTION_GARAGE_DRAFT;
-      $options[\HEAT\OPTION_WEATHER_MODULE] = \HEAT\OPTION_WEATHER_ENABLED;
+    elseif ($options[\Bga\Games\Heat\OPTION_SETUP] == \Bga\Games\Heat\OPTION_SETUP_CHAMPIONSHIP) {
+      $options[\Bga\Games\Heat\OPTION_NBR_LAPS] = 0;
+      $options[\Bga\Games\Heat\OPTION_GARAGE_MODULE] = \Bga\Games\Heat\OPTION_GARAGE_MIXED;
+      $options[\Bga\Games\Heat\OPTION_GARAGE_MODULE] = $options[\Bga\Games\Heat\OPTION_GARAGE_MODULE_CHAMPIONSHIP];
+      $options[\Bga\Games\Heat\OPTION_GARAGE_CHOICE] = \Bga\Games\Heat\OPTION_GARAGE_DRAFT;
+      $options[\Bga\Games\Heat\OPTION_WEATHER_MODULE] = \Bga\Games\Heat\OPTION_WEATHER_ENABLED;
     }
 
     Globals::setupNewGame($players, $options);
@@ -130,7 +132,7 @@ trait SetupTrait
   //       |_|
   //////////////////////////////////////////
 
-  public function actUploadCircuit($circuit)
+  public function actUploadCircuit(#[JsonParam()] $circuit)
   {
     // Filter datas
     $f = [];

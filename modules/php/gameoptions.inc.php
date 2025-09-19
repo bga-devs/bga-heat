@@ -1,6 +1,6 @@
 <?php
 
-namespace HEAT;
+namespace Bga\Games\Heat;
 
 const OPTION_TB_MODE = 112;
 const OPTION_TB_STANDARD = 0;
