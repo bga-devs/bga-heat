@@ -99,6 +99,8 @@ const HEATED_BOOST = 'heated-boost';
 const SUPER_COOL = 'super-cool';
 const DRAFT = 'draft';
 
+const CARD_SYMBOLS = [DIRECT, REFRESH];
+
 /*
  * MISC
  */

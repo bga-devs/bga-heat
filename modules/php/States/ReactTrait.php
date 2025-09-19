@@ -26,7 +26,7 @@ trait ReactTrait
     $constructor = Constructors::getActive();
     $roadCondition = $constructor->getRoadCondition();
     $symbols = Globals::getCardSymbols();
-    $usedSymbols = Globals::getUsedSymbols();
+    $usedSymbols = [];
     // Remove symbols that do not apply at this step
     $notReactSymbols = [SLIPSTREAM, REFRESH];
     foreach ($notReactSymbols as $symbol) {
@@ -105,7 +105,6 @@ trait ReactTrait
       'canPass' => $canPass,
       'descSuffix' => $canPass ? '' : 'Must',
       'flippedCards' => Globals::getFlippedCards(),
-      'usedSymbols' => $usedSymbols,
 
       'adrenalineWillCrossNextCorner' => $adrenalineWillCrossNextCorner,
       'currentHeatCost' => $currentHeatCost,

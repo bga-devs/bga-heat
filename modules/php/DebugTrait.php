@@ -19,6 +19,19 @@ trait DebugTrait
     Log::undoToStep($stepNumber);
   }
 
+  function debug_newReact()
+  {
+    $constructor = Constructors::getOfPlayer((int) self::getCurrentPlayerId());
+    $cId = $constructor->getId();
+    $cardTypes = [3, 4, 7, 8, 11, 12, 14, 19, 23, 24, 27, 28, 29, 31, 32, 35, 36, 40, 43, 46, 47, 49, 54, 55, 56, 59];
+    $cards = [];
+    foreach ($cardTypes as $cardType) {
+      $cards[] = ['type' => $cardType, 'nbr' => 1, 'location' => "hand-$cId"];
+    }
+    Cards::create($cards);
+  }
+
+
   function debug_tp()
   {
     $circuit = $this->getCircuit();

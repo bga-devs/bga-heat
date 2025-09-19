@@ -480,42 +480,52 @@ trait RoundTrait
       return;
     }
 
-    // Store previous position and store symbols
-    Globals::setRefreshedCards([]);
+    // Store previous position
     Globals::setPreviousPosition($constructor->getPosition());
     Globals::setPreviousTurn($constructor->getTurn());
-    Globals::setUsedBoost(false);
-    Globals::setUsedSymbols([]);
+
+    /////////////////////////////////////////////////
+    // Store cards symbols
     $symbols = [];
     foreach ($cards as $cardId => $card) {
       foreach ($card['symbols'] as $symbol => $n) {
-        $symbols[$symbol][$cardId] = $n;
+        $data = ['used' => false];
+        if (!in_array($symbol, CARD_SYMBOLS)) {
+          $data['n'] = $n;
+        }
+        $symbols[$symbol]['entries'][$cardId] = $data;
+      }
+      // Also store speed
+      $speed = $card['speed'];
+      if ($speed !== 0) {
+        $symbols[SPEED]['entries'][$cardId] = [
+          'values' => is_array($speed) ? $speed : [$speed],
+          'used' => false,
+        ];
       }
 
       if ($card['type'] == 110) {
         $constructor->incStat('stressPlayed');
       }
     }
+    ////////////////////////////////////////////////
 
     // Resolve + symbols
-    $usedSymbols = [];
-    $boosts = $symbols[BOOST] ?? [];
-    $totalBoost = array_sum($boosts);
-    $i = 0;
-    foreach ($boosts as $cardId => $n) {
-      $usedSymbols[] = $cardId . "-" . BOOST;
-      for ($j = 0; $j < $n; $j++) {
-        $i++;
+    $boosts = $symbol[BOOST] ?? null;
+    $totalBoost = 0;
+    if (!is_null($boosts)) {
+      foreach ($boosts['entries'] as &$entry) {
+        $entry['used'] = true;
+        $totalBoost += $entry['n'];
+      }
+
+      for ($i = 0; $i < $totalBoost; $i++) {
         list($cards, $card) = $constructor->resolveBoost();
         Notifications::resolveBoost($constructor, $cards, $card, $i, $totalBoost);
       }
     }
-    Globals::setFlippedCards($i);
-    unset($symbols[BOOST]);
-    unset($symbols[ADJUST]);
-
+    Globals::setFlippedCards($totalBoost);
     Globals::setCardSymbols($symbols);
-    Globals::setUsedSymbols($usedSymbols);
 
     $this->gamestate->jumpToState(ST_CHOOSE_SPEED);
   }
@@ -532,61 +542,76 @@ trait RoundTrait
   {
     $constructor = Constructors::getActive();
 
+    $symbols = Globals::getCardSymbols();
+
+    /////////////////////////////////
+    // LEGACY CODE, REMOVE LATER
+    if (!isset($symbols[SPEED])) {
+      foreach ($constructor->getPlayedCards() as $cardId => $card) {
+        $speed = $card['speed'];
+        if ($speed !== 0) {
+          $symbols[SPEED]['entries'][$cardId] = [
+            'values' => is_array($speed) ? $speed : [$speed],
+            'used' => false,
+          ];
+        }
+      }
+    }
+    /////////////////////////////////
+
     // Compute speed
-    $speeds = [0];
-    foreach ($constructor->getPlayedCards() as $card) {
+    $speedCombinations = [[0, []]];
+    foreach ($symbols[SPEED]['entries'] as $cardId => $entry) {
       $t = [];
 
-      $cSpeeds = $card['speed'];
-      if (!is_array($cSpeeds)) {
-        $cSpeeds = [$cSpeeds];
-      }
-
-      foreach ($cSpeeds as $cSpeed) {
-        foreach ($speeds as $speed) {
-          $t[] = $cSpeed + $speed;
+      foreach ($entry['values'] as $cSpeed) {
+        foreach ($speedCombinations as [$speed, $choice]) {
+          $choice[$cardId] = $cSpeed;
+          $t[] = [$speed + $cSpeed, $choice];
         }
       }
 
-      $speeds = $t;
+      $speedCombinations = $t;
     }
-    $possibleSpeeds = $speeds;
+    // For each speed, store the possible corresponding choices
+    $speeds = [];
+    foreach ($speedCombinations as [$speed, $choice]) {
+      $speeds[$speed]['choices'][] = $choice;
+    }
 
     // Compute ending cells and heat to pay
-    $speeds = [];
-    $heatCosts = [];
-    foreach ($possibleSpeeds as $speed) {
+    foreach ($speeds as $speed => &$infos) {
       $moveResult = $this->getCircuit()->getReachedCell($constructor, $speed, FLAG_COMPUTE_HEAT_COSTS);
-      $speeds[$speed] = $moveResult['cell'];
-      $heatCosts[$speed] = $moveResult['heatCost'];
+      $infos['cell'] = $moveResult['cell'];
+      $infos['heatCost'] = $moveResult['heatCost'];
     }
 
     return [
       'speeds' => $speeds,
-      'heatCosts' => $heatCosts,
-      'usedSymbols' => Globals::getUsedSymbols(),
       'descSuffix' => count($speeds) == 1 ? 'SingleChoice' : '',
     ];
   }
 
-  public function stChooseSpeed()
-  {
-    // TODO : enable
-    // $speeds = $this->argsChooseSpeed();
-    // if(count($speeds) == 1){
-    //   $this->actChooseSpeed($speeds[0], true);
-    // }
-  }
-
-  public function actChooseSpeed($speed, $auto = false)
+  public function actChooseSpeed(int $speed, array $choices, $auto = false)
   {
     if (!$auto) {
       self::checkAction('actChooseSpeed');
     }
-    $args = $this->argsChooseSpeed();
-    if (!array_key_exists($speed, $args['speeds'])) {
+    $args = $this->argsChooseSpeed()['speeds'];
+    if (!array_key_exists($speed, $args)) {
       throw new \BgaVisibleSystemException('Invalid speed. Should not happen');
     }
+    if (!in_array($choices, $args[$speed]['choices'])) {
+      throw new \BgaVisibleSystemException('Invalid card choice for that speed. Should not happen');
+    }
+
+    // Mark the symbols on the card
+    $symbols = Globals::getCardSymbols();
+    foreach ($choices as $cardId => $value) {
+      $symbols[SPEED]['entries'][$cardId]['used'] = true;
+      $symbols[SPEED]['entries'][$cardId]['value'] = $value;
+    }
+    Globals::setCardSymbols($symbols);
 
     // Set the speed and move the car
     $constructor = Constructors::getActive();
