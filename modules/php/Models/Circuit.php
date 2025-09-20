@@ -578,6 +578,17 @@ class Circuit
 
     return $limit;
   }
+  public function getCornersMaxSpeed(): array
+  {
+    $corners = [];
+    foreach ($this->corners as $cornerPos => $limit) {
+      $realLimit = $this->getCornerMaxSpeed($cornerPos);
+      $corners[$cornerPos] = $realLimit;
+    }
+
+    return $corners;
+  }
+
 
   /**
    * Legend information:
@@ -673,7 +684,7 @@ class Circuit
 
 
   /**
-   * Core logic part: given a constructor, a speed, a strarting and ending pos, return the following informations about corner crossed
+   * Core logic part: given a constructor, a speed, a strarting and ending pos, return the following informations about corner(s) crossed
    *  - array heatCosts: cornerPos => heatCost
    *  - bool spinOut
    *  - array speedLimits: cornerPos => speedLimit

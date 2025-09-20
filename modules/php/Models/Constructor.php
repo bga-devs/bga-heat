@@ -8,6 +8,7 @@ use Bga\Games\Heat\Managers\Cards;
 use Bga\Games\Heat\Core\Globals;
 use Bga\Games\Heat\Core\Notifications;
 use Bga\Games\Heat\Game;
+use Bga\Games\Heat\Helpers\Collection;
 
 /*
  * Constructor: all utility functions concerning a player, real or not
@@ -32,7 +33,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
   protected int $id;
   protected int $pId;
 
-  public function getUiData($currentPlayerId = null)
+  public function getUiData($currentPlayerId = null): array
   {
     $current = $this->pId == $currentPlayerId;
     return array_merge(parent::getUiData(), [
@@ -50,7 +51,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     ]);
   }
 
-  public function canLeave()
+  public function canLeave(): bool
   {
     // Constructor must be finished to quit
     if (!$this->isFinished() || $this->isAI()) {
@@ -67,50 +68,50 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     }
   }
 
-  public function getDistanceToCorner()
+  public function getDistanceToCorner(): int
   {
     return Game::get()
       ->getCircuit()
       ->getDistanceToCorner($this->getPosition());
   }
 
-  public function isAI()
+  public function isAI(): bool
   {
     return $this->pId < 0;
   }
 
-  public function getLvlAI()
+  public function getLvlAI(): ?int
   {
     return $this->isAI() ? ($this->pId + 20) % 5 : null;
   }
 
-  public function isFinished()
+  public function isFinished(): bool
   {
     return $this->getCarCell() < 0;
   }
 
-  public function incScore($n)
+  public function incScore(int $n): void
   {
     parent::incScore($n);
     if (!$this->isAI()) {
       Players::get($this->pId)->incScore($n);
     }
   }
-  public function setScoreAux($n)
+  public function setScoreAux(int $n): void
   {
     if (!$this->isAI()) {
       Players::get($this->pId)->setScoreAux($n);
     }
   }
 
-  public function getPosition()
+  public function getPosition(): int
   {
     return Game::get()
       ->getCircuit()
       ->getPosition($this);
   }
 
-  public function getRaceProgress()
+  public function getRaceProgress(): int
   {
     if ($this->isFinished()) {
       return 1;
@@ -133,14 +134,23 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     return min(1, $uid / $max);
   }
 
-  public function getLane()
+  public function getSpeedLimitModifier(): int
+  {
+    $speedLimitModifier = 0;
+    foreach ($this->getPlayedCards() as $card) {
+      $speedLimitModifier += $card['symbols'][ADJUST] ?? 0;
+    }
+    return $speedLimitModifier;
+  }
+
+  public function getLane(): int
   {
     return Game::get()
       ->getCircuit()
       ->getLane($this);
   }
 
-  public function getRoadCondition()
+  public function getRoadCondition(): ?int
   {
     return Game::get()
       ->getCircuit()
@@ -159,62 +169,65 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
       ->getCircuit()->getTunnelsSpaces());
   }
 
-  public function getDeck()
+  public function getDeck(): Collection
   {
     return Cards::getDeck($this->id);
   }
-  public function getDeckCount()
+  public function getDeckCount(): int
   {
     return $this->getDeck()->count();
   }
 
-  public function getHand()
+  public function getHand(): Collection
   {
     return Cards::getHand($this->id);
   }
 
-  public function getPlayedCards()
+  public function getPlayedCards(): Collection
   {
     return Cards::getInPlay($this->id);
   }
 
-  public function getEngine()
+  public function getEngine(): Collection
   {
     return Cards::getEngine($this->id);
   }
 
-  public function hasNoHeat()
+  public function hasNoHeat(): bool
   {
     return is_null($this->getEngine()->first());
   }
 
-  public function getDiscard()
+  public function getDiscard(): Collection
   {
     return Cards::getDiscard($this->id);
   }
 
-  public function getStat($name)
+  public function getStat(string $name): mixed
   {
     if (!$this->isAI()) {
       return Players::get($this->pId)->getStat($name);
     }
+    return null;
   }
 
-  public function setStat($name, $val)
+  public function setStat(string $name, mixed $val): mixed
   {
     if (!$this->isAI()) {
       return Players::get($this->pId)->setStat($name, $val);
     }
+    return null;
   }
 
-  public function incStat($name, $val = 1)
+  public function incStat(string $name, int $val = 1): mixed
   {
     if (!$this->isAI()) {
       return Players::get($this->pId)->incStat($name, $val);
     }
+    return null;
   }
 
-  public function resolveBoost()
+  public function resolveBoost(): array
   {
     $cards = [];
     do {
@@ -227,7 +240,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     return [$cards, $card];
   }
 
-  public function payHeats($n)
+  public function payHeats(int $n): Collection
   {
     $cards = $this->getEngine()->limit($n);
     Cards::move($cards->getIds(), ['discard', $this->id]);
@@ -235,7 +248,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     return $cards;
   }
 
-  public function getHeatsInHand()
+  public function getHeatsInHand(): Collection
   {
     return $this->getHand()->filter(function ($card) {
       return $card['effect'] == HEAT;
@@ -247,14 +260,14 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     return $this->getEngine()->count();
   }
 
-  public function getStressesInHand()
+  public function getStressesInHand(): Collection
   {
     return $this->getHand()->filter(function ($card) {
       return $card['effect'] == STRESS;
     });
   }
 
-  public function scrapCards($n)
+  public function scrapCards(int $n): array
   {
     $cards = [];
     for ($i = 0; $i < $n; $i++) {
@@ -263,7 +276,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     return $cards;
   }
 
-  public function canUseSymbol($symbol, $n)
+  public function canUseSymbol(string $symbol, int $n): bool
   {
     // Cooldown => must have something to cooldown in the hand
     if ($symbol == \COOLDOWN) {
@@ -290,7 +303,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     return true;
   }
 
-  public function eliminate()
+  public function eliminate(): void
   {
     if ($this->isFinished()) {
       return;
@@ -309,7 +322,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     Notifications::eliminate($this, $cell, $canLeave);
   }
 
-  public function giveUp()
+  public function giveUp(): void
   {
     $cell = -Constructors::count() + count(Globals::getSkippedPlayers()) + count(Globals::getGiveUpPlayers());
     $this->setCarCell($cell);

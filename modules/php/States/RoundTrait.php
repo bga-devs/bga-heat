@@ -12,6 +12,10 @@ use Bga\Games\Heat\Managers\Cards;
 use Bga\Games\Heat\Models\Circuit;
 
 use \Bga\GameFramework\Actions\Types\JsonParam;
+use Bga\Games\Heat\Models\Constructor;
+
+use const Bga\Games\Heat\OPTION_AUTO_MOVE_WHEN_SINGLE_SPEED_CHOICE;
+use const Bga\Games\Heat\OPTION_DISABLED;
 
 trait RoundTrait
 {
@@ -543,7 +547,6 @@ trait RoundTrait
   public function argsChooseSpeed()
   {
     $constructor = Constructors::getActive();
-
     $symbols = Globals::getCardSymbols();
 
     /////////////////////////////////
@@ -558,6 +561,7 @@ trait RoundTrait
           ];
         }
       }
+      Globals::setCardSymbols($symbols);
     }
     /////////////////////////////////
 
@@ -591,11 +595,33 @@ trait RoundTrait
     return [
       'speeds' => $speeds,
       'symbols' => $symbols,
+      'updatedSpeedLimits' => $this->getUpdatedSpeedLimits($constructor),
       'descSuffix' => count($speeds) == 1 ? 'SingleChoice' : '',
     ];
   }
 
-  public function actChooseSpeed(int $speed, array $choices, $auto = false)
+  public function stChooseSpeed()
+  {
+    $pId = $this->getActivePlayerId();
+    if ($this->userPreferences->get($pId, OPTION_AUTO_MOVE_WHEN_SINGLE_SPEED_CHOICE) == OPTION_DISABLED) {
+      continue;
+    }
+
+    $speeds = $this->argsChooseSpeed()['speeds'];
+    if (count($speeds) > 1) {
+      continue;
+    }
+
+    $speed = array_keys($speeds)[0];
+    if (count($speeds[$speed]['choices']) > 1) {
+      continue;
+    }
+    $choice = $speeds[$speed]['choices'][0];
+
+    $this->actChooseSpeed($speed, $choice, true);
+  }
+
+  public function actChooseSpeed(int $speed, array $choices, bool $auto = false)
   {
     if (!$auto) {
       self::checkAction('actChooseSpeed');
@@ -626,10 +652,22 @@ trait RoundTrait
     $this->stAdrenaline();
   }
 
-  public function moveCar($constructor, $n, $slipstream = false, $legendSlot = null): int
+
+  /**
+   * MoveCar : move and notify a card by $n spaces
+   *  - Constructor $constructor
+   *  - int $n
+   *  - bool $slipstream (used to know whether or not the speed increase)
+   *  - ?int $legendSlot : how far from the next corner is the legend stopping
+   */
+  public function moveCar(Constructor $constructor, int $n, bool $slipstream = false, ?int $legendSlot = null): int
   {
     $circuit = $this->getCircuit();
-    $moveResult = $circuit->getReachedCell($constructor, $n, FLAG_COMPUTE_PATHS);
+    $flags = FLAG_COMPUTE_PATHS;
+    if ($slipstream) {
+      $flags |= FLAG_IS_SLIPSTREAM;
+    }
+    $moveResult = $circuit->getReachedCell($constructor, $n, $flags);
     $constructor->setCarCell($moveResult['cell']);
     $constructor->incTurn($moveResult['extraTurn']);
     $distanceToCorner = $constructor->getDistanceToCorner();
@@ -651,7 +689,11 @@ trait RoundTrait
     return $moveResult['distance'];
   }
 
-  public function getCurrentHeatCosts($constructor)
+  /**
+   * getCurrentHetCosts: given a constructor, compute the information about the heat costs with current speed:
+   *  an array of heatCosts (cornerPos => heatCost), a bool spinout, an array speedLimits
+   */
+  public function getCurrentHeatCosts(Constructor $constructor): array
   {
     $prevPosition = Globals::getPreviousPosition();
     $prevTurn = Globals::getPreviousTurn();
@@ -668,21 +710,35 @@ trait RoundTrait
     );
   }
 
-  public function getNextCornerInfos($constructor)
+  /**
+   * getNextCornerInfos: given a constructor, return informations about the next corner ahead
+   *  the speed limit and whether it has an extraHeat road condition or not
+   */
+  public function getNextCornerInfos(Constructor $constructor): array
   {
     $position = $constructor->getPosition();
     $cornerPos = $this->getCircuit()->getNextCorner($position);
     $extraHeat = $this->getCircuit()->getCornerWeather($cornerPos) == \ROAD_CONDITION_MORE_HEAT;
 
     // Max speed modificator
-    $speedLimitModifier = 0;
-    foreach ($constructor->getPlayedCards() as $card) {
-      $speedLimitModifier += $card['symbols'][ADJUST] ?? 0;
-    }
     $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
     $limit = $rawLimit + $speedLimitModifier;
 
     return ['speedLimit' => $limit, 'extraHeat' => $extraHeat];
+  }
+
+  /**
+   * getUpdatedSpeedLimits: given a constructor, compute the updated speed limit of each corner
+   */
+  public function getUpdatedSpeedLimits(Constructor $constructor): array
+  {
+    $corners = $this->getCircuit()->getCornersMaxSpeed();
+    $modifier = $constructor->getSpeedLimitModifier();
+    foreach ($corners as $cornerPos => &$speedLimit) {
+      $speedLimit += $modifier;
+      if ($speedLimit < 0) $speedLimit = 0;
+    }
+    return $corners;
   }
 
   //////////////////////////////////////////////////////////////////

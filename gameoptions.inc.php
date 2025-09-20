@@ -498,4 +498,14 @@ $game_preferences = [
       OPTION_CONFIRM_HEAT_COST_DISABLED => ['name' => totranslate('Disabled')],
     ],
   ],
+
+  OPTION_AUTO_MOVE_WHEN_SINGLE_SPEED_CHOICE => [
+    'name' => totranslate('Automatic speed selection when only one possible choice'),
+    'needReload' => false,
+    'default' => OPTION_DISABLED,
+    'values' => [
+      OPTION_ENABLED => ['name' => totranslate('Enabled')],
+      OPTION_DISABLED => ['name' => totranslate('Disabled')],
+    ],
+  ],
 ];
