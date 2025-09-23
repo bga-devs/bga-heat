@@ -21,7 +21,8 @@ function sleep(ms: number) {
 }
 
 // @ts-ignore
-GameGui = (function () { // this hack required so we fake extend GameGui
+GameGui = (function () {
+  // this hack required so we fake extend GameGui
   function GameGui() {}
   return GameGui;
 })();
@@ -258,8 +259,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       let content = e.target.result;
       let circuit = JSON.parse(content as string);
 
-      
-      this.ajaxcall( // @ts-ignore
+      this.ajaxcall(
+        // @ts-ignore
         `/${this.game_name}/${this.game_name}/actUploadCircuit.html`,
         { circuit: JSON.stringify(circuit), lock: true },
         this,
@@ -362,7 +363,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
     Object.entries(args.speeds).forEach(([speedStr, speedChoice]) => {
       const speed = Number(speedStr);
-      this.circuit.addMapIndicator(speedChoice.cell, () => this.actChooseSpeed(speed, speedChoice.choices), speed);
+      this.circuit.addMapIndicator(speedChoice.cell, () => this.actChooseSpeed(speed, speedChoice.choices[0]), speed);
     });
   }
 
@@ -515,7 +516,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       if (speedChoice.heatCosts) {
         label += ` (${speedChoice.heatCosts}[Heat])`;
       }
-      const button = this.statusBar.addActionButton(formatTextIcons(label), () => this.actChooseSpeed(speed, speedChoice.choices));
+      const button = this.statusBar.addActionButton(formatTextIcons(label), () =>
+        this.actChooseSpeed(speed, speedChoice.choices[0])
+      );
       this.linkButtonHoverToMapIndicator(button, speedChoice.cell);
     });
   }
@@ -530,9 +533,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       const confirmationMessage = this.getSlipstreamConfirmation(args, speed);
 
       const finalAction = () => this.actSlipstream(speed);
-      const callback = confirmationMessage
-        ? () => this.confirmationDialog(confirmationMessage, finalAction)
-        : finalAction;
+      const callback = confirmationMessage ? () => this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
 
       const button = this.statusBar.addActionButton(formatTextIcons(label), callback);
       this.linkButtonHoverToMapIndicator(button, speedChoice);
@@ -720,7 +721,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   //                        action status bar (ie: the HTML links in the status bar).
   //
   public onUpdateActionButtons(stateName: string, args: any) {
-    log('onUpdateActionButtons: '+stateName, args);
+    log('onUpdateActionButtons: ' + stateName, args);
     switch (stateName) {
       case 'snakeDiscard':
         this.onEnteringSnakeDiscard(args);
@@ -740,14 +741,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         case 'swapUpgrade':
           this.addActionButton(`actSwapUpgrade_button`, _('Swap selected cards'), () => this.actSwapUpgrade());
           document.getElementById(`actSwapUpgrade_button`).classList.add('disabled');
-          this.addActionButton(
-            `actPassSwapUpgrade_button`,
-            _('Pass'),
-            () => this.actPassSwapUpgrade(),
-            null,
-            null,
-            'red'
-          );
+          this.addActionButton(`actPassSwapUpgrade_button`, _('Pass'), () => this.actPassSwapUpgrade(), null, null, 'red');
           break;
         case 'snakeDiscard':
           this.addActionButton(`actSnakeDiscard_button`, _('Discard selected card'), () => this.actSnakeDiscard());
@@ -813,17 +807,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               this.setTooltip(`actRefresh_${number}_button`, formatTextIcons(tooltip));
             });
           }
-          this.addActionButton(`actDiscard_button`, '', () =>
-            this.actDiscard(this.getCurrentPlayerTable().hand.getSelection())
-          );
-          this.addActionButton(
-            `actNoDiscard_button`,
-            _('No additional discard'),
-            () => this.actDiscard([]),
-            null,
-            null,
-            'red'
-          );
+          this.addActionButton(`actDiscard_button`, '', () => this.actDiscard(this.getCurrentPlayerTable().hand.getSelection()));
+          this.addActionButton(`actNoDiscard_button`, _('No additional discard'), () => this.actDiscard([]), null, null, 'red');
           this.onHandCardSelectionChange([]);
           break;
         case 'salvage':
@@ -860,14 +845,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           break;
         case 'planification':
           if (!this.gamedatas.isDeferredRounds) {
-            this.addActionButton(
-              `actCancelSelection_button`,
-              _('Cancel'),
-              () => this.actCancelSelection(),
-              null,
-              null,
-              'gray'
-            );
+            this.addActionButton(`actCancelSelection_button`, _('Cancel'), () => this.actCancelSelection(), null, null, 'gray');
           }
           break;
       }
@@ -875,103 +853,102 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   private onUpdateActionButtons_react(args: EnteringReactArgs) {
-          console.warn('reactArgs', args);
+    console.warn('reactArgs', args);
 
-          Object.entries(args.symbols).forEach((entry, index) => {
-            const type = entry[0];
-            let numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
+    Object.entries(args.symbols).forEach((entry, index) => {
+      const type = entry[0];
+      let numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
 
-            let max = null;
-            if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
-              max = entry[1] as number;
-              if (Object.keys(HAND_CARD_TYPE_FOR_EFFECT).includes(type)) {
-                const cardEffectType = HAND_CARD_TYPE_FOR_EFFECT[type];
-                max = Math.min(
-                  max,
-                  this.getCurrentPlayerTable()
-                    .hand.getCards()
-                    .filter((card) => card.effect == cardEffectType).length
-                );
-              }
-              numbers = [];
-              for (let i = max; i >= 1; i--) {
-                if (entry.doable.includes(type) || i === max) {
-                  // only the max button if disabled
-                  numbers.push(i);
-                }
-              }
-            }
-            numbers.forEach((number) => {
-              let label = ``;
-              let tooltip = ``;
-              let confirmationMessage = null;
-              let enabled = entry.doable.includes(type);
-              switch (type) {
-                case 'accelerate':
-                  const accelerateCard = this.getCurrentPlayerTable()
-                    .inplay.getCards()
-                    .find((card) => card.id == number);
-                  label = `+${args.flippedCards} [Speed]<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
-                  //label = `+${args.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
-                  tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', args.flippedCards);
-                  break;
-                case 'adjust':
-                  label = `<div class="icon adjust" style="color: #${number > 0 ? '438741' : 'a93423'};">${number > 0 ? `+${number}` : number}</div>`;
-                  tooltip = this.getGarageModuleIconTooltipWithIcon('adjust', number);
-                  break;
-                case 'adrenaline':
-                  label = `+${number} [Speed]`;
-                  tooltip = `
+      let max = null;
+      if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
+        max = entry[1] as number;
+        if (Object.keys(HAND_CARD_TYPE_FOR_EFFECT).includes(type)) {
+          const cardEffectType = HAND_CARD_TYPE_FOR_EFFECT[type];
+          max = Math.min(
+            max,
+            this.getCurrentPlayerTable()
+              .hand.getCards()
+              .filter((card) => card.effect == cardEffectType).length
+          );
+        }
+        numbers = [];
+        for (let i = max; i >= 1; i--) {
+          if (entry.doable.includes(type) || i === max) {
+            // only the max button if disabled
+            numbers.push(i);
+          }
+        }
+      }
+      numbers.forEach((number) => {
+        let label = ``;
+        let tooltip = ``;
+        let confirmationMessage = null;
+        let enabled = entry.doable.includes(type);
+        switch (type) {
+          case 'accelerate':
+            const accelerateCard = this.getCurrentPlayerTable()
+              .inplay.getCards()
+              .find((card) => card.id == number);
+            label = `+${args.flippedCards} [Speed]<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
+            //label = `+${args.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
+            tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', args.flippedCards);
+            break;
+          case 'adjust':
+            label = `<div class="icon adjust" style="color: #${number > 0 ? '438741' : 'a93423'};">${number > 0 ? `+${number}` : number}</div>`;
+            tooltip = this.getGarageModuleIconTooltipWithIcon('adjust', number);
+            break;
+          case 'adrenaline':
+            label = `+${number} [Speed]`;
+            tooltip = `
                                     <strong>${_('Adrenaline')}</strong>
                                     <br><br>
                                     ${_('Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).')}
                                     <br><br>
                                     <i>${_('Note: Adrenaline cannot be saved for future rounds')}</i>`;
 
-                  confirmationMessage = args.crossedFinishLine ? null : this.getAdrenalineConfirmation(args);
-                  break;
-                case 'cooldown':
-                  label = `${number} [Cooldown]`;
-                  const heats = this.getCurrentPlayerTable()
-                    .hand.getCards()
-                    .filter((card) => card.effect == 'heat').length;
-                  if (heats < number) {
-                    label += `(- ${heats} [Heat])`;
-                  }
-                  tooltip =
-                    this.getGarageModuleIconTooltipWithIcon('cooldown', number) +
-                    _(
-                      'You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).'
-                    );
-                  break;
-                case 'direct':
-                  const directCard = this.getCurrentPlayerTable()
-                    .hand.getCards()
-                    .find((card) => card.id == number);
-                  label = `<div class="icon direct"></div>${_('Play from hand')}`;
-                  if (directCard) {
-                    label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
-                  } else {
-                    console.warn('card not found in hand to display direct card', number, directCard);
-                  }
-                  //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
-                  tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
+            confirmationMessage = args.crossedFinishLine ? null : this.getAdrenalineConfirmation(args);
+            break;
+          case 'cooldown':
+            label = `${number} [Cooldown]`;
+            const heats = this.getCurrentPlayerTable()
+              .hand.getCards()
+              .filter((card) => card.effect == 'heat').length;
+            if (heats < number) {
+              label += `(- ${heats} [Heat])`;
+            }
+            tooltip =
+              this.getGarageModuleIconTooltipWithIcon('cooldown', number) +
+              _(
+                'You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).'
+              );
+            break;
+          case 'direct':
+            const directCard = this.getCurrentPlayerTable()
+              .hand.getCards()
+              .find((card) => card.id == number);
+            label = `<div class="icon direct"></div>${_('Play from hand')}`;
+            if (directCard) {
+              label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+            } else {
+              console.warn('card not found in hand to display direct card', number, directCard);
+            }
+            //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
+            tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
 
-                  confirmationMessage =
-                    args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args, directCard);
-                  break;
-                case 'heat':
-                  label = `<div class="icon forced-heat">${number}</div>`;
-                  tooltip = this.getGarageModuleIconTooltipWithIcon('heat', number);
-                  break;
-                case 'boost':
-                case 'heated-boost':
-                  const paid = type == 'heated-boost';
-                  label = `[Boost] > [Speed]`;
-                  if (paid) {
-                    label += ` (1[Heat])`;
-                  }
-                  tooltip = `
+            confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args, directCard);
+            break;
+          case 'heat':
+            label = `<div class="icon forced-heat">${number}</div>`;
+            tooltip = this.getGarageModuleIconTooltipWithIcon('heat', number);
+            break;
+          case 'boost':
+          case 'heated-boost':
+            const paid = type == 'heated-boost';
+            label = `[Boost] > [Speed]`;
+            if (paid) {
+              label += ` (1[Heat])`;
+            }
+            tooltip = `
                                     <strong>${_('Boost')}</strong>
                                     <br><br>
                                     ${paid ? _('Regardless of which gear you are in you may pay 1 Heat to boost once per turn.') : ''}
@@ -979,88 +956,79 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
                                     <br><br>
                                     <i>${_('Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.')}</i>`;
 
-                  confirmationMessage = args.crossedFinishLine ? null : this.getBoostConfirmation(args, paid);
-                  break;
-                case 'reduce':
-                  label = `<div class="icon reduce-stress">${number}</div>`;
-                  tooltip = this.getGarageModuleIconTooltipWithIcon('reduce', number);
-                  break;
-                case 'salvage':
-                  label = `<div class="icon salvage">${number}</div>`;
-                  tooltip = this.getGarageModuleIconTooltipWithIcon('salvage', number);
+            confirmationMessage = args.crossedFinishLine ? null : this.getBoostConfirmation(args, paid);
+            break;
+          case 'reduce':
+            label = `<div class="icon reduce-stress">${number}</div>`;
+            tooltip = this.getGarageModuleIconTooltipWithIcon('reduce', number);
+            break;
+          case 'salvage':
+            label = `<div class="icon salvage">${number}</div>`;
+            tooltip = this.getGarageModuleIconTooltipWithIcon('salvage', number);
 
-                  enabled = enabled && this.getCurrentPlayerTable().discard.getCardNumber() > 0;
-                  break;
-                case 'scrap':
-                  label = `<div class="icon scrap">${number}</div>`;
-                  tooltip = this.getGarageModuleIconTooltipWithIcon('scrap', number);
-                  break;
-                case 'super-cool':
-                  label = `<div class="icon super-cool">${number}</div>`;
-                  tooltip = this.getGarageModuleIconTooltipWithIcon('super-cool', number);
-                  break;
-              }
+            enabled = enabled && this.getCurrentPlayerTable().discard.getCardNumber() > 0;
+            break;
+          case 'scrap':
+            label = `<div class="icon scrap">${number}</div>`;
+            tooltip = this.getGarageModuleIconTooltipWithIcon('scrap', number);
+            break;
+          case 'super-cool':
+            label = `<div class="icon super-cool">${number}</div>`;
+            tooltip = this.getGarageModuleIconTooltipWithIcon('super-cool', number);
+            break;
+        }
 
-              const finalAction = () =>
-                this.actReact(
-                  type,
-                  Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined
-                );
-              const callback = confirmationMessage
-                ? () =>
-                    this.showHeatCostConfirmations()
-                      ? this.confirmationDialog(confirmationMessage, finalAction)
-                      : finalAction()
-                : finalAction;
-              const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
+        const finalAction = () =>
+          this.actReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined);
+        const callback = confirmationMessage
+          ? () => (this.showHeatCostConfirmations() ? this.confirmationDialog(confirmationMessage, finalAction) : finalAction())
+          : finalAction;
+        const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
 
-              this.statusBar.addActionButton(
-                formatTextIcons(label),
-                callback,
-                { id: `actReact${type}_${number}_button`, color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined }
-              );
+        this.statusBar.addActionButton(formatTextIcons(label), callback, {
+          id: `actReact${type}_${number}_button`,
+          color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined,
+        });
 
-              if (mandatory) {
-                let mandatoryZone = document.getElementById('mandatory-buttons');
-                if (!mandatoryZone) {
-                  mandatoryZone = document.createElement('div');
-                  mandatoryZone.id = 'mandatory-buttons';
-                  mandatoryZone.innerHTML = `<div class="mandatory icon"></div>`;
-                  document.getElementById('generalactions').appendChild(mandatoryZone);
-                }
-                mandatoryZone.appendChild(document.getElementById(`actReact${type}_${number}_button`));
-              }
+        if (mandatory) {
+          let mandatoryZone = document.getElementById('mandatory-buttons');
+          if (!mandatoryZone) {
+            mandatoryZone = document.createElement('div');
+            mandatoryZone.id = 'mandatory-buttons';
+            mandatoryZone.innerHTML = `<div class="mandatory icon"></div>`;
+            document.getElementById('generalactions').appendChild(mandatoryZone);
+          }
+          mandatoryZone.appendChild(document.getElementById(`actReact${type}_${number}_button`));
+        }
 
-              this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
-              if (!enabled) {
-                document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');
-                if (type === 'cooldown') {
-                  document.getElementById(`actReact${type}_${number}_button`).insertAdjacentHTML(
-                    'beforeend',
-                    `
+        this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
+        if (!enabled) {
+          document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');
+          if (type === 'cooldown') {
+            document.getElementById(`actReact${type}_${number}_button`).insertAdjacentHTML(
+              'beforeend',
+              `
                                         <div class="no-cooldown-warning">
                                             <div class="no-cooldown icon"></div>
                                         </div>
                                     `
-                  );
-                }
-              }
-            });
-          });
-
-          this.statusBar.addActionButton(_('Pass'), () => this.actPassReact(), { disabled: !args.canPass });
-          if ((args.symbols['heat'] as number) > 0 && !args.doable.includes('heat')) {
-            const confirmationMessage = args.doable.includes('cooldown')
-              ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
-              : null;
-
-            const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
-            const callback = confirmationMessage
-              ? () => this.confirmationDialog(confirmationMessage, finalAction)
-              : finalAction;
-
-            this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback);
+            );
           }
+        }
+      });
+    });
+
+    this.statusBar.addActionButton(_('Pass'), () => this.actPassReact(), { disabled: !args.canPass });
+    if ((args.symbols['heat'] as number) > 0 && !args.doable.includes('heat')) {
+      const confirmationMessage = args.doable.includes('cooldown')
+        ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
+        : null;
+
+      const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
+      const callback = confirmationMessage ? () => this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
+
+      this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback);
+    }
   }
 
   private onUpdateActionButtons_oldReact(args: EnteringOldReactArgs) {
@@ -1144,8 +1112,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
             tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
 
-            confirmationMessage =
-              args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args, directCard);
+            confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args, directCard);
             break;
           case 'heat':
             label = `<div class="icon forced-heat">${number}</div>`;
@@ -1189,15 +1156,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         }
 
         const finalAction = () =>
-          this.actOldReact(
-            type,
-            Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined
-          );
+          this.actOldReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined);
         const callback = confirmationMessage
-          ? () =>
-              this.showHeatCostConfirmations()
-                ? this.confirmationDialog(confirmationMessage, finalAction)
-                : finalAction()
+          ? () => (this.showHeatCostConfirmations() ? this.confirmationDialog(confirmationMessage, finalAction) : finalAction())
           : finalAction;
         const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
 
@@ -1248,9 +1209,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         : null;
 
       const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
-      const callback = confirmationMessage
-        ? () => this.confirmationDialog(confirmationMessage, finalAction)
-        : finalAction;
+      const callback = confirmationMessage ? () => this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
 
       this.addActionButton(`actCryCauseNotEnoughHeatToPay_button`, _("I can't pay Heat(s)"), callback);
     }
@@ -1315,7 +1274,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         return `
                     <strong>${_('Accelerate')}</strong>
                     <br>
-                    ${_('You may increase your Speed by ${number} for every [+] symbol used by you this turn (from Upgrades, Stress, Boost, etc). If you do, you must increase it for all [+] symbols used and this counts for corner checks.').replace('${number}', ''+number)}
+                    ${_('You may increase your Speed by ${number} for every [+] symbol used by you this turn (from Upgrades, Stress, Boost, etc). If you do, you must increase it for all [+] symbols used and this counts for corner checks.').replace('${number}', '' + number)}
                 `;
       case 'adjust':
         return `
@@ -1329,7 +1288,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
                         : (Number(number) < 0
                             ? _('Speed limit is ${number} lower.')
                             : _('Speed limit is ${number} higher.')
-                          ).replace('${number}', ''+Math.abs(Number(number)))
+                          ).replace('${number}', '' + Math.abs(Number(number)))
                     }
                 `;
       case 'boost':
@@ -1344,7 +1303,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         return `
                     <strong>${_('Cooldown')}</strong>
                     <br>
-                    ${_('Cooldown allows you to take ${number} Heat card(s) from your hand and put it back in your Engine (so you can use the Heat card again). ').replace('${number}', ''+number)}
+                    ${_('Cooldown allows you to take ${number} Heat card(s) from your hand and put it back in your Engine (so you can use the Heat card again). ').replace('${number}', '' + number)}
                 `;
       case 'direct':
         return `
@@ -1356,7 +1315,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         return `
                     <strong>${_('Heat')}</strong> <div class="mandatory icon"></div>
                     <br>
-                    ${_('Take ${number} Heat cards from the Engine and move them to your discard pile.').replace('${number}', ''+number)}
+                    ${_('Take ${number} Heat cards from the Engine and move them to your discard pile.').replace('${number}', '' + number)}
                 `;
       case 'one-time':
         return `
@@ -1368,7 +1327,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         return `
                     <strong>${_('Reduce Stress')}</strong>
                     <br>
-                    ${_('You may immediately discard up to ${number} Stress cards from your hand to the discard pile.').replace('${number}', ''+number)}
+                    ${_('You may immediately discard up to ${number} Stress cards from your hand to the discard pile.').replace('${number}', '' + number)}
                 `;
       case 'refresh':
         return `
@@ -1380,25 +1339,25 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         return `
                     <strong>${_('Salvage')}</strong>
                     <br>
-                    ${_('You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.').replace('${number}', ''+number)}
+                    ${_('You may look through your discard pile and choose up to ${number} cards there. These cards are shuffled into your draw deck.').replace('${number}', '' + number)}
                 `;
       case 'scrap':
         return `
                     <strong>${_('Scrap')}</strong> <div class="mandatory icon"></div>
                     <br>
-                    ${_('Discard the top card of your draw deck ${number} times.').replace('${number}', ''+number)}
+                    ${_('Discard the top card of your draw deck ${number} times.').replace('${number}', '' + number)}
                 `;
       case 'slipstream':
         return `
                     <strong>${_('Slipstream boost')}</strong>
                     <br>
-                    ${_('If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.').replace('${number}', ''+number)}
+                    ${_('If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.').replace('${number}', '' + number)}
                 `;
       case 'super-cool':
         return `
                     <strong>${_('Super cool')}</strong>
                     <br>
-                    ${_('You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.' as any).replace('${number}', ''+number)}
+                    ${_('You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.' as any).replace('${number}', '' + number)}
                     <br>
                     <i>${_('Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there).')}</i>
                 `;
@@ -1791,7 +1750,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       const buttonDiscard = document.getElementById('actDiscard_button');
       const buttonNoDiscard = document.getElementById('actNoDiscard_button');
       buttonDiscard.innerHTML = label;
-      buttonDiscard.classList.toggle('disabled', !selection.length || selection.length > this.gamedatas.gamestate.args._private.max);
+      buttonDiscard.classList.toggle(
+        'disabled',
+        !selection.length || selection.length > this.gamedatas.gamestate.args._private.max
+      );
       buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
     } else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
       this.checkSwapUpgradeSelectionState();
@@ -1871,10 +1833,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     this.bgaPerformAction('actCancelSelection', undefined, { checkAction: false });
   }
 
-  private actChooseSpeed(speed: number, choices: { [cardId: number]: number }[]) {
+  private actChooseSpeed(speed: number, choice: { [cardId: number]: number }) {
     this.bgaPerformAction('actChooseSpeed', {
       speed,
-      choices: JSON.stringify(choices)
+      choice: JSON.stringify(choice),
     });
   }
 

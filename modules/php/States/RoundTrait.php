@@ -621,20 +621,20 @@ trait RoundTrait
     $this->actChooseSpeed($speed, $choice, true);
   }
 
-  public function actChooseSpeed(int $speed, #[JsonParam] array $choices, bool $auto = false)
+  public function actChooseSpeed(int $speed, #[JsonParam] array $choice, bool $auto = false)
   {
     $args = $this->argsChooseSpeed()['speeds'];
     if (!array_key_exists($speed, $args)) {
       throw new \BgaVisibleSystemException('Invalid speed. Should not happen');
     }
     // I return something like [{"9":3,"14":5}] in choices, but it doesn't work with in_array
-    if (!in_array($choices, $args[$speed]['choices'])) {
+    if (!in_array($choice, $args[$speed]['choices'])) {
       throw new \BgaVisibleSystemException('Invalid card choice for that speed. Should not happen');
     }
 
     // Mark the symbols on the card
     $symbols = Globals::getCardSymbols();
-    foreach ($choices as $cardId => $value) {
+    foreach ($choice as $cardId => $value) {
       $symbols[SPEED]['entries'][$cardId]['used'] = true;
       $symbols[SPEED]['entries'][$cardId]['value'] = $value;
     }
@@ -720,7 +720,8 @@ trait RoundTrait
 
     // Max speed modificator
     $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
-    $limit = $rawLimit + $speedLimitModifier; // VSCode says $speedLimitModifier isn't declared here
+    $speedLimitModifier = $constructor->getSpeedLimitModifier();
+    $limit = $rawLimit + $speedLimitModifier;
 
     return ['speedLimit' => $limit, 'extraHeat' => $extraHeat];
   }

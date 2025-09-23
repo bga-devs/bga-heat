@@ -3553,6 +3553,7 @@ function sleep(ms) {
 }
 // @ts-ignore
 GameGui = (function () {
+    // this hack required so we fake extend GameGui
     function GameGui() { }
     return GameGui;
 })();
@@ -3741,7 +3742,8 @@ var Heat = /** @class */ (function (_super) {
         reader.addEventListener('load', function (e) {
             var content = e.target.result;
             var circuit = JSON.parse(content);
-            _this.ajaxcall(// @ts-ignore
+            _this.ajaxcall(
+            // @ts-ignore
             "/".concat(_this.game_name, "/").concat(_this.game_name, "/actUploadCircuit.html"), { circuit: JSON.stringify(circuit), lock: true }, _this, function () { }, undefined, // @ts-ignore
             'post');
         });
@@ -3830,7 +3832,7 @@ var Heat = /** @class */ (function (_super) {
         Object.entries(args.speeds).forEach(function (_a) {
             var speedStr = _a[0], speedChoice = _a[1];
             var speed = Number(speedStr);
-            _this.circuit.addMapIndicator(speedChoice.cell, function () { return _this.actChooseSpeed(speed, speedChoice.choices); }, speed);
+            _this.circuit.addMapIndicator(speedChoice.cell, function () { return _this.actChooseSpeed(speed, speedChoice.choices[0]); }, speed);
         });
     };
     Heat.prototype.onEnteringSlipstream = function (args) {
@@ -3958,7 +3960,9 @@ var Heat = /** @class */ (function (_super) {
             if (speedChoice.heatCosts) {
                 label += " (".concat(speedChoice.heatCosts, "[Heat])");
             }
-            var button = _this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actChooseSpeed(speed, speedChoice.choices); });
+            var button = _this.statusBar.addActionButton(formatTextIcons(label), function () {
+                return _this.actChooseSpeed(speed, speedChoice.choices[0]);
+            });
             _this.linkButtonHoverToMapIndicator(button, speedChoice.cell);
         });
     };
@@ -3973,9 +3977,7 @@ var Heat = /** @class */ (function (_super) {
                   }*/
             var confirmationMessage = _this.getSlipstreamConfirmation(args, speed);
             var finalAction = function () { return _this.actSlipstream(speed); };
-            var callback = confirmationMessage
-                ? function () { return _this.confirmationDialog(confirmationMessage, finalAction); }
-                : finalAction;
+            var callback = confirmationMessage ? function () { return _this.confirmationDialog(confirmationMessage, finalAction); } : finalAction;
             var button = _this.statusBar.addActionButton(formatTextIcons(label), callback);
             _this.linkButtonHoverToMapIndicator(button, speedChoice);
         });
@@ -4198,9 +4200,7 @@ var Heat = /** @class */ (function (_super) {
                             _this.setTooltip("actRefresh_".concat(number, "_button"), formatTextIcons(tooltip));
                         });
                     }
-                    this.addActionButton("actDiscard_button", '', function () {
-                        return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection());
-                    });
+                    this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); });
                     this.addActionButton("actNoDiscard_button", _('No additional discard'), function () { return _this.actDiscard([]); }, null, null, 'red');
                     this.onHandCardSelectionChange([]);
                     break;
@@ -4313,8 +4313,7 @@ var Heat = /** @class */ (function (_super) {
                         }
                         //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                         tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
-                        confirmationMessage =
-                            args.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(args, directCard);
+                        confirmationMessage = args.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(args, directCard);
                         break;
                     case 'heat':
                         label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
@@ -4352,14 +4351,13 @@ var Heat = /** @class */ (function (_super) {
                     return _this.actReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined);
                 };
                 var callback = confirmationMessage
-                    ? function () {
-                        return _this.showHeatCostConfirmations()
-                            ? _this.confirmationDialog(confirmationMessage, finalAction)
-                            : finalAction();
-                    }
+                    ? function () { return (_this.showHeatCostConfirmations() ? _this.confirmationDialog(confirmationMessage, finalAction) : finalAction()); }
                     : finalAction;
                 var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
-                _this.statusBar.addActionButton(formatTextIcons(label), callback, { id: "actReact".concat(type, "_").concat(number, "_button"), color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined });
+                _this.statusBar.addActionButton(formatTextIcons(label), callback, {
+                    id: "actReact".concat(type, "_").concat(number, "_button"),
+                    color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined,
+                });
                 if (mandatory) {
                     var mandatoryZone = document.getElementById('mandatory-buttons');
                     if (!mandatoryZone) {
@@ -4385,9 +4383,7 @@ var Heat = /** @class */ (function (_super) {
                 ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
                 : null;
             var finalAction_1 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
-            var callback = confirmationMessage_1
-                ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); }
-                : finalAction_1;
+            var callback = confirmationMessage_1 ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); } : finalAction_1;
             this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback);
         }
     };
@@ -4461,8 +4457,7 @@ var Heat = /** @class */ (function (_super) {
                         }
                         //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                         tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
-                        confirmationMessage =
-                            args.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(args, directCard);
+                        confirmationMessage = args.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(args, directCard);
                         break;
                     case 'heat':
                         label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
@@ -4500,11 +4495,7 @@ var Heat = /** @class */ (function (_super) {
                     return _this.actOldReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined);
                 };
                 var callback = confirmationMessage
-                    ? function () {
-                        return _this.showHeatCostConfirmations()
-                            ? _this.confirmationDialog(confirmationMessage, finalAction)
-                            : finalAction();
-                    }
+                    ? function () { return (_this.showHeatCostConfirmations() ? _this.confirmationDialog(confirmationMessage, finalAction) : finalAction()); }
                     : finalAction;
                 var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
                 _this.addActionButton("actOldReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback, null, null, SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'gray' : undefined);
@@ -4536,9 +4527,7 @@ var Heat = /** @class */ (function (_super) {
                 ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
                 : null;
             var finalAction_2 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
-            var callback = confirmationMessage_2
-                ? function () { return _this.confirmationDialog(confirmationMessage_2, finalAction_2); }
-                : finalAction_2;
+            var callback = confirmationMessage_2 ? function () { return _this.confirmationDialog(confirmationMessage_2, finalAction_2); } : finalAction_2;
             this.addActionButton("actCryCauseNotEnoughHeatToPay_button", _("I can't pay Heat(s)"), callback);
         }
     };
@@ -4903,10 +4892,10 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.actCancelSelection = function () {
         this.bgaPerformAction('actCancelSelection', undefined, { checkAction: false });
     };
-    Heat.prototype.actChooseSpeed = function (speed, choices) {
+    Heat.prototype.actChooseSpeed = function (speed, choice) {
         this.bgaPerformAction('actChooseSpeed', {
             speed: speed,
-            choices: JSON.stringify(choices)
+            choice: JSON.stringify(choice),
         });
     };
     Heat.prototype.actSlipstream = function (speed) {

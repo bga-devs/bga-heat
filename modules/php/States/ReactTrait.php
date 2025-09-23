@@ -57,16 +57,16 @@ trait ReactTrait
       }
     }
 
-    // Compute which ones are actually usable
+    // Compute which ones are actually usable : TODO
     $doableSymbols = [];
-    foreach ($symbols as $symbol => $entries) {
-      foreach ($entries as $cardId => $n) {
-        if (!$constructor->canUseSymbol($symbol, $n)) continue;
-        if (isset($symbols[HEAT][$cardId])) continue;
+    // foreach ($symbols as $symbol => $entries) {
+    //   foreach ($entries as $cardId => $n) {
+    //     if (!$constructor->canUseSymbol($symbol, $n)) continue;
+    //     if (isset($symbols[HEAT][$cardId])) continue;
 
-        $doableSymbols[$symbol][$cardId] = $n;
-      }
-    }
+    //     $doableSymbols[$symbol][$cardId] = $n;
+    //   }
+    // }
 
     // Check if heats need to be payed > heats in reserve
     // => CHANGED to disable symbols of a card if heat is not payed yet
