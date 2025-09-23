@@ -360,9 +360,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   private onEnteringChooseSpeed(args: EnteringChooseSpeedArgs) {
     this.circuit.removeMapPaths();
 
-    Object.entries(args.speeds).forEach((entry) => {
-      const speed = Number(entry[0]);
-      this.circuit.addMapIndicator(entry[1], () => this.actChooseSpeed(speed), speed);
+    Object.entries(args.speeds).forEach(([speedStr, speedChoice]) => {
+      const speed = Number(speedStr);
+      this.circuit.addMapIndicator(speedChoice.cell, () => this.actChooseSpeed(speed, speedChoice.choices), speed);
     });
   }
 
@@ -374,10 +374,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       );
     }
 
-    Object.entries(args.speeds).forEach((entry) =>
+    Object.entries(args.speeds).forEach(([speedStr, speedChoice]) =>
       this.circuit.addMapIndicator(
-        entry[1],
-        () => this.actSlipstream(Number(entry[0])),
+        speedChoice,
+        () => this.actSlipstream(Number(speedStr)),
         this.speedCounters[this.getConstructorId()].getValue(),
         false
       )
@@ -509,20 +509,20 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   private createChooseSpeedButtons(args: EnteringChooseSpeedArgs) {
-    Object.entries(args.speeds).forEach((entry) => {
-      const speed = Number(entry[0]);
+    Object.entries(args.speeds).forEach(([speedStr, speedChoice]) => {
+      const speed = Number(speedStr);
       let label = _('Move ${cell} cell(s)').replace('${cell}', `${speed}`);
-      if (args.heatCosts[speed]) {
-        label += ` (${args.heatCosts[speed]}[Heat])`;
+      if (speedChoice.heatCosts) {
+        label += ` (${speedChoice.heatCosts}[Heat])`;
       }
-      const button = this.statusBar.addActionButton(formatTextIcons(label), () => this.actChooseSpeed(speed));
-      this.linkButtonHoverToMapIndicator(button, entry[1]);
+      const button = this.statusBar.addActionButton(formatTextIcons(label), () => this.actChooseSpeed(speed, speedChoice.choices));
+      this.linkButtonHoverToMapIndicator(button, speedChoice.cell);
     });
   }
 
   private createSlipstreamButtons(args: EnteringSlipstreamArgs) {
-    Object.entries(args.speeds).forEach((entry) => {
-      const speed = Number(entry[0]);
+    Object.entries(args.speeds).forEach(([speedStr, speedChoice]) => {
+      const speed = Number(speedStr);
       let label = _('Move ${cell} cell(s)').replace('${cell}', `${speed}`);
       /*if (args.heatCosts[speed]) {
                 label += ` (${args.heatCosts[speed]}[Heat])`;
@@ -535,7 +535,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         : finalAction;
 
       const button = this.statusBar.addActionButton(formatTextIcons(label), callback);
-      this.linkButtonHoverToMapIndicator(button, entry[1]);
+      this.linkButtonHoverToMapIndicator(button, speedChoice);
     });
   }
 
@@ -720,6 +720,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   //                        action status bar (ie: the HTML links in the status bar).
   //
   public onUpdateActionButtons(stateName: string, args: any) {
+    log('onUpdateActionButtons: '+stateName, args);
     switch (stateName) {
       case 'snakeDiscard':
         this.onEnteringSnakeDiscard(args);
@@ -1870,9 +1871,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     this.bgaPerformAction('actCancelSelection', undefined, { checkAction: false });
   }
 
-  private actChooseSpeed(speed: number) {
+  private actChooseSpeed(speed: number, choices: { [cardId: number]: number }[]) {
     this.bgaPerformAction('actChooseSpeed', {
       speed,
+      choices: JSON.stringify(choices)
     });
   }
 
@@ -2009,7 +2011,6 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       'playerEliminated',
       'cryCauseNotEnoughHeatToPay',
       'setWeather',
-      'loadBug',
     ];
 
     notifs.forEach((notifName) => {

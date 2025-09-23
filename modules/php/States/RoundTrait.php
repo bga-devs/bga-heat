@@ -604,32 +604,30 @@ trait RoundTrait
   {
     $pId = $this->getActivePlayerId();
     if ($this->userPreferences->get($pId, OPTION_AUTO_MOVE_WHEN_SINGLE_SPEED_CHOICE) == OPTION_DISABLED) {
-      continue;
+      return;
     }
 
     $speeds = $this->argsChooseSpeed()['speeds'];
     if (count($speeds) > 1) {
-      continue;
+      return;
     }
 
     $speed = array_keys($speeds)[0];
     if (count($speeds[$speed]['choices']) > 1) {
-      continue;
+      return;
     }
     $choice = $speeds[$speed]['choices'][0];
 
     $this->actChooseSpeed($speed, $choice, true);
   }
 
-  public function actChooseSpeed(int $speed, array $choices, bool $auto = false)
+  public function actChooseSpeed(int $speed, #[JsonParam] array $choices, bool $auto = false)
   {
-    if (!$auto) {
-      self::checkAction('actChooseSpeed');
-    }
     $args = $this->argsChooseSpeed()['speeds'];
     if (!array_key_exists($speed, $args)) {
       throw new \BgaVisibleSystemException('Invalid speed. Should not happen');
     }
+    // I return something like [{"9":3,"14":5}] in choices, but it doesn't work with in_array
     if (!in_array($choices, $args[$speed]['choices'])) {
       throw new \BgaVisibleSystemException('Invalid card choice for that speed. Should not happen');
     }
@@ -722,7 +720,7 @@ trait RoundTrait
 
     // Max speed modificator
     $rawLimit = $this->getCircuit()->getCornerMaxSpeed($cornerPos);
-    $limit = $rawLimit + $speedLimitModifier;
+    $limit = $rawLimit + $speedLimitModifier; // VSCode says $speedLimitModifier isn't declared here
 
     return ['speedLimit' => $limit, 'extraHeat' => $extraHeat];
   }

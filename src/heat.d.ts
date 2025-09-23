@@ -146,12 +146,21 @@ interface EnteringPlanificationArgs {
     nPlayersLeft: number;
 }
 
-interface EnteringChooseSpeedArgs {
-    heatCosts: { [speed: number]: number /*heatCost*/ };
-    speeds: { [speed: number]: number /*destination cell*/ };
+interface SpeedChoice {
+    cell: number; // destination cell
+    heatCosts: number;
+    choices: {
+        [cardId: number]: number /* card speed */
+    }[];
 }
 
-interface EnteringSlipstreamArgs extends EnteringChooseSpeedArgs {
+interface EnteringChooseSpeedArgs {
+    speeds: { [speed: number]: SpeedChoice };
+}
+
+interface EnteringSlipstreamArgs /*extends EnteringChooseSpeedArgs*/ {
+    heatCosts: { [speed: number]: number /*heatCost*/ };
+    speeds: { [speed: number]: number /*destination cell*/ };
     currentHeatCost: number;
     currentHeatCosts: { [cornerId: number]: number };
     spinOut: boolean;

@@ -3827,9 +3827,10 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.onEnteringChooseSpeed = function (args) {
         var _this = this;
         this.circuit.removeMapPaths();
-        Object.entries(args.speeds).forEach(function (entry) {
-            var speed = Number(entry[0]);
-            _this.circuit.addMapIndicator(entry[1], function () { return _this.actChooseSpeed(speed); }, speed);
+        Object.entries(args.speeds).forEach(function (_a) {
+            var speedStr = _a[0], speedChoice = _a[1];
+            var speed = Number(speedStr);
+            _this.circuit.addMapIndicator(speedChoice.cell, function () { return _this.actChooseSpeed(speed, speedChoice.choices); }, speed);
         });
     };
     Heat.prototype.onEnteringSlipstream = function (args) {
@@ -3841,8 +3842,9 @@ var Heat = /** @class */ (function (_super) {
                 return _this.circuit.addCornerHeatIndicator(Number(cornerId), heat);
             });
         }
-        Object.entries(args.speeds).forEach(function (entry) {
-            return _this.circuit.addMapIndicator(entry[1], function () { return _this.actSlipstream(Number(entry[0])); }, _this.speedCounters[_this.getConstructorId()].getValue(), false);
+        Object.entries(args.speeds).forEach(function (_a) {
+            var speedStr = _a[0], speedChoice = _a[1];
+            return _this.circuit.addMapIndicator(speedChoice, function () { return _this.actSlipstream(Number(speedStr)); }, _this.speedCounters[_this.getConstructorId()].getValue(), false);
         });
     };
     Heat.prototype.onEnteringPayHeats = function (args) {
@@ -3949,20 +3951,22 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.createChooseSpeedButtons = function (args) {
         var _this = this;
-        Object.entries(args.speeds).forEach(function (entry) {
-            var speed = Number(entry[0]);
+        Object.entries(args.speeds).forEach(function (_a) {
+            var speedStr = _a[0], speedChoice = _a[1];
+            var speed = Number(speedStr);
             var label = _('Move ${cell} cell(s)').replace('${cell}', "".concat(speed));
-            if (args.heatCosts[speed]) {
-                label += " (".concat(args.heatCosts[speed], "[Heat])");
+            if (speedChoice.heatCosts) {
+                label += " (".concat(speedChoice.heatCosts, "[Heat])");
             }
-            var button = _this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actChooseSpeed(speed); });
-            _this.linkButtonHoverToMapIndicator(button, entry[1]);
+            var button = _this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actChooseSpeed(speed, speedChoice.choices); });
+            _this.linkButtonHoverToMapIndicator(button, speedChoice.cell);
         });
     };
     Heat.prototype.createSlipstreamButtons = function (args) {
         var _this = this;
-        Object.entries(args.speeds).forEach(function (entry) {
-            var speed = Number(entry[0]);
+        Object.entries(args.speeds).forEach(function (_a) {
+            var speedStr = _a[0], speedChoice = _a[1];
+            var speed = Number(speedStr);
             var label = _('Move ${cell} cell(s)').replace('${cell}', "".concat(speed));
             /*if (args.heatCosts[speed]) {
                       label += ` (${args.heatCosts[speed]}[Heat])`;
@@ -3973,7 +3977,7 @@ var Heat = /** @class */ (function (_super) {
                 ? function () { return _this.confirmationDialog(confirmationMessage, finalAction); }
                 : finalAction;
             var button = _this.statusBar.addActionButton(formatTextIcons(label), callback);
-            _this.linkButtonHoverToMapIndicator(button, entry[1]);
+            _this.linkButtonHoverToMapIndicator(button, speedChoice);
         });
     };
     Heat.prototype.showHeatCostConfirmations = function () {
@@ -4121,6 +4125,7 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
         var _a, _b, _c, _d;
+        log('onUpdateActionButtons: ' + stateName, args);
         switch (stateName) {
             case 'snakeDiscard':
                 this.onEnteringSnakeDiscard(args);
@@ -4898,9 +4903,10 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.actCancelSelection = function () {
         this.bgaPerformAction('actCancelSelection', undefined, { checkAction: false });
     };
-    Heat.prototype.actChooseSpeed = function (speed) {
+    Heat.prototype.actChooseSpeed = function (speed, choices) {
         this.bgaPerformAction('actChooseSpeed', {
             speed: speed,
+            choices: JSON.stringify(choices)
         });
     };
     Heat.prototype.actSlipstream = function (speed) {
@@ -5020,7 +5026,6 @@ var Heat = /** @class */ (function (_super) {
             'playerEliminated',
             'cryCauseNotEnoughHeatToPay',
             'setWeather',
-            'loadBug',
         ];
         notifs.forEach(function (notifName) {
             dojo.subscribe(notifName, _this, function (notifDetails) {
