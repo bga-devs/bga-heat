@@ -13,6 +13,7 @@ use Bga\Games\Heat\Managers\Players;
 use Bga\Games\Heat\Managers\Cards;
 
 use \Bga\GameFramework\Actions\Types\JsonParam;
+use Bga\Games\Heat\Models\Constructor;
 
 ///////////////////////////////////////////
 //    ____     ____                 _
@@ -23,12 +24,44 @@ use \Bga\GameFramework\Actions\Types\JsonParam;
 ///////////////////////////////////////////
 trait ReactTrait
 {
+  /**
+   * canUseSymbol: given a constructor and a symbol, return whether the constructor can use the symbol or not
+   *  for some symbols, it returns the maximum number of that symbol he can use
+   */
+  public function canUseSymbol(Constructor $constructor, string $symbol, array $symbolInfos): bool|int
+  {
+    // Cooldown => must have something to cooldown in the hand
+    if ($symbol == \COOLDOWN) {
+      $roadCondition = $this->getRoadCondition();
+      if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
+        return false;
+      }
+
+      return $constructor->getHeatsInHand()->count();
+    }
+    // Reduce stress => must have stress cards in hand
+    elseif ($symbol == REDUCE) {
+      return $constructor->getStressesInHand()->count();
+    }
+    // Heated boost => must be able to pay for it
+    elseif ($symbol == HEATED_BOOST && $symbolInfos['heated']) {
+      return $constructor->getEngine()->count() > 0;
+    }
+    // Heat
+    elseif ($symbol == HEAT) {
+      return $constructor->getEngine()->count();
+    }
+
+    return true;
+  }
+
+
   public function argsReact()
   {
     $constructor = Constructors::getActive();
     $roadCondition = $constructor->getRoadCondition();
     $symbols = Globals::getCardSymbols();
-    $usedSymbols = [];
+
     // Remove symbols that do not apply at this step
     $notReactSymbols = [SLIPSTREAM, REFRESH];
     foreach ($notReactSymbols as $symbol) {
@@ -41,33 +74,32 @@ trait ReactTrait
     }
 
     // Boost bonus
-    $boostInfos = [];
-    if (!Globals::isUsedBoost()) {
+    if (!$symbols[HEATED_BOOST]['entries'][HEATED_BOOST]['used']) {
       // Add the boost symbol
-      if ($roadCondition == ROAD_CONDITION_FREE_BOOST) {
-        $symbols[BOOST][BOOST] = 1;
-      } else {
-        $symbols[HEATED_BOOST][HEATED_BOOST] = 1;
-      }
+      $symbols[HEATED_BOOST]['heated'] = ($roadCondition != ROAD_CONDITION_FREE_BOOST);
 
       // Get some infos
+      $boostInfos = [];
       for ($i = 1; $i <= 4; $i++) {
         $boostResult = $this->getCircuit()->getReachedCell($constructor, $i, FLAG_COMPUTE_HEAT_COSTS);
         $boostInfos[$i] = $boostResult['heatCosts'];
       }
+      $symbols[HEATED_BOOST]['heatCosts'] = $boostInfos;
     }
 
-    // Compute which ones are actually usable : TODO
+    // Compute which ones are actually usable
     $doableSymbols = [];
-    // foreach ($symbols as $symbol => $entries) {
-    //   foreach ($entries as $cardId => $n) {
-    //     if (!$constructor->canUseSymbol($symbol, $n)) continue;
-    //     if (isset($symbols[HEAT][$cardId])) continue;
+    foreach ($symbols as $symbol => &$symbolInfos) {
+      $symbolInfos['doable'] = $this->canUseSymbol($constructor, $symbol, $symbolInfos);
 
-    //     $doableSymbols[$symbol][$cardId] = $n;
-    //   }
-    // }
-
+      // Disable some symbols on some cards
+      if (!in_array($symbol, [HEAT, COOLDOWN, DIRECT, BOOST, ADRENALINE, SUPER_COOL])) {
+        foreach ($symbolInfos['entries'] as $cardId => &$infos) {
+          if (isset($symbols[HEAT][$cardId])) continue;
+          $infos['doable'] = $symbols[HEAT][$cardId]['used'] ?? false;
+        }
+      }
+    }
     // Check if heats need to be payed > heats in reserve
     // => CHANGED to disable symbols of a card if heat is not payed yet
     // if (($symbols[HEAT] ?? 0) > $constructor->getEngine()->count()) {
@@ -80,23 +112,25 @@ trait ReactTrait
     list('speedLimit' => $speedLimit, 'extraHeat' => $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
 
     // Adrenaline extra info
-    $adrenalineWillCrossNextCorner = false;
-    if (isset($doableSymbols[ADRENALINE])) {
+    if (isset($symbols[ADRENALINE])) {
       list('heatCosts' => $heatCosts, 'distance' => $nSpacesForward) = $this->getCircuit()->getReachedCell($constructor, 1, FLAG_COMPUTE_HEAT_COSTS);
       if ($nSpacesForward == 0) {
-        unset($doableSymbols[ADRENALINE]);
+        $symbols[ADRENALINE]['doable'] = false;
       }
-      $adrenalineWillCrossNextCorner = count($heatCosts) > count($currentHeatCosts);
+      $symbols[ADRENALINE]['willCrossNextCorner'] = count($heatCosts) > count($currentHeatCosts);
     }
 
     // Direct play extra infos
-    $directPlayCosts = [];
-    foreach ($symbols[DIRECT] ?? [] as $cardId => $n) {
-      $card = Cards::getSingle($cardId);
-      $speed = $card['speed'];
-      list('heatCosts' => $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, true, true);
+    if (isset($symbols[DIRECT])) {
+      $directPlayCosts = [];
+      foreach ($symbols[DIRECT]['entries'] ?? [] as $cardId => $infos) {
+        $card = Cards::getSingle($cardId);
+        $speed = $card['speed'];
+        list('heatCosts' => $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, true, true);
 
-      $directPlayCosts[$cardId] = $heatCosts;
+        $directPlayCosts[$cardId] = $heatCosts;
+      }
+      $symbols[DIRECT]['heatCosts'] = $directPlayCosts;
     }
 
     $canPass = $this->canPassReact($symbols);
@@ -108,15 +142,13 @@ trait ReactTrait
       'descSuffix' => $canPass ? '' : 'Must',
       'flippedCards' => Globals::getFlippedCards(),
 
-      'adrenalineWillCrossNextCorner' => $adrenalineWillCrossNextCorner,
+      'symbols' => $symbols,
       'currentHeatCost' => $currentHeatCost,
       'heatCosts' => $currentHeatCosts,
       'spinOut' => $spinOut,
       'nextCornerSpeedLimit' => $speedLimit,
       'nextCornerExtraHeatCost' => $nextCornerExtraHeatCost,
-      'boostInfos' => $boostInfos,
       'crossedFinishLine' => $constructor->getTurn() >= $this->getCircuit()->getNbrLaps(),
-      'directPlayCosts' => $directPlayCosts,
     ];
   }
 

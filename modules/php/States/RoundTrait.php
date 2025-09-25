@@ -760,8 +760,14 @@ trait RoundTrait
     $notFinished = array_unique(array_merge(Constructors::getTurnOrder(), Globals::getGiveUpPlayers()));
     $maxNo = count($notFinished);
     if ($event != EVENT_SUDDEN_RAIN && ($no == $maxNo - 1 || ($no == $maxNo - 2 && $maxNo >= 5))) {
-      $symbols[COOLDOWN][ADRENALINE] = 1;
-      $symbols[ADRENALINE][ADRENALINE] = 1;
+      $symbols[COOLDOWN]['entries'][ADRENALINE] = [
+        'used' => false,
+        'n' => 1
+      ];
+      $symbols[ADRENALINE]['entries'][ADRENALINE] = [
+        'used' => false,
+        'n' => 1
+      ];
       Notifications::gainAdrenaline($constructor, $no == $maxNo - 1);
       $constructor->incStat('roundsAdrenaline');
     }
@@ -770,14 +776,26 @@ trait RoundTrait
     $gear = $constructor->getGear();
     if ($gear <= 2) {
       $n = $gear == 1 ? 3 : 1;
-      $symbols[COOLDOWN][GEAR] = $n;
+      $symbols[COOLDOWN]['entries'][GEAR] = [
+        'value' => $n,
+        'used' => false
+      ];
       Notifications::gainGearCooldown($constructor, $gear, $n);
     }
 
     // Weather might add 1 cooldown
     if ($roadCondition == ROAD_CONDITION_COOLING_BONUS) {
-      $symbols[COOLDOWN][WEATHER] = 1;
+      $symbols[COOLDOWN]['entries'][WEATHER] = [
+        'value' => 1,
+        'used' => false
+      ];
     }
+
+    // Store component HeatedBoost symbol
+    $symbols[HEATED_BOOST]['entries'][HEATED_BOOST] = [
+      'value' => 1,
+      'used' => false,
+    ];
 
     // Save all the symbols and proceed to React phase
     Globals::setCardSymbols($symbols);

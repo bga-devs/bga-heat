@@ -276,6 +276,9 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     return $cards;
   }
 
+
+  /////////////////////////////////:
+  //// LEGACY CODE : TO REMOVE
   public function canUseSymbol(string $symbol, int $n): bool
   {
     // Cooldown => must have something to cooldown in the hand
@@ -302,6 +305,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
 
     return true;
   }
+  ///////////////////////////
 
   public function eliminate(): void
   {
