@@ -169,11 +169,19 @@ interface EnteringSlipstreamArgs /*extends EnteringChooseSpeedArgs*/ {
     slipstreamWillCrossNextCorner: { [cornerId: number]: boolean };
 }
 
+interface ReactSymbolEntry {
+    doable?: boolean;
+    used: false;
+    value: number;
+    n: number;
+}
+
 interface ReactSymbol {
-    doable: any;
-    used: any;
-    mandatory: boolean;
-    coalescable: boolean; // true means can be grouped, false means done 1 by 1
+    doable: number | boolean;
+    entries: { [from: string|number]: ReactSymbolEntry };
+    //used: any;
+    //mandatory: boolean;
+    //coalescable: boolean; // true means can be grouped, false means done 1 by 1
 }
 
 interface EnteringReactArgs {

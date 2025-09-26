@@ -32,7 +32,7 @@ trait ReactTrait
   {
     // Cooldown => must have something to cooldown in the hand
     if ($symbol == \COOLDOWN) {
-      $roadCondition = $this->getRoadCondition();
+      $roadCondition = $constructor->getRoadCondition();
       if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
         return false;
       }

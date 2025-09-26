@@ -4245,38 +4245,27 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.onUpdateActionButtons_react = function (args) {
         var _this = this;
         console.warn('reactArgs', args);
-        Object.entries(args.symbols).forEach(function (entry, index) {
-            var type = entry[0];
-            var numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
-            var max = null;
-            if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
-                max = entry[1];
-                if (Object.keys(HAND_CARD_TYPE_FOR_EFFECT).includes(type)) {
-                    var cardEffectType_1 = HAND_CARD_TYPE_FOR_EFFECT[type];
-                    max = Math.min(max, _this.getCurrentPlayerTable()
-                        .hand.getCards()
-                        .filter(function (card) { return card.effect == cardEffectType_1; }).length);
-                }
-                numbers = [];
-                for (var i = max; i >= 1; i--) {
-                    if (entry.doable.includes(type) || i === max) {
-                        // only the max button if disabled
-                        numbers.push(i);
-                    }
-                }
-            }
-            numbers.forEach(function (number) {
+        var ignoredTypes = ['speed', 'adjust'];
+        Object.entries(args.symbols).filter(function (_a) {
+            var type = _a[0], symbolSet = _a[1];
+            return !ignoredTypes.includes(type);
+        }).forEach(function (_a, index) {
+            var type = _a[0], symbolGroup = _a[1];
+            Object.entries(symbolGroup.entries).forEach(function (_a) {
+                var _b;
+                var cardIdOrAction = _a[0], symbol = _a[1];
+                console.warn(type, 'cardIdOrAction', cardIdOrAction, 'symbol', symbol, 'symbolGroup', symbolGroup);
                 var label = "";
                 var tooltip = "";
                 var confirmationMessage = null;
-                var enabled = entry.doable.includes(type);
+                var enabled = symbol.doable;
+                var number = (_b = symbol.n) !== null && _b !== void 0 ? _b : symbol.value;
                 switch (type) {
                     case 'accelerate':
                         var accelerateCard = _this.getCurrentPlayerTable()
                             .inplay.getCards()
                             .find(function (card) { return card.id == number; });
                         label = "+".concat(args.flippedCards, " [Speed]<br>").concat(_this.cardImageHtml(accelerateCard, { constructor_id: _this.getConstructorId() }));
-                        //label = `+${args.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
                         tooltip = _this.getGarageModuleIconTooltipWithIcon('accelerate', args.flippedCards);
                         break;
                     case 'adjust':
@@ -4311,7 +4300,6 @@ var Heat = /** @class */ (function (_super) {
                         else {
                             console.warn('card not found in hand to display direct card', number, directCard);
                         }
-                        //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                         tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
                         confirmationMessage = args.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(args, directCard);
                         break;
@@ -4348,7 +4336,7 @@ var Heat = /** @class */ (function (_super) {
                         break;
                 }
                 var finalAction = function () {
-                    return _this.actReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined);
+                    return _this.actReact(type, number);
                 };
                 var callback = confirmationMessage
                     ? function () { return (_this.showHeatCostConfirmations() ? _this.confirmationDialog(confirmationMessage, finalAction) : finalAction()); }
@@ -4356,7 +4344,7 @@ var Heat = /** @class */ (function (_super) {
                 var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
                 _this.statusBar.addActionButton(formatTextIcons(label), callback, {
                     id: "actReact".concat(type, "_").concat(number, "_button"),
-                    color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined,
+                    // color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined,
                 });
                 if (mandatory) {
                     var mandatoryZone = document.getElementById('mandatory-buttons');
@@ -4378,14 +4366,17 @@ var Heat = /** @class */ (function (_super) {
             });
         });
         this.statusBar.addActionButton(_('Pass'), function () { return _this.actPassReact(); }, { disabled: !args.canPass });
-        if (args.symbols['heat'] > 0 && !args.doable.includes('heat')) {
-            var confirmationMessage_1 = args.doable.includes('cooldown')
-                ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
-                : null;
-            var finalAction_1 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
-            var callback = confirmationMessage_1 ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); } : finalAction_1;
-            this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback);
-        }
+        /*if ((args.symbols['heat'] as number) > 0 && !args.doable.includes('heat')) { TODO
+          /_*const confirmationMessage = args.doable.includes('cooldown')
+            ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
+            : null;*_/
+          const confirmationMessage = false; // TODO
+    
+          const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
+          const callback = confirmationMessage ? () => this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
+    
+          this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback);
+        }*/
     };
     Heat.prototype.onUpdateActionButtons_oldReact = function (args) {
         var _this = this;
@@ -4396,10 +4387,10 @@ var Heat = /** @class */ (function (_super) {
             if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
                 max = entry[1];
                 if (Object.keys(HAND_CARD_TYPE_FOR_EFFECT).includes(type)) {
-                    var cardEffectType_2 = HAND_CARD_TYPE_FOR_EFFECT[type];
+                    var cardEffectType_1 = HAND_CARD_TYPE_FOR_EFFECT[type];
                     max = Math.min(max, _this.getCurrentPlayerTable()
                         .hand.getCards()
-                        .filter(function (card) { return card.effect == cardEffectType_2; }).length);
+                        .filter(function (card) { return card.effect == cardEffectType_1; }).length);
                 }
                 numbers = [];
                 for (var i = max; i >= 1; i--) {
@@ -4523,11 +4514,11 @@ var Heat = /** @class */ (function (_super) {
             document.getElementById("actPassReact_button").classList.add('disabled');
         }
         if (args.symbols['heat'] > 0 && !args.doable.includes('heat')) {
-            var confirmationMessage_2 = args.doable.includes('cooldown')
+            var confirmationMessage_1 = args.doable.includes('cooldown')
                 ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
                 : null;
-            var finalAction_2 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
-            var callback = confirmationMessage_2 ? function () { return _this.confirmationDialog(confirmationMessage_2, finalAction_2); } : finalAction_2;
+            var finalAction_1 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
+            var callback = confirmationMessage_1 ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); } : finalAction_1;
             this.addActionButton("actCryCauseNotEnoughHeatToPay_button", _("I can't pay Heat(s)"), callback);
         }
     };

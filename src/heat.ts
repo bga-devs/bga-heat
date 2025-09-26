@@ -855,42 +855,22 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   private onUpdateActionButtons_react(args: EnteringReactArgs) {
     console.warn('reactArgs', args);
 
-    Object.entries(args.symbols).forEach((entry, index) => {
-      const type = entry[0];
-      let numbers = Array.isArray(entry[1]) ? entry[1] : [entry[1]];
+    const ignoredTypes = ['speed', 'adjust'];
 
-      let max = null;
-      if (SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type)) {
-        max = entry[1] as number;
-        if (Object.keys(HAND_CARD_TYPE_FOR_EFFECT).includes(type)) {
-          const cardEffectType = HAND_CARD_TYPE_FOR_EFFECT[type];
-          max = Math.min(
-            max,
-            this.getCurrentPlayerTable()
-              .hand.getCards()
-              .filter((card) => card.effect == cardEffectType).length
-          );
-        }
-        numbers = [];
-        for (let i = max; i >= 1; i--) {
-          if (entry.doable.includes(type) || i === max) {
-            // only the max button if disabled
-            numbers.push(i);
-          }
-        }
-      }
-      numbers.forEach((number) => {
+    Object.entries(args.symbols).filter(([type, symbolSet]) => !ignoredTypes.includes(type)).forEach(([type, symbolGroup], index) => {
+      Object.entries(symbolGroup.entries).forEach(([cardIdOrAction, symbol]) => {
+      console.warn(type, 'cardIdOrAction', cardIdOrAction, 'symbol', symbol, 'symbolGroup', symbolGroup);
         let label = ``;
         let tooltip = ``;
         let confirmationMessage = null;
-        let enabled = entry.doable.includes(type);
+        let enabled = symbol.doable;
+        const number = symbol.n ?? symbol.value;
         switch (type) {
           case 'accelerate':
             const accelerateCard = this.getCurrentPlayerTable()
               .inplay.getCards()
               .find((card) => card.id == number);
             label = `+${args.flippedCards} [Speed]<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
-            //label = `+${args.flippedCards} [Speed]<br>(${_(accelerateCard.text) })`;
             tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', args.flippedCards);
             break;
           case 'adjust':
@@ -932,7 +912,6 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             } else {
               console.warn('card not found in hand to display direct card', number, directCard);
             }
-            //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
             tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
 
             confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args, directCard);
@@ -979,7 +958,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         }
 
         const finalAction = () =>
-          this.actReact(type, Array.isArray(entry[1]) || SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) ? number : undefined);
+          this.actReact(type, number);
         const callback = confirmationMessage
           ? () => (this.showHeatCostConfirmations() ? this.confirmationDialog(confirmationMessage, finalAction) : finalAction())
           : finalAction;
@@ -987,7 +966,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
         this.statusBar.addActionButton(formatTextIcons(label), callback, {
           id: `actReact${type}_${number}_button`,
-          color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined,
+          // color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined,
         });
 
         if (mandatory) {
@@ -1019,16 +998,17 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     });
 
     this.statusBar.addActionButton(_('Pass'), () => this.actPassReact(), { disabled: !args.canPass });
-    if ((args.symbols['heat'] as number) > 0 && !args.doable.includes('heat')) {
-      const confirmationMessage = args.doable.includes('cooldown')
+    /*if ((args.symbols['heat'] as number) > 0 && !args.doable.includes('heat')) { TODO
+      /_*const confirmationMessage = args.doable.includes('cooldown')
         ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
-        : null;
+        : null;*_/
+      const confirmationMessage = false; // TODO 
 
       const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
       const callback = confirmationMessage ? () => this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
 
       this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback);
-    }
+    }*/
   }
 
   private onUpdateActionButtons_oldReact(args: EnteringOldReactArgs) {
