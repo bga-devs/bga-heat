@@ -1341,6 +1341,14 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
                     <br>
                     <i>${_('Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there).')}</i>
                 `;
+      case 'draft':
+        return `
+                    <strong>${_('Draft')}</strong>
+                    <br>
+                    ${_('Move your car forward on the race track up to ${number} Spaces.').replace('${number}', '' + number)}
+                    <br>
+                    <i>${_('Note: All Spaces you move into/through thanks to this symbol must be completely free of other cars and the final landing Space must have at least one car in either Spot of the Space in front of it. This extra movement does not count as speed.')}</i>
+                `;
     }
   }
 
@@ -1606,7 +1614,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               .join('<br><br>')}
 
             <h1>${_('Optional symbols')}</h1>
-            ${['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate', 'super-cool']
+            ${['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate', 'super-cool', 'draft']
               .map((symbol) => this.getGarageModuleIconTooltipWithIcon(symbol, '#'))
               .join('<br><br>')}
 

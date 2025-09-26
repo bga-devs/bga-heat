@@ -4592,6 +4592,8 @@ var Heat = /** @class */ (function (_super) {
                 return "\n                    <strong>".concat(_('Slipstream boost'), "</strong>\n                    <br>\n                    ").concat(_('If you choose to Slipstream, your typical 2 Spaces may be increased by ${number}.').replace('${number}', '' + number), "\n                ");
             case 'super-cool':
                 return "\n                    <strong>".concat(_('Super cool'), "</strong>\n                    <br>\n                    ").concat(_('You may look through your discard pile and remove up to ${number} Heat cards from it. Return these cards to your Engine spot.').replace('${number}', '' + number), "\n                    <br>\n                    <i>").concat(_('Note: If there are no Heat cards in your discard pile, the symbol is wasted (but you still got to see which cards are there).'), "</i>\n                ");
+            case 'draft':
+                return "\n                    <strong>".concat(_('Draft'), "</strong>\n                    <br>\n                    ").concat(_('Move your car forward on the race track up to ${number} Spaces.').replace('${number}', '' + number), "\n                    <br>\n                    <i>").concat(_('Note: All Spaces you move into/through thanks to this symbol must be completely free of other cars and the final landing Space must have at least one car in either Spot of the Space in front of it. This extra movement does not count as speed.'), "</i>\n                ");
         }
     };
     Heat.prototype.getWeatherCardSetupTooltip = function (type) {
@@ -4734,7 +4736,7 @@ var Heat = /** @class */ (function (_super) {
         var _this = this;
         var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_('Mandatory symbols'), "</h1>\n            ").concat(['heat', 'scrap', 'adjust', 'one-time']
             .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); })
-            .join('<br><br>'), "\n\n            <h1>").concat(_('Optional symbols'), "</h1>\n            ").concat(['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate', 'super-cool']
+            .join('<br><br>'), "\n\n            <h1>").concat(_('Optional symbols'), "</h1>\n            ").concat(['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate', 'super-cool', 'draft']
             .map(function (symbol) { return _this.getGarageModuleIconTooltipWithIcon(symbol, '#'); })
             .join('<br><br>'), "\n\n            <h1>").concat(_('Road Conditions Tokens'), "</h1>\n            <h2>").concat(_('Corner Effects'), "</h2>\n            ").concat([3, 2, 1]
             .map(function (token) { return "\n                <div>\n                    <div class=\"tooltip-symbol\">\n                        <div class=\"weather-token\" data-token-type=\"".concat(token, "\"></div>\n                    </div>\n                    ").concat(_this.getWeatherTokenTooltip(token, null), "\n                </div>\n                "); })
