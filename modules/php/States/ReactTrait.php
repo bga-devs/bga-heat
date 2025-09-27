@@ -62,6 +62,11 @@ trait ReactTrait
     $roadCondition = $constructor->getRoadCondition();
     $symbols = Globals::getCardSymbols();
 
+    // Current heat costs
+    list('heatCost' => $currentHeatCost, 'heatCosts' => $currentHeatCosts, 'spinOut' => $spinOut) = $this->getCurrentHeatCosts($constructor);
+    // Next corner infos
+    list('speedLimit' => $speedLimit, 'extraHeat' => $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
+
     // Remove symbols that do not apply at this step
     $notReactSymbols = [SLIPSTREAM, REFRESH];
     foreach ($notReactSymbols as $symbol) {
@@ -87,30 +92,6 @@ trait ReactTrait
       $symbols[HEATED_BOOST]['heatCosts'] = $boostInfos;
     }
 
-    // Compute which ones are actually usable
-    $doableSymbols = [];
-    foreach ($symbols as $symbol => &$symbolInfos) {
-      $symbolInfos['doable'] = $this->canUseSymbol($constructor, $symbol, $symbolInfos);
-
-      // Disable some symbols on some cards
-      if (!in_array($symbol, [HEAT, COOLDOWN, DIRECT, BOOST, ADRENALINE, SUPER_COOL])) {
-        foreach ($symbolInfos['entries'] as $cardId => &$infos) {
-          if (isset($symbols[HEAT][$cardId])) continue;
-          $infos['doable'] = $symbols[HEAT][$cardId]['used'] ?? false;
-        }
-      }
-    }
-    // Check if heats need to be payed > heats in reserve
-    // => CHANGED to disable symbols of a card if heat is not payed yet
-    // if (($symbols[HEAT] ?? 0) > $constructor->getEngine()->count()) {
-    //   $doableSymbols = array_values(array_intersect($doableSymbols, [COOLDOWN, DIRECT, BOOST, ADRENALINE, SUPER_COOL]));
-    // }
-
-    // Current heat costs
-    list('heatCost' => $currentHeatCost, 'heatCosts' => $currentHeatCosts, 'spinOut' => $spinOut) = $this->getCurrentHeatCosts($constructor);
-    // Next corner infos
-    list('speedLimit' => $speedLimit, 'extraHeat' => $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
-
     // Adrenaline extra info
     if (isset($symbols[ADRENALINE])) {
       list('heatCosts' => $heatCosts, 'distance' => $nSpacesForward) = $this->getCircuit()->getReachedCell($constructor, 1, FLAG_COMPUTE_HEAT_COSTS);
@@ -133,11 +114,53 @@ trait ReactTrait
       $symbols[DIRECT]['heatCosts'] = $directPlayCosts;
     }
 
-    $canPass = $this->canPassReact($symbols);
+    ////////////////////////////////////////////////
+    // Add some informations to symbols
+    ////////////////////////////////////
+
+    // Compute which ones are actually usable
+    foreach ($symbols as $symbol => &$symbolInfos) {
+      $symbolInfos['doable'] = $this->canUseSymbol($constructor, $symbol, $symbolInfos);
+
+      // Disable some symbols on some cards
+      if (!in_array($symbol, [HEAT, COOLDOWN, DIRECT, BOOST, ADRENALINE, SUPER_COOL])) {
+        foreach ($symbolInfos['entries'] as $cardId => &$infos) {
+          if (!isset($symbols[HEAT][$cardId])) continue;
+          $infos['doable'] = $symbols[HEAT][$cardId]['used'] ?? false;
+        }
+      }
+    }
+
+    // Used ?
+    foreach ($symbols as $symbol => &$symbolInfos) {
+      $used = true;
+      foreach ($symbolInfos['entries'] as $cardId => $infos) {
+        if (!($infos['used'] ?? false)) {
+          $used = false;
+        }
+      }
+      $symbolInfos['used'] = $used;
+    }
+
+    // Mandatory / Coalescable / UpTo
+    $canPass = true;
+    $mandatorySymbols = [HEAT, SCRAP];
+    $coalescableSymbols = [COOLDOWN, HEAT, DRAFT, SUPER_COOL, REDUCE];
+    $upToSymbols = [COOLDOWN, DRAFT, REDUCE, SUPER_COOL];
+
+    foreach ($symbols as $symbol => &$symbolInfos) {
+      $symbolInfos['mandatory'] = in_array($symbol, $mandatorySymbols);
+      $symbolsInfos['coalescable'] = in_array($symbol, $coalescableSymbols);
+      $symbolsInfos['upTo'] = in_array($symbol, $upToSymbols);
+
+      if ($symbolInfos['mandatory']) {
+        $canPass = $canPass && $symbolInfos['used'];
+      }
+    }
+    ////////////////////////////////////////////////
 
     return [
       'symbols' => $symbols,
-      'doable' => $doableSymbols,
       'canPass' => $canPass,
       'descSuffix' => $canPass ? '' : 'Must',
       'flippedCards' => Globals::getFlippedCards(),

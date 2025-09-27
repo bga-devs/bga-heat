@@ -1,4 +1,5 @@
 GUY :
+
 - add undo
 
 TIM :
@@ -13,3 +14,27 @@ MISC:
 - handle different podium shapes : include podium shape into circuit's data + allow for adhoc placement for extra podium slot for base circuits
   => reconstruct rectangles in frontend with matching font ?
 - user pref for auto move when only one speed
+
+#####################################################
+NEW REACT ARGS :
+interface ReactSymbolEntry {
+doable?: boolean;
+used: false;
+value: number;
+n: number;
+}
+
+interface ReactSymbol {
+doable: number | boolean;
+entries: { [from: string|number]: ReactSymbolEntry };
+used: any; => // DYNAMICALLY COMPUTED BASED ON used FLAG IN ENTRIES
+mandatory: boolean; // ADDED
+coalescable: boolean; // true means can be grouped, false means done 1 by 1
+upTo: booelan; // TRUE means the player can use less than the total of selected cards (all coalescable except HEAT currently)
+}
+
+// SOME SYMBOLS HAVE EXTRA INFORMATIONS
+DIRECT => { 'heatCosts' : {....} }
+HEATED_BOOST => { 'heated' : bool }
+ADRENALINE => { 'willCrossNextCorner' : bool }
+DIRECT => { 'heatCosts': {...} }
