@@ -48,15 +48,4 @@ class action_heat extends APP_GameAction
     $this->game->actOldReact($symbol, $arg);
     self::ajaxResponse();
   }
-
-  ///////////////////////////////////
-  ///////////////////////////////////
-  public function actReact()
-  {
-    self::setAjaxMode();
-    $symbol = self::getArg('symbol', AT_alphanum_dash, true);
-    $arg = self::getArg('arg', AT_alphanum_dash, false, '');
-    $this->game->actReact($symbol, $arg);
-    self::ajaxResponse();
-  }
 }

@@ -175,25 +175,45 @@ trait ReactTrait
     ];
   }
 
-  public function canPassReact($symbols)
-  {
-    // Mandatory symbols
-    $mandatorySymbols = [HEAT, SCRAP];
-    $canPass = empty(array_intersect($mandatorySymbols, array_keys($symbols)));
-    return $canPass;
-  }
 
-  public function actReact($symbol, $cardIds, $n = null)
+  public function actReact(string $symbol, #[JsonParam()] $entries, ?int $n = null)
   {
     self::checkAction('actReact');
     $constructor = Constructors::getActive();
     $symbols = Globals::getCardSymbols();
-    $symbol = null;
+
+    // Sanity checks
     $args = $this->argsReact();
-    $n = $args['symbols'][$symbol] ?? null;
-    if (is_null($n)) {
+    $symbolInfos = $args['symbols'][$symbol] ?? null;
+    if (is_null($symbolInfos)) {
       throw new \BgaVisibleSystemException('Invalid symbol. Should not happen');
     }
+    if (empty($entries)) {
+      throw new \BgaVisibleSystemException('No ntry picked for that symbol. Should not happen');
+    }
+    $totalN = 0;
+    foreach ($entries as $entry) {
+      $entryInfos = $symbolInfos['entries'][$entry] ?? null;
+      if (!isset($entryInfos)) {
+        throw new \BgaVisibleSystemException('Invalid entry for that symbol. Should not happen');
+      }
+      if ($entryInfos['used'] ?? false) {
+        throw new \BgaVisibleSystemException('Already used entry for that symbol. Should not happen');
+      }
+
+      $totalN += $entryInfos['n'] ?? 0;
+    }
+    if ($symbolInfos['coalescable']) {
+      if (is_null($n)) {
+        throw new \BgaVisibleSystemException('No total value picked for a coalescable symbol. Should not happen');
+      }
+      if ($totalN < $n || ($totalN != $n && !$symbolInfos['upTo'])) {
+        throw new \BgaVisibleSystemException('Invalid total value picked for a coalescable symbol. Should not happen');
+      }
+    } else if (count($entries) > 1) {
+      throw new \BgaVisibleSystemException('Multiple entries picked for a non-coalescable entry. Should not happen');
+    }
+
     die("TODO");
 
     // Update remaining symbols
