@@ -78,6 +78,7 @@ trait ReactTrait
       unset($symbols[COOLDOWN]);
     }
 
+    ///////////////////////////
     // Boost bonus
     if (!$symbols[HEATED_BOOST]['entries'][HEATED_BOOST]['used']) {
       // Add the boost symbol
@@ -92,6 +93,7 @@ trait ReactTrait
       $symbols[HEATED_BOOST]['heatCosts'] = $boostInfos;
     }
 
+    ///////////////////////////
     // Adrenaline extra info
     if (isset($symbols[ADRENALINE])) {
       list('heatCosts' => $heatCosts, 'distance' => $nSpacesForward) = $this->getCircuit()->getReachedCell($constructor, 1, FLAG_COMPUTE_HEAT_COSTS);
@@ -101,6 +103,7 @@ trait ReactTrait
       $symbols[ADRENALINE]['willCrossNextCorner'] = count($heatCosts) > count($currentHeatCosts);
     }
 
+    ///////////////////////////
     // Direct play extra infos
     if (isset($symbols[DIRECT])) {
       $directPlayCosts = [];
@@ -123,11 +126,18 @@ trait ReactTrait
       $symbolInfos['doable'] = $this->canUseSymbol($constructor, $symbol, $symbolInfos);
 
       // Disable some symbols on some cards
-      if (!in_array($symbol, [HEAT, COOLDOWN, DIRECT, BOOST, ADRENALINE, SUPER_COOL])) {
+      if (!in_array($symbol, [HEAT, COOLDOWN, DIRECT, HEATED_BOOST, ADRENALINE, SUPER_COOL, DRAFT])) {
         foreach ($symbolInfos['entries'] as $cardId => &$infos) {
           if (!isset($symbols[HEAT][$cardId])) continue;
           $infos['doable'] = $symbols[HEAT][$cardId]['used'] ?? false;
         }
+      }
+
+      // Some symbol entries are linked to corner => check if constructor is within that sector
+      foreach ($symbolInfos['entries'] as $cardId => &$infos) {
+        if (!isset($infos['cornerPos'])) continue;
+
+        $infos['doable'] = $constructor->getSector() == $infos['cornerPos'];
       }
     }
 
@@ -150,8 +160,8 @@ trait ReactTrait
 
     foreach ($symbols as $symbol => &$symbolInfos) {
       $symbolInfos['mandatory'] = in_array($symbol, $mandatorySymbols);
-      $symbolsInfos['coalescable'] = in_array($symbol, $coalescableSymbols);
-      $symbolsInfos['upTo'] = in_array($symbol, $upToSymbols);
+      $symbolInfos['coalescable'] = in_array($symbol, $coalescableSymbols);
+      $symbolInfos['upTo'] = in_array($symbol, $upToSymbols);
 
       if ($symbolInfos['mandatory']) {
         $canPass = $canPass && $symbolInfos['used'];
@@ -175,7 +185,12 @@ trait ReactTrait
     ];
   }
 
-
+  /**
+   * actReact :
+   *  - the symbol we are resolving
+   *  - the list of string entries that we are using, mostly cardIds
+   *  - (optional) value we are actually wanting to use (needed for "upTo" symbols)
+   */
   public function actReact(string $symbol, #[JsonParam()] $entries, ?int $n = null)
   {
     self::checkAction('actReact');
@@ -183,6 +198,7 @@ trait ReactTrait
     $symbols = Globals::getCardSymbols();
 
     // Sanity checks
+    $card = null;
     $args = $this->argsReact();
     $symbolInfos = $args['symbols'][$symbol] ?? null;
     if (is_null($symbolInfos)) {
@@ -210,36 +226,25 @@ trait ReactTrait
       if ($totalN < $n || ($totalN != $n && !$symbolInfos['upTo'])) {
         throw new \BgaVisibleSystemException('Invalid total value picked for a coalescable symbol. Should not happen');
       }
-    } else if (count($entries) > 1) {
-      throw new \BgaVisibleSystemException('Multiple entries picked for a non-coalescable entry. Should not happen');
+    } else {
+      if (count($entries) > 1) {
+        throw new \BgaVisibleSystemException('Multiple entries picked for a non-coalescable entry. Should not happen');
+      }
+      $card = Cards::getSingle($entries[0]);
     }
 
-    die("TODO");
 
     // Update remaining symbols
-    if (in_array($symbol, [DIRECT, ACCELERATE])) {
-      if (!in_array($arg, $symbols[$symbol])) {
-        throw new \BgaVisibleSystemException('Invalid card. Should not happen');
-      }
-      $symbols[$symbol] = array_values(array_diff($symbols[$symbol], [$arg]));
-    } else {
-      if ($arg != '') {
-        $m = (int) $arg;
-        if ($m < 0 || $m > $n) {
-          throw new \BgaVisibleSystemException('Invalid arg. Should not happen');
-        }
-        $n = $m;
-        $symbols[$symbol] -= $n;
-        if ($symbols[$symbol] <= 0) {
-          unset($symbols[$symbol]);
-        }
-      } else {
-        unset($symbols[$symbol]);
-      }
+    foreach ($entries as $entry) {
+      $symbols[$symbol]['entries'][$entry]['used'] = true;
     }
+    Globals::setCardSymbols($symbols);
 
-    Globals::setSymbols($symbols);
+
+    //////////////////////////////
     /////// Resolve effect ///////
+    //////////////////////////////
+
     // COOLDOWN
     if ($symbol == COOLDOWN) {
       $heats = $constructor->getHeatsInHand()->limit($n);
@@ -252,24 +257,13 @@ trait ReactTrait
       $constructor->incSpeed(1);
       Notifications::adrenaline($constructor);
       // Move car 1 cell (if possible)
-      $oldRoadCondition = $constructor->getRoadCondition();
       $nForward = $this->moveCar($constructor, 1);
       $constructor->incStat('adrenalineGains', $nForward);
-
-      // Weather might add 1 cooldown
-      $roadCondition = $constructor->getRoadCondition();
-      if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
-        $symbols = Globals::getSymbols();
-        $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
-        Globals::setSymbols($symbols);
-      }
     }
     // HEATED BOOST
-    elseif ($symbol == HEATED_BOOST || $symbol == BOOST) {
-      $oldRoadCondition = $constructor->getRoadCondition();
-      Globals::setUsedBoost(true);
+    elseif ($symbol == HEATED_BOOST) {
       $constructor->incStat('boost');
-      if ($symbol == HEATED_BOOST) {
+      if ($symbolInfos['heated']) {
         if ($constructor->hasNoHeat()) {
           throw new UserException(clienttranslate('You dont have enough heat to pay for the boost.'));
         }
@@ -280,22 +274,15 @@ trait ReactTrait
       list($cards, $card) = $constructor->resolveBoost();
       Globals::incFlippedCards();
       Notifications::heatedBoost($constructor, $heats, $cards, $card);
+
       // Increase speed and move the card
       $speed = $card['speed'];
       $constructor->incSpeed($speed);
       $this->moveCar($constructor, $speed);
-
-      // Weather might add 1 cooldown
-      $roadCondition = $constructor->getRoadCondition();
-      if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
-        $symbols = Globals::getSymbols();
-        $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
-        Globals::setSymbols($symbols);
-      }
     }
     // REDUCE STRESS
     elseif ($symbol == REDUCE) {
-      $cards = $constructor->getStressesInHand()->limit($arg);
+      $cards = $constructor->getStressesInHand()->limit($n);
       Cards::move($cards->getIds(), ['discard', $constructor->getId()]);
       Notifications::reduceStress($constructor, $cards);
     }
@@ -311,22 +298,11 @@ trait ReactTrait
     }
     // ACCELERATE
     elseif ($symbol == ACCELERATE) {
-      $oldRoadCondition = $constructor->getRoadCondition();
-      $cardId = $arg;
-      $card = Cards::getSingle($cardId);
       $n = Globals::getFlippedCards();
       $constructor->incSpeed($n);
       Notifications::accelerate($constructor, $card, $n);
       // Move car
       $this->moveCar($constructor, $n);
-
-      // Weather might add 1 cooldown
-      $roadCondition = $constructor->getRoadCondition();
-      if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
-        $symbols = Globals::getSymbols();
-        $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
-        Globals::setSymbols($symbols);
-      }
     }
     // SALVAGE
     elseif ($symbol == SALVAGE) {
@@ -354,9 +330,7 @@ trait ReactTrait
     }
     // DIRECT
     elseif ($symbol == DIRECT) {
-      $oldRoadCondition = $constructor->getRoadCondition();
-      $cardId = $arg;
-      $card = Cards::getSingle($cardId);
+      $cardId = $card->getId();
       Cards::move($cardId, ['inplay', $constructor->getId()]);
       $speed = $card['speed'];
       $constructor->incSpeed($speed);
@@ -364,27 +338,22 @@ trait ReactTrait
 
       if ($speed > 0) {
         $this->moveCar($constructor, $speed);
+        $symbols[SPEED]['entries'][$cardId] = [
+          'values' => [$speed],
+          'used' => true,
+        ];
       }
 
-      $symbols = Globals::getSymbols();
+      // Add new symbols !
       foreach ($card['symbols'] as $symbol => $n) {
-        if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
-          if ($symbol !== DIRECT) {
-            // no DIRECT here, to not add played DIRECT back on the list
-            $symbols[$symbol][] = $card['id'];
-          }
-        } else {
-          $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
+        $data = ['used' => $symbol === DIRECT]; // Mark the "DIRECT" symbol as used
+        if (!in_array($symbol, CARD_SYMBOLS)) {
+          $data['n'] = $n;
         }
+        $symbols[$symbol]['entries'][$cardId] = $data;
       }
 
-      // Weather might add 1 cooldown
-      $roadCondition = $constructor->getRoadCondition();
-      if ($roadCondition != $oldRoadCondition && $roadCondition == ROAD_CONDITION_COOLING_BONUS) {
-        $symbols[COOLDOWN] = ($symbols[COOLDOWN] ?? 0) + 1;
-      }
-
-      Globals::setSymbols($symbols);
+      Globals::setCardSymbols($symbols);
     }
 
     // Loop on same state to resolve other pending symbols
@@ -393,20 +362,22 @@ trait ReactTrait
 
   public function stReact()
   {
-    $symbols = $this->argsReact()['symbols'];
-    foreach ($symbols as $symbol => $n) {
-      if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
-        if (!empty($n)) {
-          return;
-        }
-      } else {
-        if ($n > 0) {
-          return;
-        }
-      }
-    }
+    // TODO : autopass
 
-    $this->stReactDone();
+    // $symbols = $this->argsReact()['symbols'];
+    // foreach ($symbols as $symbol => $n) {
+    //   if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
+    //     if (!empty($n)) {
+    //       return;
+    //     }
+    //   } else {
+    //     if ($n > 0) {
+    //       return;
+    //     }
+    //   }
+    // }
+
+    // $this->stReactDone();
   }
 
   public function actPassReact()

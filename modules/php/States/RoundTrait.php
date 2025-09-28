@@ -515,7 +515,6 @@ trait RoundTrait
       }
     }
     ////////////////////////////////////////////////
-
     // Resolve + symbols
     $boosts = $symbol[BOOST] ?? null;
     $totalBoost = 0;
@@ -531,6 +530,24 @@ trait RoundTrait
       }
     }
     Globals::setFlippedCards($totalBoost);
+
+    ////////////////////////////////////////////////
+    // Add weather section symbols
+    $circuit = $this->getCircuit();
+    foreach ($circuit->getCorners() as $cornerPos => $maxSpeed) {
+      $roadCondition = $circuit->getRoadCondition($cornerPos + 1);
+
+      if ($roadCondition == ROAD_CONDITION_COOLING_BONUS) {
+        $symbols[COOLDOWN]['entries']["corner-$cornerPos"] = [
+          'cornerPos' => $cornerPos,
+          'n' => 1,
+          'used' => false,
+        ];
+      }
+    }
+
+    //////////////////////////////////////////////
+
     Globals::setCardSymbols($symbols);
 
     $this->gamestate->jumpToState(ST_CHOOSE_SPEED);

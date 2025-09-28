@@ -150,6 +150,13 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
       ->getLane($this);
   }
 
+  public function getSector(): ?int
+  {
+    return Game::get()
+      ->getCircuit()
+      ->getSector($this->getPosition());
+  }
+
   public function getRoadCondition(): ?int
   {
     return Game::get()

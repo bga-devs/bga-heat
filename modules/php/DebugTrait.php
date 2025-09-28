@@ -34,39 +34,41 @@ trait DebugTrait
 
   function debug_tp()
   {
-    $circuit = $this->getCircuit();
+    $this->actReact(HEAT, [98], 1);
 
-    // Draw a card
-    $weatherCard = bga_rand(0, 5);
-    // Draw tokens
-    $tokens = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
-    shuffle($tokens);
-    $cornerTokens = [];
-    foreach ($circuit->getCorners() as $cornerPos => $maxSpeed) {
-      if (!$circuit->isChicane($cornerPos)) {
-        $cornerTokens[$cornerPos] = array_shift($tokens);
-      }
-    }
-    // Simulate duplicated tokens for chicane, 
-    //  but remove sector token from the first corner to make sure sector in between the two corners has nothing on it
-    foreach ($circuit->getCorners() as $cornerPos => $maxSpeed) {
-      if ($circuit->isChicane($cornerPos)) {
-        $mainCornerPos = $circuit->getChicaneMainCorner($cornerPos);
-        $cornerTokens[$cornerPos] = $cornerTokens[$mainCornerPos];
-        if (in_array($cornerTokens[$cornerPos], [ROAD_CONDITION_WEATHER, ROAD_CONDITION_FREE_BOOST, ROAD_CONDITION_INCREASE_SLIPSTREAM])) {
-          $cornerTokens[$mainCornerPos] = null;
-        }
-      }
-    }
+    // $circuit = $this->getCircuit();
 
-    var_dump([
-      'card' => $weatherCard,
-      'tokens' => $cornerTokens,
-    ]);
-    Globals::setWeather([
-      'card' => $weatherCard,
-      'tokens' => $cornerTokens,
-    ]);
+    // // Draw a card
+    // $weatherCard = bga_rand(0, 5);
+    // // Draw tokens
+    // $tokens = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
+    // shuffle($tokens);
+    // $cornerTokens = [];
+    // foreach ($circuit->getCorners() as $cornerPos => $maxSpeed) {
+    //   if (!$circuit->isChicane($cornerPos)) {
+    //     $cornerTokens[$cornerPos] = array_shift($tokens);
+    //   }
+    // }
+    // // Simulate duplicated tokens for chicane, 
+    // //  but remove sector token from the first corner to make sure sector in between the two corners has nothing on it
+    // foreach ($circuit->getCorners() as $cornerPos => $maxSpeed) {
+    //   if ($circuit->isChicane($cornerPos)) {
+    //     $mainCornerPos = $circuit->getChicaneMainCorner($cornerPos);
+    //     $cornerTokens[$cornerPos] = $cornerTokens[$mainCornerPos];
+    //     if (in_array($cornerTokens[$cornerPos], [ROAD_CONDITION_WEATHER, ROAD_CONDITION_FREE_BOOST, ROAD_CONDITION_INCREASE_SLIPSTREAM])) {
+    //       $cornerTokens[$mainCornerPos] = null;
+    //     }
+    //   }
+    // }
+
+    // var_dump([
+    //   'card' => $weatherCard,
+    //   'tokens' => $cornerTokens,
+    // ]);
+    // Globals::setWeather([
+    //   'card' => $weatherCard,
+    //   'tokens' => $cornerTokens,
+    // ]);
 
     // $round = Globals::getDraftRound();
     // $turnOrder = Constructors::getTurnOrder();
