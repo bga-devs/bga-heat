@@ -214,7 +214,6 @@ trait ReactTrait
     $symbols = Globals::getCardSymbols();
 
     // Sanity checks
-    $card = null;
     $args = $this->argsReact();
     $symbolInfos = $args['symbols'][$symbol] ?? null;
     if (is_null($symbolInfos)) {
