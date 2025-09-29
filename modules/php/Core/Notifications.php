@@ -91,7 +91,8 @@ class Notifications
     $distanceToCorner,
     $path,
     $slipstream = false,
-    $legendSlot = null
+    $legendSlot = null,
+    $draft = false,
   ) {
     $msg =
       $speed == $nSpacesForward
@@ -113,6 +114,10 @@ class Notifications
         : clienttranslate(
           'Slipstream: ${constructor_name} moves their car ${nForward} spaces forward out of ${speed} because they are blocked by other cars'
         );
+    }
+
+    if ($draft) {
+      $msg = clienttranslate('Draft: ${constructor_name} moves their car ${nForward} spaces forward');
     }
 
     self::notifyAll('moveCar', $msg, [

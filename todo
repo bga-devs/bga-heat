@@ -12,7 +12,7 @@ TIM :
 MISC:
 
 - handle different podium shapes : include podium shape into circuit's data + allow for adhoc placement for extra podium slot for base circuits
-  => reconstruct rectangles in frontend with matching font ?
+=> reconstruct rectangles in frontend with matching font ?
 - user pref for auto move when only one speed
 
 #####################################################
@@ -25,7 +25,9 @@ n: number;
 }
 
 interface ReactSymbol {
-doable: number | boolean;
+doable: boolean;
+?max: int;
+?min: int;
 entries: { [from: string|number]: ReactSymbolEntry };
 used: any; => // DYNAMICALLY COMPUTED BASED ON used FLAG IN ENTRIES
 mandatory: boolean; // ADDED
@@ -45,35 +47,35 @@ BACKEND SANITY CHECKS
 ```
 public function actReact(string $symbol, #[JsonParam()] $entries, ?int $n = null)
 {
-    $args = $this->argsReact();
-    $symbolInfos = $args['symbols'][$symbol] ?? null;
-    if (is_null($symbolInfos)) {
-      throw new \BgaVisibleSystemException('Invalid symbol. Should not happen');
-    }
-    if (empty($entries)) {
-      throw new \BgaVisibleSystemException('No ntry picked for that symbol. Should not happen');
-    }
-    $totalN = 0;
-    foreach ($entries as $entry) {
-      $entryInfos = $symbolInfos['entries'][$entry] ?? null;
-      if (!isset($entryInfos)) {
-        throw new \BgaVisibleSystemException('Invalid entry for that symbol. Should not happen');
-      }
-      if ($entryInfos['used'] ?? false) {
-        throw new \BgaVisibleSystemException('Already used entry for that symbol. Should not happen');
-      }
-
-      $totalN += $entryInfos['n'] ?? 0;
-    }
-    if ($symbolInfos['coalescable']) {
-      if (is_null($n)) {
-        throw new \BgaVisibleSystemException('No total value picked for a coalescable symbol. Should not happen');
-      }
-      if ($totalN < $n || ($totalN != $n && !$symbolInfos['upTo'])) {
-        throw new \BgaVisibleSystemException('Invalid total value picked for a coalescable symbol. Should not happen');
-      }
-    } else if (count($entries) > 1) {
-      throw new \BgaVisibleSystemException('Multiple entries picked for a non-coalescable entry. Should not happen');
-    }
+$args = $this->argsReact();
+$symbolInfos = $args['symbols'][$symbol] ?? null;
+if (is_null($symbolInfos)) {
+throw new \BgaVisibleSystemException('Invalid symbol. Should not happen');
 }
-```
+if (empty($entries)) {
+throw new \BgaVisibleSystemException('No ntry picked for that symbol. Should not happen');
+}
+$totalN = 0;
+foreach ($entries as $entry) {
+$entryInfos = $symbolInfos['entries'][$entry] ?? null;
+if (!isset($entryInfos)) {
+throw new \BgaVisibleSystemException('Invalid entry for that symbol. Should not happen');
+}
+if ($entryInfos['used'] ?? false) {
+throw new \BgaVisibleSystemException('Already used entry for that symbol. Should not happen');
+}
+
+$totalN += $entryInfos['n'] ?? 0;
+}
+if ($symbolInfos['coalescable']) {
+if (is_null($n)) {
+throw new \BgaVisibleSystemException('No total value picked for a coalescable symbol. Should not happen');
+}
+if ($totalN < $n || ($totalN !=$n && !$symbolInfos['upTo'])) {
+  throw new \BgaVisibleSystemException('Invalid total value picked for a coalescable symbol. Should not happen');
+  }
+  } else if (count($entries)> 1) {
+  throw new \BgaVisibleSystemException('Multiple entries picked for a non-coalescable entry. Should not happen');
+  }
+  }
+  ```

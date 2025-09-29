@@ -26,33 +26,43 @@ trait ReactTrait
 {
   /**
    * canUseSymbol: given a constructor and a symbol, return whether the constructor can use the symbol or not
-   *  for some symbols, it returns the maximum number of that symbol he can use
+   *  - bool doable: can we use it?
+   *  - ?int max : how much can we use it at most
+   *  - ?int min: how much do we have to use it if we want to use it
    */
-  public function canUseSymbol(Constructor $constructor, string $symbol, array $symbolInfos): bool|int
+  public function getPossibleUseOfSymbol(Constructor $constructor, string $symbol, array $symbolInfos): array
   {
     // Cooldown => must have something to cooldown in the hand
     if ($symbol == \COOLDOWN) {
       $roadCondition = $constructor->getRoadCondition();
       if ($roadCondition == ROAD_CONDITION_NO_COOLDOWN) {
-        return false;
+        return ['doable' => false];
       }
 
-      return $constructor->getHeatsInHand()->count();
+      $n = $constructor->getHeatsInHand()->count();
+      return ['doable' => $n > 0, 'max' => $n];
     }
     // Reduce stress => must have stress cards in hand
     elseif ($symbol == REDUCE) {
-      return $constructor->getStressesInHand()->count();
+      $n = $constructor->getStressesInHand()->count();
+      return ['doable' => $n > 0, 'max' => $n];
     }
     // Heated boost => must be able to pay for it
     elseif ($symbol == HEATED_BOOST && $symbolInfos['heated']) {
-      return $constructor->getEngine()->count() > 0;
+      return ['doable' => $constructor->getEngine()->count() > 0];
     }
     // Heat
     elseif ($symbol == HEAT) {
-      return $constructor->getEngine()->count();
+      $n = $constructor->getEngine()->count();
+      return ['doable' => $n > 0, 'max' => $n];
+    }
+    // Draft
+    elseif ($symbol == DRAFT) {
+      $n = $constructor->getDraftableDistance();
+      return ['doable' => $n > 0, 'max' => $n, 'min' => $n];
     }
 
-    return true;
+    return ['doable' => true];
   }
 
 
@@ -105,12 +115,17 @@ trait ReactTrait
 
     ///////////////////////////
     // Direct play extra infos
+    foreach ($constructor->getHand() as $cardId => $card) {
+      if (!isset($card['symbols'][DIRECT])) continue;
+
+      $symbols[DIRECT]['entries'][$cardId] = ['used' => false];
+    }
     if (isset($symbols[DIRECT])) {
       $directPlayCosts = [];
       foreach ($symbols[DIRECT]['entries'] ?? [] as $cardId => $infos) {
         $card = Cards::getSingle($cardId);
         $speed = $card['speed'];
-        list('heatCosts' => $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, true, true);
+        list('heatCosts' => $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, FLAG_COMPUTE_HEAT_COSTS);
 
         $directPlayCosts[$cardId] = $heatCosts;
       }
@@ -123,7 +138,9 @@ trait ReactTrait
 
     // Compute which ones are actually usable
     foreach ($symbols as $symbol => &$symbolInfos) {
-      $symbolInfos['doable'] = $this->canUseSymbol($constructor, $symbol, $symbolInfos);
+      // Add information about doable, min,max doable
+      $possibleUse = $this->getPossibleUseOfSymbol($constructor, $symbol, $symbolInfos);
+      $symbolInfos = array_merge($symbolInfos, $possibleUse);
 
       // Disable some symbols on some cards
       if (!in_array($symbol, [HEAT, COOLDOWN, DIRECT, HEATED_BOOST, ADRENALINE, SUPER_COOL, DRAFT])) {
@@ -204,6 +221,9 @@ trait ReactTrait
     if (is_null($symbolInfos)) {
       throw new \BgaVisibleSystemException('Invalid symbol. Should not happen');
     }
+    if (!$symbolInfos['doable']) {
+      throw new \BgaVisibleSystemException('Not doable symbol. Should not happen');
+    }
     if (empty($entries)) {
       throw new \BgaVisibleSystemException('No ntry picked for that symbol. Should not happen');
     }
@@ -216,6 +236,9 @@ trait ReactTrait
       if ($entryInfos['used'] ?? false) {
         throw new \BgaVisibleSystemException('Already used entry for that symbol. Should not happen');
       }
+      if (!($entryInfos['doable'] ?? true)) {
+        throw new \BgaVisibleSystemException('Non doable entry for that symbol. Should not happen');
+      }
 
       $totalN += $entryInfos['n'] ?? 0;
     }
@@ -226,11 +249,16 @@ trait ReactTrait
       if ($totalN < $n || ($totalN != $n && !$symbolInfos['upTo'])) {
         throw new \BgaVisibleSystemException('Invalid total value picked for a coalescable symbol. Should not happen');
       }
+      if (isset($symbolInfos['max']) && $n > $symbolInfos['max']) {
+        throw new \BgaVisibleSystemException('Too large total value picked for that coalescable symbol. Should not happen');
+      }
+      if (isset($symbolInfos['min']) && $n < $symbolInfos['min']) {
+        throw new \BgaVisibleSystemException('Too small total value picked for that coalescable symbol. Should not happen');
+      }
     } else {
       if (count($entries) > 1) {
         throw new \BgaVisibleSystemException('Multiple entries picked for a non-coalescable entry. Should not happen');
       }
-      $card = Cards::getSingle($entries[0]);
     }
 
 
@@ -298,11 +326,17 @@ trait ReactTrait
     }
     // ACCELERATE
     elseif ($symbol == ACCELERATE) {
+      $cardId = $entries[0];
+      $card = Cards::getSingle($cardId);
       $n = Globals::getFlippedCards();
       $constructor->incSpeed($n);
       Notifications::accelerate($constructor, $card, $n);
       // Move car
       $this->moveCar($constructor, $n);
+    }
+    // DRAFT
+    elseif ($symbol == DRAFT) {
+      $this->moveCar($constructor, $n, false, null, true);
     }
     // SALVAGE
     elseif ($symbol == SALVAGE) {
@@ -330,7 +364,8 @@ trait ReactTrait
     }
     // DIRECT
     elseif ($symbol == DIRECT) {
-      $cardId = $card->getId();
+      $cardId = $entries[0];
+      $card = Cards::getSingle($cardId);
       Cards::move($cardId, ['inplay', $constructor->getId()]);
       $speed = $card['speed'];
       $constructor->incSpeed($speed);

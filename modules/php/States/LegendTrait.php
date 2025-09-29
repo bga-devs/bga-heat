@@ -36,9 +36,9 @@ trait LegendTrait
     if ($deltaLine == 0 || $deltaCorner < $deltaLine) {
       // Try to move at corner speed + "slot cell" number
       $speed = $this->getCircuit()->getCornerMaxSpeed($cornerPos) + $slot;
-      list($newCell, $nSpacesForward, $extraTurns, $path,,) = $this->getCircuit()->getReachedCell($constructor, $speed, true);
+      $moveResult = $this->getCircuit()->getReachedCell($constructor, $speed, FLAG_COMPUTE_HEAT_COSTS);
       // Check if that makes the car cross AT MOST one corner
-      $cornersCrossed = $this->getCircuit()->getCornersInBetween($turn, $pos, $turn + $extraTurns, $pos + $nSpacesForward);
+      $cornersCrossed = $this->getCircuit()->getCornersInBetween($turn, $pos, $turn + $moveResult['extraTurn'], $pos + $moveResult['distance']);
 
       $maxCornerCrossed = 1;
       if (boolval(Globals::getAggressiveLegends())) {

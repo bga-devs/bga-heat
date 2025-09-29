@@ -552,6 +552,19 @@ class Circuit
   }
 
 
+  /**
+   * getDraftableDistance: given a position, find the distance on which a car would be able to draft from that position
+   *  => just find the first position ahead with a car on it
+   */
+  public function getDraftableDistance(int $pos): int
+  {
+    $avoidInfiniteLoop = 0;
+    $position = $pos + 1;
+    while ($this->isFree($position, 1) && $this->isFree($position, 2) && $avoidInfiniteLoop++ < 20) {
+      $position++;
+    }
+    return $position - $pos - 1;
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   //   ____                                          _       _           _ 

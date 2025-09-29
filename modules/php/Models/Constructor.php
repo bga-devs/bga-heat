@@ -176,6 +176,11 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
       ->getCircuit()->getTunnelsSpaces());
   }
 
+  public function getDraftableDistance(): int
+  {
+    return Game::get()->getCircuit()->getDraftableDistance($this->getPosition());
+  }
+
   public function getDeck(): Collection
   {
     return Cards::getDeck($this->id);

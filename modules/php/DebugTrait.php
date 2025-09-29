@@ -34,7 +34,7 @@ trait DebugTrait
 
   function debug_tp()
   {
-    $this->actReact(HEAT, [98], 1);
+    $this->actReact(DIRECT, [120]);
 
     // $circuit = $this->getCircuit();
 

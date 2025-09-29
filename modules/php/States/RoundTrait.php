@@ -675,11 +675,11 @@ trait RoundTrait
    *  - bool $slipstream (used to know whether or not the speed increase)
    *  - ?int $legendSlot : how far from the next corner is the legend stopping
    */
-  public function moveCar(Constructor $constructor, int $n, bool $slipstream = false, ?int $legendSlot = null): int
+  public function moveCar(Constructor $constructor, int $n, bool $slipstream = false, ?int $legendSlot = null, bool $draft = false): int
   {
     $circuit = $this->getCircuit();
     $flags = FLAG_COMPUTE_PATHS;
-    if ($slipstream) {
+    if ($slipstream || $draft) {
       $flags |= FLAG_IS_SLIPSTREAM;
     }
     $moveResult = $circuit->getReachedCell($constructor, $n, $flags);
@@ -695,7 +695,8 @@ trait RoundTrait
       $distanceToCorner,
       $moveResult['path'],
       $slipstream,
-      $legendSlot
+      $legendSlot,
+      $draft
     );
 
     $paths = $constructor->getPaths() ?? [];
