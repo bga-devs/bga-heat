@@ -51,7 +51,7 @@ public function actReact(string $symbol, #[JsonParam()] $entries, ?int $n = null
       throw new \BgaVisibleSystemException('Invalid symbol. Should not happen');
     }
     if (empty($entries)) {
-      throw new \BgaVisibleSystemException('No ntry picked for that symbol. Should not happen');
+      throw new \BgaVisibleSystemException('No entry picked for that symbol. Should not happen');
     }
     $totalN = 0;
     foreach ($entries as $entry) {

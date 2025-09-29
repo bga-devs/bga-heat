@@ -852,19 +852,12 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     }
   }
 
-  private onUpdateActionButtons_react(args: EnteringReactArgs) {
-    console.warn('reactArgs', args);
-
-    const ignoredTypes = ['speed', 'adjust'];
-
-    Object.entries(args.symbols).filter(([type, symbolSet]) => !ignoredTypes.includes(type)).forEach(([type, symbolGroup], index) => {
-      Object.entries(symbolGroup.entries).forEach(([cardIdOrAction, symbol]) => {
-      console.warn(type, 'cardIdOrAction', cardIdOrAction, 'symbol', symbol, 'symbolGroup', symbolGroup);
+  private addReactButton(type: string, entries: string[], symbolInfos: ReactSymbol, cumulative: boolean, args) {
         let label = ``;
         let tooltip = ``;
         let confirmationMessage = null;
-        let enabled = symbol.doable;
-        const number = symbol.n ?? symbol.value;
+        let enabled = symbolInfos.doable;
+        const number = entries.map(entry => symbolInfos.entries[entry]).map(symbolEntry => symbolEntry.n).reduce((a, b) => a + b, 0);
         switch (type) {
           case 'accelerate':
             const accelerateCard = this.getCurrentPlayerTable()
@@ -957,16 +950,21 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             break;
         }
 
+        let realNumber = number;
+        if (typeof symbolInfos.doable === 'number') {
+          realNumber = Math.min(number, symbolInfos.doable as number);
+        }
+
         const finalAction = () =>
-          this.actReact(type, number);
+          this.actReact(type, entries, realNumber);
         const callback = confirmationMessage
           ? () => (this.showHeatCostConfirmations() ? this.confirmationDialog(confirmationMessage, finalAction) : finalAction())
           : finalAction;
         const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
 
-        this.statusBar.addActionButton(formatTextIcons(label), callback, {
+        this.statusBar.addActionButton(formatTextIcons(label) + ` (symbol ${type} entries ${JSON.stringify(entries)})`, callback, {
           id: `actReact${type}_${number}_button`,
-          // color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined,
+          color: cumulative ? 'primary' : 'secondary',
         });
 
         if (mandatory) {
@@ -994,7 +992,19 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             );
           }
         }
-      });
+
+  }
+ 
+  private onUpdateActionButtons_react(args: EnteringReactArgs) {
+    const ignoredTypes = ['speed', 'adjust'];
+
+    Object.entries(args.symbols).filter(([type, symbolSet]) => !ignoredTypes.includes(type)).forEach(([type, symbolInfos], index) => {
+      const remainingEntries = symbolInfos.entries;//Object.entries(symbolInfos.entries).filter(([entry, symbolEntry]) => !symbolEntry.used);
+      //console.warn(remainingEntries);
+      this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
+      if (Object.keys(remainingEntries).length > 1) {
+        Object.keys(remainingEntries).forEach(entry => this.addReactButton(type, [entry], symbolInfos, false, args));
+      }
     });
 
     this.statusBar.addActionButton(_('Pass'), () => this.actPassReact(), { disabled: !args.canPass });
@@ -1846,10 +1856,11 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     this.bgaPerformAction('actCryCauseNotEnoughHeatToPay');
   }
 
-  public actReact(symbol: string, arg?: number) {
+  public actReact(symbol: string, entries: (string | number)[], n?: number) {
     this.bgaPerformAction('actReact', {
       symbol,
-      arg,
+      entries: JSON.stringify(entries),
+      n,
     });
   }
 

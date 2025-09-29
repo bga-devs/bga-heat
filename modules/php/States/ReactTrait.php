@@ -191,9 +191,8 @@ trait ReactTrait
    *  - the list of string entries that we are using, mostly cardIds
    *  - (optional) value we are actually wanting to use (needed for "upTo" symbols)
    */
-  public function actReact(string $symbol, #[JsonParam()] $entries, ?int $n = null)
+  public function actReact(string $symbol, #[JsonParam] $entries, ?int $n = null)
   {
-    self::checkAction('actReact');
     $constructor = Constructors::getActive();
     $symbols = Globals::getCardSymbols();
 
@@ -205,7 +204,7 @@ trait ReactTrait
       throw new \BgaVisibleSystemException('Invalid symbol. Should not happen');
     }
     if (empty($entries)) {
-      throw new \BgaVisibleSystemException('No ntry picked for that symbol. Should not happen');
+      throw new \BgaVisibleSystemException('No entry picked for that symbol. Should not happen');
     }
     $totalN = 0;
     foreach ($entries as $entry) {
