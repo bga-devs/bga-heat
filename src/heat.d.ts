@@ -170,7 +170,6 @@ interface EnteringSlipstreamArgs /*extends EnteringChooseSpeedArgs*/ {
 }
 
 interface ReactSymbolEntry {
-    doable?: boolean;
     used: false;
     value: number;
     n: number;
@@ -179,10 +178,17 @@ interface ReactSymbolEntry {
 interface ReactSymbol {
     doable: number | boolean;
     entries: { [from: string|number]: ReactSymbolEntry };
-    //used: any;
-    //mandatory: boolean;
-    //coalescable: boolean; // true means can be grouped, false means done 1 by 1
+    used: any; // DYNAMICALLY COMPUTED BASED ON used FLAG IN ENTRIES
+    mandatory: boolean;
+    coalescable: boolean; // true means can be grouped, false means done 1 by 1
+    upTo: boolean; // TRUE means the player can use less than the total of selected cards (all coalescable except HEAT currently)
+
+    // SOME SYMBOLS HAVE EXTRA INFORMATIONS
+    heatCosts?: { [speed: number]: number /*heatCost*/ }; // DIRECT
+    heated?: boolean; // HEATED_BOOST
+    willCrossNextCorner?: boolean; // ADRENALINE
 }
+
 
 interface EnteringReactArgs {
     canPass: boolean;
