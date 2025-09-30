@@ -606,7 +606,8 @@ height: 241px; */
   width: 53px;
   height: 60px;
   margin-bottom: 4px;
-  background: rgba(255, 0, 0, 0.5);
+  display: flex;
+  flex-wrap: nowrap;
 }
 .personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-speed {
   height: 60px;
@@ -1865,10 +1866,12 @@ html,
   margin: 0 2px;
 }
 
-#mandatory-buttons {
+.mandatory-buttons {
   border: 1px solid #ffe035;
   background: rgba(255, 224, 53, 0.4);
-  display: inline-block;
   margin-left: 5px;
   padding: 5px;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
 }

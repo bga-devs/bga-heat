@@ -328,10 +328,12 @@ html,
   }
 }
 
-#mandatory-buttons {
+.mandatory-buttons {
   border: 1px solid #ffe035;
   background: #ffe03566;
-  display: inline-block;
   margin-left: 5px;
   padding: 5px;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
 }

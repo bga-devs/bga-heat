@@ -176,7 +176,9 @@ interface ReactSymbolEntry {
 }
 
 interface ReactSymbol {
-    doable: number | boolean;
+    doable: boolean;
+    max?: number;
+    min?: number;
     entries: { [from: string|number]: ReactSymbolEntry };
     used: any; // DYNAMICALLY COMPUTED BASED ON used FLAG IN ENTRIES
     mandatory: boolean;
@@ -184,7 +186,7 @@ interface ReactSymbol {
     upTo: boolean; // TRUE means the player can use less than the total of selected cards (all coalescable except HEAT currently)
 
     // SOME SYMBOLS HAVE EXTRA INFORMATIONS
-    heatCosts?: { [speed: number]: number /*heatCost*/ }; // DIRECT
+    heatCosts?: { [cardId: number]: { [something: number]: number }; }; // DIRECT
     heated?: boolean; // HEATED_BOOST
     willCrossNextCorner?: boolean; // ADRENALINE
 }
@@ -202,7 +204,6 @@ interface EnteringReactArgs {
     nextCornerExtraHeatCost: boolean;
     boostInfos: { [boostSpeed: number]: { [cornerId: number]: number }; };
     crossedFinishLine: boolean;
-    directPlayCosts: { [cardId: number]: { [something: number]: number }; };
 }
 
 interface EnteringOldReactArgs {

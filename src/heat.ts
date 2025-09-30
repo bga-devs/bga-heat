@@ -544,21 +544,21 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     return !this.getGameUserPreference(201);
   }
 
-  private getAdrenalineConfirmation(reactArgs: EnteringOldReactArgs) {
+  private getAdrenalineConfirmation(currentHeatCost: number, adrenalineWillCrossNextCorner: boolean, nextCornerSpeedLimit: number, nextCornerExtraHeatCost: boolean, boostInfos: { [boostSpeed: number]: { [cornerId: number]: number }; }) {
     let confirmationMessage = null;
-    const adrenalineWillCrossNextCorner =
-      this.cornerCounters[this.getConstructorId()].getValue() == 0 && reactArgs.adrenalineWillCrossNextCorner;
-    const adrenalineCostOnCurrentCorner = reactArgs.boostInfos?.[1]
-      ? Object.values(reactArgs.boostInfos[1]).reduce((a, b) => a + b, 0)
+    adrenalineWillCrossNextCorner =
+      this.cornerCounters[this.getConstructorId()].getValue() == 0 && adrenalineWillCrossNextCorner;
+    const adrenalineCostOnCurrentCorner = boostInfos?.[1]
+      ? Object.values(boostInfos[1]).reduce((a, b) => a + b, 0)
       : 0;
-    if (adrenalineWillCrossNextCorner || reactArgs.currentHeatCost > 0 || adrenalineCostOnCurrentCorner > 0) {
+    if (adrenalineWillCrossNextCorner || currentHeatCost > 0 || adrenalineCostOnCurrentCorner > 0) {
       const newSpeed = this.speedCounters[this.getConstructorId()].getValue() + 1;
 
-      let newHeatCost = reactArgs.currentHeatCost > 0 ? reactArgs.currentHeatCost + 1 : 0;
+      let newHeatCost = currentHeatCost > 0 ? currentHeatCost + 1 : 0;
       let newCornerCost = 0;
       if (adrenalineWillCrossNextCorner) {
-        newCornerCost = Math.max(0, newSpeed - reactArgs.nextCornerSpeedLimit);
-        if (newCornerCost > 0 && reactArgs.nextCornerExtraHeatCost) {
+        newCornerCost = Math.max(0, newSpeed - nextCornerSpeedLimit);
+        if (newCornerCost > 0 && nextCornerExtraHeatCost) {
           newCornerCost++;
         }
         newHeatCost += newCornerCost;
@@ -573,14 +573,14 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               'The Adrenaline reaction will make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).'
             )
               .replace('${speed}', `<strong>${newSpeed}</strong>`)
-              .replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`) + `<br>`;
+              .replace('${speedLimit}', `<strong>${nextCornerSpeedLimit}</strong>`) + `<br>`;
         } else {
           confirmationMessage = '';
         }
 
-        if (reactArgs.currentHeatCost > 0) {
+        if (currentHeatCost > 0) {
           confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).')
-            .replace('${heat}', `<strong>${reactArgs.currentHeatCost}</strong>`)
+            .replace('${heat}', `<strong>${currentHeatCost}</strong>`)
             .replace('${newHeat}', `<strong>${newHeatCost}</strong>`);
         } else {
           confirmationMessage += _('You will have to pay ${newHeat} Heat(s).').replace(
@@ -596,21 +596,21 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     return confirmationMessage;
   }
 
-  private getBoostConfirmation(reactArgs: EnteringOldReactArgs, paid: boolean) {
+  private getBoostConfirmation(currentHeatCost: number, nextCornerSpeedLimit: number, nextCornerExtraHeatCost: boolean, boostInfos: { [boostSpeed: number]: { [cornerId: number]: number }; }, paid: boolean) {
     const mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
 
     let confirmationMessage = null;
-    const boostCostOnCurrentCorner = reactArgs.boostInfos?.[4]
-      ? Object.values(reactArgs.boostInfos[4]).reduce((a, b) => a + b, 0)
+    const boostCostOnCurrentCorner = boostInfos?.[4]
+      ? Object.values(boostInfos[4]).reduce((a, b) => a + b, 0)
       : 0;
-    if (mayCrossCorner || reactArgs.currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
+    if (mayCrossCorner || currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
       const newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
 
       let newHeatCostMax = boostCostOnCurrentCorner + (paid ? 1 : 0);
       let newCornerCostMax = 0;
       if (mayCrossCorner) {
-        newCornerCostMax = Math.max(0, newSpeedMax - reactArgs.nextCornerSpeedLimit);
-        if (newCornerCostMax > 0 && reactArgs.nextCornerExtraHeatCost) {
+        newCornerCostMax = Math.max(0, newSpeedMax - nextCornerSpeedLimit);
+        if (newCornerCostMax > 0 && nextCornerExtraHeatCost) {
           newCornerCostMax++;
         }
         newHeatCostMax += newCornerCostMax;
@@ -623,14 +623,14 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               'The Boost reaction may make you cross a <strong>new</strong> corner at a speed up to ${speed} (Corner speed limit: ${speedLimit}).'
             )
               .replace('${speed}', `<strong>${newSpeedMax}</strong>`)
-              .replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`) + `<br>`;
+              .replace('${speedLimit}', `<strong>${nextCornerSpeedLimit}</strong>`) + `<br>`;
         } else {
           confirmationMessage = '';
         }
 
-        if (reactArgs.currentHeatCost > 0) {
+        if (currentHeatCost > 0) {
           confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change up to ${newHeat} Heat(s).')
-            .replace('${heat}', `<strong>${reactArgs.currentHeatCost}</strong>`)
+            .replace('${heat}', `<strong>${currentHeatCost}</strong>`)
             .replace('${newHeat}', `<strong>${newHeatCostMax}</strong>`);
         } else {
           confirmationMessage += _('You will have to pay up to ${newHeat} Heat(s).').replace(
@@ -646,12 +646,12 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     return confirmationMessage;
   }
 
-  private getDirectPlayConfirmation(reactArgs: EnteringOldReactArgs, card: Card) {
+  private getDirectPlayConfirmation(currentHeatCost: number, nextCornerSpeedLimit: number, directPlayCosts: { [cardId: number]: { [something: number]: number }; }, card: Card) {
     const willCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < card.speed;
-    const newHeatCost = Object.values(reactArgs.directPlayCosts[card.id]).reduce((a, b) => a + b, 0);
+    const newHeatCost = Object.values(directPlayCosts[card.id]).reduce((a, b) => a + b, 0);
 
     let confirmationMessage = null;
-    if (reactArgs.currentHeatCost < newHeatCost) {
+    if (currentHeatCost < newHeatCost) {
       const newSpeed = this.speedCounters[this.getConstructorId()].getValue() + card.speed;
 
       if (willCrossCorner) {
@@ -660,14 +660,14 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             'The Direct Play reaction may make you cross a <strong>new</strong> corner at speed ${speed} (Corner speed limit: ${speedLimit}).'
           )
             .replace('${speed}', `<strong>${newSpeed}</strong>`)
-            .replace('${speedLimit}', `<strong>${reactArgs.nextCornerSpeedLimit}</strong>`) + `<br>`;
+            .replace('${speedLimit}', `<strong>${nextCornerSpeedLimit}</strong>`) + `<br>`;
       } else {
         confirmationMessage = '';
       }
 
-      if (reactArgs.currentHeatCost > 0) {
+      if (currentHeatCost > 0) {
         confirmationMessage += _('You already have ${heat} Heat(s) to pay, it will change to ${newHeat} Heat(s).')
-          .replace('${heat}', `<strong>${reactArgs.currentHeatCost}</strong>`)
+          .replace('${heat}', `<strong>${currentHeatCost}</strong>`)
           .replace('${newHeat}', `<strong>${newHeatCost}</strong>`);
       } else {
         confirmationMessage += _('You will have to pay ${newHeat} Heat(s).').replace(
@@ -852,18 +852,28 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     }
   }
 
-  private addReactButton(type: string, entries: string[], symbolInfos: ReactSymbol, cumulative: boolean, args) {
+  private addReactButton(type: string, entries: string[], symbolInfos: ReactSymbol, cumulative: boolean, args: EnteringReactArgs, forcedN?: number) {
         let label = ``;
         let tooltip = ``;
         let confirmationMessage = null;
         let enabled = symbolInfos.doable;
-        const number = entries.map(entry => symbolInfos.entries[entry]).map(symbolEntry => symbolEntry.n).reduce((a, b) => a + b, 0);
+        let number = forcedN;
+        if (forcedN === undefined && entries.every(entry => symbolInfos.entries[entry].n !== undefined)) {
+          number = entries.map(entry => symbolInfos.entries[entry]).map(symbolEntry => symbolEntry.n).reduce((a, b) => a + b, 0);
+          if (symbolInfos.max !== undefined) {
+            number = Math.min(number, symbolInfos.max);
+          }
+        }
+        const destination = cumulative ? null : document.getElementById(`${entries[0]}-${type}`);
         switch (type) {
           case 'accelerate':
-            const accelerateCard = this.getCurrentPlayerTable()
-              .inplay.getCards()
-              .find((card) => card.id == number);
-            label = `+${args.flippedCards} [Speed]<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
+            label = `+${args.flippedCards} [Speed]`;
+            if (!destination) {
+              const accelerateCard = this.getCurrentPlayerTable()
+                .inplay.getCards()
+                .find((card) => card.id == number);
+              label += `<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
+            }
             tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', args.flippedCards);
             break;
           case 'adjust':
@@ -879,7 +889,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
                                     <br><br>
                                     <i>${_('Note: Adrenaline cannot be saved for future rounds')}</i>`;
 
-            confirmationMessage = args.crossedFinishLine ? null : this.getAdrenalineConfirmation(args);
+            confirmationMessage = args.crossedFinishLine ? null : this.getAdrenalineConfirmation(args.currentHeatCost, args.adrenalineWillCrossNextCorner, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos);
             break;
           case 'cooldown':
             label = `${number} [Cooldown]`;
@@ -896,18 +906,20 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               );
             break;
           case 'direct':
+            label = `<div class="icon direct"></div>${_('Play from hand')}`;
             const directCard = this.getCurrentPlayerTable()
               .hand.getCards()
-              .find((card) => card.id == number);
-            label = `<div class="icon direct"></div>${_('Play from hand')}`;
-            if (directCard) {
-              label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
-            } else {
-              console.warn('card not found in hand to display direct card', number, directCard);
+              .find((card) => card.id == Number(entries[0]));
+            if (!destination) {
+              if (directCard) {
+                label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+              } else {
+                console.warn('card not found in hand to display direct card', number, directCard);
+              }
             }
             tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
 
-            confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args, directCard);
+            confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, symbolInfos.heatCosts, directCard);
             break;
           case 'heat':
             label = `<div class="icon forced-heat">${number}</div>`;
@@ -928,7 +940,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
                                     <br><br>
                                     <i>${_('Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.')}</i>`;
 
-            confirmationMessage = args.crossedFinishLine ? null : this.getBoostConfirmation(args, paid);
+            confirmationMessage = args.crossedFinishLine ? null : this.getBoostConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos, paid);
             break;
           case 'reduce':
             label = `<div class="icon reduce-stress">${number}</div>`;
@@ -948,41 +960,47 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             label = `<div class="icon super-cool">${number}</div>`;
             tooltip = this.getGarageModuleIconTooltipWithIcon('super-cool', number);
             break;
+          case 'draft':
+            label = `<div class="icon draft">${number}</div>`;
+            tooltip = this.getGarageModuleIconTooltipWithIcon('draft', number);
+            break;
         }
 
-        let realNumber = number;
-        if (typeof symbolInfos.doable === 'number') {
-          realNumber = Math.min(number, symbolInfos.doable as number);
-        }
-
-        const finalAction = () =>
-          this.actReact(type, entries, realNumber);
-        const callback = confirmationMessage
-          ? () => (this.showHeatCostConfirmations() ? this.confirmationDialog(confirmationMessage, finalAction) : finalAction())
-          : finalAction;
         const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
 
-        this.statusBar.addActionButton(formatTextIcons(label) + ` (symbol ${type} entries ${JSON.stringify(entries)})`, callback, {
-          id: `actReact${type}_${number}_button`,
-          color: cumulative ? 'primary' : 'secondary',
-        });
-
-        if (mandatory) {
-          let mandatoryZone = document.getElementById('mandatory-buttons');
-          if (!mandatoryZone) {
-            mandatoryZone = document.createElement('div');
-            mandatoryZone.id = 'mandatory-buttons';
-            mandatoryZone.innerHTML = `<div class="mandatory icon"></div>`;
-            document.getElementById('generalactions').appendChild(mandatoryZone);
-          }
-          mandatoryZone.appendChild(document.getElementById(`actReact${type}_${number}_button`));
+        const mandatoryZoneId = `${destination ? destination.id : ''}mandatory-buttons`;
+        let mandatoryZone = document.getElementById(mandatoryZoneId);
+        if (mandatory && !mandatoryZone) {
+          mandatoryZone = document.createElement('div');
+          mandatoryZone.classList.add('mandatory-buttons');
+          mandatoryZone.id = mandatoryZoneId;
+          mandatoryZone.innerHTML = `<div class="mandatory icon"></div>`;
+          (destination ?? document.getElementById('generalactions')).insertAdjacentElement('afterbegin', mandatoryZone);
         }
 
-        this.setTooltip(`actReact${type}_${number}_button`, formatTextIcons(tooltip));
+        const buttonId = `actReact${type}_${cumulative ? 'cumulative' : entries[0]}_${number}_button`;
+        let button = document.getElementById(buttonId);
+        if (!button) {
+          button = this.statusBar.addActionButton(
+            formatTextIcons(label), 
+            () => this.actReact(type, entries, number), 
+            {
+              id: buttonId,
+              color: forcedN ? 'secondary' : 'primary',
+              confirm: this.showHeatCostConfirmations() ? confirmationMessage : null,
+              disabled: !enabled,
+              destination,
+            }
+          );
+        }
+        if (mandatory) {
+          mandatoryZone.appendChild(button);
+        }
+
+        this.setTooltip(buttonId, formatTextIcons(tooltip));
         if (!enabled) {
-          document.getElementById(`actReact${type}_${number}_button`).classList.add('disabled');
           if (type === 'cooldown') {
-            document.getElementById(`actReact${type}_${number}_button`).insertAdjacentHTML(
+            button.insertAdjacentHTML(
               'beforeend',
               `
                                         <div class="no-cooldown-warning">
@@ -992,19 +1010,37 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             );
           }
         }
-
+        return button;
   }
  
   private onUpdateActionButtons_react(args: EnteringReactArgs) {
     const ignoredTypes = ['speed', 'adjust'];
 
     Object.entries(args.symbols).filter(([type, symbolSet]) => !ignoredTypes.includes(type)).forEach(([type, symbolInfos], index) => {
-      const remainingEntries = symbolInfos.entries;//Object.entries(symbolInfos.entries).filter(([entry, symbolEntry]) => !symbolEntry.used);
-      //console.warn(remainingEntries);
-      this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
-      if (Object.keys(remainingEntries).length > 1) {
-        Object.keys(remainingEntries).forEach(entry => this.addReactButton(type, [entry], symbolInfos, false, args));
+      const remainingEntries = {};
+      Object.entries(symbolInfos.entries).filter(([entry, symbolEntry]) => !symbolEntry.used).forEach(([entry, symbolEntry]) => 
+        remainingEntries[entry] = symbolEntry
+      );
+      let reactAll = null;
+      if (symbolInfos.coalescable && Object.keys(remainingEntries).length > /*1*/0) {
+        reactAll = this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
+        if (symbolInfos.max !== undefined && symbolInfos.upTo) {
+          for (let n = symbolInfos.min ?? 1; n < symbolInfos.max; n++) {
+            this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
+          }
+        }
       }
+      //if (!reactAll || Object.keys(remainingEntries).length > 1) {
+        Object.keys(remainingEntries).forEach(entry => {
+          this.addReactButton(type, [entry], symbolInfos, false, args);
+
+          if (symbolInfos.max !== undefined && symbolInfos.upTo) {
+            for (let n = symbolInfos.min ?? 1; n < symbolInfos.max; n++) {
+              this.addReactButton(type, [entry], symbolInfos, false, args, n);
+            }
+          }
+        });
+      //}
     });
 
     this.statusBar.addActionButton(_('Pass'), () => this.actPassReact(), { disabled: !args.canPass });
@@ -1073,7 +1109,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
                               <br><br>
                               <i>${_('Note: Adrenaline cannot be saved for future rounds')}</i>`;
 
-            confirmationMessage = args.crossedFinishLine ? null : this.getAdrenalineConfirmation(args);
+            confirmationMessage = args.crossedFinishLine ? null : this.getAdrenalineConfirmation(args.currentHeatCost, args.adrenalineWillCrossNextCorner, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos);
             break;
           case 'cooldown':
             label = `${number} [Cooldown]`;
@@ -1102,7 +1138,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
             tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
 
-            confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args, directCard);
+            confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.directPlayCosts, directCard);
             break;
           case 'heat':
             label = `<div class="icon forced-heat">${number}</div>`;
@@ -1123,7 +1159,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
                               <br><br>
                               <i>${_('Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.')}</i>`;
 
-            confirmationMessage = args.crossedFinishLine ? null : this.getBoostConfirmation(args, paid);
+            confirmationMessage = args.crossedFinishLine ? null : this.getBoostConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos, paid);
             break;
           case 'reduce':
             label = `<div class="icon reduce-stress">${number}</div>`;
