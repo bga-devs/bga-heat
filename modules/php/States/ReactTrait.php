@@ -142,6 +142,18 @@ trait ReactTrait
       $possibleUse = $this->getPossibleUseOfSymbol($constructor, $symbol, $symbolInfos);
       $symbolInfos = array_merge($symbolInfos, $possibleUse);
 
+      if (isset($symbolInfos['max']) || isset($symbolInfos['min'])) {
+        $values = array_map(fn($entry) => $entry['n'] ?? 0, $symbolInfos['entries']);
+        $totalN = array_sum($values);
+
+        if (isset($symbolInfos['min'])) {
+          $symbolInfos['doable'] = $symbolInfos['doable'] && $symbolInfos['min'] <= $totalN;
+        }
+        if (isset($symbolInfos['max'])) {
+          $symbolInfos['doable'] = $symbolInfos['doable'] && min($values) <= $symbolInfos['max'];
+        }
+      }
+
       // Disable some symbols on some cards
       if (!in_array($symbol, [HEAT, COOLDOWN, DIRECT, HEATED_BOOST, ADRENALINE, SUPER_COOL, DRAFT])) {
         foreach ($symbolInfos['entries'] as $cardId => &$infos) {

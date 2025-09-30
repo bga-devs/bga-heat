@@ -3,7 +3,6 @@ GUY :
 - add undo
 
 TIM :
-- set doable to false when min > sum n (draft symbol)
 - recode the React phase
 - handle double agressive legend!
 - add undo
