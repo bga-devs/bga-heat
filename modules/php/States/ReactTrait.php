@@ -184,7 +184,7 @@ trait ReactTrait
     // Mandatory / Coalescable / UpTo
     $canPass = true;
     $mandatorySymbols = [HEAT, SCRAP];
-    $coalescableSymbols = [COOLDOWN, HEAT, DRAFT, SUPER_COOL, REDUCE];
+    $coalescableSymbols = [HEAT, SCRAP, COOLDOWN, DRAFT, REDUCE, SUPER_COOL];
     $upToSymbols = [COOLDOWN, DRAFT, REDUCE, SUPER_COOL];
 
     foreach ($symbols as $symbol => &$symbolInfos) {
