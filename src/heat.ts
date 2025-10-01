@@ -906,17 +906,17 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               );
             break;
           case 'direct':
-            label = `<div class="icon direct"></div>${_('Play from hand')}`;
+            label = `<div class="icon direct"></div>`;
             const directCard = this.getCurrentPlayerTable()
               .hand.getCards()
               .find((card) => card.id == Number(entries[0]));
-            if (!destination) {
+            /*if (!destination) {
               if (directCard) {
                 label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
               } else {
                 console.warn('card not found in hand to display direct card', number, directCard);
               }
-            }
+            }*/
             tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
 
             confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, symbolInfos.heatCosts, directCard);
@@ -981,6 +981,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         const buttonId = `actReact${type}_${cumulative ? 'cumulative' : entries[0]}_${number}_button`;
         let button = document.getElementById(buttonId);
         if (!button) {
+          const noticeForButtonsOnCard = !destination && !symbolInfos.coalescable;
+          if (noticeForButtonsOnCard) {
+            label += `${_('(play on the card(s))')}`;
+          }
           button = this.statusBar.addActionButton(
             formatTextIcons(label), 
             () => this.actReact(type, entries, number), 
@@ -988,7 +992,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               id: buttonId,
               color: forcedN ? 'secondary' : 'primary',
               confirm: this.showHeatCostConfirmations() ? confirmationMessage : null,
-              disabled: !enabled,
+              disabled: !enabled || noticeForButtonsOnCard,
               destination,
             }
           );
@@ -1022,7 +1026,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         remainingEntries[entry] = symbolEntry
       );
       let reactAll = null;
-      if (symbolInfos.coalescable && Object.keys(remainingEntries).length > /*1*/0) {
+      if (/*symbolInfos.coalescable && */Object.keys(remainingEntries).length > /*1*/0) {
         reactAll = this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
         if (symbolInfos.max !== undefined && symbolInfos.upTo) {
           for (let n = symbolInfos.min ?? 1; n < symbolInfos.max; n++) {
