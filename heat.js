@@ -4288,18 +4288,17 @@ var Heat = /** @class */ (function (_super) {
                         _('You gain access to Cooldown in a few ways but the most common is from driving in 1st gear (Cooldown 3) and 2nd gear (Cooldown 1).');
                 break;
             case 'direct':
-                label = "<div class=\"icon direct\"></div>".concat(_('Play from hand'));
+                label = "<div class=\"icon direct\"></div>";
                 var directCard = this.getCurrentPlayerTable()
                     .hand.getCards()
                     .find(function (card) { return card.id == Number(entries[0]); });
-                if (!destination) {
-                    if (directCard) {
-                        label = "<br>".concat(this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() }));
-                    }
-                    else {
-                        console.warn('card not found in hand to display direct card', number, directCard);
-                    }
-                }
+                /*if (!destination) {
+                  if (directCard) {
+                    label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+                  } else {
+                    console.warn('card not found in hand to display direct card', number, directCard);
+                  }
+                }*/
                 tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
                 confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, symbolInfos.heatCosts, directCard);
                 break;
@@ -4352,11 +4351,15 @@ var Heat = /** @class */ (function (_super) {
         var buttonId = "actReact".concat(type, "_").concat(cumulative ? 'cumulative' : entries[0], "_").concat(number, "_button");
         var button = document.getElementById(buttonId);
         if (!button) {
+            var noticeForButtonsOnCard = !destination && !symbolInfos.coalescable;
+            if (noticeForButtonsOnCard) {
+                label += "".concat(_('(play on the card(s))'));
+            }
             button = this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actReact(type, entries, number); }, {
                 id: buttonId,
                 color: forcedN ? 'secondary' : 'primary',
                 confirm: this.showHeatCostConfirmations() ? confirmationMessage : null,
-                disabled: !enabled,
+                disabled: !enabled || noticeForButtonsOnCard,
                 destination: destination,
             });
         }
@@ -4389,7 +4392,7 @@ var Heat = /** @class */ (function (_super) {
                 return remainingEntries[entry] = symbolEntry;
             });
             var reactAll = null;
-            if (symbolInfos.coalescable && Object.keys(remainingEntries).length > /*1*/ 0) {
+            if ( /*symbolInfos.coalescable && */Object.keys(remainingEntries).length > /*1*/ 0) {
                 reactAll = _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
                 if (symbolInfos.max !== undefined && symbolInfos.upTo) {
                     for (var n = (_b = symbolInfos.min) !== null && _b !== void 0 ? _b : 1; n < symbolInfos.max; n++) {
