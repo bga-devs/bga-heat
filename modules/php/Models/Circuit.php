@@ -194,7 +194,7 @@ class Circuit
     $event = Globals::getCurrentEvent();
     if ($event == EVENT_STRIKE) {
       $n--;
-    } elseif ($event == EVENT_RECORD_CROWDS) {
+    } elseif ($event == EVENT_RECORD_CROWDS || $event == EVENT_PRESSURE_COOKER) {
       $n++;
     }
 

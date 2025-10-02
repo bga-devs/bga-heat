@@ -1209,6 +1209,25 @@ trait RoundTrait
     }
     $constructor->incStat('extraDiscard', count($cardIds));
 
+    // EVENT : PRESSURE COOKER
+    $turn = $constructor->getTurn();
+    if (Globals::getCurrentEvent() == EVENT_PRESSURE_COOKER && $turn > Globals::getPreviousTurn() && $turn < $this->getNbrLaps()) {
+      $heat = $constructor->getEngine()->first();
+      if (is_null($heat)) {
+        $heat = $constructor->getHand()->filter(fn($card) => $card['effect'] == HEAT)->first();
+      }
+      if (is_null($heat)) {
+        $heat = $constructor->getDiscard()->filter(fn($card) => $card['effect'] == HEAT)->first();
+      }
+      if (is_null($heat)) {
+        $heat = $constructor->getDeck()->filter(fn($card) => $card['effect'] == HEAT)->first();
+      }
+
+      $fromLocation = $heat['location'];
+      Cards::move($heat['id'], 'box');
+      Notifications::eventRemoveHeat($constructor, $heat, $fromLocation);
+    }
+
     $this->stReplenish();
   }
 

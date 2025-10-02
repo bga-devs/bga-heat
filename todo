@@ -1,9 +1,11 @@
 GUY :
 
+- 1965 events assets, especially the last one with a custom notification : eventRemoveHeat
 - add undo
 - for upTo, only send necessary entries (when having 2 reduce symbols and 2 + cards, if I click one, currently I can't use the second one after)
 
 TIM :
+
 - recode the React phase
 - handle double agressive legend!
 - add undo
@@ -11,4 +13,4 @@ TIM :
 MISC:
 
 - handle different podium shapes : include podium shape into circuit's data + allow for adhoc placement for extra podium slot for base circuits
-=> reconstruct rectangles in frontend with matching font ?
+  => reconstruct rectangles in frontend with matching font ?

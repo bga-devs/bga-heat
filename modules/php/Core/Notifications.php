@@ -5,6 +5,10 @@ namespace Bga\Games\Heat\Core;
 use Bga\Games\Heat\Core\Globals;
 use Bga\Games\Heat\Managers\Constructors;
 use Bga\Games\Heat\Game;
+use Bga\Games\Heat\Helpers\Collection;
+use Bga\Games\Heat\Models\Circuit;
+use Bga\Games\Heat\Models\Constructor;
+use Bga\Games\Heat\Models\Player;
 
 class Notifications
 {
@@ -37,32 +41,32 @@ class Notifications
     }
   }
 
-  public static function notify($constructor, $name, $msg, $data)
+  public static function notify(int|Constructor $constructor, string $name, string $msg, array $data): void
   {
     $pId = is_int($constructor) ? $constructor : $constructor->getPId();
     self::updateArgs($data);
     Game::get()->notifyPlayer($pId, $name, $msg, $data);
   }
 
-  public static function message($txt, $args = [])
+  public static function message(string $txt, array $args = []): void
   {
     self::notifyAll('message', $txt, $args);
   }
 
-  public static function messageTo($player, $txt, $args = [])
+  public static function messageTo(Player|int $player, string $txt, array $args = []): void
   {
     $pId = is_int($player) ? $player : $player->getId();
     self::notify($pId, 'message', $txt, $args);
   }
 
-  public static function updatePlanification($player, $args)
+  public static function updatePlanification(Player $player, array $args): void
   {
     self::notify($player->getId(), 'updatePlanification', '', [
       'args' => ['_private' => $args['_private'][$player->getId()] ?? []],
     ]);
   }
 
-  public static function reveal($constructor, $newGear, $cards, $heats, $payForFlooded)
+  public static function reveal(Constructor $constructor, int $newGear, Collection $cards, Collection $heats, bool $payForFlooded): void
   {
     $msg = clienttranslate('${constructor_name} shifts gear to ${gear} and plays ${cards_images}');
     if ($heats->count() > 0) {
@@ -83,16 +87,16 @@ class Notifications
   }
 
   public static function moveCar(
-    $constructor,
-    $newCell,
-    $speed,
-    $nSpacesForward,
-    $extraTurns,
-    $distanceToCorner,
-    $path,
-    $slipstream = false,
-    $legendSlot = null,
-    $draft = false,
+    Constructor $constructor,
+    int $newCell,
+    int $speed,
+    int $nSpacesForward,
+    int $extraTurns,
+    int $distanceToCorner,
+    array $path,
+    bool $slipstream = false,
+    ?int $legendSlot = null,
+    bool $draft = false,
   ) {
     $msg =
       $speed == $nSpacesForward
@@ -157,7 +161,7 @@ class Notifications
     }
   }
 
-  public static function gainAdrenaline($constructor, $last)
+  public static function gainAdrenaline(Constructor $constructor, bool $last): void
   {
     $msg = $last
       ? clienttranslate('${constructor_name} is last so they can use adrenaline\'s effects')
@@ -168,7 +172,7 @@ class Notifications
     ]);
   }
 
-  public static function gainGearCooldown($constructor, $gear, $n)
+  public static function gainGearCooldown(Constructor $constructor, int $gear, int $n): void
   {
     $msg =
       $gear == 1
@@ -181,7 +185,7 @@ class Notifications
     ]);
   }
 
-  public static function discard($constructor, $cards)
+  public static function discard(Constructor $constructor, Collection $cards): void
   {
     self::notifyAll('discard', clienttranslate('${constructor_name} discards ${n} card(s)'), [
       'constructor' => $constructor,
@@ -195,7 +199,7 @@ class Notifications
     ]);*/
   }
 
-  public static function reduceStress($constructor, $cards)
+  public static function reduceStress(Constructor $constructor, Collection $cards): void
   {
     self::notifyAll('discard', clienttranslate('${constructor_name} discards ${n} stress card(s) (reduce stress)'), [
       'constructor' => $constructor,
@@ -204,7 +208,7 @@ class Notifications
     ]);
   }
 
-  public static function clearPlayedCards($constructor, $cardIds, $sponsorIds)
+  public static function clearPlayedCards(Constructor $constructor, array $cardIds, array $sponsorIds): void
   {
     $msg = clienttranslate('${constructor_name} discards played card(s)');
     if (!empty($sponsorIds)) {
@@ -217,7 +221,7 @@ class Notifications
     ]);
   }
 
-  public static function draw($constructor, $cards, $areSponsors = false)
+  public static function draw(Constructor $constructor, Collection $cards, bool $areSponsors = false): void
   {
     self::notifyAll(
       'draw',
@@ -245,7 +249,7 @@ class Notifications
     );
   }
 
-  public static function resolveBoost($constructor, $cards, $card, $i, $n)
+  public static function resolveBoost(Constructor $constructor, Collection $cards, array $card, int $i, int $n): void
   {
     $msg =
       $i == 1 && $n == 1
@@ -270,14 +274,14 @@ class Notifications
     ]);
   }
 
-  public static function updateTurnOrder($constructors)
+  public static function updateTurnOrder(array $constructors): void
   {
     self::notifyAll('updateTurnOrder', clienttranslate('New round order is: ${constructors_names}'), [
       'constructors' => $constructors,
     ]);
   }
 
-  public static function payHeatsForCorner($constructor, $cards, $speed, $limit, $cornerPos, $roadCondition)
+  public static function payHeatsForCorner(Constructor $constructor, COllection $cards, int $speed, int $limit, int $cornerPos, int $roadCondition): void
   {
     $msg = clienttranslate('${constructor_name} pays ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit}');
     if ($roadCondition == \ROAD_CONDITION_MORE_HEAT) {
@@ -296,7 +300,7 @@ class Notifications
     ]);
   }
 
-  public static function spinOut($constructor, $speed, $limit, $cornerPos, $cards, $cell, $stresses, $nBack, $newTurn, $roadCondition)
+  public static function spinOut(Constructor $constructor, int $speed, int $limit, int $cornerPos, Collection $cards, int $cell, Collection $stresses, int $nBack, int $newTurn, int $roadCondition)
   {
     $msg = clienttranslate(
       '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) in their engine. They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'
@@ -322,7 +326,7 @@ class Notifications
     ]);
   }
 
-  public static function clutteredHand($constructor)
+  public static function clutteredHand(Constructor $constructor): void
   {
     self::notifyAll(
       'clutteredHand',
@@ -333,7 +337,7 @@ class Notifications
     );
   }
 
-  public static function cooldown($constructor, $heats)
+  public static function cooldown(Constructor $constructor, Collection $heats): void
   {
     self::notifyAll('cooldown', clienttranslate('${constructor_name} cooldowns ${n} heat(s)'), [
       'constructor' => $constructor,
@@ -342,14 +346,14 @@ class Notifications
     ]);
   }
 
-  public static function adrenaline($constructor)
+  public static function adrenaline(Constructor $constructor): void
   {
     self::notifyAll('adrenaline', clienttranslate('${constructor_name} uses adrenaline\'s effect to increase their speed by 1'), [
       'constructor' => $constructor,
     ]);
   }
 
-  public static function heatedBoost($constructor, $heats, $cards, $card)
+  public static function heatedBoost(Constructor $constructor, Collection $heats, Collection $cards, array $card): void
   {
     if (!is_null($heats)) {
       self::notifyAll('payHeats', clienttranslate('${constructor_name} pays 1 heat to get the [+] effect'), [
@@ -360,7 +364,7 @@ class Notifications
     self::resolveBoost($constructor, $cards, $card, 1, 1);
   }
 
-  public static function finishRace($constructor, $podium, $canLeave)
+  public static function finishRace(Constructor $constructor, int $podium, bool $canLeave): void
   {
     self::notifyAll('finishRace', clienttranslate('${constructor_name} finishes the race at position ${pos}'), [
       'constructor' => $constructor,
@@ -369,7 +373,7 @@ class Notifications
     ]);
   }
 
-  public static function payHeats($constructor, $heats)
+  public static function payHeats(Constructor $constructor, Collection $heats): void
   {
     self::notifyAll('payHeats', clienttranslate('${constructor_name} pays ${n} heat(s) for their played card(s)'), [
       'constructor' => $constructor,
@@ -378,7 +382,7 @@ class Notifications
     ]);
   }
 
-  public static function scrapCards($constructor, $cards)
+  public static function scrapCards(Constructor $constructor, array $cards): void
   {
     self::notifyAll('scrapCards', clienttranslate('${constructor_name} scraps ${cards_images}'), [
       'constructor' => $constructor,
@@ -387,7 +391,7 @@ class Notifications
     ]);
   }
 
-  public static function salvageCards($constructor, $cards)
+  public static function salvageCards(Constructor $constructor, Collection $cards): void
   {
     self::notifyAll('salvageCards', clienttranslate('${constructor_name} salvages ${cards_images}'), [
       'constructor' => $constructor,
@@ -397,7 +401,7 @@ class Notifications
     ]);
   }
 
-  public static function superCoolCards($constructor, $cards)
+  public static function superCoolCards(Constructor $constructor, Collection $cards): void
   {
     self::notifyAll(count($cards) > 0 ? 'superCoolCards' : 'log', clienttranslate('${constructor_name} super cool ${n} Heat card(s)'), [
       'constructor' => $constructor,
@@ -407,7 +411,7 @@ class Notifications
     ]);
   }
 
-  public static function directPlay($constructor, $card, $speed)
+  public static function directPlay(Constructor $constructor, array $card, int $speed): void
   {
     self::notifyAll('directPlay', clienttranslate('${constructor_name} plays ${card_image} from their hand'), [
       'constructor' => $constructor,
@@ -416,7 +420,7 @@ class Notifications
     ]);
   }
 
-  public static function refresh($constructor, $card)
+  public static function refresh(Constructor $constructor, array $card): void
   {
     self::notifyAll('refresh', clienttranslate('${constructor_name} puts back ${card_image} on the top of their deck'), [
       'constructor' => $constructor,
@@ -424,14 +428,14 @@ class Notifications
     ]);
   }
 
-  public static function newLegendCard($card)
+  public static function newLegendCard(array $card): void
   {
     self::notifyAll('newLegendCard', clienttranslate('A new legend card is revealed'), [
       'card' => $card,
     ]);
   }
 
-  public static function endOfRace($scores, $order)
+  public static function endOfRace(array $scores, array $order): void
   {
     self::notifyAll('endOfRace', clienttranslate('End of the race'), [
       'scores' => $scores,
@@ -439,14 +443,14 @@ class Notifications
     ]);
   }
 
-  public static function clean($counters)
+  public static function clean(array $counters): void
   {
     self::notifyAll('clean', clienttranslate('Clearing previous heat and stress cards'), [
       'counters' => $counters,
     ]);
   }
 
-  public static function newMarket($round, $cards, $upgrades)
+  public static function newMarket(int $round, Collection $cards, array $upgrades): void
   {
     self::notifyAll('newMarket', clienttranslate('Starting round n°${round}/${nRounds} of Upgrade card drafting'), [
       'round' => $round,
@@ -456,7 +460,7 @@ class Notifications
     ]);
   }
 
-  public static function chooseUpgrade($constructor, $card)
+  public static function chooseUpgrade(Constructor $constructor, array $card): void
   {
     self::notifyAll('chooseUpgrade', clienttranslate('${constructor_name} chooses an ${card_image}'), [
       'constructor' => $constructor,
@@ -464,7 +468,7 @@ class Notifications
     ]);
   }
 
-  public static function accelerate($constructor, $card, $n)
+  public static function accelerate(Constructor $constructor, array $card, int $n): void
   {
     self::notifyAll('accelerate', clienttranslate('${constructor_name} accelerates using ${card_image}'), [
       'constructor' => $constructor,
@@ -473,7 +477,7 @@ class Notifications
     ]);
   }
 
-  public static function endDraftRound($round, $cardIds)
+  public static function endDraftRound(int $round, array $cardIds): void
   {
     self::notifyAll(
       'endDraftRound',
@@ -487,12 +491,12 @@ class Notifications
     );
   }
 
-  public static function reformingDeckWithUpgrades()
+  public static function reformingDeckWithUpgrades(): void
   {
     self::notifyAll('reformingDeckWithUpgrades', clienttranslate('End of draft phase, reforming deck with upgrade cards'), []);
   }
 
-  public static function swapUpgrade($constructor, $card1, $card2)
+  public static function swapUpgrade(Constructor $constructor, array $card1, array $card2): void
   {
     self::notifyAll(
       'swapUpgrade',
@@ -505,7 +509,7 @@ class Notifications
     );
   }
 
-  public static function weatherHeats($n, $location)
+  public static function weatherHeats(int $n, string $location): void
   {
     self::notifyAll('weatherHeats', clienttranslate('Due to weather card, everyone move ${n} heat(s) to ${loc}'), [
       'i18n' => ['loc'],
@@ -514,21 +518,21 @@ class Notifications
     ]);
   }
 
-  public static function loadCircuit($circuit)
+  public static function loadCircuit(array $circuit): void
   {
     self::notifyAll('loadCircuit', '', [
       'circuit' => $circuit,
     ]);
   }
 
-  public static function setupRace($counters)
+  public static function setupRace(array $counters): void
   {
     self::notifyAll('setupRace', '', [
       'counters' => $counters,
     ]);
   }
 
-  public static function randomUpgrades($constructor, $cards)
+  public static function randomUpgrades(Constructor $constructor, Collection $cards): void
   {
     self::notifyAll(
       'randomUpgrades',
@@ -542,7 +546,7 @@ class Notifications
 
   /////////////////////////////////
   //// CHAMPIONSHIP
-  public static function newChampionshipRace($datas, $circuit)
+  public static function newChampionshipRace(array $datas, Circuit $circuit): void
   {
     $map = [
       EVENT_INAUGURATION => clienttranslate('New grandstand inauguration'),
@@ -560,6 +564,11 @@ class Notifications
       EVENT_TURBULENT_WINDS => clienttranslate('Turbulent winds'),
       EVENT_CHICANES => clienttranslate('Chicanes for increased safety'),
       EVENT_SUDDEN_RAIN => clienttranslate('Sudden heavy rain delays race'),
+      // TUNNEL VISION
+      EVENT_HOLD_TIGHT => clienttranslate('Hold on tight'),
+      EVENT_SMILE_WAVE => clienttranslate('Smile and wave'),
+      EVENT_TUNNEL_VISION => clienttranslate('Tunnel vision'),
+      EVENT_PRESSURE_COOKER => clienttranslate('The pressure cooker'),
     ];
 
     $i = $datas['index'];
@@ -580,7 +589,7 @@ class Notifications
     );
   }
 
-  public static function startRace($constructors, $positions)
+  public static function startRace(array $constructors, array $positions): void
   {
     self::notifyAll('startRace', clienttranslate('Order on the starting grid is: ${constructors_names}'), [
       'constructors' => $constructors,
@@ -588,14 +597,14 @@ class Notifications
     ]);
   }
 
-  public static function setWeather($weather)
+  public static function setWeather(array $weather): void
   {
     self::notifyAll('setWeather', clienttranslate('Weather tiles and road condition tokens are revealed'), [
       'weather' => $weather,
     ]);
   }
 
-  public static function drawSponsor($constructor, $card, $reason)
+  public static function drawSponsor(Constructor $constructor, array $card, string $reason): void
   {
     if (is_null($card)) {
       $msg = clienttranslate('${constructor_name} cannot draw a sponsor card because none are left');
@@ -663,7 +672,23 @@ class Notifications
     }
   }
 
-  public static function eliminate($constructor, $cell, $canLeave)
+  public static function eventRemoveHeat(Constructor $constructor, array $heat, string $fromLocation): void
+  {
+    $cId = $constructor->getId();
+    $msgs = [
+      "engine-$cId" => clienttranslate('${constructor_name} crossed the finish line and remove one Heat card from their Engine (Pressure Cooker event)'),
+      "hand-$cId" => clienttranslate('${constructor_name} crossed the finish line and remove one Heat card from their Hand (Pressure Cooker event)'),
+      "discard-$cId" => clienttranslate('${constructor_name} crossed the finish line and remove one Heat card from their Discard (Pressure Cooker event)'),
+      "deck-$cId" => clienttranslate('${constructor_name} crossed the finish line and remove one Heat card from their Deck (Pressure Cooker event)'),
+    ];
+
+    self::notifyAll('eventRemoveHeat', $msgs[$fromLocation], [
+      'constructor' => $constructor,
+      'card' => $heat
+    ]);
+  }
+
+  public static function eliminate(Constructor $constructor, int $cell, bool $canLeave): void
   {
     self::notifyAll('eliminate', clienttranslate('${constructor_name} is eliminated from the race and will score 0 points'), [
       'constructor' => $constructor,
@@ -672,7 +697,7 @@ class Notifications
     ]);
   }
 
-  public static function giveUp($constructor, $cell, $canLeave)
+  public static function giveUp(Constructor $constructor, int $cell, bool $canLeave): void
   {
     self::notifyAll(
       'eliminate',
@@ -686,7 +711,7 @@ class Notifications
     );
   }
 
-  public static function cryCauseNotEnoughHeatToPay($constructor, $cell, $turn, $distanceToCorner)
+  public static function cryCauseNotEnoughHeatToPay(Constructor $constructor, int $cell, int $turn, int $distanceToCorner): void
   {
     self::notifyAll(
       'cryCauseNotEnoughHeatToPay',
@@ -700,7 +725,7 @@ class Notifications
     );
   }
 
-  public static function discardCantPay($constructor, $cards)
+  public static function discardCantPay(Constructor $constructor, Collection $cards): void
   {
     self::notify(
       $constructor,
@@ -715,7 +740,16 @@ class Notifications
     );
   }
 
-  public static function updateSnakeDiscard($player, $args)
+  ///////////////////////////////////
+  //  ____              _        
+  // / ___| _ __   __ _| | _____ 
+  // \___ \| '_ \ / _` | |/ / _ \
+  //  ___) | | | | (_| |   <  __/
+  // |____/|_| |_|\__,_|_|\_\___|
+  ///////////////////////////////////                            
+
+
+  public static function updateSnakeDiscard(Player $player, array $args)
   {
     self::notify($player->getId(), 'updateSnakeDiscard', '', [
       'args' => ['_private' => $args['_private'][$player->getId()]],

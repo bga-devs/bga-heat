@@ -353,10 +353,10 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
   {
     $circuits = EVENTS;
     if (self::isHeavyRain()) {
-      $circuits = array_merge($circuits, EVENTS_EXP_HV);
+      $circuits = array_replace($circuits, EVENTS_EXP_HV);
     }
     if (self::isTunnelVision()) {
-      $circuits = array_merge($circuits, EVENTS_EXP_TV);
+      $circuits = array_replace($circuits, EVENTS_EXP_TV);
     }
     return $circuits;
   }

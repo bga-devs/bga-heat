@@ -11,6 +11,7 @@ use Bga\Games\Heat\Core\Notifications;
 use Bga\Games\Heat\Helpers\Utils;
 use Bga\Games\Heat\Helpers\Log;
 use Bga\Games\Heat\Helpers\Collection;
+use Bga\Games\Heat\Models\Constructor;
 
 trait DebugTrait
 {
@@ -31,10 +32,19 @@ trait DebugTrait
     Cards::create($cards);
   }
 
+  function debug_eventCookerPressure()
+  {
+    $this->stProceedToNextRace();
+    $this->stProceedToNextRace();
+    $this->stProceedToNextRace();
+  }
+
 
   function debug_tp()
   {
-    $this->actReact(DIRECT, [120]);
+    $constructor = Constructors::getActive();
+    $constructor->setCarCell(301);
+    // $this->actReact(DIRECT, [120]);
 
     // $circuit = $this->getCircuit();
 

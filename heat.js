@@ -2489,6 +2489,38 @@ var EventCardsManager = /** @class */ (function () {
                     race: 4,
                     country: _('JAPAN'),
                 };
+            case 15:
+                return {
+                    title: _('Hold on tight'),
+                    rule: _('A maximum of 1 card may be discarded per turn.'),
+                    year: '1965',
+                    race: 1,
+                    country: _('GREAT BRITAIN'),
+                };
+            case 16:
+                return {
+                    title: _('Smile and wave'),
+                    rule: _('In Press Corners, you may only gain a Sponsorship card if driving slower than the speed limit.'),
+                    year: '1965',
+                    race: 2,
+                    country: _('USA'),
+                };
+            case 17:
+                return {
+                    title: _('Tunnel vision'),
+                    rule: _('For this race, you may discard Stress cards during Step 8.'),
+                    year: '1965',
+                    race: 3,
+                    country: _('ESPAÑA'),
+                };
+            case 18:
+                return {
+                    title: _('The pressure cooker'),
+                    rule: _('This race is one lap longer than usual. Each time you complete a lap, remove a Heat card from the game. (Step 8, remove from: Engine > Hand > Discard > Deck.'),
+                    year: '1965',
+                    race: 4,
+                    country: _('NEDERLAND'),
+                };
         }
     };
     EventCardsManager.prototype.getHtml = function (card) {
