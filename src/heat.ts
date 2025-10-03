@@ -988,7 +988,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         const buttonId = `actReact${type}_${cumulative ? 'cumulative' : entries[0]}_${number}_button`;
         let button = document.getElementById(buttonId);
         if (!button) {
-          const noticeForButtonsOnCard = !destination && !symbolInfos.coalescable;
+          const noticeForButtonsOnCard = !destination && !symbolInfos.coalescable && !entries.every(entry => isNaN(entry as any as number));
           if (noticeForButtonsOnCard) {
             label += `${_('(play on the card(s))')}`;
           }
@@ -1033,7 +1033,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         remainingEntries[entry] = symbolEntry
       );
       let reactAll = null;
-      if (/*symbolInfos.coalescable && */Object.keys(remainingEntries).length > /*1*/0) {
+      if (Object.keys(remainingEntries).length > 0) {
         reactAll = this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
         if (symbolInfos.max !== undefined && symbolInfos.upTo) {
           for (let n = symbolInfos.min ?? 1; n < symbolInfos.max; n++) {
@@ -1041,7 +1041,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           }
         }
       }
-      //if (!reactAll || Object.keys(remainingEntries).length > 1) {
+      if (!Object.keys(remainingEntries).every(entry => isNaN(entry as any as number))) {
         Object.keys(remainingEntries).forEach(entry => {
           this.addReactButton(type, [entry], symbolInfos, false, args);
 
@@ -1051,7 +1051,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             }
           }
         });
-      //}
+      }
     });
 
     this.statusBar.addActionButton(_('Pass'), () => this.actPassReact(), { disabled: !args.canPass });

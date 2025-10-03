@@ -4381,7 +4381,7 @@ var Heat = /** @class */ (function (_super) {
         var buttonId = "actReact".concat(type, "_").concat(cumulative ? 'cumulative' : entries[0], "_").concat(number, "_button");
         var button = document.getElementById(buttonId);
         if (!button) {
-            var noticeForButtonsOnCard = !destination && !symbolInfos.coalescable;
+            var noticeForButtonsOnCard = !destination && !symbolInfos.coalescable && !entries.every(function (entry) { return isNaN(entry); });
             if (noticeForButtonsOnCard) {
                 label += "".concat(_('(play on the card(s))'));
             }
@@ -4422,7 +4422,7 @@ var Heat = /** @class */ (function (_super) {
                 return remainingEntries[entry] = symbolEntry;
             });
             var reactAll = null;
-            if ( /*symbolInfos.coalescable && */Object.keys(remainingEntries).length > /*1*/ 0) {
+            if (Object.keys(remainingEntries).length > 0) {
                 reactAll = _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
                 if (symbolInfos.max !== undefined && symbolInfos.upTo) {
                     for (var n = (_b = symbolInfos.min) !== null && _b !== void 0 ? _b : 1; n < symbolInfos.max; n++) {
@@ -4430,17 +4430,17 @@ var Heat = /** @class */ (function (_super) {
                     }
                 }
             }
-            //if (!reactAll || Object.keys(remainingEntries).length > 1) {
-            Object.keys(remainingEntries).forEach(function (entry) {
-                var _a;
-                _this.addReactButton(type, [entry], symbolInfos, false, args);
-                if (symbolInfos.max !== undefined && symbolInfos.upTo) {
-                    for (var n = (_a = symbolInfos.min) !== null && _a !== void 0 ? _a : 1; n < symbolInfos.max; n++) {
-                        _this.addReactButton(type, [entry], symbolInfos, false, args, n);
+            if (!Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); })) {
+                Object.keys(remainingEntries).forEach(function (entry) {
+                    var _a;
+                    _this.addReactButton(type, [entry], symbolInfos, false, args);
+                    if (symbolInfos.max !== undefined && symbolInfos.upTo) {
+                        for (var n = (_a = symbolInfos.min) !== null && _a !== void 0 ? _a : 1; n < symbolInfos.max; n++) {
+                            _this.addReactButton(type, [entry], symbolInfos, false, args, n);
+                        }
                     }
-                }
-            });
-            //}
+                });
+            }
         });
         this.statusBar.addActionButton(_('Pass'), function () { return _this.actPassReact(); }, { disabled: !args.canPass });
         /*if ((args.symbols['heat'] as number) > 0 && !args.doable.includes('heat')) { TODO
