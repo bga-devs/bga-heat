@@ -1997,6 +1997,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       'discard',
       'pDiscard',
       'snakeDiscard',
+      'eventRemoveHeat',
       'draw',
       'pDraw',
       'clearPlayedCards',
@@ -2299,6 +2300,33 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     const playerId = this.getPlayerIdFromConstructorId(constructor_id);
     const playerTable = this.getPlayerTable(playerId);
     playerTable.inplay.removeCard(card);
+  }
+
+
+  async notif_eventRemoveHeat(args: NotifEventRemoveHeatArgs)
+  {
+    const { constructor_id, card } = args;
+    const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+    const playerTable = this.getPlayerTable(playerId);
+    const location = card.location.split('-')[0];
+    switch (location) {
+      case 'engine':
+        const engineCountBefore = playerTable.engine.getCardNumber();
+        await playerTable.engine.removeCard(card);
+        playerTable.engine.setCardNumber(engineCountBefore - 1);
+        break;
+      case 'hand':
+        await playerTable.hand.removeCard(card);
+        break;
+      case 'deck':
+        playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() - 1);
+        break;
+      case 'discard':
+        const diqscardCountBefore = playerTable.discard.getCardNumber();
+        await playerTable.discard.removeCard(card);
+        playerTable.discard.setCardNumber(diqscardCountBefore - 1);
+        break;
+    }
   }
 
   notif_pDraw(args: NotifPCardsArgs) {

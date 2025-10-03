@@ -5064,6 +5064,7 @@ var Heat = /** @class */ (function (_super) {
             'discard',
             'pDiscard',
             'snakeDiscard',
+            'eventRemoveHeat',
             'draw',
             'pDraw',
             'clearPlayedCards',
@@ -5401,6 +5402,50 @@ var Heat = /** @class */ (function (_super) {
         var playerId = this.getPlayerIdFromConstructorId(constructor_id);
         var playerTable = this.getPlayerTable(playerId);
         playerTable.inplay.removeCard(card);
+    };
+    Heat.prototype.notif_eventRemoveHeat = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, card, playerId, playerTable, location, _a, engineCountBefore, diqscardCountBefore;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, card = args.card;
+                        playerId = this.getPlayerIdFromConstructorId(constructor_id);
+                        playerTable = this.getPlayerTable(playerId);
+                        location = card.location.split('-')[0];
+                        _a = location;
+                        switch (_a) {
+                            case 'engine': return [3 /*break*/, 1];
+                            case 'hand': return [3 /*break*/, 3];
+                            case 'deck': return [3 /*break*/, 5];
+                            case 'discard': return [3 /*break*/, 6];
+                        }
+                        return [3 /*break*/, 8];
+                    case 1:
+                        engineCountBefore = playerTable.engine.getCardNumber();
+                        return [4 /*yield*/, playerTable.engine.removeCard(card)];
+                    case 2:
+                        _b.sent();
+                        playerTable.engine.setCardNumber(engineCountBefore - 1);
+                        return [3 /*break*/, 8];
+                    case 3: return [4 /*yield*/, playerTable.hand.removeCard(card)];
+                    case 4:
+                        _b.sent();
+                        return [3 /*break*/, 8];
+                    case 5:
+                        playerTable.deck.setCardNumber(playerTable.deck.getCardNumber() - 1);
+                        return [3 /*break*/, 8];
+                    case 6:
+                        diqscardCountBefore = playerTable.discard.getCardNumber();
+                        return [4 /*yield*/, playerTable.discard.removeCard(card)];
+                    case 7:
+                        _b.sent();
+                        playerTable.discard.setCardNumber(diqscardCountBefore - 1);
+                        return [3 /*break*/, 8];
+                    case 8: return [2 /*return*/];
+                }
+            });
+        });
     };
     Heat.prototype.notif_pDraw = function (args) {
         var constructor_id = args.constructor_id, areSponsors = args.areSponsors, deckCount = args.deckCount;

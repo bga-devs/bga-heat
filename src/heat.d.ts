@@ -330,6 +330,11 @@ interface NotifDiscardCardsArgs extends NotifCardsArgs {
     cards?: { [id: number]: Card};
 }
 
+interface NotifEventRemoveHeatArgs {
+    constructor_id: number;
+    card: Card;
+}
+
 // pDraw, pDiscard
 interface NotifPCardsArgs {
     constructor_id: number;
