@@ -15,15 +15,11 @@
  *
  */
 
+use Bga\GameFramework\GameStateBuilder;
+
 $machinestates = [
   // The initial state. Please do not modify.
-  ST_GAME_SETUP => [
-    'name' => 'gameSetup',
-    'description' => '',
-    'type' => 'manager',
-    'action' => 'stGameSetup',
-    'transitions' => ['' => ST_SETUP_BRANCH],
-  ],
+  ST_GAME_SETUP => GameStateBuilder::gameSetup(ST_SETUP_BRANCH)->build(),
 
   ST_GENERIC_NEXT_PLAYER => [
     'name' => 'genericNextPlayer',
@@ -305,15 +301,5 @@ $machinestates = [
     'type' => 'game',
     'action' => 'stPreEndOfGame',
     'transitions' => ['' => ST_END_GAME],
-  ],
-
-  // Final state.
-  // Please do not modify (and do not overload action/args methods).
-  ST_END_GAME => [
-    'name' => 'gameEnd',
-    'description' => clienttranslate('End of game'),
-    'type' => 'manager',
-    'action' => 'stGameEnd',
-    'args' => 'argGameEnd',
   ],
 ];

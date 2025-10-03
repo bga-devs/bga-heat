@@ -3580,9 +3580,6 @@ var HAND_CARD_TYPE_FOR_EFFECT = {
     reduce: 'stress',
     cooldown: 'heat',
 };
-function sleep(ms) {
-    return new Promise(function (r) { return setTimeout(r, ms); });
-}
 // @ts-ignore
 GameGui = (function () {
     // this hack required so we fake extend GameGui
@@ -3616,6 +3613,7 @@ var Heat = /** @class */ (function (_super) {
       */
     Heat.prototype.setup = function (gamedatas) {
         var _a, _b;
+        this.getGameAreaElement().insertAdjacentHTML('beforeend', "\n      <link rel=\"stylesheet\" href=\"https://use.typekit.net/jim0ypy.css\">\n\n      <div id=\"top\">\n      </div>\n\n      <div id=\"table-center\">\n          <div id=\"circuit\"></div>\n      </div>\n      <div id=\"tables\"></div>  \n    ");
         log('Starting game setup');
         this.gamedatas = gamedatas;
         if (((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
@@ -5108,7 +5106,7 @@ var Heat = /** @class */ (function (_super) {
                 }
                 // tell the UI notification ends, if the function returned a promise.
                 if (_this.animationManager.animationsActive()) {
-                    Promise.all(__spreadArray(__spreadArray([], promises, true), [sleep(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
+                    Promise.all(__spreadArray(__spreadArray([], promises, true), [_this.wait(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
                 }
                 else {
                     _this.notifqueue.setSynchronousDuration(0);

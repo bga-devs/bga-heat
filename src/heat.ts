@@ -15,11 +15,6 @@ const HAND_CARD_TYPE_FOR_EFFECT = {
   reduce: 'stress',
   cooldown: 'heat',
 };
-
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
 // @ts-ignore
 GameGui = (function () {
   // this hack required so we fake extend GameGui
@@ -67,6 +62,18 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     */
 
   public setup(gamedatas: HeatGamedatas) {
+    this.getGameAreaElement().insertAdjacentHTML('beforeend', `
+      <link rel="stylesheet" href="https://use.typekit.net/jim0ypy.css">
+
+      <div id="top">
+      </div>
+
+      <div id="table-center">
+          <div id="circuit"></div>
+      </div>
+      <div id="tables"></div>  
+    `);
+
     log('Starting game setup');
 
     this.gamedatas = gamedatas;
@@ -2037,7 +2044,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
         // tell the UI notification ends, if the function returned a promise.
         if (this.animationManager.animationsActive()) {
-          Promise.all([...promises, sleep(minDuration)]).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
+          Promise.all([...promises, this.wait(minDuration)]).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
         } else {
           (this as any).notifqueue.setSynchronousDuration(0);
         }
