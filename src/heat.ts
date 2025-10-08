@@ -985,16 +985,18 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           (destination ?? document.getElementById('generalactions')).insertAdjacentElement('afterbegin', mandatoryZone);
         }
 
-        const buttonId = `actReact${type}_${cumulative ? 'cumulative' : entries[0]}_${number}_button`;
+        const necessaryEntries = this.getNecessaryEntries(symbolInfos, entries, number);
+        const buttonId = `actReact${type}_${cumulative ? 'cumulative' : necessaryEntries.join('-')}_${number}_button`;
         let button = document.getElementById(buttonId);
         if (!button) {
-          const noticeForButtonsOnCard = !destination && !symbolInfos.coalescable && !entries.every(entry => isNaN(entry as any as number));
+          const noticeForButtonsOnCard = !destination && !symbolInfos.coalescable && !necessaryEntries.every(entry => isNaN(entry as any as number));
           if (noticeForButtonsOnCard) {
             label += `${_('(play on the card(s))')}`;
           }
+
           button = this.statusBar.addActionButton(
             formatTextIcons(label), 
-            () => this.actReact(type, entries, number), 
+            () => this.actReact(type, necessaryEntries, number), 
             {
               id: buttonId,
               color: forcedN ? 'secondary' : 'primary',
@@ -1023,6 +1025,37 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         }
         return button;
   }
+
+  /**
+   * Returns the necessary entries to match number, using as less cards as possible
+   */
+  private getNecessaryEntries(symbolInfos: ReactSymbol, entries: string[], number: number): string[] {
+    if (number === undefined || number === null) {
+      return entries;
+    }
+
+    const enrichedEntries: { entry: string; value: number, textSymbol: number }[] = [];
+
+    entries.forEach((entry, index) => enrichedEntries.push({
+      entry,
+      value: symbolInfos.entries?.[entry]?.n,
+      textSymbol: isNaN(entry as any as number) ? 1 : 0, // for example, if we have adrenaline and cardIds for cooldown, use adrenaline as priority if possible
+    }));
+
+    enrichedEntries.sort((a, b) => (b.textSymbol - a.textSymbol) || (b.value - a.value));
+
+    const selected: { entry: string; value: number, textSymbol: number }[] = [];
+    let total = 0;
+
+    for (const info of enrichedEntries) {
+      selected.push(info);
+      total += info.value;
+      if (total >= number) {
+        break;
+      }
+    }
+    return selected.map((info) => info.entry);
+  }
  
   private onUpdateActionButtons_react(args: EnteringReactArgs) {
     const ignoredTypes = ['speed', 'adjust'];
@@ -1036,21 +1069,21 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       if (Object.keys(remainingEntries).length > 0) {
         reactAll = this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
         if (symbolInfos.max !== undefined && symbolInfos.upTo) {
-          for (let n = symbolInfos.min ?? 1; n < symbolInfos.max; n++) {
+          for (let n = symbolInfos.max - 1; n >= (symbolInfos.min ?? 1); n--) {
             this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
           }
         }
-      }
-      if (!Object.keys(remainingEntries).every(entry => isNaN(entry as any as number))) {
-        Object.keys(remainingEntries).forEach(entry => {
-          this.addReactButton(type, [entry], symbolInfos, false, args);
+        if (!Object.keys(remainingEntries).every(entry => isNaN(entry as any as number))) {
+          Object.keys(remainingEntries).forEach(entry => {
+            this.addReactButton(type, [entry], symbolInfos, false, args);
 
-          if (symbolInfos.max !== undefined && symbolInfos.upTo) {
-            for (let n = symbolInfos.min ?? 1; n < symbolInfos.max; n++) {
-              this.addReactButton(type, [entry], symbolInfos, false, args, n);
+            if (symbolInfos.max !== undefined && symbolInfos.upTo) {
+              for (let n = symbolInfos.max - 1; n >= (symbolInfos.min ?? 1); n--) {
+                this.addReactButton(type, [entry], symbolInfos, false, args, n);
+              }
             }
-          }
-        });
+          });
+        }
       }
     });
 

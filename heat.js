@@ -4378,14 +4378,15 @@ var Heat = /** @class */ (function (_super) {
             mandatoryZone.innerHTML = "<div class=\"mandatory icon\"></div>";
             (destination !== null && destination !== void 0 ? destination : document.getElementById('generalactions')).insertAdjacentElement('afterbegin', mandatoryZone);
         }
-        var buttonId = "actReact".concat(type, "_").concat(cumulative ? 'cumulative' : entries[0], "_").concat(number, "_button");
+        var necessaryEntries = this.getNecessaryEntries(symbolInfos, entries, number);
+        var buttonId = "actReact".concat(type, "_").concat(cumulative ? 'cumulative' : necessaryEntries.join('-'), "_").concat(number, "_button");
         var button = document.getElementById(buttonId);
         if (!button) {
-            var noticeForButtonsOnCard = !destination && !symbolInfos.coalescable && !entries.every(function (entry) { return isNaN(entry); });
+            var noticeForButtonsOnCard = !destination && !symbolInfos.coalescable && !necessaryEntries.every(function (entry) { return isNaN(entry); });
             if (noticeForButtonsOnCard) {
                 label += "".concat(_('(play on the card(s))'));
             }
-            button = this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actReact(type, entries, number); }, {
+            button = this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actReact(type, necessaryEntries, number); }, {
                 id: buttonId,
                 color: forcedN ? 'secondary' : 'primary',
                 confirm: this.showHeatCostConfirmations() ? confirmationMessage : null,
@@ -4403,6 +4404,35 @@ var Heat = /** @class */ (function (_super) {
             }
         }
         return button;
+    };
+    /**
+     * Returns the necessary entries to match number, using as less cards as possible
+     */
+    Heat.prototype.getNecessaryEntries = function (symbolInfos, entries, number) {
+        if (number === undefined || number === null) {
+            return entries;
+        }
+        var enrichedEntries = [];
+        entries.forEach(function (entry, index) {
+            var _a, _b;
+            return enrichedEntries.push({
+                entry: entry,
+                value: (_b = (_a = symbolInfos.entries) === null || _a === void 0 ? void 0 : _a[entry]) === null || _b === void 0 ? void 0 : _b.n,
+                textSymbol: isNaN(entry) ? 1 : 0, // for example, if we have adrenaline and cardIds for cooldown, use adrenaline as priority if possible
+            });
+        });
+        enrichedEntries.sort(function (a, b) { return (b.textSymbol - a.textSymbol) || (b.value - a.value); });
+        var selected = [];
+        var total = 0;
+        for (var _i = 0, enrichedEntries_1 = enrichedEntries; _i < enrichedEntries_1.length; _i++) {
+            var info = enrichedEntries_1[_i];
+            selected.push(info);
+            total += info.value;
+            if (total >= number) {
+                break;
+            }
+        }
+        return selected.map(function (info) { return info.entry; });
     };
     Heat.prototype.onUpdateActionButtons_react = function (args) {
         var _this = this;
@@ -4425,21 +4455,21 @@ var Heat = /** @class */ (function (_super) {
             if (Object.keys(remainingEntries).length > 0) {
                 reactAll = _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
                 if (symbolInfos.max !== undefined && symbolInfos.upTo) {
-                    for (var n = (_b = symbolInfos.min) !== null && _b !== void 0 ? _b : 1; n < symbolInfos.max; n++) {
+                    for (var n = symbolInfos.max - 1; n >= ((_b = symbolInfos.min) !== null && _b !== void 0 ? _b : 1); n--) {
                         _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
                     }
                 }
-            }
-            if (!Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); })) {
-                Object.keys(remainingEntries).forEach(function (entry) {
-                    var _a;
-                    _this.addReactButton(type, [entry], symbolInfos, false, args);
-                    if (symbolInfos.max !== undefined && symbolInfos.upTo) {
-                        for (var n = (_a = symbolInfos.min) !== null && _a !== void 0 ? _a : 1; n < symbolInfos.max; n++) {
-                            _this.addReactButton(type, [entry], symbolInfos, false, args, n);
+                if (!Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); })) {
+                    Object.keys(remainingEntries).forEach(function (entry) {
+                        var _a;
+                        _this.addReactButton(type, [entry], symbolInfos, false, args);
+                        if (symbolInfos.max !== undefined && symbolInfos.upTo) {
+                            for (var n = symbolInfos.max - 1; n >= ((_a = symbolInfos.min) !== null && _a !== void 0 ? _a : 1); n--) {
+                                _this.addReactButton(type, [entry], symbolInfos, false, args, n);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
         this.statusBar.addActionButton(_('Pass'), function () { return _this.actPassReact(); }, { disabled: !args.canPass });

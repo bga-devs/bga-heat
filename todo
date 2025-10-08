@@ -1,6 +1,5 @@
 GUY :
 - add undo
-- for upTo, only send necessary entries (when having 2 reduce symbols and 2 + cards, if I click one, currently I can't use the second one after)
 - new podium shapes
 
 TIM :
