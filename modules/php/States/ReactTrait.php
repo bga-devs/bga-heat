@@ -48,7 +48,7 @@ trait ReactTrait
       return ['doable' => $n > 0, 'max' => $n];
     }
     // Heated boost => must be able to pay for it
-    elseif ($symbol == HEATED_BOOST && $symbolInfos['heated']) {
+    elseif ($symbol == HEATED_BOOST && ($symbolInfos['heated'] ?? false)) {
       return ['doable' => $constructor->getEngine()->count() > 0];
     }
     // Heat
@@ -78,7 +78,7 @@ trait ReactTrait
     list('speedLimit' => $speedLimit, 'extraHeat' => $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
 
     // Remove symbols that do not apply at this step
-    $notReactSymbols = [SLIPSTREAM, REFRESH];
+    $notReactSymbols = [SLIPSTREAM, REFRESH, ADJUST];
     foreach ($notReactSymbols as $symbol) {
       unset($symbols[$symbol]);
     }
@@ -130,6 +130,12 @@ trait ReactTrait
         $directPlayCosts[$cardId] = $heatCosts;
       }
       $symbols[DIRECT]['heatCosts'] = $directPlayCosts;
+    }
+
+    ///////////////////////////
+    // Accelerate extra infos
+    if (isset($symbols[ACCELERATE])) {
+      $symbols[ACCELERATE]['flippedCards'] = Globals::getFlippedCards();
     }
 
     ////////////////////////////////////////////////

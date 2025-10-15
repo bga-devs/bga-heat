@@ -1,10 +1,19 @@
 GUY :
+
+- chooseSpeed: handle cases when player have the choice on how to achieve a given speed.
+  => use debug newReact. Select brakes 1/2/3/4 and brakes 1/4 for instance.
+  => speed 5 can be either achieved by doing 1 + 4 or 4 + 1 and the user should be able to choose
+  => you should always skip this choice phase if only one choice is possible
+  => you should probably always auto select the first choice and just let the user change the choice if they want to before hitting confirm, since it's a very niche situation
+- accelerate does not work (tried to fix a bit but without success)
+- react buttons on the cards (direct play) are not removed after the react phase
+- I think this one should never actually happen if backend send "used" correctly: remove "boost" button on title bar and on cards, it should always be automatically resolved when revealed
+
 - add undo
 - new podium shapes
 
 TIM :
 
-- recode the React phase
 - handle double agressive legend!
 - add undo
 - make "+" cards used again when playing them (playing 4 and "+", it only resolves 4), instead of sending them in React

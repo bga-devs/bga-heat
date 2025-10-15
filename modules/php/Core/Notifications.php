@@ -249,7 +249,7 @@ class Notifications
     );
   }
 
-  public static function resolveBoost(Constructor $constructor, Collection $cards, array $card, int $i, int $n): void
+  public static function resolveBoost(Constructor $constructor, array $cards, array $card, int $i, int $n): void
   {
     $msg =
       $i == 1 && $n == 1
@@ -281,7 +281,7 @@ class Notifications
     ]);
   }
 
-  public static function payHeatsForCorner(Constructor $constructor, COllection $cards, int $speed, int $limit, int $cornerPos, int $roadCondition): void
+  public static function payHeatsForCorner(Constructor $constructor, COllection $cards, int $speed, int $limit, int $cornerPos, ?int $roadCondition): void
   {
     $msg = clienttranslate('${constructor_name} pays ${n} heat(s) for crossing a corner at speed ${speed} instead of ${limit}');
     if ($roadCondition == \ROAD_CONDITION_MORE_HEAT) {
@@ -300,7 +300,7 @@ class Notifications
     ]);
   }
 
-  public static function spinOut(Constructor $constructor, int $speed, int $limit, int $cornerPos, Collection $cards, int $cell, Collection $stresses, int $nBack, int $newTurn, int $roadCondition)
+  public static function spinOut(Constructor $constructor, int $speed, int $limit, int $cornerPos, Collection $cards, int $cell, array $stresses, int $nBack, int $newTurn, ?int $roadCondition)
   {
     $msg = clienttranslate(
       '${constructor_name} SPINS OUT! ${constructor_name} crossed a corner at speed ${speed} instead of ${limit} but only have ${n} heat(s) in their engine. They go back before the corner, set gear to 1 and draw ${m} stress card(s) as a result'
@@ -353,7 +353,7 @@ class Notifications
     ]);
   }
 
-  public static function heatedBoost(Constructor $constructor, Collection $heats, Collection $cards, array $card): void
+  public static function heatedBoost(Constructor $constructor, Collection $heats, array $cards, array $card): void
   {
     if (!is_null($heats)) {
       self::notifyAll('payHeats', clienttranslate('${constructor_name} pays 1 heat to get the [+] effect'), [

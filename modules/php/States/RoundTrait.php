@@ -516,7 +516,7 @@ trait RoundTrait
     }
     ////////////////////////////////////////////////
     // Resolve + symbols
-    $boosts = $symbol[BOOST] ?? null;
+    $boosts = $symbols[BOOST] ?? null;
     $totalBoost = 0;
     if (!is_null($boosts)) {
       foreach ($boosts['entries'] as &$entry) {
@@ -524,10 +524,16 @@ trait RoundTrait
         $totalBoost += $entry['n'];
       }
 
-      for ($i = 0; $i < $totalBoost; $i++) {
+      for ($i = 1; $i <= $totalBoost; $i++) {
         list($cards, $card) = $constructor->resolveBoost();
+        $speed = $card['speed'];
+        $symbols[SPEED]['entries'][$card['id']] = [
+          'values' => [$speed],
+          'used' => false
+        ];
         Notifications::resolveBoost($constructor, $cards, $card, $i, $totalBoost);
       }
+      $symbols[BOOST] = $boosts;
     }
     Globals::setFlippedCards($totalBoost);
 
