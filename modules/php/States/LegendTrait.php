@@ -46,6 +46,11 @@ trait LegendTrait
         if ($aggressiveLegends !== null && $deltaCorner <= $aggressiveLegends) {
           $maxCornerCrossed = 2;
         }
+
+        $doubleAggressiveLegends = $this->getCircuit()->getDoubleAgressiveLegendDistance($cornerPos);
+        if ($doubleAggressiveLegends !== null && $deltaCorner <= $doubleAggressiveLegends) {
+          $maxCornerCrossed = 3;
+        }
       }
 
       if (count($cornersCrossed) <= $maxCornerCrossed) {

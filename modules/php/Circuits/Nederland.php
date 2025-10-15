@@ -37,6 +37,7 @@ $circuitDatas = [
       'lane' => 1,
       'legend' => 1,
       'agressiveLegend' => 3,
+      'doubleAgressiveLegend' => 0,
       'tentX' => 105,
       'tentY' => 463,
       'sectorTentX' => 219,

@@ -24,6 +24,7 @@ class Circuit
   protected array $chicanes = [];
   protected array $legendLines = [];
   protected array $agressiveLegendDistances = [];
+  protected array $doubleAgressiveLegendDistances = [];
   protected array $raceLanes = [];
   protected array $startingCells = [];
   protected array $cells = [];
@@ -54,6 +55,7 @@ class Circuit
       $this->corners[$pos] = $info['speed'];
       $this->legendLines[$pos] = $info['legend'];
       $this->agressiveLegendDistances[$pos] = $info['agressiveLegend'] ?? null;
+      $this->doubleAgressiveLegendDistances[$pos] = $info['doubleAgressiveLegend'] ?? null;
       $lane = $info['lane'];
       $this->raceLanes[] = $lane;
     }
@@ -616,6 +618,10 @@ class Circuit
   public function getAgressiveLegendDistance(int $cornerPos): ?int
   {
     return $this->agressiveLegendDistances[$cornerPos];
+  }
+  public function getDoubleAgressiveLegendDistance(int $cornerPos): ?int
+  {
+    return $this->doubleAgressiveLegendDistances[$cornerPos];
   }
 
   /**
