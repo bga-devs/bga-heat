@@ -61,6 +61,8 @@ const OPTION_LEGEND = 110;
 const OPTION_LEGEND_PRO = 109;
 const OPTION_AGGRESSIVE_LEGENDS = 111;
 
+const OPTION_MULLIGAN = 114;
+
 /**
  * User preferences
  */

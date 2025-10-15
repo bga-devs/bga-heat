@@ -166,7 +166,7 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} must select the gear and card(s) to play'),
     'type' => 'multipleactiveplayer',
     'args' => 'argsPlanification',
-    'possibleactions' => ['actPlan', 'actCancelPlan', 'actGiveUp'],
+    'possibleactions' => ['actPlan', 'actCancelPlan', 'actGiveUp', 'actMulligan'],
   ],
 
   ST_CHOOSE_SPEED => [

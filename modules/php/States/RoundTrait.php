@@ -259,6 +259,12 @@ trait RoundTrait
         !empty(Globals::getFinishedConstructors()) &&
         ($constructor->getTurn() < $this->getNbrLaps() || $constructor->getPosition() / $this->getCircuit()->getLength() < 3 / 4);
 
+      // Can we mulligan ?
+      $canMulligan = Globals::isMulliganAllowed();
+      if ($canMulligan) {
+        $previousMulligans = Globals::getMulligans()[$pId] ?? 0;
+        $canMulligan = Globals::getRound() == 1 && $previousMulligans == 0 && $nHeats > 0;
+      }
 
       $args['_private'][$pId] = [
         'cards' => $hand->getIds(),
@@ -268,6 +274,7 @@ trait RoundTrait
         'boostingCardIds' => $boostingCardIds ?? [],
         'clutteredHand' => $clutteredHand,
         'canSkipEndRace' => $canSkipEndRace,
+        'canMulligan' => $canMulligan,
         'flooded' => $flooded,
       ];
     }
@@ -277,6 +284,24 @@ trait RoundTrait
 
     $args['nPlayersLeft'] = count($args['_private']);
     return $args;
+  }
+
+  public function actMulligan()
+  {
+    $player = Players::getCurrent();
+    $constructor = Constructors::getOfPlayer($player->getId());
+    $cId = $constructor->getId();
+
+    // Pay 1 heat
+    $heat = $constructor->payHeats(1)->first();
+    // Draw new cards
+    Cards::move($constructor->getHand()->getIds(), "deck-$cId");
+    $cards = Cards::fillHand($constructor, false);
+    Notifications::mulligan($constructor, $cards, $heat);
+    // Register
+    $mulligans = Globals::getMulligans();
+    $mulligans[$player->getId()] = 1;
+    Globals::setMulligans($mulligans);
   }
 
   public function actPlan(#[JsonParam()] $cardIds)

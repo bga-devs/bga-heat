@@ -5,8 +5,10 @@ namespace Bga\Games\Heat\Managers;
 use Bga\Games\Heat\Game;
 use Bga\Games\Heat\Core\Globals;
 use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Helpers\Collection;
 use Bga\Games\Heat\Helpers\Pieces;
 use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Models\Constructor;
 
 const HV = 1;
 const TV = 2;
@@ -60,7 +62,7 @@ class Cards extends Pieces
     return self::getInLocation(['engine', $cId]);
   }
 
-  public static function draw($cId, $n)
+  public static function draw($cId, $n): Collection
   {
     static::$autoreshuffleCustom["deck-$cId"] = "discard-$cId";
     return static::pickForLocation($n, "deck-$cId", "hand-$cId");
@@ -264,15 +266,18 @@ class Cards extends Pieces
     Notifications::clean($counters);
   }
 
-  public static function fillHand($constructor)
+  public static function fillHand(Constructor $constructor, bool $notify = true): Collection
   {
     $nCards = $constructor->getHand()->count();
     $nToDraw = Game::get()->getHandSizeLimit() - $nCards;
     if ($nToDraw <= 0) {
-      return;
+      return new Collection();
     }
     $cards = Cards::draw($constructor->getId(), $nToDraw);
-    Notifications::draw($constructor, $cards);
+    if ($notify) {
+      Notifications::draw($constructor, $cards);
+    }
+    return $cards;
   }
 
   public static function addStress($constructor, $n)

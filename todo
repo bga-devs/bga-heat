@@ -9,6 +9,8 @@ GUY :
 - react buttons on the cards (direct play) are not removed after the react phase
 - I think this one should never actually happen if backend send "used" correctly: remove "boost" button on title bar and on cards, it should always be automatically resolved when revealed
 
+- Mulligan: improve button (change color?) + add warning popup + notification
+- display "adjusted" corners speeds
 - add undo
 - new podium shapes
 
@@ -16,7 +18,6 @@ TIM :
 
 - handle double agressive legend!
 - add undo
-- make "+" cards used again when playing them (playing 4 and "+", it only resolves 4), instead of sending them in React
 
 MISC:
 

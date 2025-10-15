@@ -3814,9 +3814,13 @@ var Heat = /** @class */ (function (_super) {
         }
     };
     Heat.prototype.onEnteringPlanification = function (args) {
+        var _this = this;
         this.circuit.removeMapPaths();
         if (args._private) {
             this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
+            if (args._private.canMulligan) {
+                this.statusBar.addActionButton('MULLIGAN', function () { return _this.actMulligan(); });
+            }
         }
     };
     Heat.prototype.onEnteringReact = function (args) {
@@ -4017,11 +4021,8 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.getAdrenalineConfirmation = function (currentHeatCost, adrenalineWillCrossNextCorner, nextCornerSpeedLimit, nextCornerExtraHeatCost, boostInfos) {
         var confirmationMessage = null;
-        adrenalineWillCrossNextCorner =
-            this.cornerCounters[this.getConstructorId()].getValue() == 0 && adrenalineWillCrossNextCorner;
-        var adrenalineCostOnCurrentCorner = (boostInfos === null || boostInfos === void 0 ? void 0 : boostInfos[1])
-            ? Object.values(boostInfos[1]).reduce(function (a, b) { return a + b; }, 0)
-            : 0;
+        adrenalineWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() == 0 && adrenalineWillCrossNextCorner;
+        var adrenalineCostOnCurrentCorner = (boostInfos === null || boostInfos === void 0 ? void 0 : boostInfos[1]) ? Object.values(boostInfos[1]).reduce(function (a, b) { return a + b; }, 0) : 0;
         if (adrenalineWillCrossNextCorner || currentHeatCost > 0 || adrenalineCostOnCurrentCorner > 0) {
             var newSpeed = this.speedCounters[this.getConstructorId()].getValue() + 1;
             var newHeatCost = currentHeatCost > 0 ? currentHeatCost + 1 : 0;
@@ -4062,9 +4063,7 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.getBoostConfirmation = function (currentHeatCost, nextCornerSpeedLimit, nextCornerExtraHeatCost, boostInfos, paid) {
         var mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
         var confirmationMessage = null;
-        var boostCostOnCurrentCorner = (boostInfos === null || boostInfos === void 0 ? void 0 : boostInfos[4])
-            ? Object.values(boostInfos[4]).reduce(function (a, b) { return a + b; }, 0)
-            : 0;
+        var boostCostOnCurrentCorner = (boostInfos === null || boostInfos === void 0 ? void 0 : boostInfos[4]) ? Object.values(boostInfos[4]).reduce(function (a, b) { return a + b; }, 0) : 0;
         if (mayCrossCorner || currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
             var newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
             var newHeatCostMax = boostCostOnCurrentCorner + (paid ? 1 : 0);
@@ -4279,7 +4278,10 @@ var Heat = /** @class */ (function (_super) {
         var enabled = symbolInfos.doable;
         var number = forcedN;
         if (forcedN === undefined && entries.every(function (entry) { return symbolInfos.entries[entry].n !== undefined; })) {
-            number = entries.map(function (entry) { return symbolInfos.entries[entry]; }).map(function (symbolEntry) { return symbolEntry.n; }).reduce(function (a, b) { return a + b; }, 0);
+            number = entries
+                .map(function (entry) { return symbolInfos.entries[entry]; })
+                .map(function (symbolEntry) { return symbolEntry.n; })
+                .reduce(function (a, b) { return a + b; }, 0);
             if (symbolInfos.max !== undefined) {
                 number = Math.min(number, symbolInfos.max);
             }
@@ -4287,14 +4289,15 @@ var Heat = /** @class */ (function (_super) {
         var destination = cumulative ? null : document.getElementById("".concat(entries[0], "-").concat(type));
         switch (type) {
             case 'accelerate':
-                label = "+".concat(args.flippedCards, " [Speed]");
+                var nFlipped = symbolInfos.flippedCards;
+                label = "+".concat(nFlipped, " [Speed]");
                 if (!destination) {
                     var accelerateCard = this.getCurrentPlayerTable()
                         .inplay.getCards()
                         .find(function (card) { return card.id == number; });
                     label += "<br>".concat(this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() }));
                 }
-                tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', args.flippedCards);
+                tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', nFlipped);
                 break;
             case 'adjust':
                 label = "<div class=\"icon adjust\" style=\"color: #".concat(number > 0 ? '438741' : 'a93423', ";\">").concat(number > 0 ? "+".concat(number) : number, "</div>");
@@ -4303,7 +4306,9 @@ var Heat = /** @class */ (function (_super) {
             case 'adrenaline':
                 label = "+".concat(number, " [Speed]");
                 tooltip = "\n                                    <strong>".concat(_('Adrenaline'), "</strong>\n                                    <br><br>\n                                    ").concat(_('Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).'), "\n                                    <br><br>\n                                    <i>").concat(_('Note: Adrenaline cannot be saved for future rounds'), "</i>");
-                confirmationMessage = args.crossedFinishLine ? null : this.getAdrenalineConfirmation(args.currentHeatCost, args.adrenalineWillCrossNextCorner, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos);
+                confirmationMessage = args.crossedFinishLine
+                    ? null
+                    : this.getAdrenalineConfirmation(args.currentHeatCost, args.adrenalineWillCrossNextCorner, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos);
                 break;
             case 'cooldown':
                 label = "".concat(number, " [Cooldown]");
@@ -4323,14 +4328,17 @@ var Heat = /** @class */ (function (_super) {
                     .hand.getCards()
                     .find(function (card) { return card.id == Number(entries[0]); });
                 /*if (!destination) {
-                  if (directCard) {
-                    label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
-                  } else {
-                    console.warn('card not found in hand to display direct card', number, directCard);
-                  }
-                }*/
+                      if (directCard) {
+                        label = `<br>${this.cardImageHtml(directCard, { constructor_id: this.getConstructorId() })}`;
+                      } else {
+                        console.warn('card not found in hand to display direct card', number, directCard);
+                      }
+                    }*/
                 tooltip = this.getGarageModuleIconTooltipWithIcon('direct', 1);
-                confirmationMessage = args.crossedFinishLine || !directCard ? null : this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, symbolInfos.heatCosts, directCard);
+                confirmationMessage =
+                    args.crossedFinishLine || !directCard
+                        ? null
+                        : this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, symbolInfos.heatCosts, directCard);
                 break;
             case 'heat':
                 label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
@@ -4344,7 +4352,9 @@ var Heat = /** @class */ (function (_super) {
                     label += " (1[Heat])";
                 }
                 tooltip = "\n                                    <strong>".concat(_('Boost'), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _('Regardless of which gear you are in you may pay 1 Heat to boost once per turn.') : '', "\n                                    ").concat(_('Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly.'), "\n                                    <br><br>\n                                    <i>").concat(_('Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.'), "</i>");
-                confirmationMessage = args.crossedFinishLine ? null : this.getBoostConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos, paid);
+                confirmationMessage = args.crossedFinishLine
+                    ? null
+                    : this.getBoostConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos, paid);
                 break;
             case 'reduce':
                 label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
@@ -4421,7 +4431,7 @@ var Heat = /** @class */ (function (_super) {
                 textSymbol: isNaN(entry) ? 1 : 0, // for example, if we have adrenaline and cardIds for cooldown, use adrenaline as priority if possible
             });
         });
-        enrichedEntries.sort(function (a, b) { return (b.textSymbol - a.textSymbol) || (b.value - a.value); });
+        enrichedEntries.sort(function (a, b) { return b.textSymbol - a.textSymbol || b.value - a.value; });
         var selected = [];
         var total = 0;
         for (var _i = 0, enrichedEntries_1 = enrichedEntries; _i < enrichedEntries_1.length; _i++) {
@@ -4437,19 +4447,23 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.onUpdateActionButtons_react = function (args) {
         var _this = this;
         var ignoredTypes = ['speed', 'adjust'];
-        Object.entries(args.symbols).filter(function (_a) {
+        Object.entries(args.symbols)
+            .filter(function (_a) {
             var type = _a[0], symbolSet = _a[1];
             return !ignoredTypes.includes(type);
-        }).forEach(function (_a, index) {
+        })
+            .forEach(function (_a, index) {
             var _b;
             var type = _a[0], symbolInfos = _a[1];
             var remainingEntries = {};
-            Object.entries(symbolInfos.entries).filter(function (_a) {
+            Object.entries(symbolInfos.entries)
+                .filter(function (_a) {
                 var entry = _a[0], symbolEntry = _a[1];
                 return !symbolEntry.used;
-            }).forEach(function (_a) {
+            })
+                .forEach(function (_a) {
                 var entry = _a[0], symbolEntry = _a[1];
-                return remainingEntries[entry] = symbolEntry;
+                return (remainingEntries[entry] = symbolEntry);
             });
             var reactAll = null;
             if (Object.keys(remainingEntries).length > 0) {
@@ -4528,7 +4542,9 @@ var Heat = /** @class */ (function (_super) {
                     case 'adrenaline':
                         label = "+".concat(number, " [Speed]");
                         tooltip = "\n                              <strong>".concat(_('Adrenaline'), "</strong>\n                              <br><br>\n                              ").concat(_('Adrenaline can help the last player (or two last cars in a race with 5 cars or more) to move each round. If you have adrenaline, you may add 1 extra speed (move your car 1 extra Space).'), "\n                              <br><br>\n                              <i>").concat(_('Note: Adrenaline cannot be saved for future rounds'), "</i>");
-                        confirmationMessage = args.crossedFinishLine ? null : _this.getAdrenalineConfirmation(args.currentHeatCost, args.adrenalineWillCrossNextCorner, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos);
+                        confirmationMessage = args.crossedFinishLine
+                            ? null
+                            : _this.getAdrenalineConfirmation(args.currentHeatCost, args.adrenalineWillCrossNextCorner, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos);
                         break;
                     case 'cooldown':
                         label = "".concat(number, " [Cooldown]");
@@ -4555,7 +4571,10 @@ var Heat = /** @class */ (function (_super) {
                         }
                         //label = `<div class="icon direct"></div><br>(${_(directCard?.text) })`;
                         tooltip = _this.getGarageModuleIconTooltipWithIcon('direct', 1);
-                        confirmationMessage = args.crossedFinishLine || !directCard ? null : _this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.directPlayCosts, directCard);
+                        confirmationMessage =
+                            args.crossedFinishLine || !directCard
+                                ? null
+                                : _this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.directPlayCosts, directCard);
                         break;
                     case 'heat':
                         label = "<div class=\"icon forced-heat\">".concat(number, "</div>");
@@ -4569,7 +4588,9 @@ var Heat = /** @class */ (function (_super) {
                             label += " (1[Heat])";
                         }
                         tooltip = "\n                              <strong>".concat(_('Boost'), "</strong>\n                              <br><br>\n                              ").concat(paid ? _('Regardless of which gear you are in you may pay 1 Heat to boost once per turn.') : '', "\n                              ").concat(_('Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly.'), "\n                              <br><br>\n                              <i>").concat(_('Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.'), "</i>");
-                        confirmationMessage = args.crossedFinishLine ? null : _this.getBoostConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos, paid);
+                        confirmationMessage = args.crossedFinishLine
+                            ? null
+                            : _this.getBoostConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos, paid);
                         break;
                     case 'reduce':
                         label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");
@@ -4968,6 +4989,9 @@ var Heat = /** @class */ (function (_super) {
         this.bgaPerformAction('actSnakeDiscard', {
             cardId: inPlaySelection[0].id,
         });
+    };
+    Heat.prototype.actMulligan = function () {
+        this.bgaPerformAction('actMulligan', {});
     };
     Heat.prototype.actChooseUpgrade = function () {
         this.bgaPerformAction('actChooseUpgrade', {

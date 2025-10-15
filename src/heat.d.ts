@@ -138,6 +138,7 @@ interface EnteringPlanificationPrivateArgs {
   boostingCardIds: number[];
   clutteredHand: boolean;
   canSkipEndRace: boolean;
+  canMulligan: boolean;
   flooded: boolean;
 }
 

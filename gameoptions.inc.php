@@ -123,6 +123,28 @@ $game_options = [
     ],
   ],
 
+  OPTION_MULLIGAN => [
+    'name' => totranslate('Allow Mulligan'),
+    'default' => OPTION_DISABLED,
+    'values' => [
+      OPTION_DISABLED => [
+        'name' => clienttranslate('Disabled'),
+        'description' => clienttranslate('Players have to keep their starting hand'),
+      ],
+      OPTION_ENABLED => [
+        'name' => clienttranslate('Enabled'),
+        'description' => clienttranslate('Players may pay 1 Heat to draw a new starting hand'),
+        'tmdisplay' => clienttranslate('[Mulligan]'),
+      ]
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME],
+      ],
+    ]
+  ],
 
   OPTION_LEGEND => [
     'name' => totranslate('Legends'),

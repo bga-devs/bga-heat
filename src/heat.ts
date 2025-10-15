@@ -334,6 +334,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         args._private.cards,
         args._private.selection
       );
+
+      if (args._private.canMulligan) {
+        this.statusBar.addActionButton('MULLIGAN', () => this.actMulligan());
+      }
     }
   }
 
@@ -1950,6 +1954,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     this.bgaPerformAction('actSnakeDiscard', {
       cardId: inPlaySelection[0].id,
     });
+  }
+
+  private actMulligan() {
+    this.bgaPerformAction('actMulligan', {});
   }
 
   private actChooseUpgrade() {

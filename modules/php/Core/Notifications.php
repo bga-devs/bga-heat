@@ -249,6 +249,32 @@ class Notifications
     );
   }
 
+  public static function mulligan(Constructor $constructor, Collection $cards, array $heat): void
+  {
+    self::notifyAll(
+      'mulligan',
+      clienttranslate('Mulligan: ${constructor_name} pays 1 Heat to draw a new starting hand'),
+      [
+        'constructor' => $constructor,
+        'deckCount' => $constructor->getDeckCount(),
+        'n' => count($cards),
+        'heat' => $heat,
+      ]
+    );
+
+    self::notify(
+      $constructor,
+      'pMulligan',
+      clienttranslate('Mulligan: you pay 1 Heat to draw ${cards_images} as a new starting hand'),
+      [
+        'constructor' => $constructor,
+        'deckCount' => $constructor->getDeckCount(),
+        'cards' => $cards->toArray(),
+        'heat' => $heat
+      ]
+    );
+  }
+
   public static function resolveBoost(Constructor $constructor, array $cards, array $card, int $i, int $n): void
   {
     $msg =
