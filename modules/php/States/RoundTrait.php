@@ -302,6 +302,7 @@ trait RoundTrait
     $heat = $constructor->payHeats(1)->first();
     // Draw new cards
     Cards::move($constructor->getHand()->getIds(), "deck-$cId");
+    Cards::shuffle("deck-$cId");
     $cards = Cards::fillHand($constructor, false);
     Notifications::mulligan($constructor, $cards, $heat);
     // Register
