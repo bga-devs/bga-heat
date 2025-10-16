@@ -133,16 +133,38 @@ class Game extends Table
     return $inRaceProgress;
   }
 
-  function actChangePreference($pref, $value)
+  public function actChangePreference($pref, $value)
   {
     Preferences::set($this->getCurrentPId(), $pref, $value);
   }
 
-  function addNewUndoableStep()
+  public function addNewUndoableStep()
   {
+    $player = Players::getCurrent();
+    $constructor = Constructors::getOfPlayer($player->getId());
     $stepId = Log::step();
-    Notifications::newUndoableStep(Players::getCurrent(), $stepId);
+    Notifications::newUndoableStep($constructor, $stepId);
   }
+
+  public function actRestartTurn()
+  {
+    self::checkAction('actRestartTurn');
+    if (empty(Log::getUndoableSteps())) {
+      throw new \BgaVisibleSystemException('Nothing to undo');
+    }
+    Log::undoTurn();
+  }
+
+  public function actUndoToStep(int $stepId)
+  {
+    self::checkAction('actUndoToStep');
+    $steps = Log::getUndoableSteps();
+    if (!in_array($stepId, $steps)) {
+      throw new \BgaVisibleSystemException('You cant undo here');
+    }
+    Log::undoToStep($stepId);
+  }
+
 
   ///////////////////////////////////////////////
   ///////////////////////////////////////////////

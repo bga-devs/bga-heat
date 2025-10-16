@@ -565,6 +565,7 @@ trait RoundTrait
         $entry['used'] = true;
         $totalBoost += $entry['n'];
       }
+      unset($entry);
 
       for ($i = 1; $i <= $totalBoost; $i++) {
         list($cards, $card) = $constructor->resolveBoost();
@@ -597,7 +598,7 @@ trait RoundTrait
     //////////////////////////////////////////////
 
     Globals::setCardSymbols($symbols);
-
+    Log::checkpoint();
     $this->gamestate->jumpToState(ST_CHOOSE_SPEED);
   }
 
@@ -656,6 +657,7 @@ trait RoundTrait
       $infos['cell'] = $moveResult['cell'];
       $infos['heatCost'] = $moveResult['heatCost'];
     }
+    unset($infos);
 
     return [
       'speeds' => $speeds,
@@ -688,7 +690,6 @@ trait RoundTrait
 
   public function actChooseSpeed(int $speed, #[JsonParam] array $choice, bool $auto = false)
   {
-    $this->addNewUndoableStep();
     $args = $this->argsChooseSpeed()['speeds'];
     if (!array_key_exists($speed, $args)) {
       throw new \BgaVisibleSystemException('Invalid speed. Should not happen');
@@ -696,6 +697,11 @@ trait RoundTrait
     // I return something like [{"9":3,"14":5}] in choices, but it doesn't work with in_array
     if (!in_array($choice, $args[$speed]['choices'])) {
       throw new \BgaVisibleSystemException('Invalid card choice for that speed. Should not happen');
+    }
+    // TODO : switch condition once undo works
+    // if (!$auto && (count($args) > 1 || count($args[$speed]['choices']) > 1)) {
+    if (true) {
+      $this->addNewUndoableStep();
     }
 
     // Mark the symbols on the card

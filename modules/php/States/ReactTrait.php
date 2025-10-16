@@ -166,6 +166,7 @@ trait ReactTrait
           if (!isset($symbols[HEAT][$cardId])) continue;
           $infos['doable'] = $symbols[HEAT][$cardId]['used'] ?? false;
         }
+        unset($infos);
       }
 
       // Some symbol entries are linked to corner => check if constructor is within that sector
@@ -174,7 +175,9 @@ trait ReactTrait
 
         $infos['doable'] = $constructor->getSector() == $infos['cornerPos'];
       }
+      unset($infos);
     }
+    unset($symbolInfos);
 
     // Used ?
     foreach ($symbols as $symbol => &$symbolInfos) {
@@ -186,6 +189,7 @@ trait ReactTrait
       }
       $symbolInfos['used'] = $used;
     }
+    unset($symbolInfos);
 
     // Mandatory / Coalescable / UpTo
     $canPass = true;
@@ -204,9 +208,11 @@ trait ReactTrait
         $canPass = $canPass && $symbolInfos['used'];
       }
     }
+    unset($symbolInfos);
     ////////////////////////////////////////////////
 
     return [
+      'undoableSteps' => Log::getUndoableSteps(),
       'symbols' => $symbols,
       'canPass' => $canPass,
       'descSuffix' => $canPass ? '' : 'Must',
@@ -286,7 +292,6 @@ trait ReactTrait
       $symbols[$symbol]['entries'][$entry]['used'] = true;
     }
     Globals::setCardSymbols($symbols);
-
 
     //////////////////////////////
     /////// Resolve effect ///////

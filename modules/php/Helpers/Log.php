@@ -4,6 +4,9 @@ namespace Bga\Games\Heat\Helpers;
 
 use Bga\Games\Heat\Game;
 use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
+use Bga\Games\Heat\Managers\Constructors;
+use Bga\Games\Heat\Managers\Players;
 
 /**
  * Class that allows to log DB change: useful for undo feature
@@ -53,24 +56,17 @@ class Log extends \APP_DbObject
   public static function checkpoint()
   {
     self::clearUndoableStepNotifications();
-    return self::addEntry(['type' => 'checkpoint']);
+    self::addEntry(['type' => 'checkpoint']);
   }
 
   // Create a new step to allow undo step-by-step
   public static function step()
   {
-    return self::addEntry(['type' => 'step']);
-  }
-
-  // Log the start of engine to allow "restart turn"
-  public static function startEngine()
-  {
-    self::checkpoint();
-    return self::addEntry(['type' => 'engine']);
+    return self::addEntry(['type' => 'step', 'affected' => ['state' => Game::get()->gamestate->getCurrentMainStateId()]]);
   }
 
   // Find the last checkpoint
-  public static function getLastCheckpoint($includeEngineStarts = false)
+  public static function getLastCheckpoint(bool $includeEngineStarts = false): int
   {
     $query = new QueryBuilder('log', null, 'id');
     $query = $query->select(['id']);
@@ -106,16 +102,16 @@ class Log extends \APP_DbObject
   /**
    * Revert all the way to the last checkpoint or the last start of turn
    */
-  public static function undoTurn()
+  public static function undoTurn(): void
   {
     $checkpoint = static::getLastCheckpoint(true);
-    return self::revertTo($checkpoint);
+    self::revertTo($checkpoint);
   }
 
   /**
    * Revert to a given step (checking first that it exists)
    */
-  public static function undoToStep($stepId)
+  public static function undoToStep(int $stepId): void
   {
     $query = new QueryBuilder('log', null, 'id');
     $step = $query
@@ -132,8 +128,11 @@ class Log extends \APP_DbObject
   /**
    * Revert all the logged changes up to an id
    */
-  public static function revertTo($id)
+  public static function revertTo(int $id): void
   {
+    $player = Players::getCurrent();
+    $constructor = Constructors::getOfPlayer($player->getId());
+
     $query = new QueryBuilder('log', null, 'id');
     $logs = $query
       ->select(['id', 'table', 'primary', 'type', 'affected', 'move_id'])
@@ -142,12 +141,17 @@ class Log extends \APP_DbObject
       ->get();
 
     $moveIds = [];
+    $newState = null;
     foreach ($logs as $log) {
+      $log['affected'] = json_decode($log['affected'], true);
       if (in_array($log['type'], ['step', 'engine'])) {
+        if ($log['type'] == 'step') {
+          $newState = $log['affected']['state'];
+        }
+
         continue;
       }
 
-      $log['affected'] = json_decode($log['affected'], true);
       $moveIds[] = intval($log['move_id']);
 
       foreach ($log['affected'] as $row) {
@@ -189,17 +193,16 @@ class Log extends \APP_DbObject
     if (!empty($moveIds)) {
       $packets = $query->whereIn('gamelog_move_id', $moveIds)->get();
       $notifIds = self::extractNotifIds($packets);
-      //      Notifications::clearTurn(Players::getCurrent(), $notifIds);
+      Notifications::clearTurn($constructor, $notifIds);
     }
 
     // Force to clear cached informations
     Globals::fetch();
 
     // Notify
-    // $datas = Game::get()->getAllDatas();
-    // Notifications::refreshUI($datas);
-    // $player = Players::getCurrent();
-    // Notifications::refreshHand($player, $player->getHand()->ui());
+    $datas = Game::get()->getAllDatas();
+    Notifications::refreshUI($datas);
+    Notifications::refreshHand($constructor, $constructor->getHand()->toArray());
 
     // Force notif flush to be able to delete "restart turn" notif
     Game::get()->sendNotifications();
@@ -212,7 +215,11 @@ class Log extends \APP_DbObject
         ->run();
     }
 
-    return $moveIds;
+    // Jump to the correct state
+    if (is_null($newState)) {
+      throw new \BgaVisibleSystemException('No state to undo to');
+    }
+    Game::get()->jumpToOrCall($newState);
   }
 
   /**

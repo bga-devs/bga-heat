@@ -236,7 +236,7 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsReact',
     'action' => 'stReact',
-    'possibleactions' => ['actReact', 'actPassReact', 'actCryCauseNotEnoughHeatToPay'],
+    'possibleactions' => ['actReact', 'actPassReact', 'actCryCauseNotEnoughHeatToPay', 'actUndoToStep', 'actRestartTurn'],
   ],
   ST_SALVAGE => [
     'name' => 'salvage',
@@ -244,7 +244,7 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} card(s) in your discard to put back in your deck'),
     'type' => 'activeplayer',
     'args' => 'argsSalvage',
-    'possibleactions' => ['actSalvage', 'actPassReact'],
+    'possibleactions' => ['actSalvage', 'actPassReact', 'actUndoToStep', 'actRestartTurn'],
   ],
   ST_SUPER_COOL => [
     'name' => 'superCool',
@@ -252,7 +252,7 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} Heat card(s) in your discard to put back in your engine'),
     'type' => 'activeplayer',
     'args' => 'argsSuperCool',
-    'possibleactions' => ['actSuperCool', 'actPassReact'],
+    'possibleactions' => ['actSuperCool', 'actPassReact', 'actUndoToStep', 'actRestartTurn'],
   ],
   ST_PAY_HEATS => [
     'name' => 'payHeats',
@@ -265,7 +265,7 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsPayHeats',
     'action' => 'stPayHeats',
-    'possibleactions' => ['actPayHeats'],
+    'possibleactions' => ['actPayHeats', 'actUndoToStep', 'actRestartTurn'],
   ],
 
   ST_SLIPSTREAM => [
@@ -275,7 +275,7 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsSlipstream',
     'action' => 'stSlipstream',
-    'possibleactions' => ['actSlipstream'],
+    'possibleactions' => ['actSlipstream', 'actUndoToStep', 'actRestartTurn'],
   ],
 
   ST_DISCARD => [
@@ -285,7 +285,7 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsDiscard',
     'action' => 'stDiscard',
-    'possibleactions' => ['actDiscard', 'actRefresh'],
+    'possibleactions' => ['actDiscard', 'actRefresh', 'actUndoToStep', 'actRestartTurn'],
   ],
 
   //////////////////////////////////////////////////////////////////

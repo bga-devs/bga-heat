@@ -770,34 +770,39 @@ class Notifications
   //////////////////////////////////////////////////////////
   ///// UNDO
 
-  public static function newUndoableStep($player, $stepId)
+  public static function newUndoableStep(Constructor $constructor, int $stepId): void
   {
-    self::notify($player, 'newUndoableStep', clienttranslate('Undo here'), [
+    self::notify($constructor, 'newUndoableStep', clienttranslate('Undo here'), [
       'stepId' => $stepId,
       'preserve' => ['stepId'],
     ]);
   }
 
-  public static function clearTurn($player, $notifIds)
+  public static function clearTurn(Constructor $constructor, array $notifIds): void
   {
-    self::notifyAll('clearTurn', clienttranslate('${player_name} restarts their turn'), [
-      'player' => $player,
+    self::notifyAll('clearTurn', clienttranslate('${constructor_name} restarts their turn'), [
+      'constructor' => $constructor,
       'notifIds' => $notifIds,
     ]);
   }
 
-  public static function refreshUI($datas)
+  public static function refreshUI(array $datas): void
   {
-    unset($datas['prefs']);
+    $toKeep = ['players', 'constructors', 'scores', 'progress'];
+    $newDatas = [];
+    foreach ($toKeep as $field) {
+      $newDatas[$field] = $datas[$field];
+    }
+
     self::notifyAll('refreshUI', '', [
-      'datas' => $datas,
+      'datas' => $newDatas,
     ]);
   }
 
-  public static function refreshHand($player, $hand)
+  public static function refreshHand(Constructor $constructor, array $hand): void
   {
-    self::notify($player, 'refreshHand', '', [
-      'player' => $player,
+    self::notify($constructor, 'refreshHand', '', [
+      'constructor' => $constructor,
       'hand' => $hand,
     ]);
   }
