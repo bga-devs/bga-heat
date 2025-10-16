@@ -322,6 +322,11 @@ interface NotifCardsArgs {
   deckCount: number;
 }
 
+// mulligan
+interface NotifMulliganArgs extends NotifCardsArgs {
+  heat: Card;
+}
+
 // refresh
 interface NotifRefreshArgs {
   constructor_id: number;
@@ -344,6 +349,11 @@ interface NotifPCardsArgs {
   cards: { [id: number]: Card };
   areSponsors: boolean;
   deckCount: number;
+}
+
+// pMulligan
+interface NotifPMulliganArgs extends NotifPCardsArgs {
+  heat: Card;
 }
 
 // clearPlayedCards

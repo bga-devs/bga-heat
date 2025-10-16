@@ -292,6 +292,10 @@ trait RoundTrait
     $player = Players::getCurrent();
     $constructor = Constructors::getOfPlayer($player->getId());
     $cId = $constructor->getId();
+    $mulligans = Globals::getMulligans();
+    if ($mulligans[$player->getId()] > 0) {
+      throw new UserException('You already used Mulligan');
+    }
 
     // Pay 1 heat
     $heat = $constructor->payHeats(1)->first();
@@ -300,10 +304,11 @@ trait RoundTrait
     $cards = Cards::fillHand($constructor, false);
     Notifications::mulligan($constructor, $cards, $heat);
     // Register
-    $mulligans = Globals::getMulligans();
     $mulligans[$player->getId()] = 1;
     Globals::setMulligans($mulligans);
     Log::checkpoint();
+    $this->gamestate->setPlayersMultiactive([$player->getId()], '', false);
+    // TODO reactivate works, but it doesn't send updated args, so _private.canMulligan is still true. Would we need private states for that, and do privateNextState to the same private state to force refresh of args?
   }
 
   public function actPlan(#[JsonParam()] $cardIds)

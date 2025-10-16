@@ -10,13 +10,13 @@ GUY :
 - react buttons on the cards (direct play) are not removed after the react phase
 - I think this one should never actually happen if backend send "used" correctly: remove "boost" button on title bar and on cards, it should always be automatically resolved when revealed
 
-- Mulligan: improve button (change color?) + add warning popup + notification
-- display "adjusted" corners speeds
 - add undo
 - new podium shapes
 
 TIM :
 
+- reset mulligan on new championship race
+- see TODO in actMulligan
 - add undo
 
 MISC:

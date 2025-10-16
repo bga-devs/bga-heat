@@ -334,10 +334,6 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         args._private.cards,
         args._private.selection
       );
-
-      if (args._private.canMulligan) {
-        this.statusBar.addActionButton('MULLIGAN', () => this.actMulligan());
-      }
     }
   }
 
@@ -775,7 +771,21 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           break;
         case 'planification':
           const planificationArgs = args as EnteringPlanificationArgs;
-          this.addActionButton(`actPlanification_button`, '', () => this.actPlanification());
+          this.statusBar.addActionButton(
+            '', 
+            () => this.actPlanification(), 
+            { id: `actPlanification_button` }
+          );
+          if (planificationArgs._private.canMulligan) {
+            this.statusBar.addActionButton(
+              _('Mulligan') +formatTextIcons(' (1[Heat])'), 
+              () => this.bgaPerformAction('actMulligan'), 
+              {
+                color: 'alert',
+                confirm: _('Spend 1 Heat to draw a new hand?')
+              }
+            );
+          }
           this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
           if (planificationArgs._private?.canSkipEndRace) {
             let giveUpMessage = _('If you give up, you will be ranked last.');
@@ -1956,10 +1966,6 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     });
   }
 
-  private actMulligan() {
-    this.bgaPerformAction('actMulligan', {});
-  }
-
   private actChooseUpgrade() {
     this.bgaPerformAction('actChooseUpgrade', {
       cardId: this.market.getSelection()[0].id,
@@ -2111,6 +2117,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       'eventRemoveHeat',
       'draw',
       'pDraw',
+      'mulligan',
+      'pMulligan',
       'clearPlayedCards',
       'cooldown',
       'finishTurn',
@@ -2188,6 +2196,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         );*/
     (this as any).notifqueue.setIgnoreNotificationCheck(
       'draw',
+      (notif: Notif<any>) => this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
+    );
+    (this as any).notifqueue.setIgnoreNotificationCheck(
+      'mulligan',
       (notif: Notif<any>) => this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
     );
   }
@@ -2386,6 +2398,11 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     playerTable.drawCardsPublic(n, areSponsors, deckCount);
   }
 
+  notif_mulligan(args: NotifMulliganArgs) {
+    const { constructor_id, heat } = args;
+    this.payHeats(constructor_id, [heat]);
+  }
+
   async notif_refresh(args: NotifRefreshArgs) {
     const { constructor_id, card } = args;
     const playerId = this.getPlayerIdFromConstructorId(constructor_id);
@@ -2441,8 +2458,19 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   notif_pDraw(args: NotifPCardsArgs) {
     const { constructor_id, areSponsors, deckCount } = args;
     const cards = Object.values(args.cards);
+    //const planificationArgs = this.gamedatas.gamestate.args as EnteringPlanificationArgs;
+    //planificationArgs._private.canMulligan = false;
     const playerTable = this.getCurrentPlayerTable();
     playerTable.drawCardsPrivate(cards, areSponsors, deckCount);
+  }
+
+  async notif_pMulligan(args: NotifPMulliganArgs) {
+    const { constructor_id, deckCount, heat } = args;
+    const cards = Object.values(args.cards);
+    const playerTable = this.getCurrentPlayerTable();
+    await playerTable.hand.removeAll();
+    await this.payHeats(constructor_id, [heat]);
+    await playerTable.drawCardsPrivate(cards, true, deckCount);
   }
 
   notif_pDiscard(args: NotifPCardsArgs) {

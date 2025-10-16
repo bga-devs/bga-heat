@@ -60,6 +60,28 @@
     align-items: center;
     font-family: "Barlow";
     font-size: 35px;
+    user-select: none;
+
+    &[data-adjust="down"] {
+      color: #95181b;
+    }
+    &[data-adjust="up"] {
+      color: #057c1e;
+    }
+
+    &.old-value {
+      z-index: 5;
+      transform: scale(0.6);
+      text-decoration-line: line-through;
+      text-decoration-thickness: 5px;
+
+      &[data-strike="down"] {
+        text-decoration-color: #95181b;
+      }
+      &[data-strike="up"] {
+        text-decoration-color: #057c1e;
+      }
+    }
   }
 }
 
@@ -205,6 +227,10 @@
     &[data-token-type="#{$type}"] {
       background-position-y: #{$type * 100% / 5};
     }
+  }
+
+  &[data-token-type="2"], &[data-token-type="3"] {
+    filter: contrast(0.5);
   }
 }
 
