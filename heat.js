@@ -2768,14 +2768,14 @@ var Circuit = /** @class */ (function () {
             var field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             var corner = corners[cornerId];
             if (corner) {
-                _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType, Number(cornerId));
+                _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType, Number(cornerId), corner);
             }
             else {
                 console.warn(cornerId, "doesn't exists ", corners);
             }
         });
     };
-    Circuit.prototype.createWeatherToken = function (type, x, y, cardType, cornerId) {
+    Circuit.prototype.createWeatherToken = function (type, x, y, cardType, cornerId, corner) {
         var weatherTokenDiv = document.createElement('div');
         weatherTokenDiv.id = "weather-token-".concat(type, "-").concat(document.querySelectorAll(".weather-token[id^=\"weather-token-\"]").length);
         weatherTokenDiv.classList.add('weather-token');
@@ -2787,6 +2787,14 @@ var Circuit = /** @class */ (function () {
         if ([2, 3].includes(type)) {
             var cornerDiv = document.getElementById("corner-".concat(cornerId));
             if (cornerDiv) {
+                var clone = document.createElement('div');
+                clone.id = "".concat(cornerDiv.id, "-old-value");
+                clone.classList.add('corner', 'old-value');
+                clone.style.setProperty('--x', "".concat(corner.x - 20, "px"));
+                clone.style.setProperty('--y', "".concat(corner.y - 20, "px"));
+                clone.dataset.strike = "".concat(type === 3 ? 'up' : 'down');
+                document.getElementById('circuit').appendChild(clone);
+                clone.innerHTML = "&nbsp; ".concat(cornerDiv.innerText, " &nbsp;");
                 cornerDiv.innerText = "".concat(Number(cornerDiv.innerText) + (type === 3 ? 1 : -1));
                 cornerDiv.dataset.adjust = "".concat(type === 3 ? 'up' : 'down');
             }

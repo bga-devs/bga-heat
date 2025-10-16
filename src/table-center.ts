@@ -273,14 +273,14 @@ class Circuit {
         const field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
         const corner = corners[cornerId];
         if (corner) {
-          this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`], cardType, Number(cornerId));
+          this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`], cardType, Number(cornerId), corner);
         } else {
           console.warn(cornerId, `doesn't exists `, corners);
         }
       });
   }
 
-  private createWeatherToken(type: number, x: number, y: number, cardType: number, cornerId: number): void {
+  private createWeatherToken(type: number, x: number, y: number, cardType: number, cornerId: number, corner: Corner): void {
     const weatherTokenDiv = document.createElement('div');
     weatherTokenDiv.id = `weather-token-${type}-${document.querySelectorAll(`.weather-token[id^="weather-token-"]`).length}`;
     weatherTokenDiv.classList.add('weather-token');
@@ -292,6 +292,15 @@ class Circuit {
     if ([2,3].includes(type)) {
       const cornerDiv = document.getElementById(`corner-${cornerId}`);
       if (cornerDiv) {
+        const clone = document.createElement('div');
+        clone.id = `${cornerDiv.id}-old-value`;
+        clone.classList.add('corner', 'old-value');
+        clone.style.setProperty('--x', `${corner.x - 20}px`);
+        clone.style.setProperty('--y', `${corner.y - 20}px`);
+        clone.dataset.strike = `${type === 3 ? 'up' : 'down'}`;
+        document.getElementById('circuit').appendChild(clone);
+        clone.innerHTML = `&nbsp; ${cornerDiv.innerText} &nbsp;`;
+
         cornerDiv.innerText = `${Number(cornerDiv.innerText) + (type === 3 ? 1 : -1)}`;
         cornerDiv.dataset.adjust = `${type === 3 ? 'up' : 'down'}`;
       }

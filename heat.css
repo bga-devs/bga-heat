@@ -910,6 +910,18 @@ height: 241px; */
 #table-center .corner[data-adjust=up] {
   color: #057c1e;
 }
+#table-center .corner.old-value {
+  z-index: 5;
+  transform: scale(0.6);
+  text-decoration-line: line-through;
+  text-decoration-thickness: 5px;
+}
+#table-center .corner.old-value[data-strike=down] {
+  text-decoration-color: #95181b;
+}
+#table-center .corner.old-value[data-strike=up] {
+  text-decoration-color: #057c1e;
+}
 
 .car {
   position: absolute;
