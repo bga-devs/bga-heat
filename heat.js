@@ -2768,14 +2768,14 @@ var Circuit = /** @class */ (function () {
             var field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             var corner = corners[cornerId];
             if (corner) {
-                _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType);
+                _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType, Number(cornerId));
             }
             else {
                 console.warn(cornerId, "doesn't exists ", corners);
             }
         });
     };
-    Circuit.prototype.createWeatherToken = function (type, x, y, cardType) {
+    Circuit.prototype.createWeatherToken = function (type, x, y, cardType, cornerId) {
         var weatherTokenDiv = document.createElement('div');
         weatherTokenDiv.id = "weather-token-".concat(type, "-").concat(document.querySelectorAll(".weather-token[id^=\"weather-token-\"]").length);
         weatherTokenDiv.classList.add('weather-token');
@@ -2784,6 +2784,13 @@ var Circuit = /** @class */ (function () {
         weatherTokenDiv.style.setProperty('--y', "".concat(y, "px"));
         this.circuitDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
         this.game.setTooltip(weatherTokenDiv.id, this.game.getWeatherTokenTooltip(type, cardType));
+        if ([2, 3].includes(type)) {
+            var cornerDiv = document.getElementById("corner-".concat(cornerId));
+            if (cornerDiv) {
+                cornerDiv.innerText = "".concat(Number(cornerDiv.innerText) + (type === 3 ? 1 : -1));
+                cornerDiv.dataset.adjust = "".concat(type === 3 ? 'up' : 'down');
+            }
+        }
     };
     Circuit.prototype.getPodiumPosition = function (pos) {
         var _a;

@@ -10,7 +10,6 @@ GUY :
 - react buttons on the cards (direct play) are not removed after the react phase
 - I think this one should never actually happen if backend send "used" correctly: remove "boost" button on title bar and on cards, it should always be automatically resolved when revealed
 
-- display "adjusted" corners speeds
 - add undo
 - new podium shapes
 

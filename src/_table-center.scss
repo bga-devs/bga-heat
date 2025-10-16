@@ -60,6 +60,14 @@
     align-items: center;
     font-family: "Barlow";
     font-size: 35px;
+    user-select: none;
+
+    &[data-adjust="down"] {
+      color: #95181b;
+    }
+    &[data-adjust="up"] {
+      color: #057c1e;
+    }
   }
 }
 
@@ -205,6 +213,10 @@
     &[data-token-type="#{$type}"] {
       background-position-y: #{$type * 100% / 5};
     }
+  }
+
+  &[data-token-type="2"], &[data-token-type="3"] {
+    filter: contrast(0.5);
   }
 }
 

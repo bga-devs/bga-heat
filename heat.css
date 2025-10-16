@@ -902,6 +902,13 @@ height: 241px; */
   align-items: center;
   font-family: "Barlow";
   font-size: 35px;
+  user-select: none;
+}
+#table-center .corner[data-adjust=down] {
+  color: #95181b;
+}
+#table-center .corner[data-adjust=up] {
+  color: #057c1e;
 }
 
 .car {
@@ -1057,6 +1064,9 @@ height: 241px; */
 }
 .weather-token[data-token-type="5"] {
   background-position-y: 100%;
+}
+.weather-token[data-token-type="2"], .weather-token[data-token-type="3"] {
+  filter: contrast(0.5);
 }
 
 .car-path {
