@@ -3814,13 +3814,9 @@ var Heat = /** @class */ (function (_super) {
         }
     };
     Heat.prototype.onEnteringPlanification = function (args) {
-        var _this = this;
         this.circuit.removeMapPaths();
         if (args._private) {
             this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
-            if (args._private.canMulligan) {
-                this.statusBar.addActionButton('MULLIGAN', function () { return _this.actMulligan(); });
-            }
         }
     };
     Heat.prototype.onEnteringReact = function (args) {
@@ -4181,7 +4177,13 @@ var Heat = /** @class */ (function (_super) {
                     break;
                 case 'planification':
                     var planificationArgs = args;
-                    this.addActionButton("actPlanification_button", '', function () { return _this.actPlanification(); });
+                    this.statusBar.addActionButton('', function () { return _this.actPlanification(); }, { id: "actPlanification_button" });
+                    if (planificationArgs._private.canMulligan) {
+                        this.statusBar.addActionButton(_('Mulligan') + formatTextIcons(' (1[Heat])'), function () { return _this.bgaPerformAction('actMulligan'); }, {
+                            color: 'alert',
+                            confirm: _('Spend 1 Heat to draw a new hand?')
+                        });
+                    }
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
                     if ((_a = planificationArgs._private) === null || _a === void 0 ? void 0 : _a.canSkipEndRace) {
                         var giveUpMessage_1 = _('If you give up, you will be ranked last.');
@@ -4990,9 +4992,6 @@ var Heat = /** @class */ (function (_super) {
             cardId: inPlaySelection[0].id,
         });
     };
-    Heat.prototype.actMulligan = function () {
-        this.bgaPerformAction('actMulligan', {});
-    };
     Heat.prototype.actChooseUpgrade = function () {
         this.bgaPerformAction('actChooseUpgrade', {
             cardId: this.market.getSelection()[0].id,
@@ -5121,6 +5120,8 @@ var Heat = /** @class */ (function (_super) {
             'eventRemoveHeat',
             'draw',
             'pDraw',
+            'mulligan',
+            'pMulligan',
             'clearPlayedCards',
             'cooldown',
             'finishTurn',
@@ -5190,6 +5191,7 @@ var Heat = /** @class */ (function (_super) {
                 this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
             );*/
         this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) { return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId(); });
+        this.notifqueue.setIgnoreNotificationCheck('mulligan', function (notif) { return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId(); });
     };
     Heat.prototype.notif_message = function () {
         // just to log them on the title bar
@@ -5420,6 +5422,10 @@ var Heat = /** @class */ (function (_super) {
         var playerTable = this.getPlayerTable(playerId);
         playerTable.drawCardsPublic(n, areSponsors, deckCount);
     };
+    Heat.prototype.notif_mulligan = function (args) {
+        var constructor_id = args.constructor_id, heat = args.heat;
+        this.payHeats(constructor_id, [heat]);
+    };
     Heat.prototype.notif_refresh = function (args) {
         return __awaiter(this, void 0, void 0, function () {
             var constructor_id, card, playerId, playerTable;
@@ -5504,8 +5510,33 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.notif_pDraw = function (args) {
         var constructor_id = args.constructor_id, areSponsors = args.areSponsors, deckCount = args.deckCount;
         var cards = Object.values(args.cards);
+        //const planificationArgs = this.gamedatas.gamestate.args as EnteringPlanificationArgs;
+        //planificationArgs._private.canMulligan = false;
         var playerTable = this.getCurrentPlayerTable();
         playerTable.drawCardsPrivate(cards, areSponsors, deckCount);
+    };
+    Heat.prototype.notif_pMulligan = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, deckCount, heat, cards, playerTable;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        constructor_id = args.constructor_id, deckCount = args.deckCount, heat = args.heat;
+                        cards = Object.values(args.cards);
+                        playerTable = this.getCurrentPlayerTable();
+                        return [4 /*yield*/, playerTable.hand.removeAll()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.payHeats(constructor_id, [heat])];
+                    case 2:
+                        _a.sent();
+                        return [4 /*yield*/, playerTable.drawCardsPrivate(cards, true, deckCount)];
+                    case 3:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     Heat.prototype.notif_pDiscard = function (args) {
         var constructor_id = args.constructor_id;
