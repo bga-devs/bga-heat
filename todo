@@ -1,5 +1,7 @@
 GUY :
 
+- check "updatePlanification" notif to see if it works correctly when doing Mulligan
+
 - chooseSpeed: handle cases when player have the choice on how to achieve a given speed.
   => use debug newReact. Select brakes 1/2/3/4 and brakes 1/4 for instance.
   => speed 5 can be either achieved by doing 1 + 4 or 4 + 1 and the user should be able to choose
@@ -15,8 +17,6 @@ GUY :
 
 TIM :
 
-- reset mulligan on new championship race
-- see TODO in actMulligan
 - add undo
 
 MISC:

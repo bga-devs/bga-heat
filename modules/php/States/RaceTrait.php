@@ -64,6 +64,7 @@ trait RaceTrait
     Globals::setFinishedConstructors([]);
     Globals::setSkippedPlayers([]);
     Globals::setGiveUpPlayers([]);
+    Globals::setMulligans([]);
     Globals::setRound(0);
     if (in_array(Globals::getGarageModuleMode(), [\Bga\Games\Heat\OPTION_GARAGE_DRAFT, \Bga\Games\Heat\OPTION_GARAGE_SNAKE_DRAFT])) {
       Globals::setDraftRound(1);
