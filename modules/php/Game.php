@@ -28,8 +28,10 @@ use Bga\Games\Heat\Managers\Players;
 use Bga\Games\Heat\Managers\Constructors;
 use Bga\Games\Heat\Managers\LegendCards;
 use Bga\Games\Heat\Core\Globals;
+use Bga\Games\Heat\Core\Notifications;
 use Bga\Games\Heat\Core\Preferences;
 use Bga\Games\Heat\Core\Stats;
+use Bga\Games\Heat\Helpers\Log;
 use Bga\Games\Heat\States\DeferredRoundTrait;
 use Bga\Games\Heat\States\LegendTrait;
 use Bga\Games\Heat\States\OldReactTrait;
@@ -134,6 +136,12 @@ class Game extends Table
   function actChangePreference($pref, $value)
   {
     Preferences::set($this->getCurrentPId(), $pref, $value);
+  }
+
+  function addNewUndoableStep()
+  {
+    $stepId = Log::step();
+    Notifications::newUndoableStep(Players::getCurrent(), $stepId);
   }
 
   ///////////////////////////////////////////////

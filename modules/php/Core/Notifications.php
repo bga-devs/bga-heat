@@ -766,6 +766,43 @@ class Notifications
     );
   }
 
+
+  //////////////////////////////////////////////////////////
+  ///// UNDO
+
+  public static function newUndoableStep($player, $stepId)
+  {
+    self::notify($player, 'newUndoableStep', clienttranslate('Undo here'), [
+      'stepId' => $stepId,
+      'preserve' => ['stepId'],
+    ]);
+  }
+
+  public static function clearTurn($player, $notifIds)
+  {
+    self::notifyAll('clearTurn', clienttranslate('${player_name} restarts their turn'), [
+      'player' => $player,
+      'notifIds' => $notifIds,
+    ]);
+  }
+
+  public static function refreshUI($datas)
+  {
+    unset($datas['prefs']);
+    self::notifyAll('refreshUI', '', [
+      'datas' => $datas,
+    ]);
+  }
+
+  public static function refreshHand($player, $hand)
+  {
+    self::notify($player, 'refreshHand', '', [
+      'player' => $player,
+      'hand' => $hand,
+    ]);
+  }
+
+
   ///////////////////////////////////
   //  ____              _        
   // / ___| _ __   __ _| | _____ 

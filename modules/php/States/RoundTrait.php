@@ -12,6 +12,7 @@ use Bga\Games\Heat\Managers\Cards;
 use Bga\Games\Heat\Models\Circuit;
 
 use \Bga\GameFramework\Actions\Types\JsonParam;
+use Bga\Games\Heat\Helpers\Log;
 use Bga\Games\Heat\Models\Constructor;
 
 use const Bga\Games\Heat\OPTION_AUTO_MOVE_WHEN_SINGLE_SPEED_CHOICE;
@@ -302,6 +303,7 @@ trait RoundTrait
     $mulligans = Globals::getMulligans();
     $mulligans[$player->getId()] = 1;
     Globals::setMulligans($mulligans);
+    Log::checkpoint();
   }
 
   public function actPlan(#[JsonParam()] $cardIds)
@@ -671,6 +673,7 @@ trait RoundTrait
 
   public function actChooseSpeed(int $speed, #[JsonParam] array $choice, bool $auto = false)
   {
+    $this->addNewUndoableStep();
     $args = $this->argsChooseSpeed()['speeds'];
     if (!array_key_exists($speed, $args)) {
       throw new \BgaVisibleSystemException('Invalid speed. Should not happen');
@@ -953,6 +956,7 @@ trait RoundTrait
   public function actSlipstream(int $speed)
   {
     self::checkAction('actSlipstream');
+    $this->addNewUndoableStep();
 
     $constructor = Constructors::getActive();
     Globals::setPositionBeforeSlipstream($constructor->getPosition());

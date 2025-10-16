@@ -191,11 +191,13 @@ trait ReactTrait
     $canPass = true;
     $mandatorySymbols = [HEAT, SCRAP];
     $coalescableSymbols = [HEAT, SCRAP, COOLDOWN, DRAFT, REDUCE, SUPER_COOL];
+    $irreversibleSymbols = [SCRAP, BOOST, HEATED_BOOST];
     $upToSymbols = [COOLDOWN, DRAFT, REDUCE, SUPER_COOL];
 
     foreach ($symbols as $symbol => &$symbolInfos) {
       $symbolInfos['mandatory'] = in_array($symbol, $mandatorySymbols);
       $symbolInfos['coalescable'] = in_array($symbol, $coalescableSymbols);
+      $symbolInfos['irreversible'] = in_array($symbol, $irreversibleSymbols);
       $symbolInfos['upTo'] = in_array($symbol, $upToSymbols);
 
       if ($symbolInfos['mandatory']) {
@@ -228,6 +230,7 @@ trait ReactTrait
    */
   public function actReact(string $symbol, #[JsonParam] $entries, ?int $n = null)
   {
+    $this->addNewUndoableStep();
     $constructor = Constructors::getActive();
     $symbols = Globals::getCardSymbols();
 
@@ -288,6 +291,10 @@ trait ReactTrait
     //////////////////////////////
     /////// Resolve effect ///////
     //////////////////////////////
+    // Checkpoint in case of irreversible symbol
+    if ($symbolInfos['irreversible']) {
+      Log::checkpoint();
+    }
 
     // COOLDOWN
     if ($symbol == COOLDOWN) {
@@ -433,6 +440,7 @@ trait ReactTrait
 
   public function actPassReact()
   {
+    $this->addNewUndoableStep();
     self::checkAction('actPassReact');
     if (!$this->argsReact()['canPass']) {
       throw new \BgaVisibleSystemException('Cant pass react with mandatory symbols left. Should not happen');
@@ -468,6 +476,7 @@ trait ReactTrait
   public function actSalvage(#[JsonParam()] array $cardIds)
   {
     self::checkAction('actSalvage');
+    $this->addNewUndoableStep();
     $args = $this->argsSalvage();
     if (count($cardIds) > $args['n']) {
       throw new \BgaVisibleSystemException('Too much cards. Should not happen');
@@ -512,6 +521,7 @@ trait ReactTrait
   public function actSuperCool(int $n)
   {
     self::checkAction('actSuperCool');
+    $this->addNewUndoableStep();
     $args = $this->argsSuperCool();
     if ($n > $args['n']) {
       throw new \BgaVisibleSystemException('Too much cards. Should not happen');
