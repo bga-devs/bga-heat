@@ -476,7 +476,7 @@ class Notifications
     ]);
   }
 
-  public static function newMarket(int $round, Collection $cards, array $upgrades): void
+  public static function newMarket(int $round, Collection $cards, ?array $upgrades): void
   {
     self::notifyAll('newMarket', clienttranslate('Starting round n°${round}/${nRounds} of Upgrade card drafting'), [
       'round' => $round,
