@@ -2801,13 +2801,7 @@ var Circuit = /** @class */ (function () {
         }
     };
     Circuit.prototype.getPodiumPosition = function (pos) {
-        var _a;
-        var cell = structuredClone(this.circuitDatas.podium);
-        var leaderboardSize = (_a = this.circuitDatas.podium.size) !== null && _a !== void 0 ? _a : 8;
-        cell.a = 0;
-        cell.x += LEADERBOARD_POSITIONS[leaderboardSize][pos].x;
-        cell.y += LEADERBOARD_POSITIONS[leaderboardSize][pos].y;
-        return cell;
+        return __assign(__assign({}, this.circuitDatas.podium[pos - 1]), { a: 0 });
     };
     Circuit.prototype.getCellPosition = function (carCell) {
         if (carCell < 0) {

@@ -25,15 +25,6 @@ GUY :
   => speed 5 can be either achieved by doing 1 + 4 or 4 + 1 and the user should be able to choose
   => you should always skip this choice phase if only one choice is possible
   => you should probably always auto select the first choice and just let the user change the choice if they want to before hitting confirm, since it's a very niche situation
-
-- new podium shapes => will be handled in BE
-
 TIM :
 
 - check undo on some action
-- add podium locations of all slots in circuit datas
-
-MISC:
-
-- handle different podium shapes : include podium shape into circuit's data + allow for adhoc placement for extra podium slot for base circuits
-  => reconstruct rectangles in frontend with matching font ?

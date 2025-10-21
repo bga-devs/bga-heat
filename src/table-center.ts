@@ -308,12 +308,10 @@ class Circuit {
   }
 
   private getPodiumPosition(pos: number) {
-    const cell = structuredClone(this.circuitDatas.podium);
-    const leaderboardSize = this.circuitDatas.podium.size ?? 8;
-    cell.a = 0;
-    cell.x += LEADERBOARD_POSITIONS[leaderboardSize][pos].x;
-    cell.y += LEADERBOARD_POSITIONS[leaderboardSize][pos].y;
-    return cell;
+    return {
+      ...this.circuitDatas.podium[pos - 1],
+      a: 0
+    };
   }
 
   private getCellPosition(carCell: number) {
