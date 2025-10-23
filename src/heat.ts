@@ -781,6 +781,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               _('Mulligan') +formatTextIcons(' (1[Heat])'), 
               () => this.bgaPerformAction('actMulligan'), 
               {
+                id: 'mulligan-btn',
                 color: 'alert',
                 confirm: _('Spend 1 Heat to draw a new hand?')
               }
@@ -2290,6 +2291,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
   notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
     this.updatePlannedCards(args.args._private.selection);
+    const mulliganBtn = document.getElementById('mulligan-btn');
+    if (mulliganBtn && !args.args._private.canMulligan) {
+      mulliganBtn.remove();
+    }
   }
 
   async notif_reveal(args: NotifRevealArgs) {

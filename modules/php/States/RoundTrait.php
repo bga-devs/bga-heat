@@ -294,7 +294,7 @@ trait RoundTrait
     $constructor = Constructors::getOfPlayer($pId);
     $cId = $constructor->getId();
     $mulligans = Globals::getMulligans();
-    if ($mulligans[$player->getId()] > 0) {
+    if (($mulligans[$player->getId()] ?? 0) > 0) {
       throw new UserException('You already used Mulligan');
     }
 

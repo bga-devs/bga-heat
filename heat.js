@@ -4189,6 +4189,7 @@ var Heat = /** @class */ (function (_super) {
                     this.statusBar.addActionButton('', function () { return _this.actPlanification(); }, { id: "actPlanification_button" });
                     if (planificationArgs._private.canMulligan) {
                         this.statusBar.addActionButton(_('Mulligan') + formatTextIcons(' (1[Heat])'), function () { return _this.bgaPerformAction('actMulligan'); }, {
+                            id: 'mulligan-btn',
                             color: 'alert',
                             confirm: _('Spend 1 Heat to draw a new hand?')
                         });
@@ -5284,6 +5285,10 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.notif_updatePlanification = function (args) {
         this.updatePlannedCards(args.args._private.selection);
+        var mulliganBtn = document.getElementById('mulligan-btn');
+        if (mulliganBtn && !args.args._private.canMulligan) {
+            mulliganBtn.remove();
+        }
     };
     Heat.prototype.notif_reveal = function (args) {
         return __awaiter(this, void 0, void 0, function () {
