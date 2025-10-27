@@ -856,14 +856,6 @@ trait RoundTrait
       Notifications::gainGearCooldown($constructor, $gear, $n);
     }
 
-    // Weather might add 1 cooldown
-    if ($roadCondition == ROAD_CONDITION_COOLING_BONUS) {
-      $symbols[COOLDOWN]['entries'][WEATHER] = [
-        'value' => 1,
-        'used' => false
-      ];
-    }
-
     // Store component HeatedBoost symbol
     $symbols[HEATED_BOOST]['entries'][HEATED_BOOST] = [
       'value' => 1,
