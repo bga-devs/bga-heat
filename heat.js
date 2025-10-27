@@ -4309,12 +4309,12 @@ var Heat = /** @class */ (function (_super) {
             case 'accelerate':
                 var nFlipped = symbolInfos.flippedCards;
                 label = "+".concat(nFlipped, " [Speed]");
+                /*const accelerateCard = this.getCurrentPlayerTable()
+                  .inplay.getCards()
+                  .find((card) => card.id == Number(entries[0]));
                 if (!destination) {
-                    var accelerateCard = this.getCurrentPlayerTable()
-                        .inplay.getCards()
-                        .find(function (card) { return card.id == number; });
-                    label += "<br>".concat(this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() }));
-                }
+                  label += `<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
+                }*/
                 tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', nFlipped);
                 break;
             case 'adjust':

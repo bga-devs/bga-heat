@@ -923,12 +923,12 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       case 'accelerate':
         let nFlipped = symbolInfos.flippedCards;
         label = `+${nFlipped} [Speed]`;
+        /*const accelerateCard = this.getCurrentPlayerTable()
+          .inplay.getCards()
+          .find((card) => card.id == Number(entries[0]));
         if (!destination) {
-          const accelerateCard = this.getCurrentPlayerTable()
-            .inplay.getCards()
-            .find((card) => card.id == number);
           label += `<br>${this.cardImageHtml(accelerateCard, { constructor_id: this.getConstructorId() })}`;
-        }
+        }*/
         tooltip = this.getGarageModuleIconTooltipWithIcon('accelerate', nFlipped);
         break;
       case 'adjust':

@@ -1,5 +1,4 @@
 GUY :
-- accelerate does not work (tried to fix a bit but without success)
 - I think this one should never actually happen if backend send "used" correctly: remove "boost" button on title bar and on cards, it should always be automatically resolved when revealed
 
 - undo : basically copy what you did in Ancient Knowledge
