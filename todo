@@ -1,19 +1,6 @@
 GUY :
 - I think this one should never actually happen if backend send "used" correctly: remove "boost" button on title bar and on cards, it should always be automatically resolved when revealed
 
-- undo : basically copy what you did in Ancient Knowledge
-
-  - add css for notification in the log "Undo here" to stick to next notif with "refresh icon"
-    - make them clickable and trigger actUndoToStep
-    - show only the clickable one depending on "undoableSteps" entry in onEnteringState (see below) and make sure the other ones are hidden
-  - add "undo last step" / "restart turn" buttons whenever relevant : I will always send you "undoableSteps" in the args
-    - restart should trigger actRestartTurn
-    - undo last step should call actUndoToStep with highest id of the array
-    - if the array is empty, do not display any button
-  - handle three more notifs (in top of newUndoableStep):
-    - clearTurn : strikethrough corresponding notifications (will be deleted on DB so disappear on refresh)
-    - refreshUI : public notif containing a subset of getAllDatas, so far only 'players', 'constructors', 'scores', 'progress', you can change that list if needed
-    - updateHand : private notif sent to player restarting that contains the array of card in hand, useful (only?) for direct play
 
 - chooseSpeed: handle cases when player have the choice on how to achieve a given speed.
   => use debug newReact. Select brakes 1/2/3/4 and brakes 1/4 for instance.
@@ -23,5 +10,5 @@ GUY :
 
 TIM :
 
-- check undo on some action
+- check undo on some action => constructor carCell is the latest one, not the undo one
 - check "not enough heat to play" code

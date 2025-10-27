@@ -44,6 +44,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
   private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
+  private _notif_uid_to_log_id = [];
+  private _notif_uid_to_mobile_log_id = [];
+  private _last_notif;
+
   constructor() {
     super();
   }
@@ -80,6 +84,12 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     log('Starting game setup');
 
     this.gamedatas = gamedatas;
+
+    // Create a new div for buttons to avoid BGA auto clearing it  
+    // @ts-ignore
+    dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
+    // @ts-ignore
+    dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
 
     if (gamedatas.circuitDatas?.jpgUrl && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
       g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
@@ -168,6 +178,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   ///////////////////////////////////////////////////
   //// Game & client states
 
+  public addDangerActionButton(id, text, callback, zone = 'customActions'): void {
+    if (!$(id)) this.statusBar.addActionButton(text, callback, { id, destination: $(zone), color: 'alert' });
+  }
+
   // onEnteringState: this method is called each time we are entering into a new game state.
   //                  You can use this method to perform some user interface changes at this moment.
   //
@@ -181,6 +195,50 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     if (args.args?.optionalAction) {
       let base = args.args.descSuffix ? args.args.descSuffix : '';
       this.changePageTitle(base + 'skippable');
+    }
+    
+    if (this.isCurrentPlayerActive()) {
+        if (args.args?.previousSteps) {
+            document.getElementById('logs').querySelectorAll(`.log.notif_newUndoableStep`).forEach((undoNotif: HTMLElement) => {
+                if (!args.args?.previousSteps.includes(Number(undoNotif.dataset.step))) {
+                    undoNotif.style.display = 'none';
+                }
+            });
+        }
+
+        // Undo last steps
+        args.args?.previousSteps?.forEach((stepId: number) => {
+            let logEntry = $('logs').querySelector(`.log.notif_newUndoableStep[data-step="${stepId}"]`) as HTMLElement;
+            if (logEntry) {
+                this.onClick(logEntry, e => this.undoToStep(stepId, e));
+            }
+
+            logEntry = document.querySelector(`.chatwindowlogs_zone .log.notif_newUndoableStep[data-step="${stepId}"]`) as HTMLElement;
+            if (logEntry) {
+                this.onClick(logEntry, e => this.undoToStep(stepId, e));
+            }
+        });
+
+        // Restart turn button
+        //if (args.args?.previousEngineChoices >= 1 && !args.args.automaticAction) {
+        if (args.args?.undoableSteps) {
+            let lastStep = Math.max(...args.args.undoableSteps);
+            if (lastStep > 0) {
+              this.addDangerActionButton('btnUndoLastStep', _('Undo last step'), e => this.undoToStep(lastStep, e), 'restartAction');
+            }
+
+            // Restart whole turn
+            this.addDangerActionButton(
+                'btnRestartTurn',
+                _('Restart turn'),
+                () => {
+                //this.stopActionTimer();
+                this.bgaPerformAction('actRestartTurn');
+                },
+                'restartAction'
+            );
+        }
+        //}
     }
 
     switch (stateName) {
@@ -2102,6 +2160,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   setupNotifications() {
     //log( 'notifications subscriptions setup' );
 
+    dojo.connect((this as any).notifqueue, 'addToLog', () => {
+        this.addLogClass();
+    });
+
     const notifs = [
       'message',
       'loadCircuit',
@@ -2147,6 +2209,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       'playerEliminated',
       'cryCauseNotEnoughHeatToPay',
       'setWeather',
+      'clearTurn',
+      'refreshUI',
+      'refreshHand',
     ];
 
     notifs.forEach((notifName) => {
@@ -2689,6 +2754,143 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     document.getElementById(`podium-wrapper-${constructorId}`).classList.add('finished');
     document.getElementById(`podium-counter-${constructorId}`).innerHTML = `${eliminated ? '❌' : pos}`;
   }
+
+  private onClick(elem: HTMLElement, callback) {
+      if (!elem.classList.contains('click-binded')) {
+          elem.addEventListener('click', callback);
+          elem.classList.add('click-binded');
+      }
+  }
+    
+  undoToStep(stepId: number, e?: Event) {
+    if ((e?.target as HTMLElement)?.parentElement?.classList.contains('cancel')) {
+      return;
+    }
+    
+    //this.stopActionTimer();
+    //(this as any).checkAction('actRestart');
+    this.bgaPerformAction('actUndoToStep', { stepId }/*, false*/);
+  }
+
+    notif_clearTurn(args: NotifClearTurnArgs) {
+      this.cancelLogs(args.notifIds);
+    }
+    
+    notif_refreshUI(args: NotifRefreshUIArgs) {
+      Object.entries(args.datas.constructors).forEach(([constructorIdStr, constructor]) => {
+        const constructorId = Number(constructorIdStr);
+        this.circuit.refreshUI(constructor);
+
+        if (!constructor.ai) {
+          this.gearCounters[constructor.id].setValue(constructor.gear);
+          this.engineCounters[constructor.id].setValue(Object.values(constructor.engine).length);
+        }
+
+        this.setSpeedCounter(constructor.id, constructor.speed);
+        this.cornerCounters[constructor.id].setValue(constructor.distanceToCorner);
+        this.lapCounters[constructor.id].setValue(Math.max(1, Math.min(this.gamedatas.nbrLaps, constructor.turn + 1)));
+
+          const playerId = this.getPlayerIdFromConstructorId(constructorId);
+          if (playerId > 0) {
+            this.getPlayerTable(playerId).refreshUI(constructor);
+          }
+      });
+      
+      this.championshipTable?.setRaceProgress(args.datas.progress);
+      
+      Object.values(this.gamedatas.constructors).forEach((constructor) =>
+        this.setScore(
+          this.getPlayerIdFromConstructorId(constructor.id),
+          Object.values(args.datas.scores)
+            .map((circuitScores) => circuitScores[constructor.id])
+            .reduce((a, b) => a + b, 0)
+        )
+      );
+    }
+    
+    notif_refreshHand(args: NotifRefreshHandArgs) {
+        const { constructor_id, hand } = args;
+        const playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).refreshHand(hand);
+    }  
+    
+    
+    /*
+    * [Undocumented] Called by BGA framework on any notification message
+    * Handle cancelling log messages for restart turn
+    */
+    /* @Override */
+    public onPlaceLogOnChannel(msg) {
+     var currentLogId = (this as any).notifqueue.next_log_id;
+     var currentMobileLogId = (this as any).next_log_id;
+     var res = (this as any).inherited(arguments);
+     (this as any)._notif_uid_to_log_id[msg.uid] = currentLogId;
+     (this as any)._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
+     (this as any)._last_notif = {
+       logId: currentLogId,
+       mobileLogId: currentMobileLogId,
+       msg,
+     };
+     return res;
+    }
+    
+    private cancelLogs(notifIds: string[]) {
+      notifIds.forEach((uid) => {
+        if ((this as any)._notif_uid_to_log_id.hasOwnProperty(uid)) {
+          let logId = (this as any)._notif_uid_to_log_id[uid];
+          if ($('log_' + logId)) {
+            dojo.addClass('log_' + logId, 'cancel');
+          }
+        }
+        if ((this as any)._notif_uid_to_mobile_log_id.hasOwnProperty(uid)) {
+          let mobileLogId = (this as any)._notif_uid_to_mobile_log_id[uid];
+          if ($('dockedlog_' + mobileLogId)) {
+            dojo.addClass('dockedlog_' + mobileLogId, 'cancel');
+          }
+        }
+      });
+    }
+    
+    addLogClass() {
+      if ((this as any)._last_notif == null) {
+        return;
+      }
+
+      let notif = (this as any)._last_notif;
+      let type = notif.msg.type;
+      if (type == 'history_history') {
+        type = notif.msg.args.originalType;
+      }
+
+      if ($('log_' + notif.logId)) {
+        dojo.addClass('log_' + notif.logId, 'notif_' + type);
+
+        var methodName = 'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
+        this[methodName]?.(notif);
+      }
+      if ($('dockedlog_' + notif.mobileLogId)) {
+        dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
+      }
+    }
+
+    protected onAddingNewUndoableStepToLog(notif) {
+      if (!$(`log_${notif.logId}`)) {
+        return;
+      }
+      let stepId = notif.msg.args.stepId;
+      $(`log_${notif.logId}`).dataset.step = stepId;
+      if ($(`dockedlog_${notif.mobileLogId}`)) {
+        $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
+      }
+
+      if (this.gamedatas?.gamestate?.args?.undoableSteps?.includes(parseInt(stepId))) {
+        this.onClick($(`log_${notif.logId}`), e => this.undoToStep(stepId, e));
+
+        if ($(`dockedlog_${notif.mobileLogId}`)) {
+            this.onClick($(`dockedlog_${notif.mobileLogId}`), e => this.undoToStep(stepId, e));
+        }
+      }
+    }  
 
   private coloredConstructorName(constructorName: string): string {
     return `<span style="font-weight: bold; color: #${CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find((constructor) => constructor.name == constructorName).id]}">${_(constructorName)}</span>`;

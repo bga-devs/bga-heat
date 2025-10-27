@@ -1898,3 +1898,64 @@ html,
   align-items: center;
   vertical-align: middle;
 }
+
+#logs .log.notif_newUndoableStep {
+  margin-top: 0;
+}
+#logs .log.notif_newUndoableStep .roundedbox {
+  background-color: #c4c2c2;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 5px;
+  text-align: center;
+}
+#logs .log.notif_newUndoableStep.selectable .roundedbox {
+  display: block;
+}
+
+#logs .log.notif_newUndoableStep .roundedbox:after, #logs .log.notif_newUndoableStep .roundedbox:before {
+  content: "\f0e2";
+  font: normal normal normal 12px/1 FontAwesome;
+  margin: 0 10px;
+}
+
+.chatwindowlogs_zone .log.notif_newUndoableStep {
+  margin-bottom: -4px;
+  padding: 0;
+}
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable {
+  display: block !important;
+}
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner {
+  background-color: #c4c2c2;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 5px;
+  text-align: center;
+}
+
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:after, .chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner:before {
+  content: "\f0e2";
+  font: normal normal normal 12px/1 FontAwesome;
+  margin: 0 10px;
+}
+
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner .msgtime {
+  display: none;
+}
+
+/* Cancelled notification messages */
+.log.cancel {
+  color: #c62828 !important;
+  text-decoration: line-through;
+}
+
+/* Desktop logs */
+.log.cancel .roundedbox {
+  background-color: rgba(240, 186, 117, 0.6) !important;
+}
+
+/* Mobile logs */
+.log.cancel.roundedbox {
+  background-color: #ef9a9a;
+}

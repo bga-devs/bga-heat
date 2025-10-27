@@ -479,3 +479,24 @@ interface NotifCryCauseNotEnoughHeatToPayArgs {
 interface NotifSetWeatherArgs {
   weather: Weather;
 }
+
+// clearTurn
+interface NotifClearTurnArgs {
+    notifIds: string[];
+}
+
+// refreshUI
+interface NotifRefreshUIArgs {
+    datas: {
+      players: { [playerId: number]: HeatPlayer };
+      constructors: { [id: number]: Constructor };
+      progress: number;
+      scores: { [index: number]: { [constructor_id: number]: number } };
+    }
+}
+
+// refreshHand
+interface NotifRefreshHandArgs {
+    constructor_id: number;
+    hand: Card[];
+}

@@ -3056,6 +3056,12 @@ var Circuit = /** @class */ (function () {
         var cell = this.getPodiumPosition(position);
         this.circuitDiv.insertAdjacentHTML('beforeend', "<div class=\"eliminated-podium\" style=\"--x: ".concat(cell.x, "px; --y: ").concat(cell.y, "px;\">\u274C</div>"));
     };
+    Circuit.prototype.refreshUI = function (constructor) {
+        var _this = this;
+        this.createCar(constructor);
+        this.removeMapPaths();
+        constructor.paths.filter(function (path) { return (path === null || path === void 0 ? void 0 : path.length) > 1; }).forEach(function (path) { return _this.addMapPath(path, false); });
+    };
     return Circuit;
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
@@ -3437,6 +3443,29 @@ var PlayerTable = /** @class */ (function () {
             });
         });
     };
+    PlayerTable.prototype.refreshHand = function (hand) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.hand.removeAll();
+                return [2 /*return*/, this.hand.addCards(hand)];
+            });
+        });
+    };
+    PlayerTable.prototype.refreshUI = function (constructor) {
+        return __awaiter(this, void 0, void 0, function () {
+            var engineCards, discardCards;
+            return __generator(this, function (_a) {
+                this.deck.setCardNumber(constructor.deckCount);
+                engineCards = Object.values(constructor.engine);
+                this.engine.setCardNumber(engineCards.length, engineCards[0]);
+                discardCards = Object.values(constructor.discard);
+                this.discard.setCardNumber(discardCards.length, discardCards[0]);
+                this.inplay.removeAll();
+                this.inplay.addCards(Object.values(constructor.inplay));
+                return [2 /*return*/];
+            });
+        });
+    };
     return PlayerTable;
 }());
 var LegendTable = /** @class */ (function () {
@@ -3606,6 +3635,8 @@ var Heat = /** @class */ (function (_super) {
         _this.speedCounters = [];
         _this.lapCounters = [];
         _this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
+        _this._notif_uid_to_log_id = [];
+        _this._notif_uid_to_mobile_log_id = [];
         return _this;
     }
     /*
@@ -3625,6 +3656,11 @@ var Heat = /** @class */ (function (_super) {
         this.getGameAreaElement().insertAdjacentHTML('beforeend', "\n      <link rel=\"stylesheet\" href=\"https://use.typekit.net/jim0ypy.css\">\n\n      <div id=\"top\">\n      </div>\n\n      <div id=\"table-center\">\n          <div id=\"circuit\"></div>\n      </div>\n      <div id=\"tables\"></div>  \n    ");
         log('Starting game setup');
         this.gamedatas = gamedatas;
+        // Create a new div for buttons to avoid BGA auto clearing it  
+        // @ts-ignore
+        dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
+        // @ts-ignore
+        dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
         if (((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
             g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
         }
@@ -3699,11 +3735,17 @@ var Heat = /** @class */ (function (_super) {
     };
     ///////////////////////////////////////////////////
     //// Game & client states
+    Heat.prototype.addDangerActionButton = function (id, text, callback, zone) {
+        if (zone === void 0) { zone = 'customActions'; }
+        if (!$(id))
+            this.statusBar.addActionButton(text, callback, { id: id, destination: $(zone), color: 'alert' });
+    };
     // onEnteringState: this method is called each time we are entering into a new game state.
     //                  You can use this method to perform some user interface changes at this moment.
     //
     Heat.prototype.onEnteringState = function (stateName, args) {
-        var _a, _b, _c, _d, _e;
+        var _this = this;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         log('Entering state: ' + stateName, args.args);
         if ((_a = args.args) === null || _a === void 0 ? void 0 : _a.descSuffix) {
             this.changePageTitle(args.args.descSuffix);
@@ -3711,6 +3753,41 @@ var Heat = /** @class */ (function (_super) {
         if ((_b = args.args) === null || _b === void 0 ? void 0 : _b.optionalAction) {
             var base = args.args.descSuffix ? args.args.descSuffix : '';
             this.changePageTitle(base + 'skippable');
+        }
+        if (this.isCurrentPlayerActive()) {
+            if ((_c = args.args) === null || _c === void 0 ? void 0 : _c.previousSteps) {
+                document.getElementById('logs').querySelectorAll(".log.notif_newUndoableStep").forEach(function (undoNotif) {
+                    var _a;
+                    if (!((_a = args.args) === null || _a === void 0 ? void 0 : _a.previousSteps.includes(Number(undoNotif.dataset.step)))) {
+                        undoNotif.style.display = 'none';
+                    }
+                });
+            }
+            // Undo last steps
+            (_e = (_d = args.args) === null || _d === void 0 ? void 0 : _d.previousSteps) === null || _e === void 0 ? void 0 : _e.forEach(function (stepId) {
+                var logEntry = $('logs').querySelector(".log.notif_newUndoableStep[data-step=\"".concat(stepId, "\"]"));
+                if (logEntry) {
+                    _this.onClick(logEntry, function (e) { return _this.undoToStep(stepId, e); });
+                }
+                logEntry = document.querySelector(".chatwindowlogs_zone .log.notif_newUndoableStep[data-step=\"".concat(stepId, "\"]"));
+                if (logEntry) {
+                    _this.onClick(logEntry, function (e) { return _this.undoToStep(stepId, e); });
+                }
+            });
+            // Restart turn button
+            //if (args.args?.previousEngineChoices >= 1 && !args.args.automaticAction) {
+            if ((_f = args.args) === null || _f === void 0 ? void 0 : _f.undoableSteps) {
+                var lastStep_1 = Math.max.apply(Math, args.args.undoableSteps);
+                if (lastStep_1 > 0) {
+                    this.addDangerActionButton('btnUndoLastStep', _('Undo last step'), function (e) { return _this.undoToStep(lastStep_1, e); }, 'restartAction');
+                }
+                // Restart whole turn
+                this.addDangerActionButton('btnRestartTurn', _('Restart turn'), function () {
+                    //this.stopActionTimer();
+                    _this.bgaPerformAction('actRestartTurn');
+                }, 'restartAction');
+            }
+            //}
         }
         switch (stateName) {
             case 'uploadCircuit':
@@ -3723,7 +3800,7 @@ var Heat = /** @class */ (function (_super) {
                 this.onEnteringSwapUpgrade(args.args);
                 break;
             case 'planification':
-                this.updatePlannedCards((_d = (_c = args.args._private) === null || _c === void 0 ? void 0 : _c.selection) !== null && _d !== void 0 ? _d : []);
+                this.updatePlannedCards((_h = (_g = args.args._private) === null || _g === void 0 ? void 0 : _g.selection) !== null && _h !== void 0 ? _h : []);
                 break;
             case 'react':
                 this.onEnteringReact(args.args);
@@ -3732,7 +3809,7 @@ var Heat = /** @class */ (function (_super) {
                 this.onEnteringOldReact(args.args);
                 break;
             case 'gameEnd':
-                (_e = document.getElementById('leave-text-action')) === null || _e === void 0 ? void 0 : _e.remove();
+                (_j = document.getElementById('leave-text-action')) === null || _j === void 0 ? void 0 : _j.remove();
                 break;
         }
     };
@@ -5113,6 +5190,9 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.setupNotifications = function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
+        dojo.connect(this.notifqueue, 'addToLog', function () {
+            _this.addLogClass();
+        });
         var notifs = [
             'message',
             'loadCircuit',
@@ -5158,6 +5238,9 @@ var Heat = /** @class */ (function (_super) {
             'playerEliminated',
             'cryCauseNotEnoughHeatToPay',
             'setWeather',
+            'clearTurn',
+            'refreshUI',
+            'refreshHand',
         ];
         notifs.forEach(function (notifName) {
             dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -5795,6 +5878,127 @@ var Heat = /** @class */ (function (_super) {
         document.getElementById("overall_player_board_".concat(playerId)).classList.add('finished');
         document.getElementById("podium-wrapper-".concat(constructorId)).classList.add('finished');
         document.getElementById("podium-counter-".concat(constructorId)).innerHTML = "".concat(eliminated ? '❌' : pos);
+    };
+    Heat.prototype.onClick = function (elem, callback) {
+        if (!elem.classList.contains('click-binded')) {
+            elem.addEventListener('click', callback);
+            elem.classList.add('click-binded');
+        }
+    };
+    Heat.prototype.undoToStep = function (stepId, e) {
+        var _a, _b;
+        if ((_b = (_a = e === null || e === void 0 ? void 0 : e.target) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.classList.contains('cancel')) {
+            return;
+        }
+        //this.stopActionTimer();
+        //(this as any).checkAction('actRestart');
+        this.bgaPerformAction('actUndoToStep', { stepId: stepId } /*, false*/);
+    };
+    Heat.prototype.notif_clearTurn = function (args) {
+        this.cancelLogs(args.notifIds);
+    };
+    Heat.prototype.notif_refreshUI = function (args) {
+        var _this = this;
+        var _a;
+        Object.entries(args.datas.constructors).forEach(function (_a) {
+            var constructorIdStr = _a[0], constructor = _a[1];
+            var constructorId = Number(constructorIdStr);
+            _this.circuit.refreshUI(constructor);
+            if (!constructor.ai) {
+                _this.gearCounters[constructor.id].setValue(constructor.gear);
+                _this.engineCounters[constructor.id].setValue(Object.values(constructor.engine).length);
+            }
+            _this.setSpeedCounter(constructor.id, constructor.speed);
+            _this.cornerCounters[constructor.id].setValue(constructor.distanceToCorner);
+            _this.lapCounters[constructor.id].setValue(Math.max(1, Math.min(_this.gamedatas.nbrLaps, constructor.turn + 1)));
+            var playerId = _this.getPlayerIdFromConstructorId(constructorId);
+            if (playerId > 0) {
+                _this.getPlayerTable(playerId).refreshUI(constructor);
+            }
+        });
+        (_a = this.championshipTable) === null || _a === void 0 ? void 0 : _a.setRaceProgress(args.datas.progress);
+        Object.values(this.gamedatas.constructors).forEach(function (constructor) {
+            return _this.setScore(_this.getPlayerIdFromConstructorId(constructor.id), Object.values(args.datas.scores)
+                .map(function (circuitScores) { return circuitScores[constructor.id]; })
+                .reduce(function (a, b) { return a + b; }, 0));
+        });
+    };
+    Heat.prototype.notif_refreshHand = function (args) {
+        var constructor_id = args.constructor_id, hand = args.hand;
+        var playerId = this.getPlayerIdFromConstructorId(constructor_id);
+        return this.getPlayerTable(playerId).refreshHand(hand);
+    };
+    /*
+    * [Undocumented] Called by BGA framework on any notification message
+    * Handle cancelling log messages for restart turn
+    */
+    /* @Override */
+    Heat.prototype.onPlaceLogOnChannel = function (msg) {
+        var currentLogId = this.notifqueue.next_log_id;
+        var currentMobileLogId = this.next_log_id;
+        var res = this.inherited(arguments);
+        this._notif_uid_to_log_id[msg.uid] = currentLogId;
+        this._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
+        this._last_notif = {
+            logId: currentLogId,
+            mobileLogId: currentMobileLogId,
+            msg: msg,
+        };
+        return res;
+    };
+    Heat.prototype.cancelLogs = function (notifIds) {
+        var _this = this;
+        notifIds.forEach(function (uid) {
+            if (_this._notif_uid_to_log_id.hasOwnProperty(uid)) {
+                var logId = _this._notif_uid_to_log_id[uid];
+                if ($('log_' + logId)) {
+                    dojo.addClass('log_' + logId, 'cancel');
+                }
+            }
+            if (_this._notif_uid_to_mobile_log_id.hasOwnProperty(uid)) {
+                var mobileLogId = _this._notif_uid_to_mobile_log_id[uid];
+                if ($('dockedlog_' + mobileLogId)) {
+                    dojo.addClass('dockedlog_' + mobileLogId, 'cancel');
+                }
+            }
+        });
+    };
+    Heat.prototype.addLogClass = function () {
+        var _a;
+        if (this._last_notif == null) {
+            return;
+        }
+        var notif = this._last_notif;
+        var type = notif.msg.type;
+        if (type == 'history_history') {
+            type = notif.msg.args.originalType;
+        }
+        if ($('log_' + notif.logId)) {
+            dojo.addClass('log_' + notif.logId, 'notif_' + type);
+            var methodName = 'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
+            (_a = this[methodName]) === null || _a === void 0 ? void 0 : _a.call(this, notif);
+        }
+        if ($('dockedlog_' + notif.mobileLogId)) {
+            dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
+        }
+    };
+    Heat.prototype.onAddingNewUndoableStepToLog = function (notif) {
+        var _this = this;
+        var _a, _b, _c, _d;
+        if (!$("log_".concat(notif.logId))) {
+            return;
+        }
+        var stepId = notif.msg.args.stepId;
+        $("log_".concat(notif.logId)).dataset.step = stepId;
+        if ($("dockedlog_".concat(notif.mobileLogId))) {
+            $("dockedlog_".concat(notif.mobileLogId)).dataset.step = stepId;
+        }
+        if ((_d = (_c = (_b = (_a = this.gamedatas) === null || _a === void 0 ? void 0 : _a.gamestate) === null || _b === void 0 ? void 0 : _b.args) === null || _c === void 0 ? void 0 : _c.undoableSteps) === null || _d === void 0 ? void 0 : _d.includes(parseInt(stepId))) {
+            this.onClick($("log_".concat(notif.logId)), function (e) { return _this.undoToStep(stepId, e); });
+            if ($("dockedlog_".concat(notif.mobileLogId))) {
+                this.onClick($("dockedlog_".concat(notif.mobileLogId)), function (e) { return _this.undoToStep(stepId, e); });
+            }
+        }
     };
     Heat.prototype.coloredConstructorName = function (constructorName) {
         return "<span style=\"font-weight: bold; color: #".concat(CONSTRUCTORS_COLORS[Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.name == constructorName; }).id], "\">").concat(_(constructorName), "</span>");

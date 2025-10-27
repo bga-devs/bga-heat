@@ -334,4 +334,20 @@ class PlayerTable {
 
         return true;
     }
+
+    public async refreshHand(hand: Card[]) {
+        this.hand.removeAll();
+        return this.hand.addCards(hand);
+    }
+
+    public async refreshUI(constructor: Constructor) {
+        this.deck.setCardNumber(constructor.deckCount);
+        const engineCards = Object.values(constructor.engine);
+        this.engine.setCardNumber(engineCards.length, engineCards[0]);
+        const discardCards = Object.values(constructor.discard);
+        this.discard.setCardNumber(discardCards.length, discardCards[0]);
+
+        this.inplay.removeAll();
+        this.inplay.addCards(Object.values(constructor.inplay));
+    }
 }

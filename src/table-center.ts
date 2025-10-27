@@ -577,4 +577,10 @@ class Circuit {
       `<div class="eliminated-podium" style="--x: ${cell.x}px; --y: ${cell.y}px;">❌</div>`
     );
   }
+  
+  public refreshUI(constructor: Constructor) {
+    this.createCar(constructor);
+    this.removeMapPaths();
+    constructor.paths.filter((path) => path?.length > 1).forEach((path) => this.addMapPath(path, false))
+  }
 }
