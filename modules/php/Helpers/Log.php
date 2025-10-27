@@ -22,6 +22,12 @@ use Bga\Games\Heat\Managers\Players;
 
 class Log extends \APP_DbObject
 {
+  public static function clearCache(): void
+  {
+    Globals::fetch();
+    Constructors::invalidate();
+  }
+
   public static function enable()
   {
     Game::get()->setGameStateValue('logging', 1);
@@ -197,7 +203,7 @@ class Log extends \APP_DbObject
     }
 
     // Force to clear cached informations
-    Globals::fetch();
+    self::clearCache();
 
     // Notify
     $datas = Game::get()->getAllDatas();

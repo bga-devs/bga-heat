@@ -165,7 +165,7 @@ class Circuit
 
   public function getTunnelsSpaces(): array
   {
-    return $this->datas['tunnelSpaces'] ?? [];
+    return $this->datas['tunnelsSpaces'] ?? [];
   }
 
   public function getStartingCells(): array

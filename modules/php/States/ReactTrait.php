@@ -451,6 +451,9 @@ trait ReactTrait
       throw new \BgaVisibleSystemException('Cant pass react with mandatory symbols left. Should not happen');
     }
 
+    $constructor = Constructors::getActive();
+    Notifications::message(clienttranslate('${constructor_name} ends their React phase'), ['constructor' => $constructor]);
+
     $this->stReactDone();
   }
 

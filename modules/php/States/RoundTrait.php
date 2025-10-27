@@ -955,6 +955,7 @@ trait RoundTrait
     }
 
     return [
+      'undoableSteps' => Log::getUndoableSteps(),
       'speeds' => $speeds,
       'heatCosts' => $heatCosts,
       'slipstreamWillCrossNextCorner' => $slipstreamWillCrossNextCorner,
@@ -970,14 +971,16 @@ trait RoundTrait
   public function stSlipstream()
   {
     if (empty($this->argsSlipstream()['speeds'])) {
-      $this->actSlipstream(0);
+      $this->actSlipstream(0, true);
     }
   }
 
-  public function actSlipstream(int $speed)
+  public function actSlipstream(int $speed, bool $auto = false)
   {
     self::checkAction('actSlipstream');
-    $this->addNewUndoableStep();
+    if (!$auto) {
+      $this->addNewUndoableStep();
+    }
 
     $constructor = Constructors::getActive();
     Globals::setPositionBeforeSlipstream($constructor->getPosition());
@@ -1179,7 +1182,7 @@ trait RoundTrait
 
     // Tunnel Vision exp => no discard in tunnel
     if ($constructor->isInTunnelSpace()) {
-      $cards = [];
+      $cards = new Collection();
       $maxDiscardable = 0;
     }
 
@@ -1193,6 +1196,7 @@ trait RoundTrait
     $refreshedIds = $symbols[REFRESH] ?? [];
 
     return [
+      'undoableSteps' => Log::getUndoableSteps(),
       '_private' => [
         'active' => [
           'cardIds' => $cards->getIds(),
