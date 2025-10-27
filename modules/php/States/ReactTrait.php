@@ -142,6 +142,25 @@ trait ReactTrait
     // Add some informations to symbols
     ////////////////////////////////////
 
+    // Mandatory / Coalescable / UpTo
+    $canPass = true;
+    $mandatorySymbols = [HEAT, SCRAP];
+    $coalescableSymbols = [HEAT, SCRAP, COOLDOWN, DRAFT, REDUCE, SUPER_COOL];
+    $irreversibleSymbols = [SCRAP, BOOST, HEATED_BOOST];
+    $upToSymbols = [COOLDOWN, DRAFT, REDUCE, SUPER_COOL];
+
+    foreach ($symbols as $symbol => &$symbolInfos) {
+      $symbolInfos['mandatory'] = in_array($symbol, $mandatorySymbols);
+      $symbolInfos['coalescable'] = in_array($symbol, $coalescableSymbols);
+      $symbolInfos['irreversible'] = in_array($symbol, $irreversibleSymbols);
+      $symbolInfos['upTo'] = in_array($symbol, $upToSymbols);
+
+      if ($symbolInfos['mandatory']) {
+        $canPass = $canPass && $symbolInfos['used'];
+      }
+    }
+    unset($symbolInfos);
+
     // Compute which ones are actually usable
     foreach ($symbols as $symbol => &$symbolInfos) {
       // Add information about doable, min,max doable
@@ -156,7 +175,7 @@ trait ReactTrait
           $symbolInfos['doable'] = $symbolInfos['doable'] && $symbolInfos['min'] <= $totalN;
         }
         if (isset($symbolInfos['max'])) {
-          $symbolInfos['doable'] = $symbolInfos['doable'] && min($values) <= $symbolInfos['max'];
+          $symbolInfos['doable'] = $symbolInfos['doable'] && (($symbolInfos['upTo'] ?? false) || min($values) <= $symbolInfos['max']);
         }
       }
 
@@ -188,25 +207,6 @@ trait ReactTrait
         }
       }
       $symbolInfos['used'] = $used;
-    }
-    unset($symbolInfos);
-
-    // Mandatory / Coalescable / UpTo
-    $canPass = true;
-    $mandatorySymbols = [HEAT, SCRAP];
-    $coalescableSymbols = [HEAT, SCRAP, COOLDOWN, DRAFT, REDUCE, SUPER_COOL];
-    $irreversibleSymbols = [SCRAP, BOOST, HEATED_BOOST];
-    $upToSymbols = [COOLDOWN, DRAFT, REDUCE, SUPER_COOL];
-
-    foreach ($symbols as $symbol => &$symbolInfos) {
-      $symbolInfos['mandatory'] = in_array($symbol, $mandatorySymbols);
-      $symbolInfos['coalescable'] = in_array($symbol, $coalescableSymbols);
-      $symbolInfos['irreversible'] = in_array($symbol, $irreversibleSymbols);
-      $symbolInfos['upTo'] = in_array($symbol, $upToSymbols);
-
-      if ($symbolInfos['mandatory']) {
-        $canPass = $canPass && $symbolInfos['used'];
-      }
     }
     unset($symbolInfos);
     ////////////////////////////////////////////////
