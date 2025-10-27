@@ -462,6 +462,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       case 'chooseSpeed':
         this.onLeavingChooseSpeed();
         break;
+      case 'react':
+        this.onLeavingReact();
+        break;
       case 'slipstream':
         this.onLeavingSlipstream();
         break;
@@ -489,6 +492,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
   private onLeavingChooseSpeed() {
     this.circuit.removeMapIndicators();
+  }
+
+  private onLeavingReact() {
+    document.querySelectorAll('.hand.cards .action-button').forEach(elem => elem.remove());    
   }
 
   private onLeavingSlipstream() {

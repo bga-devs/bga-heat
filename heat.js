@@ -3938,6 +3938,9 @@ var Heat = /** @class */ (function (_super) {
             case 'chooseSpeed':
                 this.onLeavingChooseSpeed();
                 break;
+            case 'react':
+                this.onLeavingReact();
+                break;
             case 'slipstream':
                 this.onLeavingSlipstream();
                 break;
@@ -3963,6 +3966,9 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.onLeavingChooseSpeed = function () {
         this.circuit.removeMapIndicators();
+    };
+    Heat.prototype.onLeavingReact = function () {
+        document.querySelectorAll('.hand.cards .action-button').forEach(function (elem) { return elem.remove(); });
     };
     Heat.prototype.onLeavingSlipstream = function () {
         this.circuit.removeMapIndicators();
