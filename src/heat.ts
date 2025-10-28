@@ -1182,7 +1182,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   private onUpdateActionButtons_react(args: EnteringReactArgs) {
-    const ignoredTypes = ['speed', 'adjust'];
+    const ignoredTypes = ['speed', 'adjust', 'boost'];
 
     Object.entries(args.symbols)
       .filter(([type, symbolSet]) => !ignoredTypes.includes(type))

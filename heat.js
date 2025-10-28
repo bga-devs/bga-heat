@@ -4541,7 +4541,7 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.onUpdateActionButtons_react = function (args) {
         var _this = this;
-        var ignoredTypes = ['speed', 'adjust'];
+        var ignoredTypes = ['speed', 'adjust', 'boost'];
         Object.entries(args.symbols)
             .filter(function (_a) {
             var type = _a[0], symbolSet = _a[1];

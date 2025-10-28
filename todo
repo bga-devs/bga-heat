@@ -3,7 +3,6 @@ GUY :
 - mulligan : notif_updatePlanification do not call onEnteringState again apparently since the old set of cards are selectable.
   In other words, you cant select the newly drawn cards unless you refresh the page. Easy to reproduce.
 - undo : "undo here" is not always clickable, need refresh
-- I think this one should never actually happen if backend send "used" correctly: remove "boost" button on title bar and on cards, it should always be automatically resolved when revealed
 
 - chooseSpeed: handle cases when player have the choice on how to achieve a given speed.
   => use debug newReact. Select brakes 1/2/3/4 and brakes 1/4 for instance.
