@@ -5967,7 +5967,7 @@ var Heat = /** @class */ (function (_super) {
         });
     };
     Heat.prototype.addLogClass = function () {
-        var _a;
+        var _this = this;
         if (this._last_notif == null) {
             return;
         }
@@ -5979,7 +5979,9 @@ var Heat = /** @class */ (function (_super) {
         if ($('log_' + notif.logId)) {
             dojo.addClass('log_' + notif.logId, 'notif_' + type);
             var methodName = 'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
-            (_a = this[methodName]) === null || _a === void 0 ? void 0 : _a.call(this, notif);
+            if (this[methodName]) {
+                setTimeout(function () { return _this[methodName](notif); }, 50);
+            }
         }
         if ($('dockedlog_' + notif.mobileLogId)) {
             dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
@@ -5987,7 +5989,7 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.onAddingNewUndoableStepToLog = function (notif) {
         var _this = this;
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e, _f;
         if (!$("log_".concat(notif.logId))) {
             return;
         }
@@ -5996,7 +5998,8 @@ var Heat = /** @class */ (function (_super) {
         if ($("dockedlog_".concat(notif.mobileLogId))) {
             $("dockedlog_".concat(notif.mobileLogId)).dataset.step = stepId;
         }
-        if ((_d = (_c = (_b = (_a = this.gamedatas) === null || _a === void 0 ? void 0 : _a.gamestate) === null || _b === void 0 ? void 0 : _b.args) === null || _c === void 0 ? void 0 : _c.undoableSteps) === null || _d === void 0 ? void 0 : _d.includes(parseInt(stepId))) {
+        console.warn('onAddingNewUndoableStepToLog', stepId, (_b = (_a = this.gamedatas) === null || _a === void 0 ? void 0 : _a.gamestate) === null || _b === void 0 ? void 0 : _b.args, notif);
+        if ((_f = (_e = (_d = (_c = this.gamedatas) === null || _c === void 0 ? void 0 : _c.gamestate) === null || _d === void 0 ? void 0 : _d.args) === null || _e === void 0 ? void 0 : _e.undoableSteps) === null || _f === void 0 ? void 0 : _f.includes(parseInt(stepId))) {
             this.onClick($("log_".concat(notif.logId)), function (e) { return _this.undoToStep(stepId, e); });
             if ($("dockedlog_".concat(notif.mobileLogId))) {
                 this.onClick($("dockedlog_".concat(notif.mobileLogId)), function (e) { return _this.undoToStep(stepId, e); });

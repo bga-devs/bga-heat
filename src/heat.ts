@@ -2869,7 +2869,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         dojo.addClass('log_' + notif.logId, 'notif_' + type);
 
         var methodName = 'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
-        this[methodName]?.(notif);
+        if (this[methodName]) {
+          setTimeout(() => this[methodName](notif), 50);
+        }
       }
       if ($('dockedlog_' + notif.mobileLogId)) {
         dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
@@ -2885,6 +2887,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       if ($(`dockedlog_${notif.mobileLogId}`)) {
         $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
       }
+
+      console.warn('onAddingNewUndoableStepToLog', stepId, this.gamedatas?.gamestate?.args, notif);
 
       if (this.gamedatas?.gamestate?.args?.undoableSteps?.includes(parseInt(stepId))) {
         this.onClick($(`log_${notif.logId}`), e => this.undoToStep(stepId, e));
