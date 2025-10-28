@@ -1,5 +1,7 @@
 GUY :
 
+- mulligan : notif_updatePlanification do not call onEnteringState again apparently since the old set of cards are selectable.
+  In other words, you cant select the newly drawn cards unless you refresh the page. Easy to reproduce.
 - react : 189351: "Issues with Draft/Cooldown in the React step" => issue with "gear" entry of cooldown probably.
 - undo : "undo here" is not always clickable, need refresh
 - undo : make undo buttons a bit separate on the right with some margin (I think it's actually in the new guidelines)
