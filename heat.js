@@ -5378,6 +5378,8 @@ var Heat = /** @class */ (function (_super) {
         if (mulliganBtn && !args.args._private.canMulligan) {
             mulliganBtn.remove();
         }
+        this.gamedatas.gamestate.args = args.args;
+        this.onEnteringPlanification(args.args);
     };
     Heat.prototype.notif_reveal = function (args) {
         return __awaiter(this, void 0, void 0, function () {
@@ -5626,6 +5628,7 @@ var Heat = /** @class */ (function (_super) {
                     case 0:
                         constructor_id = args.constructor_id, deckCount = args.deckCount, heat = args.heat;
                         cards = Object.values(args.cards);
+                        this.gamedatas.gamestate.args._private.cards = cards;
                         playerTable = this.getCurrentPlayerTable();
                         return [4 /*yield*/, playerTable.hand.removeAll()];
                     case 1:

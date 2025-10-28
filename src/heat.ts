@@ -2367,6 +2367,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     if (mulliganBtn && !args.args._private.canMulligan) {
       mulliganBtn.remove();
     }
+    this.gamedatas.gamestate.args = args.args;
+    this.onEnteringPlanification(args.args);
   }
 
   async notif_reveal(args: NotifRevealArgs) {
@@ -2544,6 +2546,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   async notif_pMulligan(args: NotifPMulliganArgs) {
     const { constructor_id, deckCount, heat } = args;
     const cards = Object.values(args.cards);
+    this.gamedatas.gamestate.args._private.cards = cards;
     const playerTable = this.getCurrentPlayerTable();
     await playerTable.hand.removeAll();
     await this.payHeats(constructor_id, [heat]);
