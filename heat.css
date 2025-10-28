@@ -1743,6 +1743,10 @@ html,
   right: -8px;
 }
 
+#btnUndoLastStep {
+  margin-left: 30px;
+}
+
 .dijitTooltipContents .icon {
   width: 20px;
   height: 20px;

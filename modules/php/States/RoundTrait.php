@@ -850,7 +850,7 @@ trait RoundTrait
     if ($gear <= 2) {
       $n = $gear == 1 ? 3 : 1;
       $symbols[COOLDOWN]['entries'][GEAR] = [
-        'value' => $n,
+        'n' => $n,
         'used' => false
       ];
       Notifications::gainGearCooldown($constructor, $gear, $n);
@@ -858,7 +858,7 @@ trait RoundTrait
 
     // Store component HeatedBoost symbol
     $symbols[HEATED_BOOST]['entries'][HEATED_BOOST] = [
-      'value' => 1,
+      'n' => 1,
       'used' => false,
     ];
 
