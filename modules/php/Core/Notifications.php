@@ -711,7 +711,8 @@ class Notifications
 
     self::notifyAll('eventRemoveHeat', $msgs[$fromLocation], [
       'constructor' => $constructor,
-      'card' => $heat
+      'card' => $heat,
+      'fromLocation' => $fromLocation,
     ]);
   }
 

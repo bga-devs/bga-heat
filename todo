@@ -1,6 +1,7 @@
 GUY :
 
-- undo : "undo here" is not always clickable, need refresh
+- https://boardgamearena.com/bug?id=190970 : pressure cooker event notif not properly updating FE
+  => be careful and check "fromLocation" in notif args to know where the heat was taken from!
 
 - chooseSpeed: handle cases when player have the choice on how to achieve a given speed.
   => use debug newReact. Select brakes 1/2/3/4 and brakes 1/4 for instance.
