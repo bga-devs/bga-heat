@@ -189,6 +189,9 @@ trait ReactTrait
         }
         if (isset($symbolInfos['max'])) {
           $symbolInfos['doable'] = $symbolInfos['doable'] && (($symbolInfos['upTo'] ?? false) || min($values) <= $symbolInfos['max']);
+          if ($symbolInfos['upTo'] ?? false) {
+            $symbolInfos['max'] = min($symbolInfos['max'], $totalN);
+          }
         }
       }
 
@@ -273,6 +276,7 @@ trait ReactTrait
         throw new \BgaVisibleSystemException('No total value picked for a coalescable symbol. Should not happen');
       }
       if ($totalN < $n || ($totalN != $n && !$symbolInfos['upTo'])) {
+        var_dump($symbolInfos);
         throw new \BgaVisibleSystemException('Invalid total value picked for a coalescable symbol. Should not happen');
       }
       if (isset($symbolInfos['max']) && $n > $symbolInfos['max']) {
