@@ -1185,8 +1185,13 @@ trait RoundTrait
     }
 
     // Any card to refresh ?
-    $symbols = Globals::getSymbols();
-    $refreshedIds = $symbols[REFRESH] ?? [];
+    $symbols = Globals::getCardSymbols();
+    $refreshedIds = [];
+    foreach ($symbols[REFRESH]['entries'] ?? [] as $cardId => $entry) {
+      if (!$entry['used']) {
+        $refreshedIds[] = $cardId;
+      }
+    }
 
     return [
       'undoableSteps' => Log::getUndoableSteps(),
@@ -1221,6 +1226,7 @@ trait RoundTrait
 
   public function actRefresh(int $cardId)
   {
+    $this->addNewUndoableStep();
     self::checkAction('actRefresh');
     $constructor = Constructors::getActive();
     $args = $this->argsDiscard()['_private']['active'];
@@ -1230,9 +1236,9 @@ trait RoundTrait
       throw new \BgaVisibleSystemException('Invalid card to refresh. Should not happen');
     }
 
-    $symbols = Globals::getSymbols();
-    $symbols[REFRESH] = array_values(array_diff($symbols[REFRESH], [$cardId]));
-    Globals::setSymbols($symbols);
+    $symbols = Globals::getCardSymbols();
+    $symbols[REFRESH]['entries'][$cardId]['used'] = true;
+    Globals::setCardSymbols($symbols);
 
     $card = Cards::getSingle($cardId);
     Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
