@@ -380,7 +380,7 @@ class Notifications
     ]);
   }
 
-  public static function heatedBoost(Constructor $constructor, Collection $heats, array $cards, array $card): void
+  public static function heatedBoost(Constructor $constructor, ?Collection $heats, array $cards, array $card): void
   {
     if (!is_null($heats)) {
       self::notifyAll('payHeats', clienttranslate('${constructor_name} pays 1 heat to get the [+] effect'), [

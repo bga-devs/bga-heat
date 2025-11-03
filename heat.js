@@ -3656,7 +3656,7 @@ var Heat = /** @class */ (function (_super) {
         this.getGameAreaElement().insertAdjacentHTML('beforeend', "\n      <link rel=\"stylesheet\" href=\"https://use.typekit.net/jim0ypy.css\">\n\n      <div id=\"top\">\n      </div>\n\n      <div id=\"table-center\">\n          <div id=\"circuit\"></div>\n      </div>\n      <div id=\"tables\"></div>  \n    ");
         log('Starting game setup');
         this.gamedatas = gamedatas;
-        // Create a new div for buttons to avoid BGA auto clearing it  
+        // Create a new div for buttons to avoid BGA auto clearing it
         // @ts-ignore
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
         // @ts-ignore
@@ -3756,7 +3756,10 @@ var Heat = /** @class */ (function (_super) {
         }
         if (this.isCurrentPlayerActive()) {
             if ((_c = args.args) === null || _c === void 0 ? void 0 : _c.previousSteps) {
-                document.getElementById('logs').querySelectorAll(".log.notif_newUndoableStep").forEach(function (undoNotif) {
+                document
+                    .getElementById('logs')
+                    .querySelectorAll(".log.notif_newUndoableStep")
+                    .forEach(function (undoNotif) {
                     var _a;
                     if (!((_a = args.args) === null || _a === void 0 ? void 0 : _a.previousSteps.includes(Number(undoNotif.dataset.step)))) {
                         undoNotif.style.display = 'none';
@@ -4274,7 +4277,7 @@ var Heat = /** @class */ (function (_super) {
                         this.statusBar.addActionButton(_('Mulligan') + formatTextIcons(' (1[Heat])'), function () { return _this.bgaPerformAction('actMulligan'); }, {
                             id: 'mulligan-btn',
                             color: 'alert',
-                            confirm: _('Spend 1 Heat to draw a new hand?')
+                            confirm: _('Spend 1 Heat to draw a new hand?'),
                         });
                     }
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand.getSelection());
@@ -4441,7 +4444,7 @@ var Heat = /** @class */ (function (_super) {
                 break;
             case 'boost':
             case 'heated-boost':
-                var paid = type == 'heated-boost';
+                var paid = type == 'heated-boost' && symbolInfos.heated;
                 label = "[Boost] > [Speed]";
                 if (paid) {
                     label += " (1[Heat])";
@@ -5932,9 +5935,9 @@ var Heat = /** @class */ (function (_super) {
         return this.getPlayerTable(playerId).refreshHand(hand);
     };
     /*
-    * [Undocumented] Called by BGA framework on any notification message
-    * Handle cancelling log messages for restart turn
-    */
+     * [Undocumented] Called by BGA framework on any notification message
+     * Handle cancelling log messages for restart turn
+     */
     /* @Override */
     Heat.prototype.onPlaceLogOnChannel = function (msg) {
         var currentLogId = this.notifqueue.next_log_id;
