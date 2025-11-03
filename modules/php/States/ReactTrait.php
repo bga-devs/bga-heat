@@ -13,6 +13,7 @@ use Bga\Games\Heat\Managers\Players;
 use Bga\Games\Heat\Managers\Cards;
 
 use \Bga\GameFramework\Actions\Types\JsonParam;
+use Bga\Games\Heat\Helpers\Collection;
 use Bga\Games\Heat\Models\Constructor;
 
 ///////////////////////////////////////////
@@ -142,6 +143,18 @@ trait ReactTrait
     // Add some informations to symbols
     ////////////////////////////////////
 
+    // Used ?
+    foreach ($symbols as $symbol => &$symbolInfos) {
+      $used = true;
+      foreach ($symbolInfos['entries'] as $cardId => $infos) {
+        if (!($infos['used'] ?? false)) {
+          $used = false;
+        }
+      }
+      $symbolInfos['used'] = $used;
+    }
+    unset($symbolInfos);
+
     // Mandatory / Coalescable / UpTo
     $canPass = true;
     $mandatorySymbols = [HEAT, SCRAP];
@@ -156,7 +169,7 @@ trait ReactTrait
       $symbolInfos['upTo'] = in_array($symbol, $upToSymbols);
 
       if ($symbolInfos['mandatory']) {
-        $canPass = $canPass && $symbolInfos['used'];
+        $canPass = $canPass && ($symbolInfos['used'] ?? false);
       }
     }
     unset($symbolInfos);
@@ -195,18 +208,6 @@ trait ReactTrait
         $infos['doable'] = $constructor->getSector() == $infos['cornerPos'];
       }
       unset($infos);
-    }
-    unset($symbolInfos);
-
-    // Used ?
-    foreach ($symbols as $symbol => &$symbolInfos) {
-      $used = true;
-      foreach ($symbolInfos['entries'] as $cardId => $infos) {
-        if (!($infos['used'] ?? false)) {
-          $used = false;
-        }
-      }
-      $symbolInfos['used'] = $used;
     }
     unset($symbolInfos);
     ////////////////////////////////////////////////
@@ -545,7 +546,7 @@ trait ReactTrait
       Cards::move($cardIds, "engine-$cId");
       Notifications::superCoolCards($constructor, $cards);
     } else {
-      Notifications::superCoolCards($constructor, []);
+      Notifications::superCoolCards($constructor, new Collection([]));
     }
     $this->gamestate->jumpToState(ST_REACT);
   }
