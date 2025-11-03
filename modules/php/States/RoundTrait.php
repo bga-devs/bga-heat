@@ -1253,7 +1253,7 @@ trait RoundTrait
       if (!empty(array_diff($cardIds, $ids))) {
         throw new \BgaVisibleSystemException('Invalid cards to discard. Should not happen');
       }
-      if (count($ids) > $args['max']) {
+      if (count($cardIds) > $args['max']) {
         throw new \BgaVisibleSystemException('Too many cards to discard. Should not happen');
       }
 
