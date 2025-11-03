@@ -374,7 +374,7 @@ trait RoundTrait
     }
   }
 
-  public function actCancelPlan()
+  public function actCancelSelection()
   {
     if (Globals::isDeferredRounds()) {
       throw new UserException('You cant cancel planification in deferred round mode. Should not happen');
@@ -660,6 +660,7 @@ trait RoundTrait
     unset($infos);
 
     return [
+      'undoableSteps' => Log::getUndoableSteps(),
       'speeds' => $speeds,
       'symbols' => $symbols,
       'updatedSpeedLimits' => $this->getUpdatedSpeedLimits($constructor),

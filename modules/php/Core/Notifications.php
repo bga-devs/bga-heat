@@ -6,6 +6,7 @@ use Bga\Games\Heat\Core\Globals;
 use Bga\Games\Heat\Managers\Constructors;
 use Bga\Games\Heat\Game;
 use Bga\Games\Heat\Helpers\Collection;
+use Bga\Games\Heat\Helpers\Log;
 use Bga\Games\Heat\Models\Circuit;
 use Bga\Games\Heat\Models\Constructor;
 use Bga\Games\Heat\Models\Player;
@@ -775,6 +776,7 @@ class Notifications
     self::notify($constructor, 'newUndoableStep', clienttranslate('Undo here'), [
       'stepId' => $stepId,
       'preserve' => ['stepId'],
+      'undoableSteps' => Log::getUndoableSteps(),
     ]);
   }
 

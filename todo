@@ -12,6 +12,3 @@ TIM :
 
 - check undo on some action + add some timing for turn confirmation (currently autoskip discard + auto spin-out)
 - check "not enough heat to play" code
-- react : 189351: "Issues with Draft/Cooldown in the React step" => issue with "gear" entry of cooldown probably. => I changed a bit the back because it was sending 'value' instead of 'n', I hope it doesn"'t break anything.
-- actCancelSelection doesn't exist on back side (cancel planification)
-- for Undo here not working, I check when choosing a speed, it calls onAddingNewUndoableStepToLog but doesn't bind because the game state args don't have an undoableSteps, I added a console.warn so you can see that. Maybe the Undo here could contain undoableSteps on its args, or I should consider if the notif appears, it's always undoable?
