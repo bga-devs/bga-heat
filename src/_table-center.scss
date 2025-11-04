@@ -74,6 +74,7 @@
       transform: scale(0.6);
       text-decoration-line: line-through;
       text-decoration-thickness: 5px;
+      white-space: nowrap;
 
       &[data-strike="down"] {
         text-decoration-color: #95181b;

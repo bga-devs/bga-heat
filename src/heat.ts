@@ -2525,6 +2525,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         const engineCountBefore = playerTable.engine.getCardNumber();
         await playerTable.engine.removeCard(card);
         playerTable.engine.setCardNumber(engineCountBefore - 1);
+        this.engineCounters[constructor_id].incValue(-1);
         break;
       case 'hand':
         await playerTable.hand.removeCard(card);

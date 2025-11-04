@@ -5595,6 +5595,7 @@ var Heat = /** @class */ (function (_super) {
                     case 2:
                         _b.sent();
                         playerTable.engine.setCardNumber(engineCountBefore - 1);
+                        this.engineCounters[constructor_id].incValue(-1);
                         return [3 /*break*/, 8];
                     case 3: return [4 /*yield*/, playerTable.hand.removeCard(card)];
                     case 4:
