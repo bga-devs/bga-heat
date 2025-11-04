@@ -172,6 +172,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     });
     this.setupNotifications();
 
+    window['BgaAutofit'].init();
+
     log('Ending game setup');
   }
 
@@ -2894,7 +2896,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
     }
 
-    console.warn('onAddingNewUndoableStepToLog', stepId, this.gamedatas?.gamestate?.args, notif);
+    //console.warn('onAddingNewUndoableStepToLog', stepId, this.gamedatas?.gamestate?.args, notif);
 
     if (this.gamedatas?.gamestate?.args?.undoableSteps?.includes(parseInt(stepId))) {
       this.onClick($(`log_${notif.logId}`), (e) => this.undoToStep(stepId, e));

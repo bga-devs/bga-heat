@@ -824,6 +824,7 @@ height: 241px; */
 }
 .event-card .card-sides .card-side.front .title-and-rule .rule {
   font-family: "roboto_slabbold";
+  max-height: 110px;
 }
 .event-card .card-sides .card-side.front .bottom-line {
   font-family: "Aachen Bold";

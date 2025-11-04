@@ -1,9 +1,8 @@
 define([
     "dojo","dojo/_base/declare",
-    "ebg/core/gamegui",
-    "ebg/counter",
-    "ebg/stock"
+    getLibUrl('bga-autofit', '1.x')
 ],
-function (dojo, declare) {
+function (dojo, declare, BgaAutofit) {
+    window['BgaAutofit'] = BgaAutofit;
     return declare("bgagame.heat", ebg.core.gamegui, new Heat());
 });

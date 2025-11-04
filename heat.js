@@ -2525,7 +2525,7 @@ var EventCardsManager = /** @class */ (function () {
     };
     EventCardsManager.prototype.getHtml = function (card) {
         var texts = this.getTexts(card);
-        var html = "<div id=\"event-card-".concat(card, "\" class=\"card event-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\" data-index=\"").concat(card, "\">\n                    <div class=\"title-and-rule\">\n                        <div class=\"title\">").concat(texts.title, "</div>\n                        <div class=\"rule\">").concat(texts.rule, "</div>\n                    </div>\n                    <div class=\"bottom-line\">\n                        <span class=\"year\">").concat(texts.year, "</span>\n                        \u2022\n                        <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', '' + texts.race), "</span>\n                        \u2022\n                        <span class=\"country\">").concat(texts.country, "</span>\n                    </div>\n                </div>\n            </div>\n        </div>");
+        var html = "<div id=\"event-card-".concat(card, "\" class=\"card event-card\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\" data-index=\"").concat(card, "\">\n                    <div class=\"title-and-rule\">\n                        <div class=\"title\">").concat(texts.title, "</div>\n                        <div class=\"rule bga-autofit\">").concat(texts.rule, "</div>\n                    </div>\n                    <div class=\"bottom-line\">\n                        <span class=\"year\">").concat(texts.year, "</span>\n                        \u2022\n                        <span class=\"race\">").concat(_('RACE ${number}').replace('${number}', '' + texts.race), "</span>\n                        \u2022\n                        <span class=\"country\">").concat(texts.country, "</span>\n                    </div>\n                </div>\n            </div>\n        </div>");
         return html;
     };
     EventCardsManager.prototype.getTooltip = function (card) {
@@ -3516,6 +3516,12 @@ var ChampionshipTable = /** @class */ (function () {
         });
         html += "\n            </div>\n            <div id=\"current-championship-card-text\"></div>\n        </div>\n        ";
         document.getElementById('top').insertAdjacentHTML('afterbegin', html);
+        /*document.querySelectorAll('.title-and-rule').forEach(titleAndRule => {
+            const title = titleAndRule.querySelector('.title');
+            if (title.clientHeight > 0) {
+                (titleAndRule.querySelector('.rule') as HTMLDivElement).style.height = `${134 - title.clientHeight}px`;
+            }
+        });*/
         var championshipCircuits = document.getElementById('championship-circuits');
         championshipCircuits.addEventListener('click', function () {
             championshipCircuits.dataset.folded = (championshipCircuits.dataset.folded == 'false').toString();
@@ -3731,6 +3737,7 @@ var Heat = /** @class */ (function (_super) {
             ],
         });
         this.setupNotifications();
+        window['BgaAutofit'].init();
         log('Ending game setup');
     };
     ///////////////////////////////////////////////////
@@ -5993,7 +6000,7 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.onAddingNewUndoableStepToLog = function (notif) {
         var _this = this;
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d;
         if (!$("log_".concat(notif.logId))) {
             return;
         }
@@ -6002,8 +6009,8 @@ var Heat = /** @class */ (function (_super) {
         if ($("dockedlog_".concat(notif.mobileLogId))) {
             $("dockedlog_".concat(notif.mobileLogId)).dataset.step = stepId;
         }
-        console.warn('onAddingNewUndoableStepToLog', stepId, (_b = (_a = this.gamedatas) === null || _a === void 0 ? void 0 : _a.gamestate) === null || _b === void 0 ? void 0 : _b.args, notif);
-        if ((_f = (_e = (_d = (_c = this.gamedatas) === null || _c === void 0 ? void 0 : _c.gamestate) === null || _d === void 0 ? void 0 : _d.args) === null || _e === void 0 ? void 0 : _e.undoableSteps) === null || _f === void 0 ? void 0 : _f.includes(parseInt(stepId))) {
+        //console.warn('onAddingNewUndoableStepToLog', stepId, this.gamedatas?.gamestate?.args, notif);
+        if ((_d = (_c = (_b = (_a = this.gamedatas) === null || _a === void 0 ? void 0 : _a.gamestate) === null || _b === void 0 ? void 0 : _b.args) === null || _c === void 0 ? void 0 : _c.undoableSteps) === null || _d === void 0 ? void 0 : _d.includes(parseInt(stepId))) {
             this.onClick($("log_".concat(notif.logId)), function (e) { return _this.undoToStep(stepId, e); });
             if ($("dockedlog_".concat(notif.mobileLogId))) {
                 this.onClick($("dockedlog_".concat(notif.mobileLogId)), function (e) { return _this.undoToStep(stepId, e); });
@@ -6078,9 +6085,8 @@ var Heat = /** @class */ (function (_super) {
 }(GameGui));
 define([
     "dojo", "dojo/_base/declare",
-    "ebg/core/gamegui",
-    "ebg/counter",
-    "ebg/stock"
-], function (dojo, declare) {
+    getLibUrl('bga-autofit', '1.x')
+], function (dojo, declare, BgaAutofit) {
+    window['BgaAutofit'] = BgaAutofit;
     return declare("bgagame.heat", ebg.core.gamegui, new Heat());
 });

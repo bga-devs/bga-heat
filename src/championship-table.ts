@@ -37,6 +37,13 @@ class ChampionshipTable {
 
         document.getElementById('top').insertAdjacentHTML('afterbegin', html);
 
+        /*document.querySelectorAll('.title-and-rule').forEach(titleAndRule => {
+            const title = titleAndRule.querySelector('.title');
+            if (title.clientHeight > 0) {
+                (titleAndRule.querySelector('.rule') as HTMLDivElement).style.height = `${134 - title.clientHeight}px`;
+            }
+        });*/
+
         const championshipCircuits = document.getElementById('championship-circuits');
         championshipCircuits.addEventListener('click', () => {
             championshipCircuits.dataset.folded = (championshipCircuits.dataset.folded == 'false').toString();

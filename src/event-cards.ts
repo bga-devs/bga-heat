@@ -170,7 +170,7 @@ class EventCardsManager {
                 <div class="card-side front" data-index="${card}">
                     <div class="title-and-rule">
                         <div class="title">${texts.title}</div>
-                        <div class="rule">${texts.rule}</div>
+                        <div class="rule bga-autofit">${texts.rule}</div>
                     </div>
                     <div class="bottom-line">
                         <span class="year">${texts.year}</span>
