@@ -5268,6 +5268,7 @@ var Heat = /** @class */ (function (_super) {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
                     $('generalactions').innerHTML = '';
+                    $('restartAction').innerHTML = '';
                     // If there is some text, we let the message some time, to be read
                     minDuration = MIN_NOTIFICATION_MS;
                 }
