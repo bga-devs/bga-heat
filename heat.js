@@ -4572,6 +4572,8 @@ var Heat = /** @class */ (function (_super) {
             });
             var reactAll = null;
             if (Object.keys(remainingEntries).length > 0) {
+                if (symbolInfos.max !== undefined && symbolInfos.max === 0)
+                    return;
                 reactAll = _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
                 if (symbolInfos.max !== undefined && symbolInfos.upTo) {
                     for (var n = symbolInfos.max - 1; n >= ((_b = symbolInfos.min) !== null && _b !== void 0 ? _b : 1); n--) {

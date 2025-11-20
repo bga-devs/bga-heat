@@ -1201,6 +1201,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           .forEach(([entry, symbolEntry]) => (remainingEntries[entry] = symbolEntry));
         let reactAll = null;
         if (Object.keys(remainingEntries).length > 0) {
+          if (symbolInfos.max !== undefined && symbolInfos.max === 0) return;
+
           reactAll = this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
           if (symbolInfos.max !== undefined && symbolInfos.upTo) {
             for (let n = symbolInfos.max - 1; n >= (symbolInfos.min ?? 1); n--) {

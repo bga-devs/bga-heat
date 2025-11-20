@@ -180,8 +180,17 @@ trait ReactTrait
       $possibleUse = $this->getPossibleUseOfSymbol($constructor, $symbol, $symbolInfos);
       $symbolInfos = array_merge($symbolInfos, $possibleUse);
 
+      // Some symbol entries are linked to corner => check if constructor is within that sector
+      foreach ($symbolInfos['entries'] as $cardId => &$infos) {
+        if (!isset($infos['cornerPos'])) continue;
+
+        $infos['doable'] = $constructor->getSector() == $infos['cornerPos'];
+      }
+      unset($infos);
+
+      // Max/min for coalescable symbols
       if (isset($symbolInfos['max']) || isset($symbolInfos['min'])) {
-        $values = array_map(fn($entry) => $entry['n'] ?? 0, $symbolInfos['entries']);
+        $values = array_map(fn($entry) => ($entry['doable'] ?? true) ? ($entry['n'] ?? 0) : 0, $symbolInfos['entries']);
         $totalN = array_sum($values);
 
         if (isset($symbolInfos['min'])) {
@@ -203,14 +212,6 @@ trait ReactTrait
         }
         unset($infos);
       }
-
-      // Some symbol entries are linked to corner => check if constructor is within that sector
-      foreach ($symbolInfos['entries'] as $cardId => &$infos) {
-        if (!isset($infos['cornerPos'])) continue;
-
-        $infos['doable'] = $constructor->getSector() == $infos['cornerPos'];
-      }
-      unset($infos);
     }
     unset($symbolInfos);
     ////////////////////////////////////////////////
