@@ -23,8 +23,8 @@ class Circuit
   protected array $corners = [];
   protected array $chicanes = [];
   protected array $legendLines = [];
-  protected array $agressiveLegendDistances = [];
-  protected array $doubleAgressiveLegendDistances = [];
+  protected array $aggressiveLegendDistances = [];
+  protected array $doubleAggressiveLegendDistances = [];
   protected array $raceLanes = [];
   protected array $startingCells = [];
   protected array $cells = [];
@@ -54,8 +54,8 @@ class Circuit
       }
       $this->corners[$pos] = $info['speed'];
       $this->legendLines[$pos] = $info['legend'];
-      $this->agressiveLegendDistances[$pos] = $info['agressiveLegend'] ?? null;
-      $this->doubleAgressiveLegendDistances[$pos] = $info['doubleAgressiveLegend'] ?? null;
+      $this->aggressiveLegendDistances[$pos] = $info['aggressiveLegend'] ?? null;
+      $this->doubleAggressiveLegendDistances[$pos] = $info['doubleAggressiveLegend'] ?? null;
       $lane = $info['lane'];
       $this->raceLanes[] = $lane;
     }
@@ -608,20 +608,20 @@ class Circuit
   /**
    * Legend information:
    *  - what is the line for a given corner
-   *  - what is the distance from given corner that would allow for double corner crossing for agressive legends
+   *  - what is the distance from given corner that would allow for double corner crossing for aggressive legends
    */
   public function getLegendLine(int $cornerPos): int
   {
     return $this->legendLines[$cornerPos];
   }
 
-  public function getAgressiveLegendDistance(int $cornerPos): ?int
+  public function getAggressiveLegendDistance(int $cornerPos): ?int
   {
-    return $this->agressiveLegendDistances[$cornerPos];
+    return $this->aggressiveLegendDistances[$cornerPos];
   }
-  public function getDoubleAgressiveLegendDistance(int $cornerPos): ?int
+  public function getDoubleAggressiveLegendDistance(int $cornerPos): ?int
   {
-    return $this->doubleAgressiveLegendDistances[$cornerPos];
+    return $this->doubleAggressiveLegendDistances[$cornerPos];
   }
 
   /**

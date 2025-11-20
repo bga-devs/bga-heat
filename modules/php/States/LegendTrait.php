@@ -42,12 +42,12 @@ trait LegendTrait
 
       $maxCornerCrossed = 1;
       if (boolval(Globals::getAggressiveLegends())) {
-        $aggressiveLegends = $this->getCircuit()->getAgressiveLegendDistance($cornerPos);
+        $aggressiveLegends = $this->getCircuit()->getAggressiveLegendDistance($cornerPos);
         if ($aggressiveLegends !== null && $deltaCorner <= $aggressiveLegends) {
           $maxCornerCrossed = 2;
         }
 
-        $doubleAggressiveLegends = $this->getCircuit()->getDoubleAgressiveLegendDistance($cornerPos);
+        $doubleAggressiveLegends = $this->getCircuit()->getDoubleAggressiveLegendDistance($cornerPos);
         if ($doubleAggressiveLegends !== null && $deltaCorner <= $doubleAggressiveLegends) {
           $maxCornerCrossed = 3;
         }
