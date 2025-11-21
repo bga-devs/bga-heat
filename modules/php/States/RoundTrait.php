@@ -12,6 +12,7 @@ use Bga\Games\Heat\Managers\Cards;
 use Bga\Games\Heat\Models\Circuit;
 
 use \Bga\GameFramework\Actions\Types\JsonParam;
+use \Bga\GameFramework\Actions\CheckAction;
 use Bga\Games\Heat\Helpers\Log;
 use Bga\Games\Heat\Models\Constructor;
 
@@ -374,12 +375,13 @@ trait RoundTrait
     }
   }
 
+  #[CheckAction(false)]
   public function actCancelSelection()
   {
     if (Globals::isDeferredRounds()) {
       throw new UserException('You cant cancel planification in deferred round mode. Should not happen');
     } else {
-      $this->gamestate->checkPossibleAction('actCancelPlan');
+      $this->gamestate->checkPossibleAction('actCancelSelection');
     }
 
     $player = Players::getCurrent();
