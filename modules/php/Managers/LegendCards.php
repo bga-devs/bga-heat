@@ -9,6 +9,7 @@ use Bga\Games\Heat\Core\Notifications;
 use Bga\Games\Heat\Core\Game;
 use Bga\Games\Heat\Helpers\UserException;
 use Bga\Games\Heat\Helpers\Collection;
+use Bga\Games\Heat\Helpers\Log;
 use Bga\Games\Heat\Managers\Constructors;
 
 const BLACK = 0;
@@ -100,6 +101,7 @@ class LegendCards
 
     $card = self::getCurrentCard();
     Notifications::newLegendCard($card);
+    Log::checkpoint();
   }
 
   public static function reshuffle()

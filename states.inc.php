@@ -177,7 +177,7 @@ $machinestates = [
     'type' => 'activeplayer',
     'args' => 'argsChooseSpeed',
     'action' => 'stChooseSpeed',
-    'possibleactions' => ['actChooseSpeed'],
+    'possibleactions' => ['actChooseSpeed', 'actUndoToStep', 'actRestartTurn'],
   ],
 
   /////////////////////////////////////////////////////////////////////////////////////

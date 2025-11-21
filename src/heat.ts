@@ -228,7 +228,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
       // Restart turn button
       //if (args.args?.previousEngineChoices >= 1 && !args.args.automaticAction) {
-      if (args.args?.undoableSteps) {
+      if (args.args?.undoableSteps && args.args.undoableSteps.length) {
         let lastStep = Math.max(...args.args.undoableSteps);
         if (lastStep > 0) {
           this.addDangerActionButton(

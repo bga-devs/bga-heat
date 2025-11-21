@@ -579,6 +579,7 @@ trait RoundTrait
         Notifications::resolveBoost($constructor, $cards, $card, $i, $totalBoost);
       }
       $symbols[BOOST] = $boosts;
+      Log::checkpoint();
     }
     Globals::setFlippedCards($totalBoost);
 
@@ -600,7 +601,9 @@ trait RoundTrait
     //////////////////////////////////////////////
 
     Globals::setCardSymbols($symbols);
-    Log::checkpoint();
+    if (Players::count() > 1) {
+      Log::checkpoint();
+    }
     $this->gamestate->jumpToState(ST_CHOOSE_SPEED);
   }
 

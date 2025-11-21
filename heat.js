@@ -3786,7 +3786,7 @@ var Heat = /** @class */ (function (_super) {
             });
             // Restart turn button
             //if (args.args?.previousEngineChoices >= 1 && !args.args.automaticAction) {
-            if ((_f = args.args) === null || _f === void 0 ? void 0 : _f.undoableSteps) {
+            if (((_f = args.args) === null || _f === void 0 ? void 0 : _f.undoableSteps) && args.args.undoableSteps.length) {
                 var lastStep_1 = Math.max.apply(Math, args.args.undoableSteps);
                 if (lastStep_1 > 0) {
                     this.addDangerActionButton('btnUndoLastStep', _('Undo last step'), function (e) { return _this.undoToStep(lastStep_1, e); }, 'restartAction');
