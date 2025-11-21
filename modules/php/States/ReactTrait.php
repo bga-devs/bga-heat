@@ -46,6 +46,11 @@ trait ReactTrait
     // Reduce stress => must have stress cards in hand
     elseif ($symbol == REDUCE) {
       $n = $constructor->getStressesInHand()->count();
+
+      // Cant discard in tunnels!
+      if ($constructor->isInTunnelSpace()) {
+        $n = 0;
+      }
       return ['doable' => $n > 0, 'max' => $n];
     }
     // Heated boost => must be able to pay for it
