@@ -924,7 +924,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               this.setTooltip(`actRefresh_${number}_button`, formatTextIcons(tooltip));
             });
           }
-          this.addActionButton(`actDiscard_button`, '', () => this.actDiscard(this.getCurrentPlayerTable().hand.getSelection()));
+
           let btn = this.statusBar.addActionButton(_('No additional discard'), () => this.actDiscard([]), {
             color: 'alert',
             confirm: args._private?.refreshedIds?.length
@@ -932,6 +932,13 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               : null,
           });
           btn.id = 'actNoDiscard_button';
+
+          let btn2 = this.statusBar.addActionButton('', () => this.actDiscard(this.getCurrentPlayerTable().hand.getSelection()), {
+            confirm: args._private?.refreshedIds?.length
+              ? _("Are you sure you don't want to refresh some of the played cards?")
+              : null,
+          });
+          btn2.id = 'actDiscard_button';
 
           this.onHandCardSelectionChange([]);
           break;

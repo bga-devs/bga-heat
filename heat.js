@@ -4252,7 +4252,7 @@ var Heat = /** @class */ (function (_super) {
     //
     Heat.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         log('onUpdateActionButtons: ' + stateName, args);
         switch (stateName) {
             case 'snakeDiscard':
@@ -4341,7 +4341,6 @@ var Heat = /** @class */ (function (_super) {
                             _this.setTooltip("actRefresh_".concat(number, "_button"), formatTextIcons(tooltip));
                         });
                     }
-                    this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); });
                     var btn = this.statusBar.addActionButton(_('No additional discard'), function () { return _this.actDiscard([]); }, {
                         color: 'alert',
                         confirm: ((_f = (_e = args._private) === null || _e === void 0 ? void 0 : _e.refreshedIds) === null || _f === void 0 ? void 0 : _f.length)
@@ -4349,6 +4348,12 @@ var Heat = /** @class */ (function (_super) {
                             : null,
                     });
                     btn.id = 'actNoDiscard_button';
+                    var btn2 = this.statusBar.addActionButton('', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); }, {
+                        confirm: ((_h = (_g = args._private) === null || _g === void 0 ? void 0 : _g.refreshedIds) === null || _h === void 0 ? void 0 : _h.length)
+                            ? _("Are you sure you don't want to refresh some of the played cards?")
+                            : null,
+                    });
+                    btn2.id = 'actDiscard_button';
                     this.onHandCardSelectionChange([]);
                     break;
                 case 'salvage':
