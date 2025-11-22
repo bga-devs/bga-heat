@@ -925,7 +925,13 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             });
           }
           this.addActionButton(`actDiscard_button`, '', () => this.actDiscard(this.getCurrentPlayerTable().hand.getSelection()));
-          this.addActionButton(`actNoDiscard_button`, _('No additional discard'), () => this.actDiscard([]), null, null, 'red');
+          this.statusBar.addActionButton(_('No additional discard'), () => () => this.actDiscard([]), {
+            color: 'alert',
+            confirm: args._private?.refreshedIds?.length
+              ? _("Are you sure you don't want to refresh some of the played cards?")
+              : null,
+          });
+
           this.onHandCardSelectionChange([]);
           break;
         case 'salvage':

@@ -4252,7 +4252,7 @@ var Heat = /** @class */ (function (_super) {
     //
     Heat.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e, _f;
         log('onUpdateActionButtons: ' + stateName, args);
         switch (stateName) {
             case 'snakeDiscard':
@@ -4342,7 +4342,12 @@ var Heat = /** @class */ (function (_super) {
                         });
                     }
                     this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); });
-                    this.addActionButton("actNoDiscard_button", _('No additional discard'), function () { return _this.actDiscard([]); }, null, null, 'red');
+                    this.statusBar.addActionButton(_('No additional discard'), function () { return function () { return _this.actDiscard([]); }; }, {
+                        color: 'alert',
+                        confirm: ((_f = (_e = args._private) === null || _e === void 0 ? void 0 : _e.refreshedIds) === null || _f === void 0 ? void 0 : _f.length)
+                            ? _("Are you sure you don't want to refresh some of the played cards?")
+                            : null,
+                    });
                     this.onHandCardSelectionChange([]);
                     break;
                 case 'salvage':
