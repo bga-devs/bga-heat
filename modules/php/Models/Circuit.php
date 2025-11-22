@@ -708,7 +708,7 @@ class Circuit
    *  - bool spinOut
    *  - array speedLimits: cornerPos => speedLimit
    */
-  public function getCrossedCornersHeatCosts(Constructor $constructor, int $speed, int $turn1, int $pos1, int $turn2, int $pos2): array
+  public function getCrossedCornersHeatCosts(Constructor $constructor, int $speed, int $turn1, int $pos1, int $turn2, int $pos2, bool $stopAtSpinOut = true): array
   {
     $corners = $this->getCornersInBetween($turn1, $pos1, $turn2, $pos2);
 
@@ -745,7 +745,9 @@ class Circuit
           $costs[$cornerPos] = $nHeatsToPay;
           if ($nHeatsToPay > $availableHeats) {
             $spinOut = true;
-            break;
+            if ($stopAtSpinOut) {
+              break;
+            }
           } else {
             $availableHeats -= $nHeatsToPay;
           }

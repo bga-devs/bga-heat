@@ -902,6 +902,13 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           );
           this.onInPlayCardSelectionChange([]);
           break;
+        case 'checkCorner':
+          if (args.spinOut) {
+            this.statusBar.addActionButton(_('SPIN OUT'), () => this.actCheckCorner(), { color: 'alert' });
+          } else {
+            this.statusBar.addActionButton(_('Pay'), () => this.actCheckCorner(), { autoclick: true });
+          }
+          break;
         case 'discard':
           this.onEnteringDiscard(args);
           if (args._private?.refreshedIds?.length) {
@@ -2121,6 +2128,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     this.bgaPerformAction('actPayHeats', {
       cardIds: JSON.stringify(selectedCards.map((card) => card.id)),
     });
+  }
+
+  public actCheckCorner() {
+    this.bgaPerformAction('actCheckCorner', {});
   }
 
   public actDiscard(selectedCards: Card[]) {

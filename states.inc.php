@@ -278,6 +278,16 @@ $machinestates = [
     'possibleactions' => ['actSlipstream', 'actUndoToStep', 'actRestartTurn'],
   ],
 
+  ST_CHECK_CORNER => [
+    'name' => 'checkCorner',
+    'description' => clienttranslate('${actplayer} must pay ${n} heat(s) for the crossed corner(s)'),
+    'descriptionmyturn' => clienttranslate('${you} must pay ${n} heat(s) for the crossed corner(s)'),
+    'type' => 'activeplayer',
+    'args' => 'argsCheckCorner',
+    'action' => 'stCheckCorner',
+    'possibleactions' => ['actCheckCorner', 'actUndoToStep', 'actRestartTurn'],
+  ],
+
   ST_DISCARD => [
     'name' => 'discard',
     'description' => clienttranslate('${actplayer} may discard cards from their hand'),

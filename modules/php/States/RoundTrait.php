@@ -994,7 +994,7 @@ trait RoundTrait
       $constructor->incStat('slipstreamGains', $nForward);
     }
 
-    $this->stCheckCorner();
+    $this->gamestate->jumpToState(ST_CHECK_CORNER);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -1005,7 +1005,34 @@ trait RoundTrait
   //    /_/(_)  \____|_| |_|\___|\___|_|\_\  \___\___/|_|  |_| |_|\___|_|
   ////////////////////////////////////////////////////////////////////////////
 
+  public function argsCheckCorner()
+  {
+    $constructor = Constructors::getActive();
+    $speed = $constructor->getSpeed();
+    $prevPosition = Globals::getPreviousPosition();
+    $prevTurn = Globals::getPreviousTurn();
+    $position = $constructor->getPosition();
+    $turn = $constructor->getTurn();
+
+    // For each corner, check speed against max speed of corner
+    list('heatCost' => $heatCost, 'spinOut' => $spinOut) = $this->getCircuit()->getCrossedCornersHeatCosts($constructor, $speed, $prevTurn, $prevPosition, $turn, $position, false);
+
+    return [
+      'undoableSteps' => Log::getUndoableSteps(),
+      'n' => $heatCost,
+      'spinOut' => $spinOut,
+    ];
+  }
+
   public function stCheckCorner()
+  {
+    $args = $this->argsCheckCorner();
+    if ($args['n'] == 0) {
+      $this->actCheckCorner();
+    }
+  }
+
+  public function actCheckCorner()
   {
     $event = Globals::getCurrentEvent();
 
@@ -1212,13 +1239,14 @@ trait RoundTrait
 
   public function stDiscard()
   {
-    // Auto skip if nothing to refresh and cant discard anything
-    $args = $this->argsDiscard()['_private']['active'];
-    $cardIds = $args['cardIds'];
-    if (empty($cardIds) && empty($args['refreshedIds'])) {
-      $this->actDiscard([]);
-      return;
-    }
+    // Remove autoskip for now for better undo handling
+    // // Auto skip if nothing to refresh and cant discard anything
+    // $args = $this->argsDiscard()['_private']['active'];
+    // $cardIds = $args['cardIds'];
+    // if (empty($cardIds) && empty($args['refreshedIds'])) {
+    //   $this->actDiscard([]);
+    //   return;
+    // }
 
     // Autoskip if race is over (no point in discarding more card)
     $constructor = Constructors::getActive();

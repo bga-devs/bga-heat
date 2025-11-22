@@ -4320,6 +4320,14 @@ var Heat = /** @class */ (function (_super) {
                     this.addActionButton("actPayHeats_button", formatTextIcons(_('Keep selected cards (max: ${number} [Heat])').replace('${number}', args.heatInReserve)), function () { return _this.actPayHeats(_this.getCurrentPlayerTable().inplay.getSelection()); });
                     this.onInPlayCardSelectionChange([]);
                     break;
+                case 'checkCorner':
+                    if (args.spinOut) {
+                        this.statusBar.addActionButton(_('SPIN OUT'), function () { return _this.actCheckCorner(); }, { color: 'alert' });
+                    }
+                    else {
+                        this.statusBar.addActionButton(_('Pay'), function () { return _this.actCheckCorner(); }, { autoclick: true });
+                    }
+                    break;
                 case 'discard':
                     this.onEnteringDiscard(args);
                     if ((_c = (_b = args._private) === null || _b === void 0 ? void 0 : _b.refreshedIds) === null || _c === void 0 ? void 0 : _c.length) {
@@ -5162,6 +5170,9 @@ var Heat = /** @class */ (function (_super) {
         this.bgaPerformAction('actPayHeats', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
+    };
+    Heat.prototype.actCheckCorner = function () {
+        this.bgaPerformAction('actCheckCorner', {});
     };
     Heat.prototype.actDiscard = function (selectedCards) {
         this.bgaPerformAction('actDiscard', {

@@ -34,6 +34,7 @@ const ST_PAY_HEATS = 24;
 const ST_SUPER_COOL = 25;
 
 const ST_SLIPSTREAM = 16;
+const ST_CHECK_CORNER = 27;
 const ST_DISCARD = 17;
 
 const ST_HIDDEN_PLANIFICATION = 40;
