@@ -108,10 +108,13 @@ class Log extends \APP_DbObject
   /**
    * Revert all the way to the last checkpoint or the last start of turn
    */
-  public static function undoTurn(): void
+  public static function undoTurn()
   {
-    $checkpoint = static::getLastCheckpoint(true);
-    self::revertTo($checkpoint);
+    $lastStep = static::getUndoableSteps(false)->last();
+    if (is_null($lastStep)) {
+      throw new \BgaVisibleSystemException('Nothing to undo!');
+    }
+    return self::revertTo($lastStep['id'] - 1);
   }
 
   /**

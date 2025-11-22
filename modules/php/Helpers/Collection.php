@@ -20,6 +20,12 @@ class Collection extends \ArrayObject
     return isset($arr[0]) ? $arr[0] : null;
   }
 
+  public function last()
+  {
+    $arr = $this->toArray();
+    return empty($arr) ? null : $arr[count($arr) - 1];
+  }
+
   public function rand()
   {
     $arr = $this->getArrayCopy();

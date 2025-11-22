@@ -71,11 +71,6 @@ class Game extends Table
     return self::$instance;
   }
 
-  protected function getGameName()
-  {
-    return 'heat';
-  }
-
   /*
    * getAllDatas:
    */

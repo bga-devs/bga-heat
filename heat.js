@@ -4342,12 +4342,13 @@ var Heat = /** @class */ (function (_super) {
                         });
                     }
                     this.addActionButton("actDiscard_button", '', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); });
-                    this.statusBar.addActionButton(_('No additional discard'), function () { return function () { return _this.actDiscard([]); }; }, {
+                    var btn = this.statusBar.addActionButton(_('No additional discard'), function () { return _this.actDiscard([]); }, {
                         color: 'alert',
                         confirm: ((_f = (_e = args._private) === null || _e === void 0 ? void 0 : _e.refreshedIds) === null || _f === void 0 ? void 0 : _f.length)
                             ? _("Are you sure you don't want to refresh some of the played cards?")
                             : null,
                     });
+                    btn.id = 'actNoDiscard_button';
                     this.onHandCardSelectionChange([]);
                     break;
                 case 'salvage':
