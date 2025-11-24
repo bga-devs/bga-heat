@@ -117,6 +117,24 @@ class Circuit
       }
     }
 
+
+    // Add sector information
+    $lapSize = $this->getLength();
+    $cornerPositions = array_keys($cornersDatas);
+    $currentCorner = $cornerPositions[count($cornerPositions) - 1];
+    $cornerPositions[] = $cornerPositions[0] + $lapSize; // Add a fake corner for end of circuit cells
+    $nextCornerIndex = 0;
+    for ($pos = 1; $pos <= $lapSize; $pos++) {
+      if ($pos >= $cornerPositions[$nextCornerIndex]) {
+        $currentCorner = $cornerPositions[$nextCornerIndex];
+        $nextCornerIndex++;
+      }
+
+      $cornersDatas[$currentCorner]['sector'][] = $this->getCell($pos, 1);
+      $cornersDatas[$currentCorner]['sector'][] = $this->getCell($pos, 2);
+    }
+
+
     $cellsDatas = [];
     foreach ($this->datas['cells'] as $cellId => $infos) {
       $cellsDatas[$cellId] = [
