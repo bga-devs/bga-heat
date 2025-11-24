@@ -2765,17 +2765,20 @@ var Circuit = /** @class */ (function () {
         })
             .forEach(function (_a) {
             var cornerId = _a[0], type = _a[1];
-            var field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
             var corner = corners[cornerId];
             if (corner) {
-                _this.createWeatherToken(type, corner["".concat(field, "X")], corner["".concat(field, "Y")], cardType, Number(cornerId), corner);
+                _this.createWeatherToken(type, cardType, Number(cornerId), corner);
             }
             else {
                 console.warn(cornerId, "doesn't exists ", corners);
             }
         });
     };
-    Circuit.prototype.createWeatherToken = function (type, x, y, cardType, cornerId, corner) {
+    Circuit.prototype.createWeatherToken = function (type, cardType, cornerId, corner) {
+        var _this = this;
+        var field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
+        var x = corner["".concat(field, "X")];
+        var y = corner["".concat(field, "Y")];
         var weatherTokenDiv = document.createElement('div');
         weatherTokenDiv.id = "weather-token-".concat(type, "-").concat(document.querySelectorAll(".weather-token[id^=\"weather-token-\"]").length);
         weatherTokenDiv.classList.add('weather-token');
@@ -2798,6 +2801,9 @@ var Circuit = /** @class */ (function () {
                 cornerDiv.innerText = "".concat(Number(cornerDiv.innerText) + (type === 3 ? 1 : -1));
                 cornerDiv.dataset.adjust = "".concat(type === 3 ? 'up' : 'down');
             }
+        }
+        if (field === 'sectorTent') {
+            corner.sector.forEach(function (cellId) { return _this.addSectorIndicator(cellId, weatherTokenDiv, x - 30, y - 30); });
         }
     };
     Circuit.prototype.getPodiumPosition = function (pos) {
@@ -2965,6 +2971,17 @@ var Circuit = /** @class */ (function () {
         if (stress) {
             mapIndicator.classList.add('stress');
         }
+        return mapIndicator;
+    };
+    Circuit.prototype.addSectorIndicator = function (cellId, weatherTokenDiv, weatherX, weatherY) {
+        var sectorIndicator = document.createElement('div');
+        sectorIndicator.id = "sector-indicator-".concat(cellId);
+        sectorIndicator.classList.add('sector-indicator');
+        var cell = this.circuitDatas.cells[cellId];
+        sectorIndicator.style.setProperty('--x', "".concat(cell.x - weatherX, "px"));
+        sectorIndicator.style.setProperty('--y', "".concat(cell.y - weatherY, "px"));
+        weatherTokenDiv.insertAdjacentElement('beforeend', sectorIndicator);
+        return sectorIndicator;
     };
     Circuit.prototype.addCornerHeatIndicator = function (cornerId, heat) {
         if (heat > 0) {
