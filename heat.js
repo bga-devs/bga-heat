@@ -3168,6 +3168,7 @@ var PlayerTable = /** @class */ (function () {
         if (selectedCardsIds === void 0) { selectedCardsIds = null; }
         var cards = this.hand.getCards();
         this.hand.setSelectionMode(selectionMode, selectableCardsIds ? cards.filter(function (card) { return selectableCardsIds.includes(Number(card.id)); }) : undefined);
+        this.hand.unselectAll();
         selectedCardsIds === null || selectedCardsIds === void 0 ? void 0 : selectedCardsIds.forEach(function (id) { return _this.hand.selectCard(cards.find(function (card) { return Number(card.id) == id; })); });
     };
     PlayerTable.prototype.getCurrentGear = function () {
