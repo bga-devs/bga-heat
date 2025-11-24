@@ -4342,19 +4342,19 @@ var Heat = /** @class */ (function (_super) {
                             _this.setTooltip("actRefresh_".concat(number, "_button"), formatTextIcons(tooltip));
                         });
                     }
-                    var btn = this.statusBar.addActionButton(_('No additional discard'), function () { return _this.actDiscard([]); }, {
+                    this.statusBar.addActionButton(_('No additional discard'), function () { return _this.actDiscard([]); }, {
                         color: 'alert',
                         confirm: ((_f = (_e = args._private) === null || _e === void 0 ? void 0 : _e.refreshedIds) === null || _f === void 0 ? void 0 : _f.length)
                             ? _("Are you sure you don't want to refresh some of the played cards?")
                             : null,
+                        id: 'actNoDiscard_button',
                     });
-                    btn.id = 'actNoDiscard_button';
-                    var btn2 = this.statusBar.addActionButton('', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); }, {
+                    this.statusBar.addActionButton('', function () { return _this.actDiscard(_this.getCurrentPlayerTable().hand.getSelection()); }, {
                         confirm: ((_h = (_g = args._private) === null || _g === void 0 ? void 0 : _g.refreshedIds) === null || _h === void 0 ? void 0 : _h.length)
                             ? _("Are you sure you don't want to refresh some of the played cards?")
                             : null,
+                        id: 'actDiscard_button',
                     });
-                    btn2.id = 'actDiscard_button';
                     this.onHandCardSelectionChange([]);
                     break;
                 case 'salvage':
@@ -5066,9 +5066,11 @@ var Heat = /** @class */ (function (_super) {
             var label = _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length));
             var buttonDiscard = document.getElementById('actDiscard_button');
             var buttonNoDiscard = document.getElementById('actNoDiscard_button');
-            buttonDiscard.innerHTML = label;
-            buttonDiscard.classList.toggle('disabled', !selection.length || selection.length > this.gamedatas.gamestate.args._private.max);
-            buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
+            if (buttonDiscard) {
+                buttonDiscard.innerHTML = label;
+                buttonDiscard.classList.toggle('disabled', !selection.length || selection.length > this.gamedatas.gamestate.args._private.max);
+            }
+            buttonNoDiscard === null || buttonNoDiscard === void 0 ? void 0 : buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
         }
         else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
             this.checkSwapUpgradeSelectionState();
