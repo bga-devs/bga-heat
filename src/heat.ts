@@ -925,20 +925,20 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             });
           }
 
-          let btn = this.statusBar.addActionButton(_('No additional discard'), () => this.actDiscard([]), {
+          this.statusBar.addActionButton(_('No additional discard'), () => this.actDiscard([]), {
             color: 'alert',
             confirm: args._private?.refreshedIds?.length
               ? _("Are you sure you don't want to refresh some of the played cards?")
               : null,
+            id: 'actNoDiscard_button',
           });
-          btn.id = 'actNoDiscard_button';
 
-          let btn2 = this.statusBar.addActionButton('', () => this.actDiscard(this.getCurrentPlayerTable().hand.getSelection()), {
+          this.statusBar.addActionButton('', () => this.actDiscard(this.getCurrentPlayerTable().hand.getSelection()), {
             confirm: args._private?.refreshedIds?.length
               ? _("Are you sure you don't want to refresh some of the played cards?")
               : null,
+            id: 'actDiscard_button',
           });
-          btn2.id = 'actDiscard_button';
 
           this.onHandCardSelectionChange([]);
           break;
@@ -2008,12 +2008,14 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
       const buttonDiscard = document.getElementById('actDiscard_button');
       const buttonNoDiscard = document.getElementById('actNoDiscard_button');
-      buttonDiscard.innerHTML = label;
-      buttonDiscard.classList.toggle(
-        'disabled',
-        !selection.length || selection.length > this.gamedatas.gamestate.args._private.max
-      );
-      buttonNoDiscard.classList.toggle('disabled', selection.length > 0);
+      if (buttonDiscard) {
+        buttonDiscard.innerHTML = label;
+        buttonDiscard.classList.toggle(
+          'disabled',
+          !selection.length || selection.length > this.gamedatas.gamestate.args._private.max
+        );
+      }
+      buttonNoDiscard?.classList.toggle('disabled', selection.length > 0);
     } else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
       this.checkSwapUpgradeSelectionState();
     } else if (this.gamedatas.gamestate.name == 'snakeDiscard') {

@@ -270,17 +270,19 @@ class Circuit {
     Object.entries(tokens)
       .filter(([cornerId, type]) => type !== null && type !== undefined)
       .forEach(([cornerId, type]) => {
-        const field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
         const corner = corners[cornerId];
         if (corner) {
-          this.createWeatherToken(type, corner[`${field}X`], corner[`${field}Y`], cardType, Number(cornerId), corner);
+          this.createWeatherToken(type, cardType, Number(cornerId), corner);
         } else {
           console.warn(cornerId, `doesn't exists `, corners);
         }
       });
   }
 
-  private createWeatherToken(type: number, x: number, y: number, cardType: number, cornerId: number, corner: Corner): void {
+  private createWeatherToken(type: number, cardType: number, cornerId: number, corner: Corner): void {
+    const field = WEATHER_TOKENS_ON_SECTOR_TENT.includes(type) ? 'sectorTent' : 'tent';
+    const x: number = corner[`${field}X`];
+    const y: number = corner[`${field}Y`];
     const weatherTokenDiv = document.createElement('div');
     weatherTokenDiv.id = `weather-token-${type}-${document.querySelectorAll(`.weather-token[id^="weather-token-"]`).length}`;
     weatherTokenDiv.classList.add('weather-token');
@@ -304,6 +306,9 @@ class Circuit {
         cornerDiv.innerText = `${Number(cornerDiv.innerText) + (type === 3 ? 1 : -1)}`;
         cornerDiv.dataset.adjust = `${type === 3 ? 'up' : 'down'}`;
       }
+    }
+    if (field === 'sectorTent') {
+      corner.sector.forEach(cellId => this.addSectorIndicator(cellId, weatherTokenDiv, x - 30, y - 30));
     }
   }
 
@@ -453,7 +458,7 @@ class Circuit {
     });
   }
 
-  public addMapIndicator(cellId: number, clickCallback?: () => void, speed: number = 0, stress: boolean = false): void {
+  public addMapIndicator(cellId: number, clickCallback?: () => void, speed: number = 0, stress: boolean = false): HTMLDivElement {
     const mapIndicator = document.createElement('div');
     mapIndicator.id = `map-indicator-${cellId}`;
     mapIndicator.classList.add('map-indicator');
@@ -473,6 +478,19 @@ class Circuit {
     if (stress) {
       mapIndicator.classList.add('stress');
     }
+    return mapIndicator;
+  }
+
+  public addSectorIndicator(cellId: number, weatherTokenDiv: HTMLDivElement, weatherX: number, weatherY: number): HTMLDivElement {
+    const sectorIndicator = document.createElement('div');
+    sectorIndicator.id = `sector-indicator-${cellId}`;
+    sectorIndicator.classList.add('sector-indicator');
+    let cell = this.circuitDatas.cells[cellId];
+    sectorIndicator.style.setProperty('--x', `${cell.x - weatherX}px`);
+    sectorIndicator.style.setProperty('--y', `${cell.y - weatherY}px`);
+    weatherTokenDiv.insertAdjacentElement('beforeend', sectorIndicator);
+
+    return sectorIndicator;
   }
 
   public addCornerHeatIndicator(cornerId: number, heat: number): void {

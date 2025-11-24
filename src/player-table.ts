@@ -147,6 +147,7 @@ class PlayerTable {
     public setHandSelectable(selectionMode: CardSelectionMode, selectableCardsIds: number[] | null = null, selectedCardsIds: number[] | null = null) {
         const cards = this.hand.getCards();
         this.hand.setSelectionMode(selectionMode, selectableCardsIds ? cards.filter(card => selectableCardsIds.includes(Number(card.id))) : undefined);
+        this.hand.unselectAll();
         selectedCardsIds?.forEach(id => this.hand.selectCard(cards.find(card => Number(card.id) == id)));
     }
     

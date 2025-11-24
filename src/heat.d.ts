@@ -48,6 +48,7 @@ interface Corner {
   tentY: number;
   sectorTentX: number;
   sectorTentY: number;
+  sector: number[]; // sector cells
 }
 
 interface Weather {

@@ -867,6 +867,9 @@ height: 241px; */
   top: calc(var(--y) - 30px);
   box-shadow: 0 0 5px 5px white;
 }
+#table-center #circuit .weather-token:hover .sector-indicator, #table-center #circuit .weather-token:active .sector-indicator {
+  display: block;
+}
 #table-center #circuit #japan-tunnel {
   position: absolute;
   left: 0;
@@ -982,6 +985,23 @@ height: 241px; */
   color: white;
   background: #6766a7;
   box-shadow: 0 0 5px 5px #6766a7;
+}
+
+.sector-indicator {
+  position: absolute;
+  z-index: 6;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 5px 5px white;
+  transform: translateX(var(--x)) translateY(var(--y));
+  transform-origin: top left;
+  pointer-events: none;
+  user-select: none;
+  display: none;
 }
 
 .corner-heat-indicator {
