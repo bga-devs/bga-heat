@@ -175,6 +175,7 @@ interface ReactSymbolEntry {
   used: false;
   value: number;
   n: number;
+  doable?: boolean;
 }
 
 interface ReactSymbol {
@@ -483,21 +484,21 @@ interface NotifSetWeatherArgs {
 
 // clearTurn
 interface NotifClearTurnArgs {
-    notifIds: string[];
+  notifIds: string[];
 }
 
 // refreshUI
 interface NotifRefreshUIArgs {
-    datas: {
-      players: { [playerId: number]: HeatPlayer };
-      constructors: { [id: number]: Constructor };
-      progress: number;
-      scores: { [index: number]: { [constructor_id: number]: number } };
-    }
+  datas: {
+    players: { [playerId: number]: HeatPlayer };
+    constructors: { [id: number]: Constructor };
+    progress: number;
+    scores: { [index: number]: { [constructor_id: number]: number } };
+  };
 }
 
 // refreshHand
 interface NotifRefreshHandArgs {
-    constructor_id: number;
-    hand: Card[];
+  constructor_id: number;
+  hand: Card[];
 }

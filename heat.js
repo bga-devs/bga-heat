@@ -4600,8 +4600,9 @@ var Heat = /** @class */ (function (_super) {
             var remainingEntries = {};
             Object.entries(symbolInfos.entries)
                 .filter(function (_a) {
+                var _b;
                 var entry = _a[0], symbolEntry = _a[1];
-                return !symbolEntry.used;
+                return !symbolEntry.used && ((_b = symbolEntry.doable) !== null && _b !== void 0 ? _b : true);
             })
                 .forEach(function (_a) {
                 var entry = _a[0], symbolEntry = _a[1];

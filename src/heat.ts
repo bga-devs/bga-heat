@@ -1218,7 +1218,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       .forEach(([type, symbolInfos], index) => {
         const remainingEntries = {};
         Object.entries(symbolInfos.entries)
-          .filter(([entry, symbolEntry]) => !symbolEntry.used)
+          .filter(([entry, symbolEntry]) => !symbolEntry.used && (symbolEntry.doable ?? true))
           .forEach(([entry, symbolEntry]) => (remainingEntries[entry] = symbolEntry));
         let reactAll = null;
         if (Object.keys(remainingEntries).length > 0) {
