@@ -1354,6 +1354,7 @@ trait RoundTrait
     if ($constructor->getTurn() < $this->getNbrLaps()) {
       // Replenish
       Cards::fillHand($constructor);
+      Log::checkpoint();
     }
 
     $this->nextPlayerCustomOrder('reveal');
