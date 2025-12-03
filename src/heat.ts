@@ -565,7 +565,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   private onLeavingReact() {
-    document.querySelectorAll('.hand.cards .action-button').forEach((elem) => elem.remove());
+    document.querySelectorAll('.hand-wrapper .action-button').forEach((elem) => elem.remove());
   }
 
   private onLeavingSlipstream() {

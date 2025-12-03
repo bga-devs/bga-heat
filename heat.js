@@ -4073,7 +4073,7 @@ var Heat = /** @class */ (function (_super) {
         this.circuit.removeMapIndicators();
     };
     Heat.prototype.onLeavingReact = function () {
-        document.querySelectorAll('.hand.cards .action-button').forEach(function (elem) { return elem.remove(); });
+        document.querySelectorAll('.hand-wrapper .action-button').forEach(function (elem) { return elem.remove(); });
     };
     Heat.prototype.onLeavingSlipstream = function () {
         this.circuit.removeMapIndicators();

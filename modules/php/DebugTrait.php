@@ -15,7 +15,7 @@ use Bga\Games\Heat\Models\Constructor;
 
 trait DebugTrait
 {
-  function debug_undo($stepNumber)
+  function debug_undo(int $stepNumber)
   {
     Log::undoToStep($stepNumber);
   }
