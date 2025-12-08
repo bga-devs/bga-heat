@@ -836,8 +836,9 @@ trait RoundTrait
 
     // Adrenaline
     $no = $constructor->getNo();
-    $notFinished = array_unique(array_merge(Constructors::getTurnOrder(), Globals::getGiveUpPlayers()));
-    $maxNo = count($notFinished);
+    // $notFinished = array_unique(array_merge(Constructors::getTurnOrder(), Globals::getGiveUpPlayers()));
+    // $maxNo = count($notFinished);
+    $maxNo = Constructors::count();
     if ($event != EVENT_SUDDEN_RAIN && ($no == $maxNo - 1 || ($no == $maxNo - 2 && $maxNo >= 5))) {
       $symbols[COOLDOWN]['entries'][ADRENALINE] = [
         'used' => false,
