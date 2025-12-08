@@ -42,8 +42,9 @@ trait DebugTrait
 
   function debug_tp()
   {
-    $constructor = Constructors::getActive();
-    $constructor->setCarCell(301);
+    Globals::loadCircuitDatas();
+    // $constructor = Constructors::getActive();
+    // $constructor->setCarCell(301);
     // $this->actReact(DIRECT, [120]);
 
     // $circuit = $this->getCircuit();
