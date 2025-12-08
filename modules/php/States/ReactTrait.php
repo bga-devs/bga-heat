@@ -660,7 +660,7 @@ trait ReactTrait
     $symbols = [];
     foreach ($constructor->getPlayedCards() as $card) {
       foreach ($card['symbols'] as $symbol => $n) {
-        if (in_array($symbol, [REFRESH, DIRECT, ACCELERATE])) {
+        if (in_array($symbol, [REFRESH, ACCELERATE])) {
           $symbols[$symbol][] = $card['id'];
         } else {
           $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;

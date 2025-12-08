@@ -599,6 +599,10 @@ trait RoundTrait
     }
 
     //////////////////////////////////////////////
+    // Remove DIRECT PLAY since the card was played already
+    foreach ($symbols[DIRECT]['entries'] ?? [] as $cardId => $entry) {
+      $symbols[DIRECT]['entries'][$cardId]['used'] = true;
+    }
 
     Globals::setCardSymbols($symbols);
     if (Players::count() > 1) {
