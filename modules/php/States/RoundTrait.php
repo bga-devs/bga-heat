@@ -642,7 +642,7 @@ trait RoundTrait
 
     // Compute speed
     $speedCombinations = [[0, []]];
-    foreach ($symbols[SPEED]['entries'] as $cardId => $entry) {
+    foreach ($symbols[SPEED]['entries'] ?? [] as $cardId => $entry) {
       $t = [];
 
       foreach ($entry['values'] as $cSpeed) {

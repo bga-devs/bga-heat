@@ -454,7 +454,7 @@ class Circuit
         'cell' => $constructor->getCarCell(),
         'distance' => 0,
         'extraTurn' => 0,
-        'paths' => [],
+        'path' => [],
         'heatCost' => 0,
         'heatCosts' => [],
         'spinOut' => false
