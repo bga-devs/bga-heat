@@ -1292,17 +1292,17 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       });
 
     this.statusBar.addActionButton(_('Pass'), () => this.actPassReact(), { disabled: !args.canPass });
-    /*if ((args.symbols['heat'] as number) > 0 && !args.doable.includes('heat')) { TODO
-      /_*const confirmationMessage = args.doable.includes('cooldown')
-        ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
-        : null;*_/
-      const confirmationMessage = false; // TODO 
+    if (!args.symbols.heat.used && !args.symbols.heat.doable) {
+      const confirmationMessage =
+        args.symbols.cooldown?.doable && args.symbols.cooldown?.max > 0 && !args.symbols.cooldown?.used
+          ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
+          : null;
 
       const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
       const callback = confirmationMessage ? () => this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
 
       this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback);
-    }*/
+    }
   }
 
   private onUpdateActionButtons_oldReact(args: EnteringOldReactArgs) {
@@ -2071,7 +2071,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       const args: EnteringPayHeatsArgs = this.gamedatas.gamestate.args;
       const selectionHeats = selection.map((card) => args.payingCards[card.id]).reduce((a, b) => a + b, 0);
 
-      document.getElementById('actPayHeats_button').classList.toggle('disabled', selectionHeats > args.heatInReserve);
+      document
+        .getElementById('actPayHeats_button')
+        .classList.toggle('disabled', selectionHeats > args.heatInReserve || selection.length != args.maxPayableCards);
     } else if (this.gamedatas.gamestate.name == 'snakeDiscard') {
       this.checkSnakeDiscardSelectionState();
     }

@@ -344,6 +344,10 @@ trait ReactTrait
 
       // Increase speed and move the card
       $speed = $card['speed'];
+      $symbols[SPEED]['entries'][$card['id']] = [
+        'value' => $card['speed'],
+        'used' => true,
+      ];
       $constructor->incSpeed($speed);
       $this->moveCar($constructor, $speed);
     }
@@ -586,10 +590,11 @@ trait ReactTrait
     $constructor = Constructors::getActive();
     $cards = $constructor->getPlayedCards();
     $payingCards = [];
-    foreach ($cards as $cardId => $card) {
-      $cost = $card['symbols'][HEAT] ?? 0;
-      if ($cost > 0) {
-        $payingCards[$cardId] = $cost;
+
+    $heats = Globals::getCardSymbols()[HEAT];
+    foreach ($heats['entries'] as $cardId => $infos) {
+      if (!$infos['used']) {
+        $payingCards[$cardId] = $infos['n'];
       }
     }
 
@@ -606,6 +611,7 @@ trait ReactTrait
     }
 
     return [
+      'undoableSteps' => Log::getUndoableSteps(),
       'payingCards' => $payingCards,
       'heatInReserve' => $nEngine,
       'maxPayableCards' => $n,
@@ -650,43 +656,32 @@ trait ReactTrait
     Notifications::discardCantPay($constructor, Cards::getMany($otherCardIds));
 
     // Resolve stresses
+    $symbols = Globals::getCardSymbols();
     $n = count($otherCardIds);
     for ($i = 0; $i < $n; $i++) {
       list($cards, $card) = $constructor->resolveBoost();
       Notifications::resolveBoost($constructor, $cards, $card, $i + 1, $n);
+      $symbols[SPEED]['entries'][$card['id']] = [
+        'value' => $card['speed'],
+        'used' => true,
+      ];
     }
 
     // Compute symbols
-    $symbols = [];
-    foreach ($constructor->getPlayedCards() as $card) {
-      foreach ($card['symbols'] as $symbol => $n) {
-        if (in_array($symbol, [REFRESH, ACCELERATE])) {
-          $symbols[$symbol][] = $card['id'];
-        } else {
-          $symbols[$symbol] = ($symbols[$symbol] ?? 0) + $n;
-        }
+    foreach ($cardIds as $cardId) {
+      $symbols[HEAT]['entries'][$cardId]['used'] = true;
+    }
+    foreach ($otherCardIds as $cardId) {
+      foreach ($symbols as $symbol => $infos) {
+        unset($symbols[$symbol]['entries'][$cardId]);
       }
     }
-    $previousSymbols = Globals::getSymbols();
-    if (isset($previousSymbols[ADRENALINE])) {
-      $symbols[ADRENALINE] = $previousSymbols[ADRENALINE];
-    }
-    unset($symbols[COOLDOWN]);
-    unset($symbols[BOOST]);
-    unset($symbols[ADJUST]);
-    unset($symbols[DIRECT]);
-    foreach ($constructor->getHand() as $cardId => $card) {
-      if (isset($card['symbols'][DIRECT])) {
-        $symbols[DIRECT][] = $cardId;
-      }
-    }
-    unset($symbols[HEAT]);
-    Globals::setSymbols($symbols);
+    Globals::setCardSymbols($symbols);
 
     // Move car
     $speed = 0;
-    foreach ($constructor->getPlayedCards() as $card) {
-      $speed += is_array($card['speed']) ? min($card['speed']) : $card['speed'];
+    foreach ($symbols[SPEED]['entries'] ?? [] as $entry) {
+      $speed += $entry['value'];
     }
     $constructor->setSpeed($speed);
     $this->moveCar($constructor, $speed);

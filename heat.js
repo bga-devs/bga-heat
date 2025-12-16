@@ -4620,6 +4620,7 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.onUpdateActionButtons_react = function (args) {
         var _this = this;
+        var _a, _b, _c;
         var ignoredTypes = ['speed', 'adjust', 'boost'];
         Object.entries(args.symbols)
             .filter(function (_a) {
@@ -4667,17 +4668,14 @@ var Heat = /** @class */ (function (_super) {
             }
         });
         this.statusBar.addActionButton(_('Pass'), function () { return _this.actPassReact(); }, { disabled: !args.canPass });
-        /*if ((args.symbols['heat'] as number) > 0 && !args.doable.includes('heat')) { TODO
-          /_*const confirmationMessage = args.doable.includes('cooldown')
-            ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
-            : null;*_/
-          const confirmationMessage = false; // TODO
-    
-          const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
-          const callback = confirmationMessage ? () => this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
-    
-          this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback);
-        }*/
+        if (!args.symbols.heat.used && !args.symbols.heat.doable) {
+            var confirmationMessage_1 = ((_a = args.symbols.cooldown) === null || _a === void 0 ? void 0 : _a.doable) && ((_b = args.symbols.cooldown) === null || _b === void 0 ? void 0 : _b.max) > 0 && !((_c = args.symbols.cooldown) === null || _c === void 0 ? void 0 : _c.used)
+                ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
+                : null;
+            var finalAction_1 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
+            var callback = confirmationMessage_1 ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); } : finalAction_1;
+            this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback);
+        }
     };
     Heat.prototype.onUpdateActionButtons_oldReact = function (args) {
         var _this = this;
@@ -4825,11 +4823,11 @@ var Heat = /** @class */ (function (_super) {
             document.getElementById("actPassReact_button").classList.add('disabled');
         }
         if (args.symbols['heat'] > 0 && !args.doable.includes('heat')) {
-            var confirmationMessage_1 = args.doable.includes('cooldown')
+            var confirmationMessage_2 = args.doable.includes('cooldown')
                 ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
                 : null;
-            var finalAction_1 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
-            var callback = confirmationMessage_1 ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); } : finalAction_1;
+            var finalAction_2 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
+            var callback = confirmationMessage_2 ? function () { return _this.confirmationDialog(confirmationMessage_2, finalAction_2); } : finalAction_2;
             this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback, { id: "actCryCauseNotEnoughHeatToPay_button" });
         }
     };
@@ -5139,7 +5137,9 @@ var Heat = /** @class */ (function (_super) {
         if (this.gamedatas.gamestate.name == 'payHeats') {
             var args_1 = this.gamedatas.gamestate.args;
             var selectionHeats = selection.map(function (card) { return args_1.payingCards[card.id]; }).reduce(function (a, b) { return a + b; }, 0);
-            document.getElementById('actPayHeats_button').classList.toggle('disabled', selectionHeats > args_1.heatInReserve);
+            document
+                .getElementById('actPayHeats_button')
+                .classList.toggle('disabled', selectionHeats > args_1.heatInReserve || selection.length != args_1.maxPayableCards);
         }
         else if (this.gamedatas.gamestate.name == 'snakeDiscard') {
             this.checkSnakeDiscardSelectionState();

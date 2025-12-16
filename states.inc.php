@@ -259,10 +259,10 @@ $machinestates = [
   ST_PAY_HEATS => [
     'name' => 'payHeats',
     'description' => clienttranslate(
-      '${actplayer} must choose which card to pay Heat(s) for and which card to discard and resolve as stress'
+      '${actplayer} must choose which card to pay Heat(s) for'
     ),
     'descriptionmyturn' => clienttranslate(
-      '${you} must choose which card to pay Heat(s) for and which card to discard and resolve as stress'
+      '${you} must choose which card to pay Heat(s) for'
     ),
     'type' => 'activeplayer',
     'args' => 'argsPayHeats',
