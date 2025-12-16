@@ -30,7 +30,6 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
   private circuitZoomManager: ZoomManager;
   private tablesZoomManager: ZoomManager;
-  public gamedatas: HeatGamedatas;
   private circuit: Circuit;
   private playersTables: PlayerTable[] = [];
   private legendTable?: LegendTable;
@@ -48,8 +47,22 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   private _notif_uid_to_mobile_log_id = [];
   private _last_notif;
 
+  public gameui: GameGui<HeatGamedatas>;
+  public statusBar: StatusBar;
+  public images: Images;
+  public sounds: Sounds;
+  public userPreferences: UserPreferences;
+  public players: Players;
+  public actions: Actions;
+  public notifications: Notifications;
+  public gameArea: GameArea;
+  public playerPanels: PlayerPanels;
+  public dialogs: Dialogs;
+  public gamedatas: HeatGamedatas;
+
   constructor() {
     super();
+    Object.assign(this, this.bga);
   }
 
   /*
@@ -66,7 +79,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     */
 
   public setup(gamedatas: HeatGamedatas) {
-    this.getGameAreaElement().insertAdjacentHTML(
+    this.gameArea.getElement().insertAdjacentHTML(
       'beforeend',
       `
       <link rel="stylesheet" href="https://use.typekit.net/jim0ypy.css">
@@ -199,7 +212,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       this.changePageTitle(base + 'skippable');
     }
 
-    if (this.isCurrentPlayerActive()) {
+    if (this.players.isCurrentPlayerActive()) {
       if (args.args?.previousSteps) {
         document
           .getElementById('logs')
@@ -245,7 +258,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           _('Restart turn'),
           () => {
             //this.stopActionTimer();
-            this.bgaPerformAction('actRestartTurn');
+            this.actions.performAction('actRestartTurn');
           },
           'restartAction'
         );
@@ -295,7 +308,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     this.gamedatas.gamestate.descriptionmyturn = this.gamedatas.gamestate['descriptionmyturn' + suffix];
     if (this.gamedatas.gamestate['description' + suffix])
       this.gamedatas.gamestate.description = this.gamedatas.gamestate['description' + suffix];
-    this.updatePageTitle();
+    this.gameui.updatePageTitle();
   }
 
   private onEnteringStateUploadCircuit(args) {
@@ -369,15 +382,15 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     this.initMarketStock();
     this.market.addCards(Object.values(args.market));
 
-    this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
+    this.market.setSelectionMode(this.players.isCurrentPlayerActive() ? 'single' : 'none');
   }
 
   private onEnteringSwapUpgrade(args: EnteringSwapUpgradeArgs) {
     this.initMarketStock();
     this.market.addCards(Object.values(args.market));
 
-    this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
-    if (this.isCurrentPlayerActive()) {
+    this.market.setSelectionMode(this.players.isCurrentPlayerActive() ? 'single' : 'none');
+    if (this.players.isCurrentPlayerActive()) {
       const hand = this.getCurrentPlayerTable().hand;
       hand.removeAll();
       hand.addCards(Object.values(args.owned));
@@ -388,7 +401,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   private onEnteringSnakeDiscard(args: any) {
     const playerTable = this.getCurrentPlayerTable();
     playerTable.inplay.unselectAll();
-    playerTable.inplay.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
+    playerTable.inplay.setSelectionMode(this.players.isCurrentPlayerActive() ? 'single' : 'none');
     const cards = playerTable.inplay.getCards();
     if (args._private.choice) {
       playerTable.inplay.selectCard(cards.find((card) => Number(card.id) == Number(args._private.choice)));
@@ -400,7 +413,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
     if (args._private) {
       this.getCurrentPlayerTable().setHandSelectable(
-        this.isCurrentPlayerActive() ? 'multiple' : 'none',
+        this.players.isCurrentPlayerActive() ? 'multiple' : 'none',
         args._private.cards,
         args._private.selection
       );
@@ -495,7 +508,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     // negative ids to not mess with deck pile
     this.market.addCards(Object.values(args._private.cards).map((card) => ({ ...card, id: -card.id })));
 
-    this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'multiple' : 'none');
+    this.market.setSelectionMode(this.players.isCurrentPlayerActive() ? 'multiple' : 'none');
   }
 
   private onEnteringSuperCool(args: EnteringSalvageArgs) {
@@ -554,7 +567,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   private onLeavingSnakeDiscard() {
-    if (this.isCurrentPlayerActive()) {
+    if (this.players.isCurrentPlayerActive()) {
       const playerTable = this.getCurrentPlayerTable();
       playerTable.inplay.setSelectionMode('none');
     }
@@ -628,7 +641,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   private showHeatCostConfirmations(): boolean {
-    return !this.getGameUserPreference(201);
+    return !this.userPreferences.get(201);
   }
 
   private getAdrenalineConfirmation(
@@ -831,19 +844,19 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         break;
     }
 
-    if (this.isCurrentPlayerActive()) {
+    if (this.players.isCurrentPlayerActive()) {
       switch (stateName) {
         case 'chooseUpgrade':
-          this.addActionButton(`actChooseUpgrade_button`, _('Take selected card'), () => this.actChooseUpgrade());
+          this.statusBar.addActionButton(_('Take selected card'), () => this.actChooseUpgrade(), { id: `actChooseUpgrade_button` });
           document.getElementById(`actChooseUpgrade_button`).classList.add('disabled');
           break;
         case 'swapUpgrade':
-          this.addActionButton(`actSwapUpgrade_button`, _('Swap selected cards'), () => this.actSwapUpgrade());
+          this.statusBar.addActionButton(_('Swap selected cards'), () => this.actSwapUpgrade(), { id: `actSwapUpgrade_button` });
           document.getElementById(`actSwapUpgrade_button`).classList.add('disabled');
-          this.addActionButton(`actPassSwapUpgrade_button`, _('Pass'), () => this.actPassSwapUpgrade(), null, null, 'red');
+          this.statusBar.addActionButton(_('Pass'), () => this.actPassSwapUpgrade(), { id: `actPassSwapUpgrade_button`, color: 'alert' });
           break;
         case 'snakeDiscard':
-          this.addActionButton(`actSnakeDiscard_button`, _('Discard selected card'), () => this.actSnakeDiscard());
+          this.statusBar.addActionButton(_('Discard selected card'), () => this.actSnakeDiscard(), { id: `actSnakeDiscard_button` });
           this.checkSnakeDiscardSelectionState();
           break;
         case 'planification':
@@ -852,7 +865,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           if (planificationArgs._private.canMulligan) {
             this.statusBar.addActionButton(
               _('Mulligan') + formatTextIcons(' (1[Heat])'),
-              () => this.bgaPerformAction('actMulligan'),
+              () => this.actions.performAction('actMulligan'),
               {
                 id: 'mulligan-btn',
                 color: 'alert',
@@ -895,10 +908,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           break;
         case 'payHeats':
           this.onEnteringPayHeats(args);
-          this.addActionButton(
-            `actPayHeats_button`,
+          this.statusBar.addActionButton(
             formatTextIcons(_('Keep selected cards (max: ${number} [Heat])').replace('${number}', args.heatInReserve)),
-            () => this.actPayHeats(this.getCurrentPlayerTable().inplay.getSelection())
+            () => this.actPayHeats(this.getCurrentPlayerTable().inplay.getSelection()),
+            { id: `actPayHeats_button` }
           );
           this.onInPlayCardSelectionChange([]);
           break;
@@ -920,7 +933,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
                             ${this.cardImageHtml(refreshCard, { constructor_id: this.getConstructorId() })}`;
               const tooltip = this.getGarageModuleIconTooltipWithIcon('refresh', 1);
 
-              this.addActionButton(`actRefresh_${number}_button`, formatTextIcons(label), () => this.actRefresh(number));
+              this.statusBar.addActionButton(formatTextIcons(label), () => this.actRefresh(number), { id: `actRefresh_${number}_button` });
               this.setTooltip(`actRefresh_${number}_button`, formatTextIcons(tooltip));
             });
           }
@@ -944,39 +957,33 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           break;
         case 'salvage':
           this.onEnteringSalvage(args);
-          this.addActionButton(`actSalvage_button`, _('Salvage selected cards'), () => this.actSalvage());
+          this.statusBar.addActionButton(_('Salvage selected cards'), () => this.actSalvage(), { id: `actSalvage_button` });
           document.getElementById(`actSalvage_button`).classList.add('disabled');
           break;
         case 'superCool':
           this.onEnteringSuperCool(args);
           for (let i = args.n; i >= 0; i--) {
-            this.addActionButton(`actSuperCool${i}_button`, `<div class="icon super-cool">${i}</div>`, () =>
-              this.actSuperCool(i)
-            );
+            this.statusBar.addActionButton(`<div class="icon super-cool">${i}</div>`, () => this.actSuperCool(i), { id: `actSuperCool${i}_button` });
             if (i > args._private.max) {
               document.getElementById(`actSuperCool${i}_button`).classList.add('disabled');
             }
           }
           break;
         case 'confirmEndOfRace':
-          this.addActionButton(`seen_button`, _('Seen'), () => this.actConfirmResults());
+          this.statusBar.addActionButton(_('Seen'), () => this.actConfirmResults(), { id: `seen_button` });
           break;
       }
     } else {
       switch (stateName) {
         case 'snakeDiscard':
-          this.addActionButton(
-            `actCancelSnakeDiscard_button`,
-            _('Cancel'),
-            () => this.bgaPerformAction('actCancelSnakeDiscard', undefined, { checkAction: false }),
-            null,
-            null,
-            'gray'
-          );
+          this.statusBar.addActionButton(_('Cancel'), () => this.actions.performAction('actCancelSnakeDiscard', undefined, { checkAction: false }), {
+            id: `actCancelSnakeDiscard_button`,
+            color: 'secondary',
+          });
           break;
         case 'planification':
           if (!this.gamedatas.isDeferredRounds) {
-            this.addActionButton(`actCancelSelection_button`, _('Cancel'), () => this.actCancelSelection(), null, null, 'gray');
+            this.statusBar.addActionButton(_('Cancel'), () => this.actCancelSelection(), { id: `actCancelSelection_button`, color: 'secondary' });
           }
           break;
       }
@@ -1142,6 +1149,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     const necessaryEntries = this.getNecessaryEntries(symbolInfos, entries, number);
     const buttonId = `actReact${type}_${cumulative ? 'cumulative' : necessaryEntries.join('-')}_${number}_button`;
     let button = document.getElementById(buttonId);
+    let buttonStatusBar = null;
     if (!button) {
       const noticeForButtonsOnCard =
         !destination && !symbolInfos.coalescable && !necessaryEntries.every((entry) => isNaN(entry as any as number));
@@ -1156,9 +1164,19 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         disabled: !enabled || noticeForButtonsOnCard,
         destination,
       });
+
+      destination && console.warn(button);
+      if (destination) {
+        buttonStatusBar = this.statusBar.addActionButton(formatTextIcons(label), () => this.actReact(type, necessaryEntries, number), {
+          id: 'status-bar-'+buttonId,
+          color: forcedN ? 'secondary' : 'primary',
+          confirm: this.showHeatCostConfirmations() ? confirmationMessage : null,
+          disabled: !enabled,
+        });
+      }
     }
     if (mandatory) {
-      mandatoryZone.appendChild(button);
+      mandatoryZone.appendChild(/*buttonStatusBar ?? */button);
     }
 
     this.setTooltip(buttonId, formatTextIcons(tooltip));
@@ -1220,17 +1238,25 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         Object.entries(symbolInfos.entries)
           .filter(([entry, symbolEntry]) => !symbolEntry.used && (symbolEntry.doable ?? true))
           .forEach(([entry, symbolEntry]) => (remainingEntries[entry] = symbolEntry));
-        let reactAll = null;
         if (Object.keys(remainingEntries).length > 0) {
-          if (symbolInfos.max !== undefined && symbolInfos.max === 0) return;
+          if (symbolInfos.max !== undefined && symbolInfos.max === 0) {
+            return;
+          }
 
-          reactAll = this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
+          const noticeForButtonsOnCard = !symbolInfos.coalescable && !Object.keys(remainingEntries).every((entry) => isNaN(entry as any as number));
+
+          if (!noticeForButtonsOnCard) {
+            this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
+          }
           if (symbolInfos.max !== undefined && symbolInfos.upTo) {
             for (let n = symbolInfos.max - 1; n >= (symbolInfos.min ?? 1); n--) {
               this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
             }
           }
-          if (!Object.keys(remainingEntries).every((entry) => isNaN(entry as any as number))) {
+          if (noticeForButtonsOnCard) {
+            console.warn(type, remainingEntries);
+          }
+          if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every((entry) => isNaN(entry as any as number))) {
             Object.keys(remainingEntries).forEach((entry) => {
               this.addReactButton(type, [entry], symbolInfos, false, args);
 
@@ -1413,14 +1439,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           : finalAction;
         const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
 
-        this.addActionButton(
-          `actOldReact${type}_${number}_button`,
-          formatTextIcons(label),
-          callback,
-          null,
-          null,
-          SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'gray' : undefined
-        );
+        this.statusBar.addActionButton(formatTextIcons(label), callback, {
+          id: `actOldReact${type}_${number}_button`,
+          color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined,
+        });
 
         if (mandatory) {
           let mandatoryZone = document.getElementById('mandatory-buttons');
@@ -1450,7 +1472,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       });
     });
 
-    this.addActionButton(`actPassOldReact_button`, _('Pass'), () => this.actPassOldReact());
+    this.statusBar.addActionButton(_('Pass'), () => this.actPassOldReact(), { id: `actPassOldReact_button` });
     if (!args.canPass) {
       document.getElementById(`actPassReact_button`).classList.add('disabled');
     }
@@ -1462,7 +1484,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       const finalAction = () => this.actCryCauseNotEnoughHeatToPay();
       const callback = confirmationMessage ? () => this.confirmationDialog(confirmationMessage, finalAction) : finalAction;
 
-      this.addActionButton(`actCryCauseNotEnoughHeatToPay_button`, _("I can't pay Heat(s)"), callback);
+      this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback, { id: `actCryCauseNotEnoughHeatToPay_button` });
     }
   }
 
@@ -1485,7 +1507,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   public getPlayerId(): number {
-    return Number(this.player_id);
+    return this.players.getCurrentPlayerId();
   }
 
   private getConstructorId(): number | null {
@@ -2060,67 +2082,67 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     const playerTable = this.getCurrentPlayerTable();
     const inPlaySelection = playerTable?.inplay?.getSelection() ?? [];
 
-    this.bgaPerformAction('actSnakeDiscard', {
+    this.actions.performAction('actSnakeDiscard', {
       cardId: inPlaySelection[0].id,
     });
   }
 
   private actChooseUpgrade() {
-    this.bgaPerformAction('actChooseUpgrade', {
+    this.actions.performAction('actChooseUpgrade', {
       cardId: this.market.getSelection()[0].id,
     });
   }
 
   private actSwapUpgrade() {
-    this.bgaPerformAction('actSwapUpgrade', {
+    this.actions.performAction('actSwapUpgrade', {
       marketCardId: this.market.getSelection()[0].id,
       ownedCardId: this.getCurrentPlayerTable().hand.getSelection()[0].id,
     });
   }
 
   private actPassSwapUpgrade() {
-    this.bgaPerformAction('actPassSwapUpgrade');
+    this.actions.performAction('actPassSwapUpgrade');
   }
 
   public actPlanification() {
     const selectedCards = this.getCurrentPlayerTable().hand.getSelection();
 
-    this.bgaPerformAction('actPlan', {
+    this.actions.performAction('actPlan', {
       cardIds: JSON.stringify(selectedCards.map((card) => card.id)),
     });
   }
 
   public actCancelSelection() {
-    this.bgaPerformAction('actCancelSelection', undefined, { checkAction: false });
+    this.actions.performAction('actCancelSelection', undefined, { checkAction: false });
   }
 
   private actChooseSpeed(speed: number, choice: { [cardId: number]: number }) {
-    this.bgaPerformAction('actChooseSpeed', {
+    this.actions.performAction('actChooseSpeed', {
       speed,
       choice: JSON.stringify(choice),
     });
   }
 
   private actSlipstream(speed: number) {
-    this.bgaPerformAction('actSlipstream', {
+    this.actions.performAction('actSlipstream', {
       speed,
     });
   }
 
   private actPassReact() {
-    this.bgaPerformAction('actPassReact');
+    this.actions.performAction('actPassReact');
   }
 
   private actPassOldReact() {
-    this.bgaPerformAction('actPassOldReact');
+    this.actions.performAction('actPassOldReact');
   }
 
   private actCryCauseNotEnoughHeatToPay() {
-    this.bgaPerformAction('actCryCauseNotEnoughHeatToPay');
+    this.actions.performAction('actCryCauseNotEnoughHeatToPay');
   }
 
   public actReact(symbol: string, entries: (string | number)[], n?: number) {
-    this.bgaPerformAction('actReact', {
+    this.actions.performAction('actReact', {
       symbol,
       entries: JSON.stringify(entries),
       n,
@@ -2128,30 +2150,30 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   public actOldReact(symbol: string, arg?: number) {
-    this.bgaPerformAction('actOldReact', {
+    this.actions.performAction('actOldReact', {
       symbol,
       arg,
     });
   }
 
   public actRefresh(cardId: number) {
-    this.bgaPerformAction('actRefresh', {
+    this.actions.performAction('actRefresh', {
       cardId,
     });
   }
 
   public actPayHeats(selectedCards: Card[]) {
-    this.bgaPerformAction('actPayHeats', {
+    this.actions.performAction('actPayHeats', {
       cardIds: JSON.stringify(selectedCards.map((card) => card.id)),
     });
   }
 
   public actCheckCorner() {
-    this.bgaPerformAction('actCheckCorner', {});
+    this.actions.performAction('actCheckCorner', {});
   }
 
   public actDiscard(selectedCards: Card[]) {
-    this.bgaPerformAction('actDiscard', {
+    this.actions.performAction('actDiscard', {
       cardIds: JSON.stringify(selectedCards.map((card) => card.id)),
     });
   }
@@ -2159,27 +2181,27 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   public actSalvage() {
     const selectedCards = this.market.getSelection();
 
-    this.bgaPerformAction('actSalvage', {
+    this.actions.performAction('actSalvage', {
       cardIds: JSON.stringify(selectedCards.map((card) => -card.id)),
     });
   }
 
   public actSuperCool(n: number) {
-    this.bgaPerformAction('actSuperCool', {
+    this.actions.performAction('actSuperCool', {
       n,
     });
   }
 
   public actConfirmResults() {
-    this.bgaPerformAction('actConfirmResults');
+    this.actions.performAction('actConfirmResults');
   }
 
   public actQuitGame() {
-    this.bgaPerformAction('actQuitGame', undefined, { checkAction: false });
+    this.actions.performAction('actQuitGame', undefined, { checkAction: false });
   }
 
   public actGiveUp() {
-    this.bgaPerformAction('actGiveUp');
+    this.actions.performAction('actGiveUp');
   }
 
   ///////////////////////////////////////////////////
@@ -2262,7 +2284,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         const promise = this[`notif_${notifName}`](notifDetails.args);
         const promises = promise ? [promise] : [];
         let minDuration = 1;
-        let msg = this.format_string_recursive(notifDetails.log, notifDetails.args);
+        let msg = this.gameui.format_string_recursive(notifDetails.log, notifDetails.args);
         if (msg != '') {
           $('gameaction_status').innerHTML = msg;
           $('pagemaintitletext').innerHTML = msg;
@@ -2277,11 +2299,11 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         if (this.animationManager.animationsActive()) {
           Promise.all([...promises, this.wait(minDuration)]).then(() => (this as any).notifqueue.onSynchronousNotificationEnd());
         } else {
-          (this as any).notifqueue.setSynchronousDuration(0);
+          (this.gameui as any).notifqueue.setSynchronousDuration(0);
         }
       });
       if (notifName !== 'playerEliminated') {
-        (this as any).notifqueue.setSynchronous(notifName, undefined);
+        (this.gameui as any).notifqueue.setSynchronous(notifName, undefined);
       }
     });
 
@@ -2302,14 +2324,14 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         });
     }
 
-    /*this.notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) => 
+    /*this.gameui.notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) => 
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
         );*/
-    (this as any).notifqueue.setIgnoreNotificationCheck(
+    (this.gameui as any).notifqueue.setIgnoreNotificationCheck(
       'draw',
       (notif: Notif<any>) => this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
     );
-    (this as any).notifqueue.setIgnoreNotificationCheck(
+    (this.gameui as any).notifqueue.setIgnoreNotificationCheck(
       'mulligan',
       (notif: Notif<any>) => this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId()
     );
@@ -2811,7 +2833,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
     //this.stopActionTimer();
     //(this as any).checkAction('actRestart');
-    this.bgaPerformAction('actUndoToStep', { stepId } /*, false*/);
+    this.actions.performAction('actUndoToStep', { stepId } /*, false*/);
   }
 
   notif_clearTurn(args: NotifClearTurnArgs) {
@@ -2983,8 +3005,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   /* This enable to inject translatable styled things to logs or action bar */
-  /* @Override */
-  public format_string_recursive(log: string, args: any) {
+  public bgaFormatText(log: string, args: any): { log: string; args: any } {
     try {
       if (log && args && !args.processed) {
         this.formatArgCardImage(args, 'card', 'card_image');
@@ -3004,10 +3025,11 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           });
 
         log = formatTextIcons(_(log));
+        args.processed = true;
       }
     } catch (e) {
       console.error(log, args, 'Exception thrown', e.stack);
     }
-    return (this as any).inherited(arguments);
+    return { log, args };
   }
 }

@@ -3661,6 +3661,7 @@ var Heat = /** @class */ (function (_super) {
         _this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         _this._notif_uid_to_log_id = [];
         _this._notif_uid_to_mobile_log_id = [];
+        Object.assign(_this, _this.bga);
         return _this;
     }
     /*
@@ -3677,7 +3678,7 @@ var Heat = /** @class */ (function (_super) {
       */
     Heat.prototype.setup = function (gamedatas) {
         var _a, _b;
-        this.getGameAreaElement().insertAdjacentHTML('beforeend', "\n      <link rel=\"stylesheet\" href=\"https://use.typekit.net/jim0ypy.css\">\n\n      <div id=\"top\">\n      </div>\n\n      <div id=\"table-center\">\n          <div id=\"circuit\"></div>\n      </div>\n      <div id=\"tables\"></div>  \n    ");
+        this.gameArea.getElement().insertAdjacentHTML('beforeend', "\n      <link rel=\"stylesheet\" href=\"https://use.typekit.net/jim0ypy.css\">\n\n      <div id=\"top\">\n      </div>\n\n      <div id=\"table-center\">\n          <div id=\"circuit\"></div>\n      </div>\n      <div id=\"tables\"></div>  \n    ");
         log('Starting game setup');
         this.gamedatas = gamedatas;
         // Create a new div for buttons to avoid BGA auto clearing it
@@ -3779,7 +3780,7 @@ var Heat = /** @class */ (function (_super) {
             var base = args.args.descSuffix ? args.args.descSuffix : '';
             this.changePageTitle(base + 'skippable');
         }
-        if (this.isCurrentPlayerActive()) {
+        if (this.players.isCurrentPlayerActive()) {
             if ((_c = args.args) === null || _c === void 0 ? void 0 : _c.previousSteps) {
                 document
                     .getElementById('logs')
@@ -3812,7 +3813,7 @@ var Heat = /** @class */ (function (_super) {
                 // Restart whole turn
                 this.addDangerActionButton('btnRestartTurn', _('Restart turn'), function () {
                     //this.stopActionTimer();
-                    _this.bgaPerformAction('actRestartTurn');
+                    _this.actions.performAction('actRestartTurn');
                 }, 'restartAction');
             }
             //}
@@ -3857,7 +3858,7 @@ var Heat = /** @class */ (function (_super) {
         this.gamedatas.gamestate.descriptionmyturn = this.gamedatas.gamestate['descriptionmyturn' + suffix];
         if (this.gamedatas.gamestate['description' + suffix])
             this.gamedatas.gamestate.description = this.gamedatas.gamestate['description' + suffix];
-        this.updatePageTitle();
+        this.gameui.updatePageTitle();
     };
     Heat.prototype.onEnteringStateUploadCircuit = function (args) {
         var _this = this;
@@ -3905,13 +3906,13 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.onEnteringChooseUpgrade = function (args) {
         this.initMarketStock();
         this.market.addCards(Object.values(args.market));
-        this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
+        this.market.setSelectionMode(this.players.isCurrentPlayerActive() ? 'single' : 'none');
     };
     Heat.prototype.onEnteringSwapUpgrade = function (args) {
         this.initMarketStock();
         this.market.addCards(Object.values(args.market));
-        this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
-        if (this.isCurrentPlayerActive()) {
+        this.market.setSelectionMode(this.players.isCurrentPlayerActive() ? 'single' : 'none');
+        if (this.players.isCurrentPlayerActive()) {
             var hand = this.getCurrentPlayerTable().hand;
             hand.removeAll();
             hand.addCards(Object.values(args.owned));
@@ -3921,7 +3922,7 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.onEnteringSnakeDiscard = function (args) {
         var playerTable = this.getCurrentPlayerTable();
         playerTable.inplay.unselectAll();
-        playerTable.inplay.setSelectionMode(this.isCurrentPlayerActive() ? 'single' : 'none');
+        playerTable.inplay.setSelectionMode(this.players.isCurrentPlayerActive() ? 'single' : 'none');
         var cards = playerTable.inplay.getCards();
         if (args._private.choice) {
             playerTable.inplay.selectCard(cards.find(function (card) { return Number(card.id) == Number(args._private.choice); }));
@@ -3930,7 +3931,7 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.onEnteringPlanification = function (args) {
         this.circuit.removeMapPaths();
         if (args._private) {
-            this.getCurrentPlayerTable().setHandSelectable(this.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
+            this.getCurrentPlayerTable().setHandSelectable(this.players.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
         }
     };
     Heat.prototype.onEnteringReact = function (args) {
@@ -4014,7 +4015,7 @@ var Heat = /** @class */ (function (_super) {
         }
         // negative ids to not mess with deck pile
         this.market.addCards(Object.values(args._private.cards).map(function (card) { return (__assign(__assign({}, card), { id: -card.id })); }));
-        this.market.setSelectionMode(this.isCurrentPlayerActive() ? 'multiple' : 'none');
+        this.market.setSelectionMode(this.players.isCurrentPlayerActive() ? 'multiple' : 'none');
     };
     Heat.prototype.onEnteringSuperCool = function (args) {
         var _this = this;
@@ -4064,7 +4065,7 @@ var Heat = /** @class */ (function (_super) {
         }
     };
     Heat.prototype.onLeavingSnakeDiscard = function () {
-        if (this.isCurrentPlayerActive()) {
+        if (this.players.isCurrentPlayerActive()) {
             var playerTable = this.getCurrentPlayerTable();
             playerTable.inplay.setSelectionMode('none');
         }
@@ -4133,7 +4134,7 @@ var Heat = /** @class */ (function (_super) {
         });
     };
     Heat.prototype.showHeatCostConfirmations = function () {
-        return !this.getGameUserPreference(201);
+        return !this.userPreferences.get(201);
     };
     Heat.prototype.getAdrenalineConfirmation = function (currentHeatCost, adrenalineWillCrossNextCorner, nextCornerSpeedLimit, nextCornerExtraHeatCost, boostInfos) {
         var confirmationMessage = null;
@@ -4280,26 +4281,26 @@ var Heat = /** @class */ (function (_super) {
                 this.onEnteringPlanification(args);
                 break;
         }
-        if (this.isCurrentPlayerActive()) {
+        if (this.players.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'chooseUpgrade':
-                    this.addActionButton("actChooseUpgrade_button", _('Take selected card'), function () { return _this.actChooseUpgrade(); });
+                    this.statusBar.addActionButton(_('Take selected card'), function () { return _this.actChooseUpgrade(); }, { id: "actChooseUpgrade_button" });
                     document.getElementById("actChooseUpgrade_button").classList.add('disabled');
                     break;
                 case 'swapUpgrade':
-                    this.addActionButton("actSwapUpgrade_button", _('Swap selected cards'), function () { return _this.actSwapUpgrade(); });
+                    this.statusBar.addActionButton(_('Swap selected cards'), function () { return _this.actSwapUpgrade(); }, { id: "actSwapUpgrade_button" });
                     document.getElementById("actSwapUpgrade_button").classList.add('disabled');
-                    this.addActionButton("actPassSwapUpgrade_button", _('Pass'), function () { return _this.actPassSwapUpgrade(); }, null, null, 'red');
+                    this.statusBar.addActionButton(_('Pass'), function () { return _this.actPassSwapUpgrade(); }, { id: "actPassSwapUpgrade_button", color: 'alert' });
                     break;
                 case 'snakeDiscard':
-                    this.addActionButton("actSnakeDiscard_button", _('Discard selected card'), function () { return _this.actSnakeDiscard(); });
+                    this.statusBar.addActionButton(_('Discard selected card'), function () { return _this.actSnakeDiscard(); }, { id: "actSnakeDiscard_button" });
                     this.checkSnakeDiscardSelectionState();
                     break;
                 case 'planification':
                     var planificationArgs = args;
                     this.statusBar.addActionButton('', function () { return _this.actPlanification(); }, { id: "actPlanification_button" });
                     if (planificationArgs._private.canMulligan) {
-                        this.statusBar.addActionButton(_('Mulligan') + formatTextIcons(' (1[Heat])'), function () { return _this.bgaPerformAction('actMulligan'); }, {
+                        this.statusBar.addActionButton(_('Mulligan') + formatTextIcons(' (1[Heat])'), function () { return _this.actions.performAction('actMulligan'); }, {
                             id: 'mulligan-btn',
                             color: 'alert',
                             confirm: _('Spend 1 Heat to draw a new hand?'),
@@ -4335,7 +4336,7 @@ var Heat = /** @class */ (function (_super) {
                     break;
                 case 'payHeats':
                     this.onEnteringPayHeats(args);
-                    this.addActionButton("actPayHeats_button", formatTextIcons(_('Keep selected cards (max: ${number} [Heat])').replace('${number}', args.heatInReserve)), function () { return _this.actPayHeats(_this.getCurrentPlayerTable().inplay.getSelection()); });
+                    this.statusBar.addActionButton(formatTextIcons(_('Keep selected cards (max: ${number} [Heat])').replace('${number}', args.heatInReserve)), function () { return _this.actPayHeats(_this.getCurrentPlayerTable().inplay.getSelection()); }, { id: "actPayHeats_button" });
                     this.onInPlayCardSelectionChange([]);
                     break;
                 case 'checkCorner':
@@ -4355,7 +4356,7 @@ var Heat = /** @class */ (function (_super) {
                                 .find(function (card) { return card.id == number; });
                             var label = "<div class=\"icon refresh\"></div>".concat(_('Place back on deck'), "<br>\n                            ").concat(_this.cardImageHtml(refreshCard, { constructor_id: _this.getConstructorId() }));
                             var tooltip = _this.getGarageModuleIconTooltipWithIcon('refresh', 1);
-                            _this.addActionButton("actRefresh_".concat(number, "_button"), formatTextIcons(label), function () { return _this.actRefresh(number); });
+                            _this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actRefresh(number); }, { id: "actRefresh_".concat(number, "_button") });
                             _this.setTooltip("actRefresh_".concat(number, "_button"), formatTextIcons(tooltip));
                         });
                     }
@@ -4376,15 +4377,13 @@ var Heat = /** @class */ (function (_super) {
                     break;
                 case 'salvage':
                     this.onEnteringSalvage(args);
-                    this.addActionButton("actSalvage_button", _('Salvage selected cards'), function () { return _this.actSalvage(); });
+                    this.statusBar.addActionButton(_('Salvage selected cards'), function () { return _this.actSalvage(); }, { id: "actSalvage_button" });
                     document.getElementById("actSalvage_button").classList.add('disabled');
                     break;
                 case 'superCool':
                     this.onEnteringSuperCool(args);
                     var _loop_3 = function (i) {
-                        this_1.addActionButton("actSuperCool".concat(i, "_button"), "<div class=\"icon super-cool\">".concat(i, "</div>"), function () {
-                            return _this.actSuperCool(i);
-                        });
+                        this_1.statusBar.addActionButton("<div class=\"icon super-cool\">".concat(i, "</div>"), function () { return _this.actSuperCool(i); }, { id: "actSuperCool".concat(i, "_button") });
                         if (i > args._private.max) {
                             document.getElementById("actSuperCool".concat(i, "_button")).classList.add('disabled');
                         }
@@ -4395,18 +4394,21 @@ var Heat = /** @class */ (function (_super) {
                     }
                     break;
                 case 'confirmEndOfRace':
-                    this.addActionButton("seen_button", _('Seen'), function () { return _this.actConfirmResults(); });
+                    this.statusBar.addActionButton(_('Seen'), function () { return _this.actConfirmResults(); }, { id: "seen_button" });
                     break;
             }
         }
         else {
             switch (stateName) {
                 case 'snakeDiscard':
-                    this.addActionButton("actCancelSnakeDiscard_button", _('Cancel'), function () { return _this.bgaPerformAction('actCancelSnakeDiscard', undefined, { checkAction: false }); }, null, null, 'gray');
+                    this.statusBar.addActionButton(_('Cancel'), function () { return _this.actions.performAction('actCancelSnakeDiscard', undefined, { checkAction: false }); }, {
+                        id: "actCancelSnakeDiscard_button",
+                        color: 'secondary',
+                    });
                     break;
                 case 'planification':
                     if (!this.gamedatas.isDeferredRounds) {
-                        this.addActionButton("actCancelSelection_button", _('Cancel'), function () { return _this.actCancelSelection(); }, null, null, 'gray');
+                        this.statusBar.addActionButton(_('Cancel'), function () { return _this.actCancelSelection(); }, { id: "actCancelSelection_button", color: 'secondary' });
                     }
                     break;
             }
@@ -4533,6 +4535,7 @@ var Heat = /** @class */ (function (_super) {
         var necessaryEntries = this.getNecessaryEntries(symbolInfos, entries, number);
         var buttonId = "actReact".concat(type, "_").concat(cumulative ? 'cumulative' : necessaryEntries.join('-'), "_").concat(number, "_button");
         var button = document.getElementById(buttonId);
+        var buttonStatusBar = null;
         if (!button) {
             var noticeForButtonsOnCard = !destination && !symbolInfos.coalescable && !necessaryEntries.every(function (entry) { return isNaN(entry); });
             if (noticeForButtonsOnCard) {
@@ -4545,9 +4548,18 @@ var Heat = /** @class */ (function (_super) {
                 disabled: !enabled || noticeForButtonsOnCard,
                 destination: destination,
             });
+            destination && console.warn(button);
+            if (destination) {
+                buttonStatusBar = this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actReact(type, necessaryEntries, number); }, {
+                    id: 'status-bar-' + buttonId,
+                    color: forcedN ? 'secondary' : 'primary',
+                    confirm: this.showHeatCostConfirmations() ? confirmationMessage : null,
+                    disabled: !enabled,
+                });
+            }
         }
         if (mandatory) {
-            mandatoryZone.appendChild(button);
+            mandatoryZone.appendChild(/*buttonStatusBar ?? */ button);
         }
         this.setTooltip(buttonId, formatTextIcons(tooltip));
         if (!enabled) {
@@ -4608,17 +4620,23 @@ var Heat = /** @class */ (function (_super) {
                 var entry = _a[0], symbolEntry = _a[1];
                 return (remainingEntries[entry] = symbolEntry);
             });
-            var reactAll = null;
             if (Object.keys(remainingEntries).length > 0) {
-                if (symbolInfos.max !== undefined && symbolInfos.max === 0)
+                if (symbolInfos.max !== undefined && symbolInfos.max === 0) {
                     return;
-                reactAll = _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
+                }
+                var noticeForButtonsOnCard = !symbolInfos.coalescable && !Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); });
+                if (!noticeForButtonsOnCard) {
+                    _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args);
+                }
                 if (symbolInfos.max !== undefined && symbolInfos.upTo) {
                     for (var n = symbolInfos.max - 1; n >= ((_b = symbolInfos.min) !== null && _b !== void 0 ? _b : 1); n--) {
                         _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
                     }
                 }
-                if (!Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); })) {
+                if (noticeForButtonsOnCard) {
+                    console.warn(type, remainingEntries);
+                }
+                if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); })) {
                     Object.keys(remainingEntries).forEach(function (entry) {
                         var _a;
                         _this.addReactButton(type, [entry], symbolInfos, false, args);
@@ -4762,7 +4780,10 @@ var Heat = /** @class */ (function (_super) {
                     ? function () { return (_this.showHeatCostConfirmations() ? _this.confirmationDialog(confirmationMessage, finalAction) : finalAction()); }
                     : finalAction;
                 var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
-                _this.addActionButton("actOldReact".concat(type, "_").concat(number, "_button"), formatTextIcons(label), callback, null, null, SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'gray' : undefined);
+                _this.statusBar.addActionButton(formatTextIcons(label), callback, {
+                    id: "actOldReact".concat(type, "_").concat(number, "_button"),
+                    color: SYMBOLS_WITH_POSSIBLE_HALF_USAGE.includes(type) && number < max ? 'secondary' : undefined,
+                });
                 if (mandatory) {
                     var mandatoryZone = document.getElementById('mandatory-buttons');
                     if (!mandatoryZone) {
@@ -4782,7 +4803,7 @@ var Heat = /** @class */ (function (_super) {
                 }
             });
         });
-        this.addActionButton("actPassOldReact_button", _('Pass'), function () { return _this.actPassOldReact(); });
+        this.statusBar.addActionButton(_('Pass'), function () { return _this.actPassOldReact(); }, { id: "actPassOldReact_button" });
         if (!args.canPass) {
             document.getElementById("actPassReact_button").classList.add('disabled');
         }
@@ -4792,7 +4813,7 @@ var Heat = /** @class */ (function (_super) {
                 : null;
             var finalAction_1 = function () { return _this.actCryCauseNotEnoughHeatToPay(); };
             var callback = confirmationMessage_1 ? function () { return _this.confirmationDialog(confirmationMessage_1, finalAction_1); } : finalAction_1;
-            this.addActionButton("actCryCauseNotEnoughHeatToPay_button", _("I can't pay Heat(s)"), callback);
+            this.statusBar.addActionButton(_("I can't pay Heat(s)"), callback, { id: "actCryCauseNotEnoughHeatToPay_button" });
         }
     };
     Heat.prototype.linkButtonHoverToMapIndicator = function (btn, cellId) {
@@ -4810,7 +4831,7 @@ var Heat = /** @class */ (function (_super) {
         this.addTooltipHtmlToClass(className, html, this.TOOLTIP_DELAY);
     };
     Heat.prototype.getPlayerId = function () {
-        return Number(this.player_id);
+        return this.players.getCurrentPlayerId();
     };
     Heat.prototype.getConstructorId = function () {
         var _this = this;
@@ -5133,103 +5154,103 @@ var Heat = /** @class */ (function (_super) {
         var _a, _b;
         var playerTable = this.getCurrentPlayerTable();
         var inPlaySelection = (_b = (_a = playerTable === null || playerTable === void 0 ? void 0 : playerTable.inplay) === null || _a === void 0 ? void 0 : _a.getSelection()) !== null && _b !== void 0 ? _b : [];
-        this.bgaPerformAction('actSnakeDiscard', {
+        this.actions.performAction('actSnakeDiscard', {
             cardId: inPlaySelection[0].id,
         });
     };
     Heat.prototype.actChooseUpgrade = function () {
-        this.bgaPerformAction('actChooseUpgrade', {
+        this.actions.performAction('actChooseUpgrade', {
             cardId: this.market.getSelection()[0].id,
         });
     };
     Heat.prototype.actSwapUpgrade = function () {
-        this.bgaPerformAction('actSwapUpgrade', {
+        this.actions.performAction('actSwapUpgrade', {
             marketCardId: this.market.getSelection()[0].id,
             ownedCardId: this.getCurrentPlayerTable().hand.getSelection()[0].id,
         });
     };
     Heat.prototype.actPassSwapUpgrade = function () {
-        this.bgaPerformAction('actPassSwapUpgrade');
+        this.actions.performAction('actPassSwapUpgrade');
     };
     Heat.prototype.actPlanification = function () {
         var selectedCards = this.getCurrentPlayerTable().hand.getSelection();
-        this.bgaPerformAction('actPlan', {
+        this.actions.performAction('actPlan', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
     };
     Heat.prototype.actCancelSelection = function () {
-        this.bgaPerformAction('actCancelSelection', undefined, { checkAction: false });
+        this.actions.performAction('actCancelSelection', undefined, { checkAction: false });
     };
     Heat.prototype.actChooseSpeed = function (speed, choice) {
-        this.bgaPerformAction('actChooseSpeed', {
+        this.actions.performAction('actChooseSpeed', {
             speed: speed,
             choice: JSON.stringify(choice),
         });
     };
     Heat.prototype.actSlipstream = function (speed) {
-        this.bgaPerformAction('actSlipstream', {
+        this.actions.performAction('actSlipstream', {
             speed: speed,
         });
     };
     Heat.prototype.actPassReact = function () {
-        this.bgaPerformAction('actPassReact');
+        this.actions.performAction('actPassReact');
     };
     Heat.prototype.actPassOldReact = function () {
-        this.bgaPerformAction('actPassOldReact');
+        this.actions.performAction('actPassOldReact');
     };
     Heat.prototype.actCryCauseNotEnoughHeatToPay = function () {
-        this.bgaPerformAction('actCryCauseNotEnoughHeatToPay');
+        this.actions.performAction('actCryCauseNotEnoughHeatToPay');
     };
     Heat.prototype.actReact = function (symbol, entries, n) {
-        this.bgaPerformAction('actReact', {
+        this.actions.performAction('actReact', {
             symbol: symbol,
             entries: JSON.stringify(entries),
             n: n,
         });
     };
     Heat.prototype.actOldReact = function (symbol, arg) {
-        this.bgaPerformAction('actOldReact', {
+        this.actions.performAction('actOldReact', {
             symbol: symbol,
             arg: arg,
         });
     };
     Heat.prototype.actRefresh = function (cardId) {
-        this.bgaPerformAction('actRefresh', {
+        this.actions.performAction('actRefresh', {
             cardId: cardId,
         });
     };
     Heat.prototype.actPayHeats = function (selectedCards) {
-        this.bgaPerformAction('actPayHeats', {
+        this.actions.performAction('actPayHeats', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
     };
     Heat.prototype.actCheckCorner = function () {
-        this.bgaPerformAction('actCheckCorner', {});
+        this.actions.performAction('actCheckCorner', {});
     };
     Heat.prototype.actDiscard = function (selectedCards) {
-        this.bgaPerformAction('actDiscard', {
+        this.actions.performAction('actDiscard', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return card.id; })),
         });
     };
     Heat.prototype.actSalvage = function () {
         var selectedCards = this.market.getSelection();
-        this.bgaPerformAction('actSalvage', {
+        this.actions.performAction('actSalvage', {
             cardIds: JSON.stringify(selectedCards.map(function (card) { return -card.id; })),
         });
     };
     Heat.prototype.actSuperCool = function (n) {
-        this.bgaPerformAction('actSuperCool', {
+        this.actions.performAction('actSuperCool', {
             n: n,
         });
     };
     Heat.prototype.actConfirmResults = function () {
-        this.bgaPerformAction('actConfirmResults');
+        this.actions.performAction('actConfirmResults');
     };
     Heat.prototype.actQuitGame = function () {
-        this.bgaPerformAction('actQuitGame', undefined, { checkAction: false });
+        this.actions.performAction('actQuitGame', undefined, { checkAction: false });
     };
     Heat.prototype.actGiveUp = function () {
-        this.bgaPerformAction('actGiveUp');
+        this.actions.performAction('actGiveUp');
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
@@ -5306,7 +5327,7 @@ var Heat = /** @class */ (function (_super) {
                 var promise = _this["notif_".concat(notifName)](notifDetails.args);
                 var promises = promise ? [promise] : [];
                 var minDuration = 1;
-                var msg = _this.format_string_recursive(notifDetails.log, notifDetails.args);
+                var msg = _this.gameui.format_string_recursive(notifDetails.log, notifDetails.args);
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
@@ -5320,11 +5341,11 @@ var Heat = /** @class */ (function (_super) {
                     Promise.all(__spreadArray(__spreadArray([], promises, true), [_this.wait(minDuration)], false)).then(function () { return _this.notifqueue.onSynchronousNotificationEnd(); });
                 }
                 else {
-                    _this.notifqueue.setSynchronousDuration(0);
+                    _this.gameui.notifqueue.setSynchronousDuration(0);
                 }
             });
             if (notifName !== 'playerEliminated') {
-                _this.notifqueue.setSynchronous(notifName, undefined);
+                _this.gameui.notifqueue.setSynchronous(notifName, undefined);
             }
         });
         if (isDebug) {
@@ -5342,11 +5363,11 @@ var Heat = /** @class */ (function (_super) {
                 }
             });
         }
-        /*this.notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) =>
+        /*this.gameui.notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) =>
                 this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
             );*/
-        this.notifqueue.setIgnoreNotificationCheck('draw', function (notif) { return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId(); });
-        this.notifqueue.setIgnoreNotificationCheck('mulligan', function (notif) { return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId(); });
+        this.gameui.notifqueue.setIgnoreNotificationCheck('draw', function (notif) { return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId(); });
+        this.gameui.notifqueue.setIgnoreNotificationCheck('mulligan', function (notif) { return _this.getPlayerIdFromConstructorId(notif.args.constructor_id) == _this.getPlayerId(); });
     };
     Heat.prototype.notif_message = function () {
         // just to log them on the title bar
@@ -5952,7 +5973,7 @@ var Heat = /** @class */ (function (_super) {
         }
         //this.stopActionTimer();
         //(this as any).checkAction('actRestart');
-        this.bgaPerformAction('actUndoToStep', { stepId: stepId } /*, false*/);
+        this.actions.performAction('actUndoToStep', { stepId: stepId } /*, false*/);
     };
     Heat.prototype.notif_clearTurn = function (args) {
         this.cancelLogs(args.notifIds);
@@ -6101,8 +6122,7 @@ var Heat = /** @class */ (function (_super) {
         }
     };
     /* This enable to inject translatable styled things to logs or action bar */
-    /* @Override */
-    Heat.prototype.format_string_recursive = function (log, args) {
+    Heat.prototype.bgaFormatText = function (log, args) {
         var _this = this;
         try {
             if (log && args && !args.processed) {
@@ -6120,12 +6140,13 @@ var Heat = /** @class */ (function (_super) {
                     args[key] = _this.coloredConstructorName(args[key]);
                 });
                 log = formatTextIcons(_(log));
+                args.processed = true;
             }
         }
         catch (e) {
             console.error(log, args, 'Exception thrown', e.stack);
         }
-        return this.inherited(arguments);
+        return { log: log, args: args };
     };
     return Heat;
 }(GameGui));

@@ -108,6 +108,18 @@ interface HeatGame extends Game {
   legendCardsManager: LegendCardsManager;
   eventCardsManager: EventCardsManager;
 
+	gameui: GameGui<HeatGamedatas>;
+  statusBar: StatusBar;
+  images: Images;
+  sounds: Sounds;
+  userPreferences: UserPreferences;
+  players: Players;
+  actions: Actions;
+  notifications: Notifications;
+  gameArea: GameArea;
+  playerPanels: PlayerPanels;
+  dialogs: Dialogs;
+
   getPlayerId(): number;
   getPlayer(playerId: number): HeatPlayer;
   getGameStateName(): string;
