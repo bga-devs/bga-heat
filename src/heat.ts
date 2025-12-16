@@ -292,23 +292,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   public changePageTitle(suffix: string = null, save: boolean = false): void {
-    if (suffix == null) {
-      suffix = 'generic';
-    }
-
-    if (!this.gamedatas.gamestate['descriptionmyturn' + suffix]) {
-      return;
-    }
-
-    if (save) {
-      (this.gamedatas.gamestate as any).descriptionmyturngeneric = this.gamedatas.gamestate.descriptionmyturn;
-      (this.gamedatas.gamestate as any).descriptiongeneric = this.gamedatas.gamestate.description;
-    }
-
-    this.gamedatas.gamestate.descriptionmyturn = this.gamedatas.gamestate['descriptionmyturn' + suffix];
-    if (this.gamedatas.gamestate['description' + suffix])
-      this.gamedatas.gamestate.description = this.gamedatas.gamestate['description' + suffix];
-    this.gameui.updatePageTitle();
+    const title = this.players.isCurrentPlayerActive() ? 
+        (this.gamedatas.gamestate['descriptionmyturn' + suffix] ?? this.gamedatas.gamestate['descriptionmyturn']) :
+        (this.gamedatas.gamestate['description' + suffix] ?? this.gamedatas.gamestate['description']);
+    this.statusBar.setTitle(title, this.gamedatas.gamestate.args);
   }
 
   private onEnteringStateUploadCircuit(args) {
@@ -990,6 +977,19 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     }
   }
 
+  private getMandatoryZone(destination: HTMLElement | null): HTMLElement {
+    const mandatoryZoneId = `${destination ? destination.id : ''}mandatory-buttons`;
+    let mandatoryZone = document.getElementById(mandatoryZoneId);
+    if (!mandatoryZone) {
+      mandatoryZone = document.createElement('div');
+      mandatoryZone.classList.add('mandatory-buttons');
+      mandatoryZone.id = mandatoryZoneId;
+      mandatoryZone.innerHTML = `<div class="mandatory icon"></div>`;
+      (destination ?? document.getElementById('generalactions')).insertAdjacentElement('afterbegin', mandatoryZone);
+    }
+    return mandatoryZone;
+  }
+
   private addReactButton(
     type: string,
     entries: string[],
@@ -1136,16 +1136,6 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
 
     const mandatory = ['heat', 'scrap', 'adjust'].includes(type);
 
-    const mandatoryZoneId = `${destination ? destination.id : ''}mandatory-buttons`;
-    let mandatoryZone = document.getElementById(mandatoryZoneId);
-    if (mandatory && !mandatoryZone) {
-      mandatoryZone = document.createElement('div');
-      mandatoryZone.classList.add('mandatory-buttons');
-      mandatoryZone.id = mandatoryZoneId;
-      mandatoryZone.innerHTML = `<div class="mandatory icon"></div>`;
-      (destination ?? document.getElementById('generalactions')).insertAdjacentElement('afterbegin', mandatoryZone);
-    }
-
     const necessaryEntries = this.getNecessaryEntries(symbolInfos, entries, number);
     const buttonId = `actReact${type}_${cumulative ? 'cumulative' : necessaryEntries.join('-')}_${number}_button`;
     let button = document.getElementById(buttonId);
@@ -1165,9 +1155,20 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         destination,
       });
 
-      destination && console.warn(button);
-      if (destination) {
-        buttonStatusBar = this.statusBar.addActionButton(formatTextIcons(label), () => this.actReact(type, necessaryEntries, number), {
+      if (destination && !symbolInfos.coalescable) {
+        const card = type === 'direct' ? (this.getCurrentPlayerTable()
+          .hand.getCards()
+          .find((card) => card.id == Number(entries[0])))
+          : (this.getCurrentPlayerTable()
+          .inplay.getCards()
+          .find((card) => card.id == Number(entries[0])));
+
+        let statusBarLabel = formatTextIcons(label)
+        if (card) {
+          statusBarLabel += `<br>${this.cardImageHtml(card, { constructor_id: this.getConstructorId() })}`;
+        }
+
+        buttonStatusBar = this.statusBar.addActionButton(statusBarLabel, () => this.actReact(type, necessaryEntries, number), {
           id: 'status-bar-'+buttonId,
           color: forcedN ? 'secondary' : 'primary',
           confirm: this.showHeatCostConfirmations() ? confirmationMessage : null,
@@ -1176,7 +1177,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       }
     }
     if (mandatory) {
-      mandatoryZone.appendChild(/*buttonStatusBar ?? */button);
+      this.getMandatoryZone(destination).appendChild(button);
+      if (buttonStatusBar) {
+        this.getMandatoryZone(null).appendChild(buttonStatusBar);
+      }
     }
 
     this.setTooltip(buttonId, formatTextIcons(tooltip));
@@ -1252,9 +1256,6 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
             for (let n = symbolInfos.max - 1; n >= (symbolInfos.min ?? 1); n--) {
               this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
             }
-          }
-          if (noticeForButtonsOnCard) {
-            console.warn(type, remainingEntries);
           }
           if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every((entry) => isNaN(entry as any as number))) {
             Object.keys(remainingEntries).forEach((entry) => {

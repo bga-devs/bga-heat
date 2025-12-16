@@ -3843,22 +3843,13 @@ var Heat = /** @class */ (function (_super) {
         }
     };
     Heat.prototype.changePageTitle = function (suffix, save) {
+        var _a, _b;
         if (suffix === void 0) { suffix = null; }
         if (save === void 0) { save = false; }
-        if (suffix == null) {
-            suffix = 'generic';
-        }
-        if (!this.gamedatas.gamestate['descriptionmyturn' + suffix]) {
-            return;
-        }
-        if (save) {
-            this.gamedatas.gamestate.descriptionmyturngeneric = this.gamedatas.gamestate.descriptionmyturn;
-            this.gamedatas.gamestate.descriptiongeneric = this.gamedatas.gamestate.description;
-        }
-        this.gamedatas.gamestate.descriptionmyturn = this.gamedatas.gamestate['descriptionmyturn' + suffix];
-        if (this.gamedatas.gamestate['description' + suffix])
-            this.gamedatas.gamestate.description = this.gamedatas.gamestate['description' + suffix];
-        this.gameui.updatePageTitle();
+        var title = this.players.isCurrentPlayerActive() ?
+            ((_a = this.gamedatas.gamestate['descriptionmyturn' + suffix]) !== null && _a !== void 0 ? _a : this.gamedatas.gamestate['descriptionmyturn']) :
+            ((_b = this.gamedatas.gamestate['description' + suffix]) !== null && _b !== void 0 ? _b : this.gamedatas.gamestate['description']);
+        this.statusBar.setTitle(title, this.gamedatas.gamestate.args);
     };
     Heat.prototype.onEnteringStateUploadCircuit = function (args) {
         var _this = this;
@@ -4414,6 +4405,18 @@ var Heat = /** @class */ (function (_super) {
             }
         }
     };
+    Heat.prototype.getMandatoryZone = function (destination) {
+        var mandatoryZoneId = "".concat(destination ? destination.id : '', "mandatory-buttons");
+        var mandatoryZone = document.getElementById(mandatoryZoneId);
+        if (!mandatoryZone) {
+            mandatoryZone = document.createElement('div');
+            mandatoryZone.classList.add('mandatory-buttons');
+            mandatoryZone.id = mandatoryZoneId;
+            mandatoryZone.innerHTML = "<div class=\"mandatory icon\"></div>";
+            (destination !== null && destination !== void 0 ? destination : document.getElementById('generalactions')).insertAdjacentElement('afterbegin', mandatoryZone);
+        }
+        return mandatoryZone;
+    };
     Heat.prototype.addReactButton = function (type, entries, symbolInfos, cumulative, args, forcedN) {
         var _this = this;
         var label = "";
@@ -4523,15 +4526,6 @@ var Heat = /** @class */ (function (_super) {
                 break;
         }
         var mandatory = ['heat', 'scrap', 'adjust'].includes(type);
-        var mandatoryZoneId = "".concat(destination ? destination.id : '', "mandatory-buttons");
-        var mandatoryZone = document.getElementById(mandatoryZoneId);
-        if (mandatory && !mandatoryZone) {
-            mandatoryZone = document.createElement('div');
-            mandatoryZone.classList.add('mandatory-buttons');
-            mandatoryZone.id = mandatoryZoneId;
-            mandatoryZone.innerHTML = "<div class=\"mandatory icon\"></div>";
-            (destination !== null && destination !== void 0 ? destination : document.getElementById('generalactions')).insertAdjacentElement('afterbegin', mandatoryZone);
-        }
         var necessaryEntries = this.getNecessaryEntries(symbolInfos, entries, number);
         var buttonId = "actReact".concat(type, "_").concat(cumulative ? 'cumulative' : necessaryEntries.join('-'), "_").concat(number, "_button");
         var button = document.getElementById(buttonId);
@@ -4548,9 +4542,18 @@ var Heat = /** @class */ (function (_super) {
                 disabled: !enabled || noticeForButtonsOnCard,
                 destination: destination,
             });
-            destination && console.warn(button);
-            if (destination) {
-                buttonStatusBar = this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actReact(type, necessaryEntries, number); }, {
+            if (destination && !symbolInfos.coalescable) {
+                var card = type === 'direct' ? (this.getCurrentPlayerTable()
+                    .hand.getCards()
+                    .find(function (card) { return card.id == Number(entries[0]); }))
+                    : (this.getCurrentPlayerTable()
+                        .inplay.getCards()
+                        .find(function (card) { return card.id == Number(entries[0]); }));
+                var statusBarLabel = formatTextIcons(label);
+                if (card) {
+                    statusBarLabel += "<br>".concat(this.cardImageHtml(card, { constructor_id: this.getConstructorId() }));
+                }
+                buttonStatusBar = this.statusBar.addActionButton(statusBarLabel, function () { return _this.actReact(type, necessaryEntries, number); }, {
                     id: 'status-bar-' + buttonId,
                     color: forcedN ? 'secondary' : 'primary',
                     confirm: this.showHeatCostConfirmations() ? confirmationMessage : null,
@@ -4559,7 +4562,10 @@ var Heat = /** @class */ (function (_super) {
             }
         }
         if (mandatory) {
-            mandatoryZone.appendChild(/*buttonStatusBar ?? */ button);
+            this.getMandatoryZone(destination).appendChild(button);
+            if (buttonStatusBar) {
+                this.getMandatoryZone(null).appendChild(buttonStatusBar);
+            }
         }
         this.setTooltip(buttonId, formatTextIcons(tooltip));
         if (!enabled) {
@@ -4632,9 +4638,6 @@ var Heat = /** @class */ (function (_super) {
                     for (var n = symbolInfos.max - 1; n >= ((_b = symbolInfos.min) !== null && _b !== void 0 ? _b : 1); n--) {
                         _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
                     }
-                }
-                if (noticeForButtonsOnCard) {
-                    console.warn(type, remainingEntries);
                 }
                 if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); })) {
                     Object.keys(remainingEntries).forEach(function (entry) {

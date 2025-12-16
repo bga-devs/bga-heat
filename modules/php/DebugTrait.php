@@ -2,6 +2,7 @@
 
 namespace Bga\Games\Heat;
 
+use Bga\GameFramework\Actions\Debug;
 use Bga\Games\Heat\Managers\Players;
 use Bga\Games\Heat\Managers\Constructors;
 use Bga\Games\Heat\Managers\Cards;
@@ -20,6 +21,7 @@ trait DebugTrait
     Log::undoToStep($stepNumber);
   }
 
+  #[Debug(reload: true)]
   function debug_newReact()
   {
     $constructor = Constructors::getOfPlayer((int) self::getCurrentPlayerId());
