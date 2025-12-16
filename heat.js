@@ -3846,9 +3846,9 @@ var Heat = /** @class */ (function (_super) {
         var _a, _b;
         if (suffix === void 0) { suffix = null; }
         if (save === void 0) { save = false; }
-        var title = this.players.isCurrentPlayerActive() ?
-            ((_a = this.gamedatas.gamestate['descriptionmyturn' + suffix]) !== null && _a !== void 0 ? _a : this.gamedatas.gamestate['descriptionmyturn']) :
-            ((_b = this.gamedatas.gamestate['description' + suffix]) !== null && _b !== void 0 ? _b : this.gamedatas.gamestate['description']);
+        var title = this.players.isCurrentPlayerActive()
+            ? (_a = this.gamedatas.gamestate['descriptionmyturn' + suffix]) !== null && _a !== void 0 ? _a : this.gamedatas.gamestate['descriptionmyturn']
+            : (_b = this.gamedatas.gamestate['description' + suffix]) !== null && _b !== void 0 ? _b : this.gamedatas.gamestate['description'];
         this.statusBar.setTitle(title, this.gamedatas.gamestate.args);
     };
     Heat.prototype.onEnteringStateUploadCircuit = function (args) {
@@ -4275,16 +4275,23 @@ var Heat = /** @class */ (function (_super) {
         if (this.players.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'chooseUpgrade':
-                    this.statusBar.addActionButton(_('Take selected card'), function () { return _this.actChooseUpgrade(); }, { id: "actChooseUpgrade_button" });
+                    this.statusBar.addActionButton(_('Take selected card'), function () { return _this.actChooseUpgrade(); }, {
+                        id: "actChooseUpgrade_button",
+                    });
                     document.getElementById("actChooseUpgrade_button").classList.add('disabled');
                     break;
                 case 'swapUpgrade':
                     this.statusBar.addActionButton(_('Swap selected cards'), function () { return _this.actSwapUpgrade(); }, { id: "actSwapUpgrade_button" });
                     document.getElementById("actSwapUpgrade_button").classList.add('disabled');
-                    this.statusBar.addActionButton(_('Pass'), function () { return _this.actPassSwapUpgrade(); }, { id: "actPassSwapUpgrade_button", color: 'alert' });
+                    this.statusBar.addActionButton(_('Pass'), function () { return _this.actPassSwapUpgrade(); }, {
+                        id: "actPassSwapUpgrade_button",
+                        color: 'alert',
+                    });
                     break;
                 case 'snakeDiscard':
-                    this.statusBar.addActionButton(_('Discard selected card'), function () { return _this.actSnakeDiscard(); }, { id: "actSnakeDiscard_button" });
+                    this.statusBar.addActionButton(_('Discard selected card'), function () { return _this.actSnakeDiscard(); }, {
+                        id: "actSnakeDiscard_button",
+                    });
                     this.checkSnakeDiscardSelectionState();
                     break;
                 case 'planification':
@@ -4347,7 +4354,9 @@ var Heat = /** @class */ (function (_super) {
                                 .find(function (card) { return card.id == number; });
                             var label = "<div class=\"icon refresh\"></div>".concat(_('Place back on deck'), "<br>\n                            ").concat(_this.cardImageHtml(refreshCard, { constructor_id: _this.getConstructorId() }));
                             var tooltip = _this.getGarageModuleIconTooltipWithIcon('refresh', 1);
-                            _this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actRefresh(number); }, { id: "actRefresh_".concat(number, "_button") });
+                            _this.statusBar.addActionButton(formatTextIcons(label), function () { return _this.actRefresh(number); }, {
+                                id: "actRefresh_".concat(number, "_button"),
+                            });
                             _this.setTooltip("actRefresh_".concat(number, "_button"), formatTextIcons(tooltip));
                         });
                     }
@@ -4369,12 +4378,13 @@ var Heat = /** @class */ (function (_super) {
                 case 'salvage':
                     this.onEnteringSalvage(args);
                     this.statusBar.addActionButton(_('Salvage selected cards'), function () { return _this.actSalvage(); }, { id: "actSalvage_button" });
-                    document.getElementById("actSalvage_button").classList.add('disabled');
                     break;
                 case 'superCool':
                     this.onEnteringSuperCool(args);
                     var _loop_3 = function (i) {
-                        this_1.statusBar.addActionButton("<div class=\"icon super-cool\">".concat(i, "</div>"), function () { return _this.actSuperCool(i); }, { id: "actSuperCool".concat(i, "_button") });
+                        this_1.statusBar.addActionButton("<div class=\"icon super-cool\">".concat(i, "</div>"), function () { return _this.actSuperCool(i); }, {
+                            id: "actSuperCool".concat(i, "_button"),
+                        });
                         if (i > args._private.max) {
                             document.getElementById("actSuperCool".concat(i, "_button")).classList.add('disabled');
                         }
@@ -4399,7 +4409,10 @@ var Heat = /** @class */ (function (_super) {
                     break;
                 case 'planification':
                     if (!this.gamedatas.isDeferredRounds) {
-                        this.statusBar.addActionButton(_('Cancel'), function () { return _this.actCancelSelection(); }, { id: "actCancelSelection_button", color: 'secondary' });
+                        this.statusBar.addActionButton(_('Cancel'), function () { return _this.actCancelSelection(); }, {
+                            id: "actCancelSelection_button",
+                            color: 'secondary',
+                        });
                     }
                     break;
             }
@@ -4543,12 +4556,13 @@ var Heat = /** @class */ (function (_super) {
                 destination: destination,
             });
             if (destination && !symbolInfos.coalescable) {
-                var card = type === 'direct' ? (this.getCurrentPlayerTable()
-                    .hand.getCards()
-                    .find(function (card) { return card.id == Number(entries[0]); }))
-                    : (this.getCurrentPlayerTable()
+                var card = type === 'direct'
+                    ? this.getCurrentPlayerTable()
+                        .hand.getCards()
+                        .find(function (card) { return card.id == Number(entries[0]); })
+                    : this.getCurrentPlayerTable()
                         .inplay.getCards()
-                        .find(function (card) { return card.id == Number(entries[0]); }));
+                        .find(function (card) { return card.id == Number(entries[0]); });
                 var statusBarLabel = formatTextIcons(label);
                 if (card) {
                     statusBarLabel += "<br>".concat(this.cardImageHtml(card, { constructor_id: this.getConstructorId() }));
