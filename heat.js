@@ -3922,7 +3922,13 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.onEnteringPlanification = function (args) {
         this.circuit.removeMapPaths();
         if (args._private) {
-            this.getCurrentPlayerTable().setHandSelectable(this.players.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, args._private.selection);
+            var selection = this.getCurrentPlayerTable()
+                .hand.getSelection()
+                .map(function (card) { return card.id; });
+            if (selection.length == 0) {
+                selection = args._private.selection;
+            }
+            this.getCurrentPlayerTable().setHandSelectable(this.players.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, selection);
         }
     };
     Heat.prototype.onEnteringReact = function (args) {

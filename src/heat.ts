@@ -399,10 +399,17 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     this.circuit.removeMapPaths();
 
     if (args._private) {
+      let selection = this.getCurrentPlayerTable()
+        .hand.getSelection()
+        .map((card) => card.id);
+      if (selection.length == 0) {
+        selection = args._private.selection;
+      }
+
       this.getCurrentPlayerTable().setHandSelectable(
         this.players.isCurrentPlayerActive() ? 'multiple' : 'none',
         args._private.cards,
-        args._private.selection
+        selection
       );
     }
   }
