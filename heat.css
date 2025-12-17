@@ -727,9 +727,6 @@ height: 241px; */
   pointer-events: all !important;
   user-select: none;
 }
-.event-card .card-sides .card-side.front {
-  text-shadow: 0 0 1px black, 0 0 2px black;
-}
 .event-card .card-sides .card-side.front[data-index="1"] {
   background-position: 0% 0%;
 }
@@ -789,6 +786,9 @@ height: 241px; */
 }
 .event-card .card-sides .card-side.front[data-index="20"] {
   background-position: 100% 211.1111111111%;
+}
+.event-card .card-sides .card-side.front {
+  text-shadow: 0 0 1px black, 0 0 2px black;
 }
 .event-card .card-sides .card-side.front .title-and-rule {
   position: absolute;
@@ -1408,7 +1408,8 @@ height: 241px; */
 #championship-table {
   margin: 5px 0;
 }
-#championship-table #championship-circuits-progress, #championship-table #championship-circuits {
+#championship-table #championship-circuits-progress,
+#championship-table #championship-circuits {
   display: grid;
   grid-template-columns: 100px repeat(var(--race-count), 1fr);
   gap: 15px;
@@ -1475,7 +1476,8 @@ height: 241px; */
   cursor: pointer;
 }
 #championship-table .championship-circuit:not(.current) .card {
-  display: none;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 #current-championship-card-text {

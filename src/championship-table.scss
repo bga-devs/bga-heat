@@ -1,12 +1,12 @@
 #championship-table {
   margin: 5px 0;
 
-  #championship-circuits-progress, #championship-circuits {
+  #championship-circuits-progress,
+  #championship-circuits {
     display: grid;
     grid-template-columns: 100px repeat(var(--race-count), 1fr);
     gap: 15px;
   }
-  
 
   .circuit-progress {
     height: 8px;
@@ -59,7 +59,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: 'Aachen Bold';
+    font-family: "Aachen Bold";
     color: #91d7e8;
   }
 
@@ -77,7 +77,9 @@
     }
 
     .card {
-      transition: transform 0.5s, margin 0.5s;
+      transition:
+        transform 0.5s,
+        margin 0.5s;
     }
 
     &.current {
@@ -87,7 +89,9 @@
     }
 
     &:not(.current) .card {
-      display: none;
+      // display: none;
+      visibility: hidden;
+      pointer-events: none;
     }
   }
 }
@@ -110,7 +114,7 @@
     display: inline-block;
     width: 32px;
     height: 32px;
-    background-image: url('img/scorepad.jpg');
+    background-image: url("img/scorepad.jpg");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -121,7 +125,7 @@
   margin-top: 10px;
   width: 600px;
   height: 360px;
-  background-image: url('img/scorepad.jpg');
+  background-image: url("img/scorepad.jpg");
   position: relative;
 
   table {
@@ -145,7 +149,10 @@
       td {
         width: 85px;
         text-align: center;
-        text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;
+        text-shadow:
+          0 0 1px white,
+          0 0 2px white,
+          0 0 3px white;
         position: relative;
 
         &.score {
