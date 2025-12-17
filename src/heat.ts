@@ -1292,7 +1292,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       });
 
     this.statusBar.addActionButton(_('Pass'), () => this.actPassReact(), { disabled: !args.canPass });
-    if (!args.symbols.heat.used && !args.symbols.heat.doable) {
+    if (args.symbols.heat && !args.symbols.heat.used && !args.symbols.heat.doable) {
       const confirmationMessage =
         args.symbols.cooldown?.doable && args.symbols.cooldown?.max > 0 && !args.symbols.cooldown?.used
           ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')

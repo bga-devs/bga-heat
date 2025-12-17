@@ -4668,7 +4668,7 @@ var Heat = /** @class */ (function (_super) {
             }
         });
         this.statusBar.addActionButton(_('Pass'), function () { return _this.actPassReact(); }, { disabled: !args.canPass });
-        if (!args.symbols.heat.used && !args.symbols.heat.doable) {
+        if (args.symbols.heat && !args.symbols.heat.used && !args.symbols.heat.doable) {
             var confirmationMessage_1 = ((_a = args.symbols.cooldown) === null || _a === void 0 ? void 0 : _a.doable) && ((_b = args.symbols.cooldown) === null || _b === void 0 ? void 0 : _b.max) > 0 && !((_c = args.symbols.cooldown) === null || _c === void 0 ? void 0 : _c.used)
                 ? _('You can cooldown, and it may unlock the Heat reaction. Are you sure you want to pass without cooldown?')
                 : null;
