@@ -1087,6 +1087,12 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         break;
       case 'cooldown':
         label = `${number} [Cooldown]`;
+        if (entries.length == 1) {
+          let entry = entries[0];
+          if (entry == 'adrenaline') label += _('(Adrenaline)');
+          if (entry == 'gear') label += _('(Gear)');
+          if (entry.substring(0, 6) == 'corner') label += _('(Weather)');
+        }
         const heats = this.getCurrentPlayerTable()
           .hand.getCards()
           .filter((card) => card.effect == 'heat').length;

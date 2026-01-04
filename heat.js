@@ -4488,6 +4488,15 @@ var Heat = /** @class */ (function (_super) {
                 break;
             case 'cooldown':
                 label = "".concat(number, " [Cooldown]");
+                if (entries.length == 1) {
+                    var entry = entries[0];
+                    if (entry == 'adrenaline')
+                        label += _('(Adrenaline)');
+                    if (entry == 'gear')
+                        label += _('(Gear)');
+                    if (entry.substring(0, 6) == 'corner')
+                        label += _('(Weather)');
+                }
                 var heats = this.getCurrentPlayerTable()
                     .hand.getCards()
                     .filter(function (card) { return card.effect == 'heat'; }).length;
