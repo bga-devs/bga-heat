@@ -399,6 +399,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     this.circuit.removeMapPaths();
 
     if (args._private) {
+      this.getCurrentPlayerTable().setCurrentGear(args._private.gear);
+
       let selection = this.getCurrentPlayerTable()
         .hand.getSelection()
         .map((card) => card.id);
@@ -411,6 +413,14 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         args._private.cards,
         selection
       );
+
+      if (selection?.length > 0) {
+        this.getCurrentPlayerTable().setCurrentGear(selection.length);
+        let cards = this.getCurrentPlayerTable()
+          .hand.getCards()
+          .filter((card) => selection.includes(card.id));
+        this.onHandCardSelectionChange(cards);
+      }
     }
   }
 
@@ -432,6 +442,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     document.querySelectorAll(`.planned-card`).forEach((elem) => elem.classList.remove('planned-card'));
 
     if (plannedCardsIds?.length) {
+      const playerTable = this.getCurrentPlayerTable();
       const hand = this.getCurrentPlayerTable()?.hand;
       if (hand) {
         const cards = hand.getCards();
@@ -442,6 +453,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
           }
         });
       }
+
+      playerTable.setCurrentGear(plannedCardsIds.length);
     }
   }
 
@@ -2046,6 +2059,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       }
 
       this.circuit.removeMapIndicators();
+
       if (selection.length && privateArgs && !clutteredHand) {
         const totalSpeeds = this.getPossibleSpeeds(selection, privateArgs);
         const stressCardsSelected = selection.some((card) => privateArgs.boostingCardIds.includes(card.id));

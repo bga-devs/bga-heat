@@ -3922,13 +3922,21 @@ var Heat = /** @class */ (function (_super) {
     Heat.prototype.onEnteringPlanification = function (args) {
         this.circuit.removeMapPaths();
         if (args._private) {
-            var selection = this.getCurrentPlayerTable()
+            this.getCurrentPlayerTable().setCurrentGear(args._private.gear);
+            var selection_1 = this.getCurrentPlayerTable()
                 .hand.getSelection()
                 .map(function (card) { return card.id; });
-            if (selection.length == 0) {
-                selection = args._private.selection;
+            if (selection_1.length == 0) {
+                selection_1 = args._private.selection;
             }
-            this.getCurrentPlayerTable().setHandSelectable(this.players.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, selection);
+            this.getCurrentPlayerTable().setHandSelectable(this.players.isCurrentPlayerActive() ? 'multiple' : 'none', args._private.cards, selection_1);
+            if ((selection_1 === null || selection_1 === void 0 ? void 0 : selection_1.length) > 0) {
+                this.getCurrentPlayerTable().setCurrentGear(selection_1.length);
+                var cards = this.getCurrentPlayerTable()
+                    .hand.getCards()
+                    .filter(function (card) { return selection_1.includes(card.id); });
+                this.onHandCardSelectionChange(cards);
+            }
         }
     };
     Heat.prototype.onEnteringReact = function (args) {
@@ -3955,6 +3963,7 @@ var Heat = /** @class */ (function (_super) {
         var _a;
         document.querySelectorAll(".planned-card").forEach(function (elem) { return elem.classList.remove('planned-card'); });
         if (plannedCardsIds === null || plannedCardsIds === void 0 ? void 0 : plannedCardsIds.length) {
+            var playerTable = this.getCurrentPlayerTable();
             var hand_1 = (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.hand;
             if (hand_1) {
                 var cards_1 = hand_1.getCards();
@@ -3966,6 +3975,7 @@ var Heat = /** @class */ (function (_super) {
                     }
                 });
             }
+            playerTable.setCurrentGear(plannedCardsIds.length);
         }
     };
     Heat.prototype.onEnteringChooseSpeed = function (args) {

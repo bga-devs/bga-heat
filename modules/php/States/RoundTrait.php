@@ -269,6 +269,7 @@ trait RoundTrait
       }
 
       $args['_private'][$pId] = [
+        'gear' => $constructor->getGear(),
         'cards' => $hand->getIds(),
         'speeds' => $speeds,
         'cells' => $cells,

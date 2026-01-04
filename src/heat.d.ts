@@ -108,7 +108,7 @@ interface HeatGame extends Game {
   legendCardsManager: LegendCardsManager;
   eventCardsManager: EventCardsManager;
 
-	gameui: GameGui<HeatGamedatas>;
+  gameui: GameGui<HeatGamedatas>;
   statusBar: StatusBar;
   images: Images;
   sounds: Sounds;
@@ -144,6 +144,7 @@ interface EnteringSwapUpgradeArgs extends EnteringChooseUpgradeArgs {
 }
 
 interface EnteringPlanificationPrivateArgs {
+  gear: number;
   cards: number[];
   selection: number[];
   cells: { [speed: number]: number /*destination cell*/ };
