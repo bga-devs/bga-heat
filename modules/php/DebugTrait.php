@@ -44,6 +44,11 @@ trait DebugTrait
 
   function debug_tp()
   {
+    $constructor = Constructors::getActive();
+    $no = $constructor->getNo() + count(Globals::getFinishedConstructors());
+    $maxNo = Constructors::count();
+    var_dump($no, $maxNo, ($no == $maxNo - 1 || ($no == $maxNo - 2 && $maxNo >= 5)));
+
     Globals::loadCircuitDatas();
     // $constructor = Constructors::getActive();
     // $constructor->setCarCell(301);
