@@ -1308,7 +1308,7 @@ trait RoundTrait
 
     // EVENT : PRESSURE COOKER
     $turn = $constructor->getTurn();
-    if (Globals::getCurrentEvent() == EVENT_PRESSURE_COOKER && $turn > Globals::getPreviousTurn() && $turn < $this->getNbrLaps()) {
+    if (Globals::getCurrentEvent() == EVENT_PRESSURE_COOKER && $turn > 0 && $turn > Globals::getPreviousTurn() && $turn < $this->getNbrLaps()) {
       $heat = $constructor->getEngine()->first();
       if (is_null($heat)) {
         $heat = $constructor->getHand()->filter(fn($card) => $card['effect'] == HEAT)->first();
