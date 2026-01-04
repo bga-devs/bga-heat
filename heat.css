@@ -1463,6 +1463,7 @@ height: 241px; */
   justify-content: center;
   align-items: center;
   transition: height 0.5s;
+  position: relative;
 }
 #championship-table .championship-circuit .circuit-name {
   font-weight: bold;
@@ -1476,6 +1477,7 @@ height: 241px; */
   cursor: pointer;
 }
 #championship-table .championship-circuit:not(.current) .card {
+  position: absolute;
   visibility: hidden;
   pointer-events: none;
 }

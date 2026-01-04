@@ -71,6 +71,7 @@
     justify-content: center;
     align-items: center;
     transition: height 0.5s;
+    position: relative;
 
     .circuit-name {
       font-weight: bold;
@@ -90,6 +91,7 @@
 
     &:not(.current) .card {
       // display: none;
+      position: absolute;
       visibility: hidden;
       pointer-events: none;
     }
