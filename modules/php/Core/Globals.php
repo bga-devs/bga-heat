@@ -328,20 +328,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
       }
       // Random championship
       elseif ($championship == OPTION_CHAMPIONSHIP_RANDOM) {
-        $datas = ['name' => clienttranslate('Custom'), 'circuits' => [], 'index' => 0];
-        $circuits = array_values(self::getPossibleCircuits());
-        $events = array_keys(self::getPossibleEvents());
-        shuffle($circuits);
-        shuffle($events);
-        foreach ($circuits as $i => $circuit) {
-          if (count($datas['circuits']) == 4) break;
-
-          $datas['circuits'][] = [
-            'name' => self::getCircuitName($circuit),
-            'circuit' => $circuit,
-            'event' => $events[$i],
-          ];
-        }
+        $datas = self::getRandomTournament();
         self::setChampionshipDatas($datas);
       }
     }
@@ -376,6 +363,31 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     }
   }
 
+  public static function getRandomTournament(): array
+  {
+    $datas = ['name' => clienttranslate('Custom'), 'circuits' => [], 'index' => 0];
+    $circuits = array_values(self::getPossibleCircuits());
+    $events = array_keys(self::getPossibleEvents());
+    shuffle($circuits);
+    shuffle($events);
+    foreach ($circuits as $i => $circuit) {
+      if (count($datas['circuits']) == 4) break;
+
+      // Prevent espana with striker event
+      if ($circuit == 'espana' && $events[$i] == EVENT_STRIKE) {
+        return self::getRandomTournament();
+      }
+
+      $datas['circuits'][] = [
+        'name' => self::getCircuitName($circuit),
+        'circuit' => $circuit,
+        'event' => $events[$i],
+      ];
+    }
+
+    return $datas;
+  }
+
   public static function getPossibleCircuits(): array
   {
     $circuits = CIRCUITS;
@@ -391,14 +403,14 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
 
   public static function getPossibleEvents(): array
   {
-    $circuits = EVENTS;
+    $events = EVENTS;
     if (self::isHeavyRain()) {
-      $circuits = array_replace($circuits, EVENTS_EXP_HV);
+      $events = array_replace($events, EVENTS_EXP_HV);
     }
     if (self::isTunnelVision()) {
-      $circuits = array_replace($circuits, EVENTS_EXP_TV);
+      $events = array_replace($events, EVENTS_EXP_TV);
     }
-    return $circuits;
+    return $events;
   }
 
   public static function isSnakeDraft()
