@@ -1040,6 +1040,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     let confirmationMessage = null;
     let enabled = symbolInfos.doable;
     let number = forcedN;
+    if (forcedN !== undefined && entries.length == 1) {
+      if (symbolInfos.entries[entries[0]].n !== forcedN) return;
+    }
     if (forcedN === undefined && entries.every((entry) => symbolInfos.entries[entry].n !== undefined)) {
       number = entries
         .map((entry) => symbolInfos.entries[entry])

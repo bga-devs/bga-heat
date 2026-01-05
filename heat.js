@@ -4468,11 +4468,16 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.addReactButton = function (type, entries, symbolInfos, cumulative, args, forcedN) {
         var _this = this;
+        console.log('Add react button', type, entries, symbolInfos, cumulative, forcedN);
         var label = "";
         var tooltip = "";
         var confirmationMessage = null;
         var enabled = symbolInfos.doable;
         var number = forcedN;
+        if (forcedN !== undefined && entries.length == 1) {
+            if (symbolInfos.entries[entries[0]].n !== forcedN)
+                return;
+        }
         if (forcedN === undefined && entries.every(function (entry) { return symbolInfos.entries[entry].n !== undefined; })) {
             number = entries
                 .map(function (entry) { return symbolInfos.entries[entry]; })
