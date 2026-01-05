@@ -46,7 +46,8 @@ trait DebugTrait
   {
     var_dump(Globals::getScores());
     // Globals::loadCircuitDatas();
-    // $constructor = Constructors::getActive();
+    $constructor = Constructors::getActive();
+    $constructor->incStat('time', 0.5);
     // $constructor->setCarCell(301);
     // $this->actReact(DIRECT, [120]);
 

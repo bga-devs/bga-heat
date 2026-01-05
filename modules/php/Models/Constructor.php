@@ -231,7 +231,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
     return null;
   }
 
-  public function incStat(string $name, int $val = 1): mixed
+  public function incStat(string $name, float|int $val = 1): mixed
   {
     if (!$this->isAI()) {
       return Players::get($this->pId)->incStat($name, $val);

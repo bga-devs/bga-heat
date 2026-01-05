@@ -38,7 +38,7 @@ class Stats extends \Bga\Games\Heat\Helpers\CachedDB_Manager
     ];
 
     // Fetch existing stats, all stats
-    $stats = Game::get()->getStatTypes();
+    $stats = self::getStatTypes();
     $existingStats = self::getAll()
       ->map(function ($stat) {
         return $stat['type'] . ',' . ($stat['pId'] == null ? 'table' : 'player');
@@ -114,7 +114,7 @@ class Stats extends \Bga\Games\Heat\Helpers\CachedDB_Manager
   public static function __callStatic($method, $args)
   {
     if (preg_match('/^([gs]et|inc)([A-Z])(.*)$/', $method, $match)) {
-      $stats = Game::get()->getStatTypes();
+      $stats = self::getStatTypes();
 
       // Sanity check : does the name correspond to a declared variable ?
       $name = mb_strtolower($match[2]) . $match[3];
@@ -187,5 +187,133 @@ class Stats extends \Bga\Games\Heat\Helpers\CachedDB_Manager
       }
     }
     return null;
+  }
+
+
+  public static function getStatTypes(): array
+  {
+    require_once dirname(__FILE__) . "/../constants.inc.php";
+
+    return [
+      'table' => [],
+
+      'player' => [
+        'position' => [
+          'id' => STAT_POSITION,
+          'name' => totranslate('Position at race start'),
+          'type' => 'float',
+        ],
+        'endPosition' => [
+          'id' => STAT_POSITION_END,
+          'name' => totranslate('Position at race end'),
+          'type' => 'float',
+        ],
+        'time' => [
+          'id' => STAT_CIRCUIT_TIME,
+          'name' => totranslate('Finish time'),
+          'type' => 'float',
+        ],
+        'rounds' => [
+          'id' => STAT_ROUNDS,
+          'name' => totranslate('Rounds played'),
+          'type' => 'float',
+        ],
+        'roundsFirst' => [
+          'id' => STAT_ROUNDS_FIRST,
+          'name' => totranslate('Rounds played in first position '),
+          'type' => 'float',
+        ],
+        'roundsSpeed1' => [
+          'id' => STAT_ROUNDS_1,
+          'name' => totranslate('Rounds played in gear 1'),
+          'type' => 'float',
+        ],
+        'roundsSpeed2' => [
+          'id' => STAT_ROUNDS_2,
+          'name' => totranslate('Rounds played in gear 2'),
+          'type' => 'float',
+        ],
+        'roundsSpeed3' => [
+          'id' => STAT_ROUNDS_3,
+          'name' => totranslate('Rounds played in gear 3'),
+          'type' => 'float',
+        ],
+        'roundsSpeed4' => [
+          'id' => STAT_ROUNDS_4,
+          'name' => totranslate('Rounds played in gear 4'),
+          'type' => 'float',
+        ],
+
+        'roundsAdrenaline' => [
+          'id' => STAT_ROUNDS_ADRENALINE,
+          'name' => totranslate('Rounds with adrenaline'),
+          'type' => 'float',
+        ],
+        'adrenalineGains' => [
+          'id' => STAT_ADRENALINE_GAIN,
+          'name' => totranslate('Extra-spaces gained from adrenaline'),
+          'type' => 'float',
+        ],
+
+        'spinOuts' => [
+          'id' => STAT_SPINOUT,
+          'name' => totranslate('Spin-outs'),
+          'type' => 'float',
+        ],
+        'stressSpinOuts' => [
+          'id' => STAT_SPINOUT_STRESS,
+          'name' => totranslate('Stress card gained due to spin-outs'),
+          'type' => 'float',
+        ],
+
+        'heatLeft' => [
+          'id' => STAT_HEAT_LEFT,
+          'name' => totranslate('Heat left in engine at game\'s end'),
+          'type' => 'float',
+        ],
+        'heatPayed' => [
+          'id' => STAT_HEAT_PAYED,
+          'name' => totranslate('Heat paid'),
+          'type' => 'float',
+        ],
+        'heatPayedGearUp' => [
+          'id' => STAT_HEAT_PAYED_GEAR_UP,
+          'name' => totranslate('Heat paid for increasing gear by 2'),
+          'type' => 'float',
+        ],
+        'heatPayedGearDown' => [
+          'id' => STAT_HEAT_PAYED_GEAR_DOWN,
+          'name' => totranslate('Heat paid for decreasing gear by 2'),
+          'type' => 'float',
+        ],
+        'boost' => [
+          'id' => STAT_BOOST,
+          'name' => totranslate('Boosts performed'),
+          'type' => 'float',
+        ],
+        'overspeedCorners' => [
+          'id' => STAT_OVERSPEED_CORNERS,
+          'name' => totranslate('Overspeed corners'),
+          'type' => 'float',
+        ],
+
+        'slipstreamGains' => [
+          'id' => STAT_SLIPSTREAM_GAINS,
+          'name' => totranslate('Extra-spaces gained from slipstream'),
+          'type' => 'float',
+        ],
+
+        'extraDiscard' => [
+          'id' => STAT_EXTRA_DISCARD,
+          'name' => totranslate('Cards discarded from hand in phase 9'),
+          'type' => 'float',
+        ],
+        'stressPlayed' => [
+          'id' => STAT_STRESS_PLAYED,
+          'name' => totranslate('Stress cards played'),
+          'type' => 'float',
+        ],
+      ],
+    ];
   }
 }
