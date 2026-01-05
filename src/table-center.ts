@@ -181,6 +181,37 @@ class Circuit {
     } else {
       $('espana-tunnel')?.remove();
     }
+
+    circuitDatas.tunnelsSpaces.forEach((cellPos) =>
+      this.addTooltipToCell(
+        cellPos,
+        _(
+          'As long as your car is on a tunnel Space, you cannot discard any cards from your hand. This rule takes precedence over any effect that would allow you to discard (Event, Upgrade, Road Condition...)'
+        )
+      )
+    );
+    circuitDatas.floodedSpaces.forEach((cellPos) =>
+      this.addTooltipToCell(
+        cellPos,
+        _(
+          'If you start the Round on a flooded Space, Shifting down a gear in Step 1 costs 1 extra Heat. This means that shifting down a single gear will cost a total of 1 Heat, shifting down two gears will cost 2 Heat."'
+        )
+      )
+    );
+  }
+
+  public addTooltipToCell(cellPos: number, tooltip: string) {
+    const cell = this.getCellPosition(cellPos);
+    if (cell) {
+      let o = document.createElement('div');
+      o.id = `cell-tooltip-${cellPos}`;
+      o.classList.add('cell-tooltip');
+      o.style.setProperty('--x', `${cell.x}px`);
+      o.style.setProperty('--y', `${cell.y}px`);
+      o.style.setProperty('--r', `${cell.a ?? 0}deg`);
+      this.circuitDiv.insertAdjacentElement('beforeend', o);
+      this.game.setTooltip(o.id, tooltip);
+    }
   }
 
   public newCircuit(circuitDatas: CircuitDatas) {
@@ -291,7 +322,7 @@ class Circuit {
     weatherTokenDiv.style.setProperty('--y', `${y}px`);
     this.circuitDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
     this.game.setTooltip(weatherTokenDiv.id, this.game.getWeatherTokenTooltip(type, cardType));
-    if ([2,3].includes(type)) {
+    if ([2, 3].includes(type)) {
       const cornerDiv = document.getElementById(`corner-${cornerId}`);
       if (cornerDiv) {
         const clone = document.createElement('div');
@@ -308,14 +339,14 @@ class Circuit {
       }
     }
     if (field === 'sectorTent') {
-      corner.sector.forEach(cellId => this.addSectorIndicator(cellId, weatherTokenDiv, x - 30, y - 30));
+      corner.sector.forEach((cellId) => this.addSectorIndicator(cellId, weatherTokenDiv, x - 30, y - 30));
     }
   }
 
   private getPodiumPosition(pos: number) {
     return {
       ...this.circuitDatas.podium[pos - 1],
-      a: 0
+      a: 0,
     };
   }
 
@@ -595,10 +626,10 @@ class Circuit {
       `<div class="eliminated-podium" style="--x: ${cell.x}px; --y: ${cell.y}px;">❌</div>`
     );
   }
-  
+
   public refreshUI(constructor: Constructor) {
     this.createCar(constructor);
     this.removeMapPaths();
-    constructor.paths.filter((path) => path?.length > 1).forEach((path) => this.addMapPath(path, false))
+    constructor.paths.filter((path) => path?.length > 1).forEach((path) => this.addMapPath(path, false));
   }
 }

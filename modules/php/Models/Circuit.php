@@ -157,6 +157,8 @@ class Circuit
       'startingCells' => $this->startingCells,
       'cells' => $cellsDatas,
       'pressCorners' => $pressCorners,
+      'floodedSpaces' => $this->getFloodedSpaces(),
+      'tunnelsSpaces' => $this->getTunnelsSpaces(),
     ];
   }
 

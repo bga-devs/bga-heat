@@ -19,7 +19,8 @@
       top: calc(var(--y) - 30px);
       box-shadow: 0 0 5px 5px white;
 
-      &:hover, &:active {
+      &:hover,
+      &:active {
         .sector-indicator {
           display: block;
         }
@@ -111,6 +112,17 @@
   &.current {
     background-position-x: 100%;
   }
+}
+
+.cell-tooltip {
+  position: absolute;
+  left: -30.5px;
+  top: -17px;
+  width: 61.08px;
+  height: 34px;
+  z-index: 4;
+  transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
+  transform-origin: center center;
 }
 
 .eliminated-podium {
@@ -253,7 +265,8 @@
     }
   }
 
-  &[data-token-type="2"], &[data-token-type="3"] {
+  &[data-token-type="2"],
+  &[data-token-type="3"] {
     filter: contrast(0.5);
   }
 }

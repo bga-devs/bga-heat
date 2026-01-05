@@ -75,6 +75,8 @@ interface CircuitDatas {
   weatherCardPos: Cell;
   podium: Podium;
   pressCorners?: number[];
+  tunnelsSpaces: number[];
+  floodedSpaces: number[];
 }
 
 interface HeatGamedatas {

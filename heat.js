@@ -2696,6 +2696,26 @@ var Circuit = /** @class */ (function () {
         else {
             (_b = $('espana-tunnel')) === null || _b === void 0 ? void 0 : _b.remove();
         }
+        circuitDatas.tunnelsSpaces.forEach(function (cellPos) {
+            return _this.addTooltipToCell(cellPos, _('As long as your car is on a tunnel Space, you cannot discard any cards from your hand. This rule takes precedence over any effect that would allow you to discard (Event, Upgrade, Road Condition...)'));
+        });
+        circuitDatas.floodedSpaces.forEach(function (cellPos) {
+            return _this.addTooltipToCell(cellPos, _('If you start the Round on a flooded Space, Shifting down a gear in Step 1 costs 1 extra Heat. This means that shifting down a single gear will cost a total of 1 Heat, shifting down two gears will cost 2 Heat."'));
+        });
+    };
+    Circuit.prototype.addTooltipToCell = function (cellPos, tooltip) {
+        var _a;
+        var cell = this.getCellPosition(cellPos);
+        if (cell) {
+            var o = document.createElement('div');
+            o.id = "cell-tooltip-".concat(cellPos);
+            o.classList.add('cell-tooltip');
+            o.style.setProperty('--x', "".concat(cell.x, "px"));
+            o.style.setProperty('--y', "".concat(cell.y, "px"));
+            o.style.setProperty('--r', "".concat((_a = cell.a) !== null && _a !== void 0 ? _a : 0, "deg"));
+            this.circuitDiv.insertAdjacentElement('beforeend', o);
+            this.game.setTooltip(o.id, tooltip);
+        }
     };
     Circuit.prototype.newCircuit = function (circuitDatas) {
         this.circuitDiv.innerHTML = '';

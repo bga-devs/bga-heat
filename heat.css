@@ -948,6 +948,17 @@ height: 241px; */
   background-position-x: 100%;
 }
 
+.cell-tooltip {
+  position: absolute;
+  left: -30.5px;
+  top: -17px;
+  width: 61.08px;
+  height: 34px;
+  z-index: 4;
+  transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
+  transform-origin: center center;
+}
+
 .eliminated-podium {
   position: absolute;
   left: calc(var(--x) + 20px);
