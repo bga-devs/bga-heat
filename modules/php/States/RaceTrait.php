@@ -59,6 +59,8 @@ trait RaceTrait
 
     if (!Globals::isChampionship()) {
       $this->setWeatherAndSetupCards();
+    } else {
+      Globals::setWeather([]);
     }
 
     Globals::setFinishedConstructors([]);
