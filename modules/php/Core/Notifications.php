@@ -280,9 +280,9 @@ class Notifications
   {
     $msg =
       $i == 1 && $n == 1
-      ? clienttranslate('${constructor_name} discards ${cards_images} and keep ${card_image} to resolve [+] symbol')
+      ? clienttranslate('${constructor_name} discards ${cards_images} and keeps ${card_image} to resolve [+] symbol')
       : clienttranslate(
-        '${constructor_name} discards ${cards_images} and keep ${card_image} to resolve [+] symbol (${i} / ${n})'
+        '${constructor_name} discards ${cards_images} and keeps ${card_image} to resolve [+] symbol (${i} / ${n})'
       );
     if (empty($cards)) {
       $msg =
