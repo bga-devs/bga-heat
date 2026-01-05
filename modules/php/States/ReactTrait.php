@@ -244,9 +244,11 @@ trait ReactTrait
    *  - the list of string entries that we are using, mostly cardIds
    *  - (optional) value we are actually wanting to use (needed for "upTo" symbols)
    */
-  public function actReact(string $symbol, #[JsonParam] $entries, ?int $n = null)
+  public function actReact(string $symbol, #[JsonParam] $entries, ?int $n = null, $autoAndNoChangeOfState = false)
   {
-    $this->addNewUndoableStep();
+    if (!$autoAndNoChangeOfState) {
+      $this->addNewUndoableStep();
+    }
     $constructor = Constructors::getActive();
     $symbols = Globals::getCardSymbols();
 
@@ -430,12 +432,28 @@ trait ReactTrait
         }
         $symbols[$symbol]['entries'][$cardId] = $data;
       }
-
       Globals::setCardSymbols($symbols);
+
+      // Do we have to pay for that card ? => do it now!
+      $cost = $card['symbols'][HEAT] ?? 0;
+      $cooldown = ($card['symbols'][COOLDOWN] ?? 0);
+      if ($cost > 0) {
+        // Enough heat to pay => pay now
+        if ($constructor->getHeatsInEngine() >= $cost) {
+          $this->actReact(HEAT, [$cardId], $cost, true);
+        }
+        // Othewise, if the player can cooldown using that card, force the cooldown and they pay for it
+        else if ($constructor->getHeatsInHand()->count() > 0 && $cooldown > 0 && $constructor->getRoadCondition() != ROAD_CONDITION_NO_COOLDOWN) {
+          $this->actReact(COOLDOWN, [$cardId], $cooldown, true);
+          $this->actReact(HEAT, [$cardId], $cost, true);
+        }
+      }
     }
 
     // Loop on same state to resolve other pending symbols
-    $this->gamestate->jumpToState(ST_REACT);
+    if (!$autoAndNoChangeOfState) {
+      $this->gamestate->jumpToState(ST_REACT);
+    }
   }
 
   public function stReact()
