@@ -192,6 +192,10 @@ trait RoundTrait
   {
     $planification = Globals::getPlanification();
     $args = ['_private' => []];
+    if (Globals::isDeferredRounds()) {
+      $args['descSuffix'] = 'enhanced';
+    }
+
     foreach (Constructors::getAll() as $constructor) {
       if ($constructor->isAI() || $constructor->isFinished()) {
         continue;
