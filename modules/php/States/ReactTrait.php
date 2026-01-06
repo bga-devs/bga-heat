@@ -134,6 +134,11 @@ trait ReactTrait
         list('heatCosts' => $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, FLAG_COMPUTE_HEAT_COSTS);
 
         $directPlayCosts[$cardId] = $heatCosts;
+
+        $cost = $card['symbols'][HEAT] ?? 0;
+        if ($cost > 0 && $constructor->getHeatsInEngine() == 0 && $constructor->getHeatsInHand()->count() == 0) {
+          $symbols[DIRECT]['entries'][$cardId]['doable'] = false;
+        }
       }
       $symbols[DIRECT]['heatCosts'] = $directPlayCosts;
     }
