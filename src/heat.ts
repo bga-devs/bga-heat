@@ -1306,7 +1306,8 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
             }
           }
-          if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every((entry) => isNaN(entry as any as number))) {
+          if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every((entry) => isNaN(entry as any as number)) && type !== 'cooldown') {
+            // we ignore cooldown because we don't want Gear/Adrenaline cooldown buttons to show in addition to coalesced cooldown buttons
             Object.keys(remainingEntries).forEach((entry) => {
               this.addReactButton(type, [entry], symbolInfos, false, args);
 

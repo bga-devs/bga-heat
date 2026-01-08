@@ -4468,7 +4468,6 @@ var Heat = /** @class */ (function (_super) {
     };
     Heat.prototype.addReactButton = function (type, entries, symbolInfos, cumulative, args, forcedN) {
         var _this = this;
-        console.log('Add react button', type, entries, symbolInfos, cumulative, forcedN);
         var label = "";
         var tooltip = "";
         var confirmationMessage = null;
@@ -4704,7 +4703,8 @@ var Heat = /** @class */ (function (_super) {
                         _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
                     }
                 }
-                if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); })) {
+                if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); }) && type !== 'cooldown') {
+                    // we ignore cooldown because we don't want Gear/Adrenaline cooldown buttons to show in addition to coalesced cooldown buttons
                     Object.keys(remainingEntries).forEach(function (entry) {
                         var _a;
                         _this.addReactButton(type, [entry], symbolInfos, false, args);
