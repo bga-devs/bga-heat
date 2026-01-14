@@ -396,7 +396,8 @@ trait RaceTrait
     $round += 1;
     Globals::setDraftRound($round);
     if ($round <= Globals::getNDraftRounds()) {
-      $this->gamestate->nextState('draft');
+      //$this->gamestate->nextState('draft');
+      $this->gamestate->jumpToState(ST_PREPARE_GARAGE_DRAFT);
     } else {
       // Snake draft ? => go to discard card state
       if (Globals::isSnakeDraft()) {
