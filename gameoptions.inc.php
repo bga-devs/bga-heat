@@ -31,7 +31,7 @@ require_once 'modules/php/gameoptions.inc.php';
 $game_options = [
   OPTION_EXPANSION_TUNNEL_VISION => [
     'name' => totranslate('Tunnel Vision expansion'),
-    'level' => "major",
+    // 'level' => "major",
     'values' => [
       OPTION_EXPANSION_DISABLED => [
         'name' => clienttranslate('Disabled'),
@@ -60,9 +60,8 @@ $game_options = [
       ],
       OPTION_EXPANSION_ENABLED => [
         'name' => clienttranslate('Enabled'),
-        'tmdisplay' => clienttranslate('((Tunnel Vision))'),
+        'tmdisplay' => clienttranslate('((Heavy Rain))'),
         'nobeginner' => true,
-        'alpha' => true,
       ],
     ],
     'displaycondition' => [
