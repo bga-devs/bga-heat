@@ -291,7 +291,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
 
   /////////////////////////////////:
   //// LEGACY CODE : TO REMOVE
-  public function canUseSymbol(string $symbol, int $n): bool
+  public function canUseSymbol(string $symbol, int|array $n): bool
   {
     // Cooldown => must have something to cooldown in the hand
     if ($symbol == \COOLDOWN) {

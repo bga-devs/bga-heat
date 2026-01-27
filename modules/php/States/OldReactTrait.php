@@ -91,7 +91,7 @@ trait OldReactTrait
     foreach ($symbols[DIRECT] ?? [] as $cardId) {
       $card = Cards::getSingle($cardId);
       $speed = $card['speed'];
-      list('heatCosts' => $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, true, true);
+      list('heatCosts' => $heatCosts) = $this->getCircuit()->getReachedCell($constructor, $speed, FLAG_COMPUTE_HEAT_COSTS);
 
       $directPlayCosts[$cardId] = $heatCosts;
     }
