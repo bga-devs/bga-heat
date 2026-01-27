@@ -207,7 +207,7 @@ trait ReactTrait
           $symbolInfos['doable'] = $symbolInfos['doable'] && $symbolInfos['min'] <= $totalN;
         }
         if (isset($symbolInfos['max'])) {
-          $symbolInfos['doable'] = $symbolInfos['doable'] && (($symbolInfos['upTo'] ?? false) || min($values) <= $symbolInfos['max']);
+          $symbolInfos['doable'] = $symbolInfos['doable'] && (($symbolInfos['upTo'] ?? false) || (!empty($values) && min($values) <= $symbolInfos['max']));
           if ($symbolInfos['upTo'] ?? false) {
             $symbolInfos['max'] = min($symbolInfos['max'], $totalN);
           }
