@@ -5135,7 +5135,7 @@ var Heat = /** @class */ (function (_super) {
             var maxAllowed = Math.min(4, gear + maxGearChange);
             var allowed = selection.length >= minAllowed && selection.length <= maxAllowed;
             var useHeat = allowed && Math.abs(selection.length - gear) == 2 ? 1 : 0;
-            if (privateArgs_1.flooded && selection.length < gear) {
+            if ((privateArgs_1 === null || privateArgs_1 === void 0 ? void 0 : privateArgs_1.flooded) && selection.length < gear) {
                 useHeat++;
             }
             var label = '';
