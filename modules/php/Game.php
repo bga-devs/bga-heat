@@ -101,7 +101,7 @@ class Game extends Table
   /*
    * getGameProgression:
    */
-  function getGameProgression()
+  function getGameProgression(): float
   {
     if (Globals::isChampionship()) {
       $datas = Globals::getChampionshipDatas();
@@ -117,7 +117,7 @@ class Game extends Table
     return 100 * ($totalProgress + $inRaceProgress / $raceNumber);
   }
 
-  function getRaceProgress()
+  function getRaceProgress(): float
   {
     $inRaceProgresses = Constructors::getAll()
       ->map(function ($constructor) {

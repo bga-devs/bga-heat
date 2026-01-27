@@ -111,7 +111,7 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
       ->getPosition($this);
   }
 
-  public function getRaceProgress(): int
+  public function getRaceProgress(): float
   {
     if ($this->isFinished()) {
       return 1;

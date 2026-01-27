@@ -44,10 +44,24 @@ trait DebugTrait
 
   function debug_tp()
   {
-    $constructor = Constructors::getActive();
-    $no = $constructor->getNo() + count(Globals::getFinishedConstructors()) + count(Globals::getSkippedPlayers());
-    $maxNo = Constructors::count();
-    var_dump($no, $maxNo);
+    if (Globals::isChampionship()) {
+      $datas = Globals::getChampionshipDatas();
+      $raceIndex = $datas['index'];
+      $raceNumber = max(1, count($datas['circuits']));
+    } else {
+      $raceIndex = 0;
+      $raceNumber = 1;
+    }
+
+    $totalProgress = $raceIndex / $raceNumber;
+    $inRaceProgress = $this->getRaceProgress();
+    // return 100 * ($totalProgress + $inRaceProgress / $raceNumber);
+
+    var_dump($totalProgress, $inRaceProgress, $raceNumber);
+    // $constructor = Constructors::getActive();
+    // $no = $constructor->getNo() + count(Globals::getFinishedConstructors()) + count(Globals::getSkippedPlayers());
+    // $maxNo = Constructors::count();
+    // var_dump($no, $maxNo);
 
     // var_dump(Globals::getScores());
     // // Globals::loadCircuitDatas();
