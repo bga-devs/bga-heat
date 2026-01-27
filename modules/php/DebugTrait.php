@@ -44,10 +44,15 @@ trait DebugTrait
 
   function debug_tp()
   {
-    var_dump(Globals::getScores());
-    // Globals::loadCircuitDatas();
     $constructor = Constructors::getActive();
-    $constructor->incStat('time', 0.5);
+    $no = $constructor->getNo() + count(Globals::getFinishedConstructors()) + count(Globals::getSkippedPlayers());
+    $maxNo = Constructors::count();
+    var_dump($no, $maxNo);
+
+    // var_dump(Globals::getScores());
+    // // Globals::loadCircuitDatas();
+    // $constructor = Constructors::getActive();
+    // $constructor->incStat('time', 0.5);
     // $constructor->setCarCell(301);
     // $this->actReact(DIRECT, [120]);
 

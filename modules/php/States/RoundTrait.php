@@ -844,7 +844,7 @@ trait RoundTrait
     $event = Globals::getCurrentEvent();
 
     // Adrenaline
-    $no = $constructor->getNo() + count(Globals::getFinishedConstructors());
+    $no = $constructor->getNo() + count(Globals::getFinishedConstructors()) + count(Globals::getSkippedPlayers());
     $maxNo = Constructors::count();
     if ($event != EVENT_SUDDEN_RAIN && ($no == $maxNo - 1 || ($no == $maxNo - 2 && $maxNo >= 5))) {
       $symbols[COOLDOWN]['entries'][ADRENALINE] = [
