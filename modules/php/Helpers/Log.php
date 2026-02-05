@@ -177,6 +177,10 @@ class Log extends \APP_DbObject
         // UNDO UPDATE -> NEW UPDATE
         if ($log['type'] == 'update') {
           $q->update($row)->run($row[$log['primary']]);
+          if (Globals::isDeferredRoundsActive() && $log['table'] == 'global_variables' && in_array($row['name'], Globals::$syncVariables)) {
+            $q2 = new QueryBuilder("global_variables2", null, $log['primary']);
+            $q2->update($row)->run($row[$log['primary']]);
+          }
         }
         // UNDO DELETE -> CREATE
         elseif ($log['type'] == 'delete') {

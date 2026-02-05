@@ -16,7 +16,7 @@ class Notifications
   /*************************
    **** GENERIC METHODS ****
    *************************/
-  protected static function notifyAll($name, $msg, $data)
+  protected static function notifyAll($name, $msg, $data, $shouldStore = true)
   {
     self::updateArgs($data);
 
@@ -25,13 +25,15 @@ class Notifications
     }
     // DeferredRounds mode => send in private instead + store for later
     else {
-      $pendingNotifs = Globals::getPendingNotifications();
-      $pendingNotifs[] = [
-        'name' => $name,
-        'msg' => $msg,
-        'data' => $data,
-      ];
-      Globals::setPendingNotifications($pendingNotifs);
+      if ($shouldStore) {
+        $pendingNotifs = Globals::getPendingNotifications();
+        $pendingNotifs[] = [
+          'name' => $name,
+          'msg' => $msg,
+          'data' => $data,
+        ];
+        Globals::setPendingNotifications($pendingNotifs);
+      }
 
       $activeConstructor = Constructors::getActive();
       $previousConstructors = Constructors::getAll()->filter(fn($c) => !$c->isAI() && $c->getNo() <= $activeConstructor->getNo());
@@ -786,7 +788,7 @@ class Notifications
     self::notifyAll('clearTurn', clienttranslate('${constructor_name} restarts their turn'), [
       'constructor' => $constructor,
       'notifIds' => $notifIds,
-    ]);
+    ], false);
   }
 
   public static function refreshUI(array $datas): void
@@ -799,7 +801,7 @@ class Notifications
 
     self::notifyAll('refreshUI', '', [
       'datas' => $newDatas,
-    ]);
+    ], false);
   }
 
   public static function refreshHand(Constructor $constructor, array $hand): void
@@ -807,7 +809,7 @@ class Notifications
     self::notify($constructor, 'refreshHand', '', [
       'constructor' => $constructor,
       'hand' => $hand,
-    ]);
+    ], false);
   }
 
 

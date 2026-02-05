@@ -52,7 +52,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
 {
   protected static $initialized = false;
   // Variables that should be stored on both table for deferredRounds feature
-  protected static $syncVariables = [
+  public static $syncVariables = [
     'round',
     'customTurnOrders',
     'turnOrder',
