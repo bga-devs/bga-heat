@@ -704,7 +704,7 @@ trait ReactTrait
     // Move car
     $speed = 0;
     foreach ($symbols[SPEED]['entries'] ?? [] as $entry) {
-      $speed += $entry['value'];
+      $speed += $entry['value'] ?? 0;
     }
     $constructor->setSpeed($speed);
     $this->moveCar($constructor, $speed);
