@@ -308,7 +308,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     self::setWeatherModule(($options[OPTION_WEATHER_MODULE] ?? OPTION_DISABLED) == OPTION_WEATHER_ENABLED);
     self::setHeavyRain(($options[OPTION_EXPANSION_HEAVY_RAIN] ?? OPTION_EXPANSION_DISABLED) == OPTION_EXPANSION_ENABLED);
     self::setTunnelVision(($options[OPTION_EXPANSION_TUNNEL_VISION] ?? OPTION_EXPANSION_DISABLED) == OPTION_EXPANSION_ENABLED);
-    self::setDeferredRounds(($options[OPTION_TB_MODE] ?? OPTION_TB_STANDARD) == OPTION_TB_ENHANCED);
+    self::setDeferredRounds(count($players) == 1 ? false : ($options[OPTION_TB_MODE] ?? OPTION_TB_STANDARD) == OPTION_TB_ENHANCED);
     self::setMulliganAllowed(($options[OPTION_MULLIGAN] ?? OPTION_DISABLED) == OPTION_ENABLED);
     self::setChampionship($options[OPTION_SETUP] == OPTION_SETUP_CHAMPIONSHIP);
     if (self::isChampionship()) {
