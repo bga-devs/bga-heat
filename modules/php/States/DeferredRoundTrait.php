@@ -109,8 +109,12 @@ trait DeferredRoundTrait
     // Send missing notif, possible faster ??
     $pId = $constructor->getPId();
     $pendingNotifs = Globals::getPendingNotifications();
+    $i = 0;
     foreach ($pendingNotifs as $notif) {
       Notifications::notify($pId, $notif['name'], $notif['msg'], $notif['data']);
+      if ($i++ >= 25) {
+        $this->sendNotifications();
+      }
     }
 
     $this->stReveal();
