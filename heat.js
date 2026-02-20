@@ -5530,18 +5530,30 @@ var Heat = /** @class */ (function (_super) {
         });
     };
     Heat.prototype.notif_updatePlanification = function (args) {
-        this.updatePlannedCards(args.args._private.selection);
-        var mulliganBtn = document.getElementById('mulligan-btn');
-        if (mulliganBtn && !args.args._private.canMulligan) {
-            mulliganBtn.remove();
-        }
-        this.gamedatas.gamestate.args = args.args;
-        this.onEnteringPlanification(args.args);
+        return __awaiter(this, void 0, void 0, function () {
+            var mulliganBtn;
+            return __generator(this, function (_a) {
+                this.updatePlannedCards(args.args._private.selection);
+                mulliganBtn = document.getElementById('mulligan-btn');
+                if (mulliganBtn && !args.args._private.canMulligan) {
+                    mulliganBtn.remove();
+                }
+                this.gamedatas.gamestate.args = args.args;
+                this.onEnteringPlanification(args.args);
+                this.changePageTitle();
+                return [2 /*return*/];
+            });
+        });
     };
     Heat.prototype.notif_updateSnakeDiscard = function (args) {
-        this.updateDiscardDraftCard(args.args._private.choice);
-        this.gamedatas.gamestate.args = args.args;
-        this.onEnteringSnakeDiscard(args.args);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.updateDiscardDraftCard(args.args._private.choice);
+                this.gamedatas.gamestate.args = args.args;
+                this.onEnteringSnakeDiscard(args.args);
+                return [2 /*return*/];
+            });
+        });
     };
     Heat.prototype.notif_reveal = function (args) {
         return __awaiter(this, void 0, void 0, function () {

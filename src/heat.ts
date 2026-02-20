@@ -2491,7 +2491,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     });
   }
 
-  notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
+  async notif_updatePlanification(args: NotifUpdatePlanificationArgs) {
     this.updatePlannedCards(args.args._private.selection);
     const mulliganBtn = document.getElementById('mulligan-btn');
     if (mulliganBtn && !args.args._private.canMulligan) {
@@ -2499,9 +2499,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     }
     this.gamedatas.gamestate.args = args.args;
     this.onEnteringPlanification(args.args);
+    this.changePageTitle();
   }
 
-  notif_updateSnakeDiscard(args: any) {
+  async notif_updateSnakeDiscard(args: any) {
     this.updateDiscardDraftCard(args.args._private.choice);
     this.gamedatas.gamestate.args = args.args;
     this.onEnteringSnakeDiscard(args.args);
