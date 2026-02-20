@@ -265,6 +265,7 @@ trait RaceTrait
   public function stPrepareGarageDraft(): void
   {
     Globals::setDeferredRoundsActive(false);
+    Globals::checkDeferredIfNeeded(false);
 
     $round = Globals::getDraftRound();
     $cards = Cards::drawMarket();
@@ -307,9 +308,6 @@ trait RaceTrait
 
   public function argsChooseUpgrade(): array
   {
-    // TMP : TODO REMOVE
-    Globals::setDeferredRoundsActive(false);
-
     $data = [
       'market' => Cards::getInLocation('market'),
       'round' => Globals::getDraftRound(),
@@ -396,9 +394,6 @@ trait RaceTrait
   // CHAMPIONSHIP : swap
   public function argsSwapUpgrade(): array
   {
-    // TMP : TODO REMOVE
-    Globals::setDeferredRoundsActive(false);
-
     $constructor = Constructors::getActive();
     return [
       'market' => Cards::getInLocation('market'),

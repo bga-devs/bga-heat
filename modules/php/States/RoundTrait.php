@@ -121,6 +121,7 @@ trait RoundTrait
   function stEndRound()
   {
     Globals::setDeferredRoundsActive(false);
+    Globals::checkDeferredIfNeeded(false);
 
     // Compute new order
     $positions = [];
