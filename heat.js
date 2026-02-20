@@ -5410,9 +5410,11 @@ var Heat = /** @class */ (function (_super) {
                 var msg = _this.gameui.format_string_recursive(notifDetails.log, notifDetails.args);
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
-                    $('pagemaintitletext').innerHTML = msg;
-                    $('generalactions').innerHTML = '';
-                    $('restartAction').innerHTML = '';
+                    if (notifDetails.args.constructor_id && notifDetails.args.constructor_id == _this.getConstructorId()) {
+                        $('pagemaintitletext').innerHTML = msg;
+                        $('generalactions').innerHTML = '';
+                        $('restartAction').innerHTML = '';
+                    }
                     // If there is some text, we let the message some time, to be read
                     minDuration = MIN_NOTIFICATION_MS;
                 }
@@ -5702,8 +5704,14 @@ var Heat = /** @class */ (function (_super) {
         playerTable.drawCardsPublic(n, areSponsors, deckCount);
     };
     Heat.prototype.notif_mulligan = function (args) {
-        var constructor_id = args.constructor_id, heat = args.heat;
-        this.payHeats(constructor_id, [heat]);
+        return __awaiter(this, void 0, void 0, function () {
+            var constructor_id, heat;
+            return __generator(this, function (_a) {
+                constructor_id = args.constructor_id, heat = args.heat;
+                this.payHeats(constructor_id, [heat]);
+                return [2 /*return*/];
+            });
+        });
     };
     Heat.prototype.notif_refresh = function (args) {
         return __awaiter(this, void 0, void 0, function () {

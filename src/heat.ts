@@ -2357,9 +2357,11 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         let msg = this.gameui.format_string_recursive(notifDetails.log, notifDetails.args);
         if (msg != '') {
           $('gameaction_status').innerHTML = msg;
-          $('pagemaintitletext').innerHTML = msg;
-          $('generalactions').innerHTML = '';
-          $('restartAction').innerHTML = '';
+          if (notifDetails.args.constructor_id && notifDetails.args.constructor_id == this.getConstructorId()) {
+            $('pagemaintitletext').innerHTML = msg;
+            $('generalactions').innerHTML = '';
+            $('restartAction').innerHTML = '';
+          }
 
           // If there is some text, we let the message some time, to be read
           minDuration = MIN_NOTIFICATION_MS;
@@ -2614,7 +2616,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     playerTable.drawCardsPublic(n, areSponsors, deckCount);
   }
 
-  notif_mulligan(args: NotifMulliganArgs) {
+  async notif_mulligan(args: NotifMulliganArgs) {
     const { constructor_id, heat } = args;
     this.payHeats(constructor_id, [heat]);
   }
