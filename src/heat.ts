@@ -279,6 +279,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       case 'planification':
         this.updatePlannedCards(args.args._private?.selection ?? []);
         break;
+      case 'snakeDiscard':
+        this.updateDiscardDraftCard(args.args._private?.choice ?? null);
+        break;
       case 'react':
         this.onEnteringReact(args.args);
         break;
@@ -455,6 +458,15 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       }
 
       playerTable.setCurrentGear(plannedCardsIds.length);
+    }
+  }
+
+  public updateDiscardDraftCard(cardId: number | null) {
+    document.querySelectorAll(`.planned-card`).forEach((elem) => elem.classList.remove('planned-card'));
+
+    if (cardId !== null) {
+      let card = document.querySelector(`.card[data-card-id="${cardId}"]`);
+      if (card) card.classList.add('planned-card');
     }
   }
 
@@ -1306,7 +1318,10 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
             }
           }
-          if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every((entry) => isNaN(entry as any as number)) && type !== 'cooldown') {
+          if (
+            noticeForButtonsOnCard ||
+            (!Object.keys(remainingEntries).every((entry) => isNaN(entry as any as number)) && type !== 'cooldown')
+          ) {
             // we ignore cooldown because we don't want Gear/Adrenaline cooldown buttons to show in addition to coalesced cooldown buttons
             Object.keys(remainingEntries).forEach((entry) => {
               this.addReactButton(type, [entry], symbolInfos, false, args);
@@ -2287,6 +2302,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       'endDraftRound',
       'reformingDeckWithUpgrades',
       'updatePlanification',
+      'updateSnakeDiscard',
       'reveal',
       'moveCar',
       'updateTurnOrder',
@@ -2483,6 +2499,12 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     }
     this.gamedatas.gamestate.args = args.args;
     this.onEnteringPlanification(args.args);
+  }
+
+  notif_updateSnakeDiscard(args: any) {
+    this.updateDiscardDraftCard(args.args._private.choice);
+    this.gamedatas.gamestate.args = args.args;
+    this.onEnteringSnakeDiscard(args.args);
   }
 
   async notif_reveal(args: NotifRevealArgs) {

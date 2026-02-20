@@ -3791,7 +3791,7 @@ var Heat = /** @class */ (function (_super) {
     //
     Heat.prototype.onEnteringState = function (stateName, args) {
         var _this = this;
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
         log('Entering state: ' + stateName, args.args);
         if ((_a = args.args) === null || _a === void 0 ? void 0 : _a.descSuffix) {
             this.changePageTitle(args.args.descSuffix);
@@ -3851,6 +3851,9 @@ var Heat = /** @class */ (function (_super) {
             case 'planification':
                 this.updatePlannedCards((_h = (_g = args.args._private) === null || _g === void 0 ? void 0 : _g.selection) !== null && _h !== void 0 ? _h : []);
                 break;
+            case 'snakeDiscard':
+                this.updateDiscardDraftCard((_k = (_j = args.args._private) === null || _j === void 0 ? void 0 : _j.choice) !== null && _k !== void 0 ? _k : null);
+                break;
             case 'react':
                 this.onEnteringReact(args.args);
                 break;
@@ -3858,7 +3861,7 @@ var Heat = /** @class */ (function (_super) {
                 this.onEnteringOldReact(args.args);
                 break;
             case 'gameEnd':
-                (_j = document.getElementById('leave-text-action')) === null || _j === void 0 ? void 0 : _j.remove();
+                (_l = document.getElementById('leave-text-action')) === null || _l === void 0 ? void 0 : _l.remove();
                 break;
         }
     };
@@ -3996,6 +3999,14 @@ var Heat = /** @class */ (function (_super) {
                 });
             }
             playerTable.setCurrentGear(plannedCardsIds.length);
+        }
+    };
+    Heat.prototype.updateDiscardDraftCard = function (cardId) {
+        document.querySelectorAll(".planned-card").forEach(function (elem) { return elem.classList.remove('planned-card'); });
+        if (cardId !== null) {
+            var card = document.querySelector(".card[data-card-id=\"".concat(cardId, "\"]"));
+            if (card)
+                card.classList.add('planned-card');
         }
     };
     Heat.prototype.onEnteringChooseSpeed = function (args) {
@@ -4703,7 +4714,8 @@ var Heat = /** @class */ (function (_super) {
                         _this.addReactButton(type, Object.keys(remainingEntries), symbolInfos, true, args, n);
                     }
                 }
-                if (noticeForButtonsOnCard || !Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); }) && type !== 'cooldown') {
+                if (noticeForButtonsOnCard ||
+                    (!Object.keys(remainingEntries).every(function (entry) { return isNaN(entry); }) && type !== 'cooldown')) {
                     // we ignore cooldown because we don't want Gear/Adrenaline cooldown buttons to show in addition to coalesced cooldown buttons
                     Object.keys(remainingEntries).forEach(function (entry) {
                         var _a;
@@ -5346,6 +5358,7 @@ var Heat = /** @class */ (function (_super) {
             'endDraftRound',
             'reformingDeckWithUpgrades',
             'updatePlanification',
+            'updateSnakeDiscard',
             'reveal',
             'moveCar',
             'updateTurnOrder',
@@ -5524,6 +5537,11 @@ var Heat = /** @class */ (function (_super) {
         }
         this.gamedatas.gamestate.args = args.args;
         this.onEnteringPlanification(args.args);
+    };
+    Heat.prototype.notif_updateSnakeDiscard = function (args) {
+        this.updateDiscardDraftCard(args.args._private.choice);
+        this.gamedatas.gamestate.args = args.args;
+        this.onEnteringSnakeDiscard(args.args);
     };
     Heat.prototype.notif_reveal = function (args) {
         return __awaiter(this, void 0, void 0, function () {
