@@ -2357,7 +2357,11 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
         let msg = this.gameui.format_string_recursive(notifDetails.log, notifDetails.args);
         if (msg != '') {
           $('gameaction_status').innerHTML = msg;
-          if (notifDetails.args.constructor_id && notifDetails.args.constructor_id == this.getConstructorId()) {
+          const multiactivestates = ['snakeDiscard', 'planification', 'uploadCircuit', 'confirmEndOfRace'];
+          if (
+            !multiactivestates.includes(this.getGameStateName()) ||
+            (notifDetails.args.constructor_id && notifDetails.args.constructor_id == this.getConstructorId())
+          ) {
             $('pagemaintitletext').innerHTML = msg;
             $('generalactions').innerHTML = '';
             $('restartAction').innerHTML = '';
@@ -2500,6 +2504,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       mulliganBtn.remove();
     }
     this.gamedatas.gamestate.args = args.args;
+    this.onUpdateActionButtons('planification', args.args);
     this.onEnteringPlanification(args.args);
     this.changePageTitle();
   }

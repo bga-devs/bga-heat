@@ -5410,7 +5410,9 @@ var Heat = /** @class */ (function (_super) {
                 var msg = _this.gameui.format_string_recursive(notifDetails.log, notifDetails.args);
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
-                    if (notifDetails.args.constructor_id && notifDetails.args.constructor_id == _this.getConstructorId()) {
+                    var multiactivestates = ['snakeDiscard', 'planification', 'uploadCircuit', 'confirmEndOfRace'];
+                    if (!multiactivestates.includes(_this.getGameStateName()) ||
+                        (notifDetails.args.constructor_id && notifDetails.args.constructor_id == _this.getConstructorId())) {
                         $('pagemaintitletext').innerHTML = msg;
                         $('generalactions').innerHTML = '';
                         $('restartAction').innerHTML = '';
@@ -5541,6 +5543,7 @@ var Heat = /** @class */ (function (_super) {
                     mulliganBtn.remove();
                 }
                 this.gamedatas.gamestate.args = args.args;
+                this.onUpdateActionButtons('planification', args.args);
                 this.onEnteringPlanification(args.args);
                 this.changePageTitle();
                 return [2 /*return*/];
