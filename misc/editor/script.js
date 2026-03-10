@@ -343,7 +343,9 @@ function saveCircuit() {
 //////////////////////////
 
 function exportJSON() {
-  let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(DATAS));
+  let exportedDatas = { ...DATAS };
+  delete exportedDatas.startingCells;
+  let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportedDatas));
   let dlAnchorElem = document.getElementById('download-anchor');
   dlAnchorElem.setAttribute('href', dataStr);
   dlAnchorElem.setAttribute('download', DATAS.id + '.heat');
@@ -359,7 +361,6 @@ function exportCompressedJSON() {
     nbrLaps: DATAS.nbrLaps || 0,
     stressCards: DATAS.stressCards || 0,
     heatCards: DATAS.heatCards || 0,
-    startingCells: DATAS.startingCells || [],
     podium: { x: 0, y: 0, a: 0 },
     weatherCardPos: DATAS.weatherCardPos
       ? { x: parseInt(DATAS.weatherCardPos.x), y: parseInt(DATAS.weatherCardPos.y) }

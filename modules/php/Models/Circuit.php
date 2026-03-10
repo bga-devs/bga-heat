@@ -26,7 +26,6 @@ class Circuit
   protected array $aggressiveLegendsDistances = [];
   protected array $doubleAggressiveLegendsDistances = [];
   protected array $raceLanes = [];
-  protected array $startingCells = [];
   protected array $cells = [];
   protected array $uPosToCells = [];
   protected ?array $pressCornersPositions = null;
@@ -60,7 +59,6 @@ class Circuit
       $this->raceLanes[] = $lane;
     }
     array_unshift($this->raceLanes, $lane);
-    $this->startingCells = $datas['startingCells'];
     $this->nbrLaps = $datas['nbrLaps'];
     $this->stressCards = $datas['stressCards'];
     $this->heatCards = $datas['heatCards'];
@@ -154,7 +152,6 @@ class Circuit
       'corners' => $cornersDatas,
       'weatherCardPos' => $this->datas['weatherCardPos'],
       'podium' => $this->datas['podium'],
-      'startingCells' => $this->startingCells,
       'cells' => $cellsDatas,
       'pressCorners' => $pressCorners,
       'floodedSpaces' => $this->getFloodedSpaces(),
@@ -190,7 +187,26 @@ class Circuit
 
   public function getStartingCells(): array
   {
-    return $this->startingCells;
+    $cellsByPosition = [];
+    foreach ($this->cells as $cellId => $info) {
+      $position = isset($info['position']) ? (int) $info['position'] : (int) $info['pos'] + 1;
+      $lane = (int) $info['lane'];
+      $cellsByPosition[$position][$lane] = (int) $cellId;
+    }
+
+    krsort($cellsByPosition, SORT_NUMERIC);
+    $startingCells = [];
+    foreach ($cellsByPosition as $laneCells) {
+      ksort($laneCells, SORT_NUMERIC);
+      foreach ($laneCells as $cellId) {
+        $startingCells[] = $cellId;
+        if (count($startingCells) === 12) {
+          return $startingCells;
+        }
+      }
+    }
+
+    throw new \InvalidArgumentException('Unable to compute starting cells from circuit cells.');
   }
 
   public function getLength(): int

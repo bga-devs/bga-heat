@@ -147,7 +147,6 @@ trait SetupTrait
       'nbrLaps' => 'Number of laps',
       'weatherCardPos' => 'Weather card position',
       'podium' => 'Podium position',
-      'startingCells' => 'Starting cells',
       'corners' => 'Corners',
       'cells' => 'Cells',
     ];
@@ -179,14 +178,6 @@ trait SetupTrait
       'x' => (int) $f['podium']['x'],
       'y' => (int) $f['podium']['y'],
     ];
-
-    // Starting cells
-    if (!is_array($f['startingCells']) || count($f['startingCells']) != 8) {
-      throw new \BgaVisibleSystemException('Wrong Starting cells format. Invalid circuit file.');
-    }
-    foreach ($f['startingCells'] as $i => $c) {
-      $f['startingCells'][$i] = (int) $c;
-    }
 
     // Corners
     foreach ($f['corners'] as $i => $corner) {
