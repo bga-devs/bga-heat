@@ -34,10 +34,11 @@ trait RaceTrait
 
     // Place cars on starting positions
     $circuit = $this->getCircuit();
-    $cells = $circuit->getStartingCells();
+    $turnOrder = Constructors::getTurnOrder();
+    $cells = $circuit->getStartingCells(count($turnOrder));
     $positions = [];
     $constructors = [];
-    foreach (Constructors::getTurnOrder() as $i => $cId) {
+    foreach ($turnOrder as $i => $cId) {
       $cell = $cells[$i];
       $constructor = Constructors::get($cId);
       $constructor->setCarCell($cell);

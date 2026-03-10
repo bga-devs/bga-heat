@@ -185,7 +185,7 @@ class Circuit
     return $this->datas['tunnelsSpaces'] ?? [];
   }
 
-  public function getStartingCells(): array
+  public function getStartingCells(int $carCount): array
   {
     $cellsByPosition = [];
     foreach ($this->cells as $cellId => $info) {
@@ -200,7 +200,7 @@ class Circuit
       ksort($laneCells, SORT_NUMERIC);
       foreach ($laneCells as $cellId) {
         $startingCells[] = $cellId;
-        if (count($startingCells) === 12) {
+        if (count($startingCells) === $carCount) {
           return $startingCells;
         }
       }
