@@ -40,7 +40,6 @@ $game_options = [
         'name' => clienttranslate('Enabled'),
         'tmdisplay' => clienttranslate('((Tunnel Vision))'),
         'nobeginner' => true,
-        'alpha' => true,
       ],
     ],
     'displaycondition' => [
