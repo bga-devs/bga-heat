@@ -1,4 +1,4 @@
-$playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f37321", "811b8f";
+$playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f37321", "811b8f", "ffffff";
 
 @import "../node_modules/bga-help/bga-help";
 @import "../node_modules/bga-zoom/bga-zoom";
@@ -205,7 +205,7 @@ html,
   &.legend {
     background: url("img/legend-icons.png");
     background-size: 100% auto;
-    background-position-y: calc(var(--constructor-id) * 100% / 7);
+    background-position-y: calc(var(--constructor-id) * 100% / 8);
   }
 
   &.player {

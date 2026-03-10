@@ -533,7 +533,7 @@ height: 241px; */
 .personal-card .card-sides .card-side {
   border-radius: 8px;
   background-image: url("img/personal-cards.jpg");
-  background-size: auto 800%;
+  background-size: auto 900%;
 }
 .personal-card .card-sides .card-side > * {
   pointer-events: all !important;
@@ -704,7 +704,7 @@ height: 241px; */
   height: 48px;
   background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--color) * 100% / 7);
+  background-position-y: calc(var(--color) * 100% / 8);
   color: white;
   text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
   text-align: center;
@@ -726,6 +726,9 @@ height: 241px; */
 .event-card .card-sides .card-side > * {
   pointer-events: all !important;
   user-select: none;
+}
+.event-card .card-sides .card-side.front {
+  text-shadow: 0 0 1px black, 0 0 2px black;
 }
 .event-card .card-sides .card-side.front[data-index="1"] {
   background-position: 0% 0%;
@@ -786,9 +789,6 @@ height: 241px; */
 }
 .event-card .card-sides .card-side.front[data-index="20"] {
   background-position: 100% 211.1111111111%;
-}
-.event-card .card-sides .card-side.front {
-  text-shadow: 0 0 1px black, 0 0 2px black;
 }
 .event-card .card-sides .card-side.front .title-and-rule {
   position: absolute;
@@ -936,7 +936,7 @@ height: 241px; */
   height: 34px;
   z-index: 3;
   background: url("img/cars.png");
-  background-position-y: calc(var(--constructor-id) * 100% / 7);
+  background-position-y: calc(var(--constructor-id) * 100% / 8);
   background-size: 200% 800%;
   transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
@@ -1194,7 +1194,7 @@ height: 241px; */
 .legend_avatar {
   background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 100% / 7);
+  background-position-y: calc(var(--constructor-id) * 100% / 8);
 }
 
 .player-table {
@@ -1252,6 +1252,9 @@ height: 241px; */
 }
 .player-table .player-board[data-color="811b8f"] {
   background-image: url("img/mats/player-board-811b8f.jpg");
+}
+.player-table .player-board[data-color=ffffff] {
+  background-image: url("img/mats/player-board-ffffff.jpg");
 }
 .player-table .player-board .bga-cards_deck-counter {
   --bga-cards-deck-counter-size: 40px;
@@ -1313,24 +1316,27 @@ height: 241px; */
   background-position-x: 0%;
 }
 .player-table .player-board .gear[data-color="376bbe"] {
-  background-position-x: 14.2857142857%;
+  background-position-x: 12.5%;
 }
 .player-table .player-board .gear[data-color="26a54e"] {
-  background-position-x: 28.5714285714%;
+  background-position-x: 25%;
 }
 .player-table .player-board .gear[data-color=e52927] {
-  background-position-x: 42.8571428571%;
+  background-position-x: 37.5%;
 }
 .player-table .player-board .gear[data-color="979797"] {
-  background-position-x: 57.1428571429%;
+  background-position-x: 50%;
 }
 .player-table .player-board .gear[data-color=face0d] {
-  background-position-x: 71.4285714286%;
+  background-position-x: 62.5%;
 }
 .player-table .player-board .gear[data-color=f37321] {
-  background-position-x: 85.7142857143%;
+  background-position-x: 75%;
 }
 .player-table .player-board .gear[data-color="811b8f"] {
+  background-position-x: 87.5%;
+}
+.player-table .player-board .gear[data-color=ffffff] {
   background-position-x: 100%;
 }
 .player-table .player-board .gear[data-color="12151a"] {
@@ -1809,7 +1815,7 @@ html,
 .constructor-avatar.legend {
   background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 100% / 7);
+  background-position-y: calc(var(--constructor-id) * 100% / 8);
 }
 .constructor-avatar.player {
   border-radius: 50%;
