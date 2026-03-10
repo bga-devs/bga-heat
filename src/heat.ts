@@ -8,7 +8,7 @@ const LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 const LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
-const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321', '811b8f']; // copy of gameinfos
+const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321', '811b8f', 'ffffff']; // copy of gameinfos
 
 const SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce', 'scrap'];
 const HAND_CARD_TYPE_FOR_EFFECT = {

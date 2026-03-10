@@ -17,6 +17,7 @@
 
   .name-wrapper {
     color: var(--player-color);
+    text-shadow: 0 0 1px var(--player-color-text-shadow), 0 0 2px var(--player-color-text-shadow), 0 0 3px var(--player-color-text-shadow);
     position: relative;
     display: flex;
     padding: 5px;

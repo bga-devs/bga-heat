@@ -25,12 +25,12 @@ class Players extends \Bga\Games\Heat\Helpers\DB_Manager
     // Create players
     $gameInfos = Game::get()->getGameinfos();
     $colors = $gameInfos['player_colors'];
-    $query = self::DB()->multipleInsert(['player_id', 'player_color', 'player_canal', 'player_name', 'player_avatar']);
+    $query = self::DB()->multipleInsert(['player_id', 'player_color', 'player_name']);
 
     $values = [];
     foreach ($players as $pId => $player) {
       $color = array_shift($colors);
-      $values[] = [$pId, $color, $player['player_canal'], $player['player_name'], $player['player_avatar']];
+      $values[] = [$pId, $color, $player['player_name']];
     }
     $query->values($values);
     Game::get()->reattributeColorsBasedOnPreferences($players, $gameInfos['player_colors']);

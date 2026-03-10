@@ -1214,6 +1214,7 @@ height: 241px; */
 }
 .player-table .name-wrapper {
   color: var(--player-color);
+  text-shadow: 0 0 1px var(--player-color-text-shadow), 0 0 2px var(--player-color-text-shadow), 0 0 3px var(--player-color-text-shadow);
   position: relative;
   display: flex;
   padding: 5px;
@@ -2005,4 +2006,8 @@ html,
 /* Mobile logs */
 .log.cancel.roundedbox {
   background-color: #ef9a9a;
+}
+
+.player-name a:first-of-type[style*="color: #ffffff"], span[style*="color: #ffffff"] {
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
 }

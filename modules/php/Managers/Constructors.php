@@ -57,7 +57,8 @@ class Constructors extends \Bga\Games\Heat\Helpers\CachedDB_Manager
       \CONSTRUCTOR_GREEN => clienttranslate('Green legend'),
       \CONSTRUCTOR_GRAY => clienttranslate('Gray legend'),
       \CONSTRUCTOR_ORANGE => clienttranslate('Orange legend'),
-      \CONSTRUCTOR_PURPLE => clienttranslate('Purple legend')
+      \CONSTRUCTOR_PURPLE => clienttranslate('Purple legend'),
+      \CONSTRUCTOR_WHITE => clienttranslate('White legend'),
     ];
     $name = $names[$cId];
 
