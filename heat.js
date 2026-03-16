@@ -3912,7 +3912,7 @@ var Heat = /** @class */ (function (_super) {
         var _a;
         if (!this.market) {
             var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
-            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat((((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100) / 7, "%;\"></div>\n            "));
+            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat((((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100) / 8, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
             this.market.onSelectionChange = function (selection) { return _this.onMarketSelectionChange(selection); };
         }
@@ -4045,7 +4045,7 @@ var Heat = /** @class */ (function (_super) {
         var _a;
         if (!this.market) {
             var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
-            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat((((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100) / 7, "%;\"></div>\n            "));
+            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat((((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100) / 8, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
             this.market.onSelectionChange = function (selection) {
                 document.getElementById("actSalvage_button").classList.toggle('disabled', selection.length > args.n);
@@ -4060,7 +4060,7 @@ var Heat = /** @class */ (function (_super) {
         var _a;
         if (!this.market) {
             var constructor = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); });
-            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat((((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100) / 7, "%;\"></div>\n            "));
+            document.getElementById('top').insertAdjacentHTML('afterbegin', "\n                <div id=\"market\" style=\"--personal-card-background-y: ".concat((((_a = constructor === null || constructor === void 0 ? void 0 : constructor.id) !== null && _a !== void 0 ? _a : 0) * 100) / 8, "%;\"></div>\n            "));
             this.market = new LineStock(this.cardsManager, document.getElementById("market"));
         }
         // negative ids to not mess with deck pile
@@ -6200,7 +6200,7 @@ var Heat = /** @class */ (function (_super) {
         var _this = this;
         var _a, _b;
         var constructorId = (_a = args.constructor_id) !== null && _a !== void 0 ? _a : (_b = Object.values(this.gamedatas.constructors).find(function (constructor) { return constructor.pId == _this.getPlayerId(); })) === null || _b === void 0 ? void 0 : _b.id;
-        return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat((constructorId * 100) / 7, "%;\" data-symbols=\"").concat(card.type < 100 ? Object.keys(card.symbols).length : 0, "\">").concat(this.cardsManager.getHtml(card), "</div>");
+        return "<div class=\"log-card-image\" style=\"--personal-card-background-y: ".concat((constructorId * 100) / 8, "%;\" data-symbols=\"").concat(card.type < 100 ? Object.keys(card.symbols).length : 0, "\">").concat(this.cardsManager.getHtml(card), "</div>");
     };
     Heat.prototype.cardsImagesHtml = function (cards, args) {
         var _this = this;

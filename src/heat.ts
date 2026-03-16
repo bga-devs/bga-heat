@@ -358,7 +358,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 7}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 8}%;"></div>
             `
       );
       this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
@@ -514,7 +514,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 7}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 8}%;"></div>
             `
       );
       this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
@@ -534,7 +534,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 7}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 8}%;"></div>
             `
       );
       this.market = new LineStock<Card>(this.cardsManager, document.getElementById(`market`));
@@ -3050,7 +3050,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     const constructorId =
       args.constructor_id ??
       Object.values(this.gamedatas.constructors).find((constructor) => constructor.pId == this.getPlayerId())?.id;
-    return `<div class="log-card-image" style="--personal-card-background-y: ${(constructorId * 100) / 7}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
+    return `<div class="log-card-image" style="--personal-card-background-y: ${(constructorId * 100) / 8}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
   }
 
   private cardsImagesHtml(cards: Card[], args: any) {
