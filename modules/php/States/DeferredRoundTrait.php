@@ -46,7 +46,7 @@ trait DeferredRoundTrait
         $planificationDone = Globals::getPlanificationRevealed();
         // FALLBACK CODE, REMOVE A BIT LATTER
         if (empty($planificationDone)) {
-          return !is_null($this->gamestate) && $this->gamestate->state_id() == ST_PLANIFICATION;
+          return !is_null($this->gamestate) && $this->gamestate->getCurrentMainStateId() == ST_PLANIFICATION;
         } else {
           return !($planificationDone[$currentConstructor->getId()] ?? false);
         }

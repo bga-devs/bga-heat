@@ -199,40 +199,4 @@ trait DebugTrait
     // Replenish
     Cards::fillHand($constructor);
   }
-
-  /*
-   * loadBugSQL: in studio, this is one of the URLs triggered by loadBug() above
-   */
-  /*public function loadBugReportSQL(int $reportId, array $studioPlayers): void
-  {
-    $prodPlayers = $this->getObjectListFromDb("SELECT `player_id` FROM `player`", true);
-    $prodCount = count($prodPlayers);
-    $studioCount = count($studioPlayers);
-    if ($prodCount != $studioCount) {
-        throw new BgaVisibleSystemException("Incorrect player count (bug report has $prodCount players, studio table has $studioCount players)");
-    }
-
-    // Change for your game
-    // We are setting the current state to match the start of a player's turn if it's already game over
-    $sql = ['UPDATE global SET global_value='.ST_DRAFT_GARAGE_SNAKE_DISCARD.' WHERE global_id=1 AND global_value=99'];
-    foreach ($prodPlayers as $index => $prodId) {
-      $studioId = $studioPlayers[$index];
-
-      // All games can keep this SQL
-      $sql[] = "UPDATE player SET player_id=$studioId WHERE player_id=$prodId";
-      $sql[] = "UPDATE global SET global_value=$studioId WHERE global_value=$prodId";
-      $sql[] = "UPDATE stats SET stats_player_id=$studioId WHERE stats_player_id=$prodId";
-
-      // Add game-specific SQL update the tables for your game
-      $sql[] = "UPDATE constructors SET player_id=$studioId WHERE player_id=$prodId";
-
-      // This could be improved, it assumes you had sequential studio accounts before loading
-      // e.g., quietmint0, quietmint1, quietmint2, etc. are at the table
-      $studioId++;
-    }
-
-    foreach ($sql as $q) {
-      $this->DbQuery($q);
-    }
-  }*/
 }

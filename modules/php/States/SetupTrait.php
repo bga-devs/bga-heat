@@ -94,6 +94,8 @@ trait SetupTrait
 
     $this->setGameStateInitialValue('logging', true);
     $this->activeNextPlayer();
+
+    return \ST_SETUP_BRANCH;
   }
 
   public function stSetupBranch()

@@ -21,8 +21,6 @@ declare(strict_types=1);
 
 namespace Bga\Games\Heat;
 
-require_once APP_GAMEMODULE_PATH . 'module/table/table.game.php';
-
 use Bga\GameFramework\Table;
 use Bga\Games\Heat\Managers\Players;
 use Bga\Games\Heat\Managers\Constructors;
@@ -328,11 +326,5 @@ class Game extends Table
   public function getCurrentPId()
   {
     return $this->getCurrentPlayerId();
-  }
-
-  // Exposing protected method translation
-  public function translate($text)
-  {
-    return $this->_($text);
   }
 }

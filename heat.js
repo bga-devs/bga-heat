@@ -3707,9 +3707,9 @@ var Heat = /** @class */ (function (_super) {
         // @ts-ignore
         dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
         if (((_a = gamedatas.circuitDatas) === null || _a === void 0 ? void 0 : _a.jpgUrl) && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
-            g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
+            this.bga.images.preloadImage(gamedatas.circuitDatas.jpgUrl);
         }
-        //g_img_preload.push(...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
+        //this.bga.images.preloadImages(Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
         // Create a new div for buttons to avoid BGA auto clearing it
         dojo.place("<div id='customActions' style='display:inline-block'></div>", 'generalactions', 'after');
         dojo.place("<div id='restartAction' style='display:inline-block'></div>", 'customActions', 'after');
@@ -5904,8 +5904,9 @@ var Heat = /** @class */ (function (_super) {
         });
     };
     Heat.prototype.setScore = function (playerId, score) {
-        if (this.scoreCtrl[playerId]) {
-            this.scoreCtrl[playerId].toValue(score);
+        var counter = this.bga.playerPanels.getScoreCounter(playerId);
+        if (counter) {
+            counter.toValue(score);
         }
         else {
             document.getElementById("player_score_".concat(playerId)).innerText = "".concat(score);

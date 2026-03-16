@@ -1,5 +1,3 @@
-declare const g_img_preload;
-
 const ANIMATION_MS = 500;
 const MIN_NOTIFICATION_MS = 1200;
 const ACTION_TIMER_DURATION = 5;
@@ -105,9 +103,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
     dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
 
     if (gamedatas.circuitDatas?.jpgUrl && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
-      g_img_preload.push(gamedatas.circuitDatas.jpgUrl);
+      this.bga.images.preloadImage(gamedatas.circuitDatas.jpgUrl);
     }
-    //g_img_preload.push(...Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
+    //this.bga.images.preloadImages(Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
 
     // Create a new div for buttons to avoid BGA auto clearing it
     dojo.place("<div id='customActions' style='display:inline-block'></div>", 'generalactions', 'after');
@@ -2747,8 +2745,9 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   }
 
   private setScore(playerId: number, score: number) {
-    if (this.scoreCtrl[playerId]) {
-      this.scoreCtrl[playerId].toValue(score);
+    const counter = this.bga.playerPanels.getScoreCounter(playerId);
+    if (counter) {
+      counter.toValue(score);
     } else {
       document.getElementById(`player_score_${playerId}`).innerText = `${score}`;
     }
