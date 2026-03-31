@@ -580,7 +580,7 @@ height: 241px; */
 }
 .personal-card .card-sides .card-side.front.upgrade-card {
   background-image: url("img/upgrade-cards.jpg");
-  background-size: auto 600%;
+  background-size: auto 800%;
 }
 .personal-card .card-sides .card-side.front.sponsor-card {
   background-image: url("img/sponsor-cards.jpg");
