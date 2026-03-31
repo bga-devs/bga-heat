@@ -159,6 +159,46 @@ class EventCardsManager {
           race: 4,
           country: _('NEDERLAND'),
         };
+      case 19:
+        return {
+          title: /*TODORR_*/('Tight maneuvers'),
+          rule: /*TODORR_*/(
+            'Your total Slipstream Value is reduced by 1.'
+          ),
+          year: '1966',
+          race: 1,
+          country: _('FRANCE'),
+        };
+      case 20:
+        return {
+          title: /*TODORR_*/('Smooth start'),
+          rule: /*TODORR_*/(
+            'Before the race, place all of your Stress cards into your discard pile.'
+          ),
+          year: '1966',
+          race: 2,
+          country: /*TODORR_*/('GERMANY'),
+        };
+      case 21:
+        return {
+          title: /*TODORR_*/('The crowd goes wild'),
+          rule: /*TODORR_*/(
+            'The first 2 drivers to cross the B Corner Line every lap immediately gain a Sponsorship card. Legends count even though they get no benefit from it.'
+          ),
+          year: '1966',
+          race: 3,
+          country: _('ITALY'),
+        };
+      case 22:
+        return {
+          title: /*TODORR_*/('Consulting the mechanics'),
+          rule: /*TODORR_*/(
+            'Before the race, in starting grid order, all drivers choose either +1 Heat card & +1 Stress card, OR -1 Heat card & -1 Stress card.'
+          ),
+          year: '1966',
+          race: 4,
+          country: /*TODORR_*/('SOUTH AFRICA'),
+        };
     }
   }
 
