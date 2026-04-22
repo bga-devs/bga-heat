@@ -2,6 +2,10 @@
 
 namespace Bga\Games\Heat\Helpers;
 
+use Bga\GameFramework\SystemException;
+use Bga\GameFramework\Table;
+use Bga\GameFramework\VisibleSystemException;
+
 class QueryBuilder extends \APP_DbObject
 {
   private $table,
@@ -46,7 +50,7 @@ class QueryBuilder extends \APP_DbObject
   public function insert($fields = [], $overwriteIfExists = false)
   {
     $this->multipleInsert(array_keys($fields), $overwriteIfExists)->values([array_values($fields)]);
-    return self::DbGetLastId();
+    return Table::DbGetLastId();
   }
 
   /*
@@ -63,35 +67,53 @@ class QueryBuilder extends \APP_DbObject
 
   public function values($rows = [])
   {
-    // Fetch starting index if not provided
-    $startingId = null;
-    if ($this->insertPrimaryIndex === false) {
-      $startingId = (int) self::getUniqueValueFromDB(
-        "SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{$this->table}';"
-      );
-    }
-
-    $ids = [];
     $vals = [];
+    $ids  = [];
+
     foreach ($rows as $row) {
       $rowValues = [];
+
       foreach ($row as $val) {
-        $rowValues[] = $val === null ? 'NULL' : "'" . mysql_escape_string($val) . "'";
+        $rowValues[] = $val === null
+          ? 'NULL'
+          : "'" . mysql_escape_string($val) . "'";
       }
+
       $vals[] = '(' . implode(',', $rowValues) . ')';
-      $ids[] = $rom[$this->primary] ?? ($this->insertPrimaryIndex === false ? $startingId++ : $row[$this->insertPrimaryIndex]);
+
+      // Case 1: Primary key explicitly provided
+      if ($this->insertPrimaryIndex !== false && $this->insertPrimaryIndex !== null) {
+        $ids[] = $row[$this->insertPrimaryIndex];
+      }
     }
 
     $this->sql .= implode(',', $vals);
-    self::DbQuery($this->sql);
-    if ($this->log) {
+
+    // Execute INSERT
+    Table::DbQuery($this->sql);
+
+    // Case 2: AUTO_INCREMENT primary key
+    if ($this->insertPrimaryIndex === false) {
+      $firstId = (int) Table::getUniqueValueFromDB("SELECT LAST_INSERT_ID()");
+      $count   = count($rows);
+
+      for ($i = 0; $i < $count; $i++) {
+        $ids[] = $firstId + $i;
+      }
+    }
+
+    // Case 3: No primary tracking requested (insertPrimaryIndex === null)
+    // $ids remains as collected (possibly empty)
+
+    if ($this->log && !empty($ids)) {
       Log::addEntry([
-        'table' => $this->table,
+        'table'   => $this->table,
         'primary' => $this->primary,
-        'type' => 'create',
+        'type'    => 'create',
         'affected' => $ids,
       ]);
     }
+
     return $ids;
   }
 
@@ -165,7 +187,7 @@ class QueryBuilder extends \APP_DbObject
       }
 
       $this->assembleQueryClauses();
-      $objList = self::getObjectListFromDB($this->sql);
+      $objList = Table::getObjectListFromDB($this->sql);
       Log::addEntry([
         'table' => $this->table,
         'primary' => $this->primary,
@@ -176,8 +198,8 @@ class QueryBuilder extends \APP_DbObject
     }
 
     $this->assembleQueryClauses();
-    self::DbQuery($this->sql);
-    return self::DbAffectedRow();
+    Table::DbQuery($this->sql);
+    return Table::DbAffectedRow();
   }
 
   /*********************************
@@ -214,9 +236,9 @@ class QueryBuilder extends \APP_DbObject
     $this->assembleQueryClauses();
 
     if ($debug) {
-      throw new \feException($this->sql);
+      throw new SystemException($this->sql);
     }
-    $res = self::getObjectListFromDB($this->sql);
+    $res = Table::getObjectListFromDB($this->sql);
     $oRes = [];
     foreach ($res as $row) {
       $id = $row['result_associative_index'];
@@ -250,13 +272,13 @@ class QueryBuilder extends \APP_DbObject
   public function func($func, $field = null)
   {
     if (!in_array($func, ['COUNT', 'MAX', 'MIN'])) {
-      throw new \BgaVisibleSystemException('QueryBuilder: func is called with unknown function');
+      throw new VisibleSystemException('QueryBuilder: func is called with unknown function');
     }
 
     $field = is_null($field) ? '*' : "`$field`";
     $this->sql = "SELECT $func($field) FROM `$this->table`";
     $this->assembleQueryClauses();
-    return (int) self::getUniqueValueFromDB($this->sql);
+    return (int) Table::getUniqueValueFromDB($this->sql);
   }
 
   public function count($field = null)
