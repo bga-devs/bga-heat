@@ -287,6 +287,7 @@ $machinestates = [
     'args' => 'argsCheckCorner',
     'action' => 'stCheckCorner',
     'possibleactions' => ['actCheckCorner', 'actUndoToStep', 'actRestartTurn'],
+    'transitions' => ['zombiePass' => ST_DISCARD],
   ],
 
   ST_DISCARD => [
