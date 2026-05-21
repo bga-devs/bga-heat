@@ -599,7 +599,9 @@ object {
     background: red;
 }
 #main-frame.show-lanes .center-indicator::before,
-#main-frame.show-flooded .center-indicator::before {
+#main-frame.show-flooded .center-indicator::before,
+#main-frame.show-gravel .center-indicator::before,
+#main-frame.show-tunnels .center-indicator::before {
     content: attr(data-position);
     background: white;
     width: auto;
@@ -624,6 +626,9 @@ object {
     background: rgb(77, 77, 77);
     color: white;
     border: 1px solid white;
+}
+#main-frame.show-gravel .center-indicator[data-gravel="1"]::before {
+    background: rgb(204, 178, 93);
 }
 
 .direction-indicator {
