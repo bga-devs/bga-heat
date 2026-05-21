@@ -3,7 +3,12 @@ let DATAS = null;
 let CELLS = [];
 
 // Sections
-const SECTIONS = ['centers', 'directions', 'neighbours', 'lanes', 'flooded', 'tunnels'];
+const SECTIONS = ['centers', 'directions', 'neighbours', 'lanes', 'flooded', 'gravel', 'tunnels'];
+const SPACE_ALIASES = {
+  flooded: 'floodedSpaces',
+  gravel: 'gravelSpaces',
+  tunnels: 'tunnelsSpaces',
+};
 
 ////// HELP //////
 
@@ -239,6 +244,7 @@ updateLoadFile();
 
 function loadCircuit(datas) {
   DATAS = datas;
+  Object.keys(SPACE_ALIASES).forEach((spaceType) => normalizeSpaces(spaceType));
 
   $('display-circuit-id').innerHTML = 'ID: ' + DATAS.id;
   $('display-circuit-name').innerHTML = 'Name: ' + DATAS.name;
@@ -366,8 +372,9 @@ function exportCompressedJSON() {
       ? { x: parseInt(DATAS.weatherCardPos.x), y: parseInt(DATAS.weatherCardPos.y) }
       : { x: 0, y: 0 },
     corners: DATAS.corners || [],
-    floodedSpaces: DATAS.flooded || [],
-    tunnelsSpaces: DATAS.tunnels || [],
+    floodedSpaces: getSpaces('flooded'),
+    gravelSpaces: getSpaces('gravel'),
+    tunnelsSpaces: getSpaces('tunnels'),
     cells: {},
   };
 
@@ -502,6 +509,7 @@ function updateStatus() {
 
   // Always optional
   DATAS.computed.flooded = true;
+  DATAS.computed.gravel = true;
   DATAS.computed.tunnels = true;
 
   SECTIONS.forEach((section) => {
@@ -689,28 +697,21 @@ function onMouseClickCell(id, cell, evt) {
   }
 
   if (modes.flooded.edit) {
-    if (DATAS.flooded === undefined) DATAS.flooded = [];
-
-    const index = DATAS.flooded.indexOf(id);
-    if (index > -1) {
-      DATAS.flooded.splice(index, 1);
-    } else {
-      DATAS.flooded.push(id);
-    }
+    toggleSpace('flooded', id);
     saveCircuit();
     updateFloodedSpaces();
     return;
   }
 
-  if (modes.tunnels.edit) {
-    if (DATAS.tunnels === undefined) DATAS.tunnels = [];
+  if (modes.gravel.edit) {
+    toggleSpace('gravel', id);
+    saveCircuit();
+    updateGravelSpaces();
+    return;
+  }
 
-    const index = DATAS.tunnels.indexOf(id);
-    if (index > -1) {
-      DATAS.tunnels.splice(index, 1);
-    } else {
-      DATAS.tunnels.push(id);
-    }
+  if (modes.tunnels.edit) {
+    toggleSpace('tunnels', id);
     saveCircuit();
     updateTunnelsSpaces();
     return;
@@ -784,8 +785,9 @@ function updateCenters() {
     $(`center-${cellId}`).dataset.lane = DATAS.cells[cellId].lane ?? 0;
     $(`center-${cellId}`).dataset.position = DATAS.cells[cellId].position ?? 0;
 
-    $(`center-${cellId}`).dataset.flooded = (DATAS.flooded ?? []).includes(cellId) ? 1 : 0;
-    $(`center-${cellId}`).dataset.tunnels = (DATAS.tunnels ?? []).includes(cellId) ? 1 : 0;
+    $(`center-${cellId}`).dataset.flooded = hasSpace('flooded', cellId) ? 1 : 0;
+    $(`center-${cellId}`).dataset.gravel = hasSpace('gravel', cellId) ? 1 : 0;
+    $(`center-${cellId}`).dataset.tunnels = hasSpace('tunnels', cellId) ? 1 : 0;
   });
 }
 
@@ -1085,6 +1087,39 @@ function updateFloodedSpaces() {
 
 function updateTunnelsSpaces() {
   updateCenters();
+}
+
+function updateGravelSpaces() {
+  updateCenters();
+}
+
+function normalizeSpaces(spaceType) {
+  const legacyKey = SPACE_ALIASES[spaceType];
+  DATAS[spaceType] = DATAS[spaceType] ?? DATAS[legacyKey] ?? [];
+  delete DATAS[legacyKey];
+}
+
+function getSpaces(spaceType) {
+  normalizeSpaces(spaceType);
+  return DATAS[spaceType];
+}
+
+function hasSpace(spaceType, id) {
+  return getSpaceIndex(getSpaces(spaceType), id) > -1;
+}
+
+function toggleSpace(spaceType, id) {
+  const spaces = getSpaces(spaceType);
+  const index = getSpaceIndex(spaces, id);
+  if (index > -1) {
+    spaces.splice(index, 1);
+  } else {
+    spaces.push(id);
+  }
+}
+
+function getSpaceIndex(spaces, id) {
+  return spaces.findIndex((spaceId) => spaceId == id);
 }
 
 ////////////////////////////////////////////
