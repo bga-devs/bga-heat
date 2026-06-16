@@ -1,16 +1,26 @@
-.player-board {
-  background-color: white;
-
-  &.spectator-mode {
+html[data-theme="light"] {
+  .player-board {
+    --bga-player-panel-background: white;
     color: black;
-    * {
-      background: white !important;
+
+    &.finished {
+      --bga-player-panel-background: lightgray;
+      color: black;
     }
   }
+}
 
+html[data-theme="dark"] {
+  .player-board {
+    &.finished {
+      --bga-player-panel-background: #3c3c3c;
+      color: #c3c2c2;
+    }
+  }
+}
+
+.player-board {
   &.finished {
-    background-color: lightgray;
-
     .order-counter {
       display: none;
     }

@@ -72,6 +72,7 @@
     align-items: center;
     transition: height 0.5s;
     position: relative;
+    color: black;
 
     .circuit-name {
       font-weight: bold;
@@ -94,6 +95,16 @@
       position: absolute;
       visibility: hidden;
       pointer-events: none;
+    }
+  }
+}
+
+html[data-theme="dark"] {
+  #championship-table #championship-circuits {
+    background: #6e6e6e;
+
+    .championship-circuit {
+      color: white;
     }
   }
 }
