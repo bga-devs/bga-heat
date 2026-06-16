@@ -21,19 +21,19 @@ $playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f373
   font-weight: normal;
   src:
     local("Aachen Bold"),
-    url("img/aachen-bold-opentype.woff") format("woff");
+    url("fonts/aachen-bold-opentype.woff") format("woff");
 }
 
 @font-face {
   font-family: "roboto_slabbold";
-  src: url("img/RobotoSlab-Bold-webfont.woff") format("woff");
+  src: url("fonts/RobotoSlab-Bold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Barlow";
-  src: url("img/BarlowCondensed-Medium.woff") format("woff");
+  src: url("fonts/BarlowCondensed-Medium.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
