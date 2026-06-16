@@ -20,7 +20,7 @@ GameGui = (function () {
   return GameGui;
 })();
 
-class Heat extends GameGui<HeatGamedatas> implements HeatGame {
+class Heat extends GameGui<HeatPlayer, HeatGamedatas> implements HeatGame {
   public animationManager: AnimationManager;
   public cardsManager: CardsManager;
   public legendCardsManager: LegendCardsManager;
@@ -45,7 +45,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
   private _notif_uid_to_mobile_log_id = [];
   private _last_notif;
 
-  public gameui: GameGui<HeatGamedatas>;
+  public gameui: any; // TODO GameGui<HeatPlayer, HeatGamedatas>;
   public statusBar: StatusBar;
   public images: Images;
   public sounds: Sounds;
@@ -1162,7 +1162,7 @@ class Heat extends GameGui<HeatGamedatas> implements HeatGame {
               args.currentHeatCost,
               args.nextCornerSpeedLimit,
               args.nextCornerExtraHeatCost,
-              args.boostInfos,
+              symbolInfos.heatCosts,
               paid
             );
         break;
