@@ -156,6 +156,7 @@ class Circuit
       'pressCorners' => $pressCorners,
       'floodedSpaces' => $this->getFloodedSpaces(),
       'tunnelsSpaces' => $this->getTunnelsSpaces(),
+      'gravelSpaces' => $this->getGravelSpaces(),
     ];
   }
 
@@ -183,6 +184,11 @@ class Circuit
   public function getTunnelsSpaces(): array
   {
     return $this->datas['tunnelsSpaces'] ?? [];
+  }
+
+  public function getGravelSpaces(): array
+  {
+    return $this->datas['gravelSpaces'] ?? [];
   }
 
   public function getStartingCells(int $carCount): array

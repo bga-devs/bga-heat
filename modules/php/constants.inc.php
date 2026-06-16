@@ -236,6 +236,7 @@ const CHAMPIONSHIP_SEASONS = [
 const CIRCUITS = ['usa', 'gb', 'italia', 'france'];
 const CIRCUITS_EXP_HV = ['japan', 'mexico'];
 const CIRCUITS_EXP_TV = ['nederland', 'espana'];
+const CIRCUITS_EXP_RR = ['deutschland', 'southafrica'];
 
 /******************
  ****** STATS ******
