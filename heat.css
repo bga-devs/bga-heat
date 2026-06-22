@@ -1709,12 +1709,15 @@ html[data-theme=dark] #championship-table #championship-circuits .championship-c
     margin-top: 8px;
   }
 }
-html,
-.mode_3d #game_play_area_background {
+html {
   background: url("img/rules-background.jpg");
   background-size: 100% auto;
   background-repeat: repeat;
   background-position: top;
+}
+
+html[data-theme=dark] {
+  background-blend-mode: soft-light;
 }
 
 .icon {

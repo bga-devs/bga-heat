@@ -47,12 +47,15 @@ $playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f373
   }
 }
 
-html,
-.mode_3d #game_play_area_background {
+html {
   background: url("img/rules-background.jpg");
   background-size: 100% auto;
   background-repeat: repeat;
   background-position: top;
+}
+
+html[data-theme="dark"] {
+  background-blend-mode: soft-light;
 }
 
 .icon {
