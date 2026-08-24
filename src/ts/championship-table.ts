@@ -1,4 +1,6 @@
-class ChampionshipTable {
+import { CONSTRUCTORS_COLORS } from './constants';
+
+export class ChampionshipTable {
     constructor(private game: HeatGame, private gamedatas: HeatGamedatas) {
         let html = `
         <div id="championship-table">

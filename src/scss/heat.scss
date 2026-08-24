@@ -1,9 +1,9 @@
 $playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f37321", "811b8f", "ffffff";
 
-@import "../node_modules/bga-help/bga-help";
-@import "../node_modules/bga-zoom/bga-zoom";
-@import "../node_modules/bga-jump-to/bga-jump-to";
-@import "../node_modules/bga-cards/bga-cards";
+@import "../../node_modules/bga-help/bga-help";
+@import "../../node_modules/bga-zoom/bga-zoom";
+@import "../../node_modules/bga-jump-to/bga-jump-to";
+@import "../../node_modules/bga-cards/bga-cards";
 @import "cards";
 @import "legend-cards";
 @import "event-cards";

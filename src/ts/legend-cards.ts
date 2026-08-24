@@ -1,10 +1,12 @@
-type LegendCard = {
+import { BgaCards } from './libs';
+
+export type LegendCard = {
     [column: number]: {
         [color: number]: number
     }
 };
 
-class LegendCardsManager extends CardManager<LegendCard> {
+export class LegendCardsManager extends BgaCards.CardManager<LegendCard> {
     constructor (public game: HeatGame) {
         super(game, {
             getId: (card) => `legend-card-${JSON.stringify(card).replace(/"/g, '')}`,

@@ -477,6 +477,7 @@ body > .card {
   width: calc(var(--width) + (var(--tile-count) - 1) * var(--horizontal-shift));
   height: calc(var(--height) + (var(--tile-count) - 1) * var(--vertical-shift));
   transition: width 0.5s ease-in-out, height 0.5s ease-in-out, background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  opacity: var(--tile-count);
 }
 
 .card-stock.all-visible-deck > .card {
@@ -727,9 +728,6 @@ height: 241px; */
   pointer-events: all !important;
   user-select: none;
 }
-.event-card .card-sides .card-side.front {
-  text-shadow: 0 0 1px black, 0 0 2px black;
-}
 .event-card .card-sides .card-side.front[data-index="1"] {
   background-position: 0% 0%;
 }
@@ -819,6 +817,9 @@ height: 241px; */
 }
 .event-card .card-sides .card-side.front[data-index="30"] {
   background-position: 100% 322.2222222222%;
+}
+.event-card .card-sides .card-side.front {
+  text-shadow: 0 0 1px black, 0 0 2px black;
 }
 .event-card .card-sides .card-side.front .title-and-rule {
   position: absolute;

@@ -2,6 +2,13 @@
  * Your game interfaces
  */
 
+type Card = import('./cards').Card;
+type LegendCard = import('./legend-cards').LegendCard;
+type CardsManager = import('./cards').CardsManager;
+type LegendCardsManager = import('./legend-cards').LegendCardsManager;
+type EventCardsManager = import('./event-cards').EventCardsManager;
+type PlayerTable = import('./player-table').PlayerTable;
+
 interface HeatPlayer extends Player {
   no: number;
 }
@@ -79,19 +86,7 @@ interface CircuitDatas {
   floodedSpaces: number[];
 }
 
-interface HeatGamedatas {
-  current_player_id: string;
-  decision: { decision_type: string };
-  game_result_neutralized: string;
-  gamestate: Gamestate;
-  gamestates: { [gamestateId: number]: Gamestate };
-  neutralized_player_id: string;
-  notifications: { last_packet_id: string; move_nbr: string };
-  playerorder: (string | number)[];
-  players: { [playerId: number]: HeatPlayer };
-  tablespeed: string;
-
-  // Add here variables you set up in getAllDatas
+interface HeatGamedatas extends Gamedatas<HeatPlayer> {
   championship: Championship;
   circuitDatas: CircuitDatas;
   nbrLaps: number;
@@ -104,37 +99,8 @@ interface HeatGamedatas {
   isDeferredRounds: boolean;
 }
 
-interface HeatGame extends Game {
-  animationManager: AnimationManager;
-  cardsManager: CardsManager;
-  legendCardsManager: LegendCardsManager;
-  eventCardsManager: EventCardsManager;
-
-  gameui: GameGui<HeatGamedatas>;
-  statusBar: StatusBar;
-  images: Images;
-  sounds: Sounds;
-  userPreferences: UserPreferences;
-  players: Players;
-  actions: Actions;
-  notifications: Notifications;
-  gameArea: GameArea;
-  playerPanels: PlayerPanels;
-  dialogs: Dialogs;
-
-  getPlayerId(): number;
-  getPlayer(playerId: number): HeatPlayer;
-  getGameStateName(): string;
-  getCurrentPlayerTable(): PlayerTable | null;
-  getGarageModuleIconTooltip(symbol: string, number: number | string): string;
-  getGarageModuleIconTooltipWithIcon(symbol: string, number: number | string): string;
-  getWeatherCardSetupTooltip(type: number): string;
-  getWeatherCardEffectTooltip(type: number): string;
-  getWeatherTokenTooltip(type: number, cardType: number): string;
-  setTooltip(id: string, html: string): void;
-  onHandCardSelectionChange(selection: Card[]): void;
-  onInPlayCardSelectionChange(selection: Card[]): void;
-  changePageTitle(suffix?: string, save?: boolean): void;
+interface HeatGame {
+  [key: string]: any;
 }
 
 interface EnteringChooseUpgradeArgs {
