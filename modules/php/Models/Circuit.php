@@ -185,6 +185,11 @@ class Circuit
     return $this->datas['tunnelsSpaces'] ?? [];
   }
 
+  public function getGravelSpaces(): array
+  {
+    return $this->datas['gravelSpaces'] ?? [];
+  }
+
   public function getStartingCells(int $carCount): array
   {
     $cellsByPosition = [];

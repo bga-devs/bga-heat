@@ -22,12 +22,15 @@ use const Bga\Games\Heat\OPTION_CIRCUIT_JAPAN;
 use const Bga\Games\Heat\OPTION_CIRCUIT_MEXICO;
 use const Bga\Games\Heat\OPTION_CIRCUIT_NEDERLAND;
 use const Bga\Games\Heat\OPTION_CIRCUIT_RANDOM;
+use const Bga\Games\Heat\OPTION_CIRCUIT_DEUTSCHLAND;
+use const Bga\Games\Heat\OPTION_CIRCUIT_SOUTH_AFRICA;
 use const Bga\Games\Heat\OPTION_CIRCUIT_USA;
 use const Bga\Games\Heat\OPTION_DISABLED;
 use const Bga\Games\Heat\OPTION_ENABLED;
 use const Bga\Games\Heat\OPTION_EXPANSION_DISABLED;
 use const Bga\Games\Heat\OPTION_EXPANSION_ENABLED;
 use const Bga\Games\Heat\OPTION_EXPANSION_HEAVY_RAIN;
+use const Bga\Games\Heat\OPTION_EXPANSION_ROCKY_ROAD;
 use const Bga\Games\Heat\OPTION_EXPANSION_TUNNEL_VISION;
 use const Bga\Games\Heat\OPTION_GARAGE_CHOICE;
 use const Bga\Games\Heat\OPTION_GARAGE_RANDOM;
@@ -112,6 +115,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     'weather' => 'obj',
     'heavyRain' => 'bool',
     'tunnelVision' => 'bool',
+    'rockyRoad' => 'bool',
     'championship' => 'bool',
     'championshipDatas' => 'obj',
     'mulliganAllowed' => 'bool',
@@ -308,6 +312,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     self::setWeatherModule(($options[OPTION_WEATHER_MODULE] ?? OPTION_DISABLED) == OPTION_WEATHER_ENABLED);
     self::setHeavyRain(($options[OPTION_EXPANSION_HEAVY_RAIN] ?? OPTION_EXPANSION_DISABLED) == OPTION_EXPANSION_ENABLED);
     self::setTunnelVision(($options[OPTION_EXPANSION_TUNNEL_VISION] ?? OPTION_EXPANSION_DISABLED) == OPTION_EXPANSION_ENABLED);
+    self::setRockyRoad(($options[OPTION_EXPANSION_ROCKY_ROAD] ?? OPTION_EXPANSION_DISABLED) == OPTION_EXPANSION_ENABLED);
     self::setDeferredRounds(count($players) == 1 ? false : ($options[OPTION_TB_MODE] ?? OPTION_TB_STANDARD) == OPTION_TB_ENHANCED);
     self::setMulliganAllowed(($options[OPTION_MULLIGAN] ?? OPTION_DISABLED) == OPTION_ENABLED);
     self::setChampionship($options[OPTION_SETUP] == OPTION_SETUP_CHAMPIONSHIP);
@@ -338,6 +343,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
       // Fallback for incompatible gameoptions
       if (in_array($opt, [OPTION_CIRCUIT_JAPAN, OPTION_CIRCUIT_MEXICO])) Globals::setHeavyRain(true);
       if (in_array($opt, [OPTION_CIRCUIT_NEDERLAND, OPTION_CIRCUIT_ESPANA])) Globals::setTunnelVision(true);
+      if (in_array($opt, [OPTION_CIRCUIT_SOUTH_AFRICA, OPTION_CIRCUIT_DEUTSCHLAND])) Globals::setRockyRoad(true);
 
       $circuits = self::getPossibleCircuits();
       shuffle($circuits);
@@ -351,6 +357,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
         OPTION_CIRCUIT_MEXICO => 'mexico',
         OPTION_CIRCUIT_NEDERLAND => 'nederland',
         OPTION_CIRCUIT_ESPANA => 'espana',
+        OPTION_CIRCUIT_SOUTH_AFRICA => 'SouthAfrica',
+        OPTION_CIRCUIT_DEUTSCHLAND => 'Deutschland',
 
         OPTION_CIRCUIT_RANDOM => $circuits[0],
         OPTION_CIRCUIT_CUSTOM => 'custom',
@@ -397,6 +405,9 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     if (self::isTunnelVision()) {
       $circuits = array_merge($circuits, CIRCUITS_EXP_TV);
     }
+    if (self::isRockyRoad()) {
+      $circuits = array_merge($circuits, CIRCUITS_EXP_RR);
+    }
     return $circuits;
   }
 
@@ -429,6 +440,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
       'mexico' => clienttranslate('Mexico'),
       'nederland' => clienttranslate('Nederland'),
       'espana' => clienttranslate('España'),
+      'SouthAfrica' => clienttranslate('South Africa'),
+      'Deutschland' => clienttranslate('Deutschland'),
     ];
     return $map[$circuitId];
   }
@@ -454,6 +467,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
       'mexico' => 'Mexico',
       'nederland' => 'Nederland',
       'espana' => 'Espana',
+      'SouthAfrica' => 'SouthAfrica',
+      'Deutschland' => 'Deutschland',
     ];
     $fileName = __DIR__ . '/../Circuits/' . $names[Globals::getCircuit()] . '.php';
     include_once $fileName;

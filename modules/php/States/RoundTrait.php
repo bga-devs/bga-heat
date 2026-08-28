@@ -984,7 +984,6 @@ trait RoundTrait
 
   public function actSlipstream(int $speed, bool $auto = false)
   {
-    self::checkAction('actSlipstream');
     if (!$auto) {
       $this->addNewUndoableStep();
     }
@@ -1001,6 +1000,21 @@ trait RoundTrait
       // Compute the new cell
       $nForward = $this->moveCar($constructor, $speed, true);
       $constructor->incStat('slipstreamGains', $nForward);
+
+      // CHAIN_ASPIRATION: Check if player can chain another slipstream (RockyRoad expansion)
+      if (!empty($this->argsSlipstream()['speeds'])) {
+        $playedCards = $constructor->getPlayedCards();
+        foreach ($playedCards as $card) {
+          if (isset($card['symbols'][CHAIN_ASPIRATION])) {
+            // Player can chain another slipstream
+            Notifications::message(clienttranslate('${constructor_name} can chain another slipstream'), [
+              'constructor' => $constructor,
+            ]);
+            $this->gamestate->jumpToState(ST_SLIPSTREAM);
+            return;
+          }
+        }
+      }
     }
 
     $this->gamestate->jumpToState(ST_CHECK_CORNER);
@@ -1188,6 +1202,17 @@ trait RoundTrait
             Notifications::drawSponsor($constructor, $card, EVENT_GOING_GLOBAL);
           }
         }
+      }
+    }
+
+    // Gravel penalty (RockyRoad expansion)
+    if ($constructor->isInGravelSpace()) {
+      $engine = $constructor->getEngine();
+      if ($engine->count() > 0) {
+        // Player has at least one Heat card in engine - must pay 1 Heat
+        $heatCard = $engine->first();
+        Cards::move($heatCard['id'], ['discard', $constructor->getId()]);
+        Notifications::gravelPenalty($constructor, $heatCard);
       }
     }
 

@@ -176,6 +176,12 @@ class Constructor extends \Bga\Games\Heat\Helpers\DB_Model
       ->getCircuit()->getTunnelsSpaces());
   }
 
+  public function isInGravelSpace(): bool
+  {
+    return in_array($this->getCarCell(), Game::get()
+      ->getCircuit()->getGravelSpaces());
+  }
+
   public function getDraftableDistance(): int
   {
     return Game::get()->getCircuit()->getDraftableDistance($this->getPosition());

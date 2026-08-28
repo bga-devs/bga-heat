@@ -31,7 +31,7 @@ trait OldReactTrait
     $roadCondition = $constructor->getRoadCondition();
     $symbols = Globals::getSymbols();
     // Remove symbols that do not apply at this step
-    $notReactSymbols = [SLIPSTREAM, REFRESH];
+    $notReactSymbols = [SLIPSTREAM, REFRESH, CHAIN_ASPIRATION];
     foreach ($notReactSymbols as $symbol) {
       unset($symbols[$symbol]);
     }

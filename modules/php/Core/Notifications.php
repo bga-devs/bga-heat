@@ -457,6 +457,15 @@ class Notifications
     ]);
   }
 
+  public static function gravelPenalty(Constructor $constructor, array $card): void
+  {
+    self::notifyAll('payHeats', clienttranslate('${constructor_name} pays 1 Heat due to gravel'), [
+      'constructor' => $constructor,
+      'cards' => [$card],
+      'i18n' => ['constructor_name'],
+    ]);
+  }
+
   public static function newLegendCard(array $card): void
   {
     self::notifyAll('newLegendCard', clienttranslate('A new legend card is revealed'), [

@@ -72,6 +72,28 @@ $game_options = [
     ],
   ],
 
+  OPTION_EXPANSION_ROCKY_ROAD => [
+    'name' => totranslate('Rocky Road expansion'),
+    'values' => [
+      OPTION_EXPANSION_DISABLED => [
+        'name' => clienttranslate('Disabled'),
+      ],
+      OPTION_EXPANSION_ENABLED => [
+        'name' => clienttranslate('Enabled'),
+        'tmdisplay' => clienttranslate('((Rocky Road))'),
+        'nobeginner' => true,
+        'alpha' => true,
+      ],
+    ],
+    'displaycondition' => [
+      [
+        'type' => 'otheroptionisnot',
+        'id' => OPTION_SETUP,
+        'value' => [OPTION_SETUP_FIRST_GAME],
+      ],
+    ],
+  ],
+
   OPTION_TB_MODE => [
     'name' => totranslate('Turn-based mode'),
     'default' => OPTION_TB_STANDARD,
@@ -340,6 +362,14 @@ $game_options = [
       OPTION_CIRCUIT_ESPANA => [
         'name' => clienttranslate('España (Tunnel Vision)'),
         'tmdisplay' => clienttranslate('[España]'),
+      ],
+      OPTION_CIRCUIT_SOUTH_AFRICA => [
+        'name' => clienttranslate('South Africa (Rocky Road)'),
+        'tmdisplay' => clienttranslate('[South Africa]'),
+      ],
+      OPTION_CIRCUIT_DEUTSCHLAND => [
+        'name' => clienttranslate('Deutschland (Rocky Road)'),
+        'tmdisplay' => clienttranslate('[Deutschland]'),
       ],
       OPTION_CIRCUIT_RANDOM => [
         'name' => clienttranslate('Random'),

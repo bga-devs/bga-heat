@@ -367,7 +367,7 @@ function exportCompressedJSON() {
     nbrLaps: DATAS.nbrLaps || 0,
     stressCards: DATAS.stressCards || 0,
     heatCards: DATAS.heatCards || 0,
-    podium: { x: 0, y: 0, a: 0 },
+    podium: DATAS.podium || { x: 0, y: 0, a: 0 },
     weatherCardPos: DATAS.weatherCardPos
       ? { x: parseInt(DATAS.weatherCardPos.x), y: parseInt(DATAS.weatherCardPos.y) }
       : { x: 0, y: 0 },

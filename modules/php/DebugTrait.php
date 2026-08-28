@@ -26,10 +26,10 @@ trait DebugTrait
   {
     $constructor = Constructors::getOfPlayer((int) self::getCurrentPlayerId());
     $cId = $constructor->getId();
-    $cardTypes = [3, 4, 7, 8, 11, 12, 14, 19, 23, 24, 27, 28, 29, 31, 32, 35, 36, 40, 43, 46, 47, 49, 54, 55, 56, 59];
+    $cardTypes = [3, 4, 7, 8, 11, 12, 14, 19, 23, 24, 27, 28, 29, 31, 32, 35, 36, 40, 43, 46, 47, 49, 54, 55, 56, 59, 61, 62, 64];
     $cards = [];
     foreach ($cardTypes as $cardType) {
-      $cards[] = ['type' => $cardType, 'nbr' => 1, 'location' => "hand-$cId"];
+      $cards[] = ['type' => $cardType, 'nbr' => 1, 'location' => "inplay-$cId"];
     }
     Cards::create($cards);
   }
@@ -44,20 +44,21 @@ trait DebugTrait
 
   function debug_tp()
   {
-    if (Globals::isChampionship()) {
-      $datas = Globals::getChampionshipDatas();
-      $raceIndex = $datas['index'];
-      $raceNumber = max(1, count($datas['circuits']));
-    } else {
-      $raceIndex = 0;
-      $raceNumber = 1;
-    }
+    Globals::loadCircuitDatas();
+    // if (Globals::isChampionship()) {
+    //   $datas = Globals::getChampionshipDatas();
+    //   $raceIndex = $datas['index'];
+    //   $raceNumber = max(1, count($datas['circuits']));
+    // } else {
+    //   $raceIndex = 0;
+    //   $raceNumber = 1;
+    // }
 
-    $totalProgress = $raceIndex / $raceNumber;
-    $inRaceProgress = $this->getRaceProgress();
-    // return 100 * ($totalProgress + $inRaceProgress / $raceNumber);
+    // $totalProgress = $raceIndex / $raceNumber;
+    // $inRaceProgress = $this->getRaceProgress();
+    // // return 100 * ($totalProgress + $inRaceProgress / $raceNumber);
 
-    var_dump($totalProgress, $inRaceProgress, $raceNumber);
+    // var_dump($totalProgress, $inRaceProgress, $raceNumber);
     // $constructor = Constructors::getActive();
     // $no = $constructor->getNo() + count(Globals::getFinishedConstructors()) + count(Globals::getSkippedPlayers());
     // $maxNo = Constructors::count();
@@ -120,10 +121,11 @@ trait DebugTrait
     //    var_dump($this->getCircuit()->isFree(7, 1));
   }
 
-  function debug_move($speed)
+  function debug_move(int $speed)
   {
     $constructor = Constructors::getActive();
-    var_dump($this->getCircuit()->getReachedCell($constructor, $speed));
+    $this->moveCar($constructor, $speed);
+    // var_dump($this->getCircuit()->getReachedCell($constructor, $speed));
   }
 
   function debug_discard()

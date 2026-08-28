@@ -12,6 +12,7 @@ use Bga\Games\Heat\Models\Constructor;
 
 const HV = 1;
 const TV = 2;
+const RR = 3;
 
 /* Class to manage all the cards for Heat */
 
@@ -102,6 +103,7 @@ class Cards extends Pieces
       if ($card['set'] == 0) return true;
       if ($card['set'] == HV) return Globals::isHeavyRain();
       if ($card['set'] == TV) return Globals::isTunnelVision();
+      if ($card['set'] == RR) return Globals::isRockyRoad();
       return false;
     }
     ////////////////////////////
@@ -420,6 +422,13 @@ class Cards extends Pieces
       58 => $f(ADVANCED_UPGRADE, 3, [DRAFT => 1, ADJUST => 1, SCRAP => 3], clienttranslate('Front Wing'), TV),
       59 => $f(ADVANCED_UPGRADE, 4, [DRAFT => 1, REFRESH => 1, SCRAP => 4], clienttranslate('Front Wing'), TV),
       60 => $f(ADVANCED_UPGRADE, 6, [DRAFT => 2, HEAT => 1], clienttranslate('Front Wing'), TV),
+      // Rocky Road expansion
+      61 => $f(ADVANCED_UPGRADE, 0, [CHAIN_ASPIRATION => 1, ADJUST => 1, SCRAP => 1], clienttranslate('Sliding Skirts'), RR),
+      62 => $f(ADVANCED_UPGRADE, 0, [CHAIN_ASPIRATION => 1, SLIPSTREAM => 1], clienttranslate('Sliding Skirts'), RR),
+      63 => $f(ADVANCED_UPGRADE, 2, [CHAIN_ASPIRATION => 1, REFRESH => 1], clienttranslate('Sliding Skirts'), RR),
+      64 => $f(ADVANCED_UPGRADE, 3, [CHAIN_ASPIRATION => 1, DIRECT => 1], clienttranslate('Sliding Skirts'), RR),
+      65 => $f(ADVANCED_UPGRADE, 4, [CHAIN_ASPIRATION => 1], clienttranslate('Sliding Skirts'), RR),
+      66 => $f(ADVANCED_UPGRADE, 6, [CHAIN_ASPIRATION => 1, HEAT => 1], clienttranslate('Sliding Skirts'), RR),
 
       // SPONSORS
       80 => $f(SPONSOR, [1, 2, 3, 4], [], clienttranslate('Dramdo Brakes')),
@@ -431,6 +440,8 @@ class Cards extends Pieces
       85 => $f(SPONSOR, 0, [SUPER_COOL => 2], clienttranslate('E.Mercury air system'), HV),
       // Tunnel Vision expansion
       86 => $f(SPONSOR, 5, [DRAFT => 2], clienttranslate('Eole Wings Industries'), TV),
+      // Rocky Road expansion
+      87 => $f(SPONSOR, [0, 4], [CHAIN_ASPIRATION => 1], clienttranslate('Thunder Valley Aero'), RR),
     ];
   }
 }

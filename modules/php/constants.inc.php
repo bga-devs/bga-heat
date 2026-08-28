@@ -101,6 +101,7 @@ const ADRENALINE = 'adrenaline';
 const HEATED_BOOST = 'heated-boost';
 const SUPER_COOL = 'super-cool';
 const DRAFT = 'draft';
+const CHAIN_ASPIRATION = 'chain-aspiration';
 
 const CARD_SYMBOLS = [DIRECT, REFRESH];
 
@@ -236,6 +237,7 @@ const CHAMPIONSHIP_SEASONS = [
 const CIRCUITS = ['usa', 'gb', 'italia', 'france'];
 const CIRCUITS_EXP_HV = ['japan', 'mexico'];
 const CIRCUITS_EXP_TV = ['nederland', 'espana'];
+const CIRCUITS_EXP_RR = ['SouthAfrica', 'Deutschland'];
 
 /******************
  ****** STATS ******

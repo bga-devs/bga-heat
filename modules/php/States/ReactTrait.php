@@ -84,7 +84,7 @@ trait ReactTrait
     list('speedLimit' => $speedLimit, 'extraHeat' => $nextCornerExtraHeatCost) = $this->getNextCornerInfos($constructor);
 
     // Remove symbols that do not apply at this step
-    $notReactSymbols = [SLIPSTREAM, REFRESH, ADJUST];
+    $notReactSymbols = [SLIPSTREAM, REFRESH, ADJUST, CHAIN_ASPIRATION];
     foreach ($notReactSymbols as $symbol) {
       unset($symbols[$symbol]);
     }
