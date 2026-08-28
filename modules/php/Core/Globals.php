@@ -14,7 +14,6 @@ use const Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_64;
 use const Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_65;
 use const Bga\Games\Heat\OPTION_CIRCUIT;
 use const Bga\Games\Heat\OPTION_CIRCUIT_CUSTOM;
-use const Bga\Games\Heat\OPTION_CIRCUIT_DEUTSCHLAND;
 use const Bga\Games\Heat\OPTION_CIRCUIT_ESPANA;
 use const Bga\Games\Heat\OPTION_CIRCUIT_FRANCE;
 use const Bga\Games\Heat\OPTION_CIRCUIT_GB;
@@ -85,7 +84,6 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     'positionBeforeSlipstream' => 'int',
     'turnBeforeSlipstream' => 'int',
     'previousTurn' => 'int',
-    'symbols' => 'obj', // Old, kept for legacy
     'cardSymbols' => 'obj',
     'scores' => 'obj',
     'flippedCards' => 'int',

@@ -328,9 +328,8 @@ trait RoundTrait
     Notifications::updatePlanification($player, $args);
   }
 
-  public function actPlan(#[JsonParam()] $cardIds)
+  public function actPlan(#[JsonParam()] array $cardIds)
   {
-    self::checkAction('actPlan');
     $player = Players::getCurrent();
     $constructor = Constructors::getOfPlayer($player->getId());
     $args = $this->argsPlanification()['_private'][$player->getId()];
@@ -435,7 +434,6 @@ trait RoundTrait
 
   public function actGiveUp()
   {
-    self::checkAction('actPlan');
     $player = Players::getCurrent();
     $constructor = Constructors::getOfPlayer($player->getId());
     $args = $this->argsPlanification()['_private'][$player->getId()];
@@ -1294,7 +1292,6 @@ trait RoundTrait
   public function actRefresh(int $cardId)
   {
     $this->addNewUndoableStep();
-    self::checkAction('actRefresh');
     $constructor = Constructors::getActive();
     $args = $this->argsDiscard()['_private']['active'];
 
@@ -1316,7 +1313,6 @@ trait RoundTrait
 
   public function actDiscard(#[JsonParam()] array $cardIds)
   {
-    self::checkAction('actDiscard');
     $constructor = Constructors::getActive();
     $args = $this->argsDiscard()['_private']['active'];
 

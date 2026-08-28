@@ -181,53 +181,6 @@ $machinestates = [
     'possibleactions' => ['actChooseSpeed', 'actUndoToStep', 'actRestartTurn'],
   ],
 
-  /////////////////////////////////////////////////////////////////////////////////////
-  ///// KEPT ONLY FOR NOT BREAKING OLDER TABLES
-  /////////////////////////////////////////////////////////////////////////////////////
-  ST_OLD_REACT => [
-    'name' => 'oldReact',
-    'description' => clienttranslate('${actplayer} may react'),
-    'descriptionmyturn' => clienttranslate('${you} may react'),
-    'descriptionMust' => clienttranslate('${actplayer} must react'),
-    'descriptionmyturnMust' => clienttranslate('${you} must react'),
-    'type' => 'activeplayer',
-    'args' => 'argsOldReact',
-    'action' => 'stOldReact',
-    'possibleactions' => ['actOldReact', 'actPassOldReact', 'actOldCryCauseNotEnoughHeatToPay'],
-  ],
-  ST_OLD_SALVAGE => [
-    'name' => 'oldSalvage',
-    'description' => clienttranslate('${actplayer} may choose up to ${n} card(s) in their discard to put back in their deck'),
-    'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} card(s) in your discard to put back in your deck'),
-    'type' => 'activeplayer',
-    'args' => 'argsOldSalvage',
-    'possibleactions' => ['actOldSalvage', 'actPassOldReact'],
-  ],
-  ST_OLD_SUPER_COOL => [
-    'name' => 'oldSuperCool',
-    'description' => clienttranslate('${actplayer} may choose up to ${n} Heat card(s) in their discard to put back in their engine'),
-    'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} Heat card(s) in your discard to put back in your engine'),
-    'type' => 'activeplayer',
-    'args' => 'argsOldSuperCool',
-    'possibleactions' => ['actOldSuperCool', 'actPassOldReact'],
-  ],
-  ST_OLD_PAY_HEATS => [
-    'name' => 'oldPayHeats',
-    'description' => clienttranslate(
-      '${actplayer} must choose which card to pay Heat(s) for and which card to discard and resolve as stress'
-    ),
-    'descriptionmyturn' => clienttranslate(
-      '${you} must choose which card to pay Heat(s) for and which card to discard and resolve as stress'
-    ),
-    'type' => 'activeplayer',
-    'args' => 'argsOldPayHeats',
-    'action' => 'stOldPayHeats',
-    'possibleactions' => ['actOldPayHeats'],
-  ],
-  /////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////
-
-
   ST_REACT => [
     'name' => 'react',
     'description' => clienttranslate('${actplayer} may react'),

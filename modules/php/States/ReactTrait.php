@@ -484,7 +484,6 @@ trait ReactTrait
   public function actPassReact()
   {
     $this->addNewUndoableStep();
-    self::checkAction('actPassReact');
     if (!$this->argsReact()['canPass']) {
       throw new \BgaVisibleSystemException('Cant pass react with mandatory symbols left. Should not happen');
     }
@@ -521,7 +520,6 @@ trait ReactTrait
 
   public function actSalvage(#[JsonParam()] array $cardIds)
   {
-    self::checkAction('actSalvage');
     $this->addNewUndoableStep();
     $args = $this->argsSalvage();
     if (count($cardIds) > $args['n']) {
@@ -566,7 +564,6 @@ trait ReactTrait
 
   public function actSuperCool(int $n)
   {
-    self::checkAction('actSuperCool');
     $this->addNewUndoableStep();
     $args = $this->argsSuperCool();
     if ($n > $args['n']) {
@@ -651,7 +648,6 @@ trait ReactTrait
 
   public function actPayHeats(#[JsonParam()] array $cardIds)
   {
-    self::checkAction('actPayHeats');
     $args = $this->argsPayHeats();
     if (count($cardIds) != $args['maxPayableCards']) {
       throw new \BgaVisibleSystemException('Not enough card. Should not happen');

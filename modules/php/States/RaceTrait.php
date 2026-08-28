@@ -207,7 +207,6 @@ trait RaceTrait
 
   public function actConfirmResults(): void
   {
-    self::checkAction('actConfirmResults');
     $pId = $this->getCurrentPId();
     $this->gamestate->setPlayerNonMultiactive($pId, 'done');
   }
@@ -325,7 +324,6 @@ trait RaceTrait
 
   public function actChooseUpgrade(int $cardId): void
   {
-    self::checkAction('actChooseUpgrade');
     $args = $this->argsChooseUpgrade();
     if (!array_key_exists($cardId, $args['market']->toAssoc())) {
       throw new \BgaVisibleSystemException('You cant select that update. Should not happen');
@@ -406,7 +404,6 @@ trait RaceTrait
   {
     $cardId1 = $marketCardId;
     $cardId2 = $ownedCardId;
-    self::checkAction('actSwapUpgrade');
     $args = $this->argsSwapUpgrade();
     if (!array_key_exists($cardId1, $args['market']->toAssoc())) {
       throw new \BgaVisibleSystemException('You cant select that update. Not in market. Should not happen');
@@ -427,7 +424,6 @@ trait RaceTrait
 
   public function actPassSwapUpgrade(): void
   {
-    self::checkAction('actPassSwapUpgrade');
     $this->stFinishChampionshipDraft();
   }
 
@@ -484,7 +480,6 @@ trait RaceTrait
 
   public function actSnakeDiscard(int $cardId): void
   {
-    self::checkAction('actSnakeDiscard');
     $player = Players::getCurrent();
     $args = $this->argsSnakeDiscard()['_private'][$player->getId()];
     if (!in_array($cardId, $args['cards'])) {

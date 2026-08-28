@@ -32,7 +32,6 @@ use Bga\Games\Heat\Core\Stats;
 use Bga\Games\Heat\Helpers\Log;
 use Bga\Games\Heat\States\DeferredRoundTrait;
 use Bga\Games\Heat\States\LegendTrait;
-use Bga\Games\Heat\States\OldReactTrait;
 use Bga\Games\Heat\States\RaceTrait;
 use Bga\Games\Heat\States\ReactTrait;
 use Bga\Games\Heat\States\RoundTrait;
@@ -44,7 +43,6 @@ class Game extends Table
   use SetupTrait;
   use RaceTrait;
   use RoundTrait;
-  use OldReactTrait;
   use ReactTrait;
   use LegendTrait;
   use DeferredRoundTrait;
@@ -141,7 +139,6 @@ class Game extends Table
 
   public function actRestartTurn()
   {
-    self::checkAction('actRestartTurn');
     if (empty(Log::getUndoableSteps())) {
       throw new \BgaVisibleSystemException('Nothing to undo');
     }
@@ -150,7 +147,6 @@ class Game extends Table
 
   public function actUndoToStep(int $stepId)
   {
-    self::checkAction('actUndoToStep');
     $steps = Log::getUndoableSteps();
     if (!in_array($stepId, $steps)) {
       throw new \BgaVisibleSystemException('You cant undo here');
