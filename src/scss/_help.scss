@@ -7,3 +7,7 @@
         position: unset;
     }
 }
+
+[data-theme="dark"] #popin_bgaHelpDialog {
+   --background-color: #40434d;
+}

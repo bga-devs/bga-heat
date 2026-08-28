@@ -1721,6 +1721,12 @@ export class Game {
                     <br>
                     <i>${_('Note: All Spaces you move into/through thanks to this symbol must be completely free of other cars and the final landing Space must have at least one car in either Spot of the Space in front of it. This extra movement does not count as speed.')}</i>
                 `;
+      case 'chain-aspiration':
+        return `
+                    <strong>${_('Extra Slipstream')}</strong>
+                    <br>
+                    ${_('It allows for an extra Slipstream move if the previous one puts your car in a new Slipstream position. All bonuses to a Slipstream available for the round will also apply to this extra move.')}
+                `;
     }
   }
 
@@ -1986,7 +1992,7 @@ export class Game {
               .join('<br><br>')}
 
             <h1>${_('Optional symbols')}</h1>
-            ${['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate', 'super-cool', 'draft']
+            ${['cooldown', 'slipstream', 'reduce', 'refresh', 'salvage', 'direct', 'accelerate', 'super-cool', 'draft', 'chain-aspiration']
               .map((symbol) => this.getGarageModuleIconTooltipWithIcon(symbol, '#'))
               .join('<br><br>')}
 

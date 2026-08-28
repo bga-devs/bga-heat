@@ -77,77 +77,80 @@ html[data-theme="dark"] {
   text-align: center;
 
   &.flag {
-    background-position-x: #{0 * 100% / 23};
+    background-position-x: #{0 * 100% / 24};
   }
   &.engine {
-    background-position-x: #{1 * 100% / 23};
+    background-position-x: #{1 * 100% / 24};
   }
   &.heat {
-    background-position-x: #{2 * 100% / 23};
+    background-position-x: #{2 * 100% / 24};
   }
   &.cooldown {
-    background-position-x: #{3 * 100% / 23};
+    background-position-x: #{3 * 100% / 24};
   }
   &.stress {
-    background-position-x: #{4 * 100% / 23};
+    background-position-x: #{4 * 100% / 24};
   }
   &.boost {
-    background-position-x: #{5 * 100% / 23};
+    background-position-x: #{5 * 100% / 24};
   }
   &.speed {
-    background-position-x: #{6 * 100% / 23};
+    background-position-x: #{6 * 100% / 24};
   }
   &.podium {
-    background-position-x: #{7 * 100% / 23};
+    background-position-x: #{7 * 100% / 24};
   }
   &.reduce-stress,
   &.reduce {
-    background-position-x: #{8 * 100% / 23};
+    background-position-x: #{8 * 100% / 24};
   }
   &.scrap {
-    background-position-x: #{9 * 100% / 23};
+    background-position-x: #{9 * 100% / 24};
   }
   &.direct {
-    background-position-x: #{10 * 100% / 23};
+    background-position-x: #{10 * 100% / 24};
   }
   &.adjust {
-    background-position-x: #{11 * 100% / 23};
+    background-position-x: #{11 * 100% / 24};
   }
   &.forced-heat {
-    background-position-x: #{12 * 100% / 23};
+    background-position-x: #{12 * 100% / 24};
   }
   &.refresh {
-    background-position-x: #{13 * 100% / 23};
+    background-position-x: #{13 * 100% / 24};
   }
   &.salvage {
-    background-position-x: #{14 * 100% / 23};
+    background-position-x: #{14 * 100% / 24};
   }
   &.gear {
-    background-position-x: #{15 * 100% / 23};
+    background-position-x: #{15 * 100% / 24};
   }
   &.mandatory {
-    background-position-x: #{16 * 100% / 23};
+    background-position-x: #{16 * 100% / 24};
   }
   &.slipstream {
-    background-position-x: #{17 * 100% / 23};
+    background-position-x: #{17 * 100% / 24};
   }
   &.one-time {
-    background-position-x: #{18 * 100% / 23};
+    background-position-x: #{18 * 100% / 24};
   }
   &.corner {
-    background-position-x: #{19 * 100% / 23};
+    background-position-x: #{19 * 100% / 24};
   }
   &.accelerate {
-    background-position-x: #{20 * 100% / 23};
+    background-position-x: #{20 * 100% / 24};
   }
   &.super-cool {
-    background-position-x: #{21 * 100% / 23};
+    background-position-x: #{21 * 100% / 24};
   }
   &.no-cooldown {
-    background-position-x: #{22 * 100% / 23};
+    background-position-x: #{22 * 100% / 24};
   }
   &.draft {
-    background-position-x: #{23 * 100% / 23};
+    background-position-x: #{23 * 100% / 24};
+  }
+  &.chain-aspiration {
+    background-position-x: #{24 * 100% / 24};
   }
 }
 
