@@ -1,3 +1,5 @@
+import { CONSTRUCTORS_COLORS } from './constants';
+
 const MAP_WIDTH = 1650;
 const MAP_HEIGHT = 1100;
 
@@ -137,7 +139,7 @@ class CarAnimation {
   }
 }
 
-class Circuit {
+export class Circuit {
   private circuitDiv: HTMLDivElement;
   private circuitDatas: CircuitDatas;
 
@@ -162,6 +164,10 @@ class Circuit {
   public loadCircuit(circuitDatas: CircuitDatas) {
     this.circuitDatas = circuitDatas;
     this.circuitDiv.style.backgroundImage = `url('${this.circuitDatas.jpgUrl.startsWith('http') ? this.circuitDatas.jpgUrl : `${g_gamethemeurl}img/${this.circuitDatas.jpgUrl}`}')`;
+    const circuitJumpTo = document.getElementById(`bga-jump-to_circuit`);
+    if (circuitJumpTo) {
+      circuitJumpTo.style.backgroundImage = this.circuitDiv.style.backgroundImage;
+    }
 
     this.createCorners(this.circuitDatas.corners);
     this.createPressTokens(this.circuitDatas.pressCorners);

@@ -477,6 +477,7 @@ body > .card {
   width: calc(var(--width) + (var(--tile-count) - 1) * var(--horizontal-shift));
   height: calc(var(--height) + (var(--tile-count) - 1) * var(--vertical-shift));
   transition: width 0.5s ease-in-out, height 0.5s ease-in-out, background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  opacity: var(--tile-count);
 }
 
 .card-stock.all-visible-deck > .card {
@@ -727,9 +728,6 @@ height: 241px; */
   pointer-events: all !important;
   user-select: none;
 }
-.event-card .card-sides .card-side.front {
-  text-shadow: 0 0 1px black, 0 0 2px black;
-}
 .event-card .card-sides .card-side.front[data-index="1"] {
   background-position: 0% 0%;
 }
@@ -819,6 +817,9 @@ height: 241px; */
 }
 .event-card .card-sides .card-side.front[data-index="30"] {
   background-position: 100% 322.2222222222%;
+}
+.event-card .card-sides .card-side.front {
+  text-shadow: 0 0 1px black, 0 0 2px black;
 }
 .event-card .card-sides .card-side.front .title-and-rule {
   position: absolute;
@@ -937,6 +938,7 @@ height: 241px; */
   font-family: "Barlow";
   font-size: 35px;
   user-select: none;
+  color: black;
 }
 #table-center .corner[data-adjust=down] {
   color: #95181b;
@@ -1166,18 +1168,20 @@ height: 241px; */
     stroke-dashoffset: 0;
   }
 }
-.player-board {
-  background-color: white;
-}
-.player-board.spectator-mode {
+html[data-theme=light] .player-board {
+  --game-bga-player-panel-background: white;
   color: black;
 }
-.player-board.spectator-mode * {
-  background: white !important;
+html[data-theme=light] .player-board.finished {
+  --game-bga-player-panel-background: lightgray;
+  color: black;
 }
-.player-board.finished {
-  background-color: lightgray;
+
+html[data-theme=dark] .player-board.finished {
+  --game-bga-player-panel-background: #3c3c3c;
+  color: #c3c2c2;
 }
+
 .player-board.finished .order-counter {
   display: none;
 }
@@ -1512,6 +1516,7 @@ height: 241px; */
   align-items: center;
   transition: height 0.5s;
   position: relative;
+  color: black;
 }
 #championship-table .championship-circuit .circuit-name {
   font-weight: bold;
@@ -1528,6 +1533,13 @@ height: 241px; */
   position: absolute;
   visibility: hidden;
   pointer-events: none;
+}
+
+html[data-theme=dark] #championship-table #championship-circuits {
+  background: #6e6e6e;
+}
+html[data-theme=dark] #championship-table #championship-circuits .championship-circuit {
+  color: white;
 }
 
 #current-championship-card-text {
@@ -1585,6 +1597,7 @@ height: 241px; */
 }
 .scorepad-image table tr td.score {
   font-size: 24pt;
+  color: black;
 }
 .scorepad-image table tr td .name {
   position: relative;
@@ -1676,17 +1689,17 @@ height: 241px; */
   font-family: "Aachen Bold";
   font-style: normal;
   font-weight: normal;
-  src: local("Aachen Bold"), url("img/aachen-bold-opentype.woff") format("woff");
+  src: local("Aachen Bold"), url("fonts/aachen-bold-opentype.woff") format("woff");
 }
 @font-face {
   font-family: "roboto_slabbold";
-  src: url("img/RobotoSlab-Bold-webfont.woff") format("woff");
+  src: url("fonts/RobotoSlab-Bold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "Barlow";
-  src: url("img/BarlowCondensed-Medium.woff") format("woff");
+  src: url("fonts/BarlowCondensed-Medium.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -1698,12 +1711,15 @@ height: 241px; */
     margin-top: 8px;
   }
 }
-html,
-.mode_3d #game_play_area_background {
+html {
   background: url("img/rules-background.jpg");
   background-size: 100% auto;
   background-repeat: repeat;
   background-position: top;
+}
+
+html[data-theme=dark] {
+  background-blend-mode: soft-light;
 }
 
 .icon {
@@ -2038,6 +2054,6 @@ html,
   background-color: #ef9a9a;
 }
 
-.player-name a:first-of-type[style*="color: #ffffff"], span[style*="color: #ffffff"] {
+.player-name a:first-of-type[style*="color: #ffffff"], span[style*="color: #ffffff"], strong[style*="color: #ffffff"] {
   text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
 }

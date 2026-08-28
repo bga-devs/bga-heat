@@ -156,6 +156,7 @@ class Circuit
       'pressCorners' => $pressCorners,
       'floodedSpaces' => $this->getFloodedSpaces(),
       'tunnelsSpaces' => $this->getTunnelsSpaces(),
+      'gravelSpaces' => $this->getGravelSpaces(),
     ];
   }
 

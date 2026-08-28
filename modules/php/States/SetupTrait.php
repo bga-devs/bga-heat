@@ -207,6 +207,9 @@ trait SetupTrait
       $cells[$cellId] = $g;
     }
     $f['cells'] = $cells;
+    foreach (['floodedSpaces', 'tunnelsSpaces', 'gravelSpaces'] as $field) {
+      $f[$field] = array_map('intval', $circuit[$field] ?? []);
+    }
 
     Globals::setCircuitDatas($f);
     Notifications::loadCircuit($f);

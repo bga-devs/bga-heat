@@ -1,4 +1,8 @@
-class LegendTable {
+import { BgaCards } from './libs';
+import type { LegendCard } from './legend-cards';
+import type { Deck } from '../../bga-cards';
+
+export class LegendTable {
     public deck: Deck<LegendCard>;
     public discard: Deck<LegendCard>;
 
@@ -15,21 +19,21 @@ class LegendTable {
 
         document.getElementById('tables').insertAdjacentHTML('beforeend', html);
         
-        this.deck = new Deck<LegendCard>(this.game.legendCardsManager, document.getElementById(`legend-deck`), {
+        this.deck = new BgaCards.Deck(this.game.legendCardsManager, document.getElementById(`legend-deck`), {
             cardNumber: 10,
             autoUpdateCardNumber: false,
             topCard: [],
             fakeCardGenerator: () => [],
         });
         
-        this.discard = new Deck<LegendCard>(this.game.legendCardsManager, document.getElementById(`legend-discard`), {
+        this.discard = new BgaCards.Deck(this.game.legendCardsManager, document.getElementById(`legend-discard`), {
             cardNumber: legendCard ? 1 : 0,
             topCard: legendCard,
         }); 
     }
     
     public async newLegendCard(card: LegendCard): Promise<any> {
-        await this.deck.addCard(card, undefined, { visible: false, autoRemovePreviousCards: false, });
+        await (this.deck as any).addCard(card, undefined, { visible: false, autoRemovePreviousCards: false, });
 
         await this.discard.addCard(card);
 

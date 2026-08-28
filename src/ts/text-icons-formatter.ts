@@ -1,4 +1,4 @@
-function formatTextIcons(rawText: string) {
+export function formatTextIcons(rawText: string) {
     if (!rawText) {
         return '';
     }

@@ -1,43 +1,16 @@
 {
-    "rootDir": ".", 
-    "compilerOptions": {
-      "target": "es5",
-      "module": "none",
-      "lib": ["dom", "esnext"],  
-      "sourceMap": false,
-      "outFile": "heat.js",
-    },
-    "files": [
-        "bga-framework.d.ts",
-        "src/heat.d.ts",
-        "node_modules/bga-zoom/src/zoom-manager.ts",
-        "node_modules/bga-help/src/help-manager.ts",
-        "node_modules/bga-jump-to/src/jump-to-manager.ts",
-        "node_modules/bga-animations/src/framework.d.ts",
-        "node_modules/bga-animations/src/animations.ts",
-        "node_modules/bga-animations/src/animations/attach-with-animation.ts",
-        "node_modules/bga-animations/src/animations/cumulated-animations.ts",
-        "node_modules/bga-animations/src/animations/slide-to-animation.ts",
-        "node_modules/bga-animations/src/animations/slide-animation.ts",
-        "node_modules/bga-animations/src/animations/pause-animation.ts",
-        "node_modules/bga-animations/src/animations-utils.ts",
-        "node_modules/bga-animations/src/animation-manager.ts",
-        "node_modules/bga-cards/src/animations.ts",
-        "node_modules/bga-cards/src/stocks/card-stock.ts",
-        "node_modules/bga-cards/src/stocks/deck.ts",
-        "node_modules/bga-cards/src/stocks/line-stock.ts",
-        "node_modules/bga-cards/src/stocks/manual-position-stock.ts",
-        "node_modules/bga-cards/src/sort.ts",
-        "node_modules/bga-cards/src/card-manager.ts",
-        "src/text-icons-formatter.ts",
-        "src/cards.ts",
-        "src/legend-cards.ts",
-        "src/event-cards.ts",
-        "src/table-center.ts",
-        "src/player-table.ts",
-        "src/legend-table.ts",
-        "src/championship-table.ts",
-        "src/heat.ts",
-        "src/define.ts"
-    ]
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": ["dom", "esnext"],
+    "sourceMap": false,
+    "rootDir": "src",
+    "strict": false
+  },
+  "include": [
+    "*.d.ts",
+    "src/ts/**/*.d.ts",
+    "src/ts/**/*.ts"
+  ]
 }

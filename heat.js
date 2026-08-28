@@ -4606,7 +4606,7 @@ var Heat = /** @class */ (function (_super) {
                 tooltip = "\n                                    <strong>".concat(_('Boost'), "</strong>\n                                    <br><br>\n                                    ").concat(paid ? _('Regardless of which gear you are in you may pay 1 Heat to boost once per turn.') : '', "\n                                    ").concat(_('Boosting gives you a [+] symbol as reminded on the player mats. Move your car accordingly.'), "\n                                    <br><br>\n                                    <i>").concat(_('Note: [+] symbols always increase your Speed value for the purpose of the Check Corner step.'), "</i>");
                 confirmationMessage = args.crossedFinishLine
                     ? null
-                    : this.getBoostConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, args.boostInfos, paid);
+                    : this.getBoostConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, args.nextCornerExtraHeatCost, symbolInfos.heatCosts, paid);
                 break;
             case 'reduce':
                 label = "<div class=\"icon reduce-stress\">".concat(number, "</div>");

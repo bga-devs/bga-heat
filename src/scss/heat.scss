@@ -1,9 +1,9 @@
 $playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f37321", "811b8f", "ffffff";
 
-@import "../node_modules/bga-help/bga-help";
-@import "../node_modules/bga-zoom/bga-zoom";
-@import "../node_modules/bga-jump-to/bga-jump-to";
-@import "../node_modules/bga-cards/bga-cards";
+@import "../../node_modules/bga-help/bga-help";
+@import "../../node_modules/bga-zoom/bga-zoom";
+@import "../../node_modules/bga-jump-to/bga-jump-to";
+@import "../../node_modules/bga-cards/bga-cards";
 @import "cards";
 @import "legend-cards";
 @import "event-cards";
@@ -21,19 +21,19 @@ $playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f373
   font-weight: normal;
   src:
     local("Aachen Bold"),
-    url("img/aachen-bold-opentype.woff") format("woff");
+    url("fonts/aachen-bold-opentype.woff") format("woff");
 }
 
 @font-face {
   font-family: "roboto_slabbold";
-  src: url("img/RobotoSlab-Bold-webfont.woff") format("woff");
+  src: url("fonts/RobotoSlab-Bold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Barlow";
-  src: url("img/BarlowCondensed-Medium.woff") format("woff");
+  src: url("fonts/BarlowCondensed-Medium.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -47,12 +47,15 @@ $playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f373
   }
 }
 
-html,
-.mode_3d #game_play_area_background {
+html {
   background: url("img/rules-background.jpg");
   background-size: 100% auto;
   background-repeat: repeat;
   background-position: top;
+}
+
+html[data-theme="dark"] {
+  background-blend-mode: soft-light;
 }
 
 .icon {
@@ -411,6 +414,6 @@ html,
   background-color: #ef9a9a;
 }
 
-.player-name a:first-of-type[style*="color: #ffffff"], span[style*="color: #ffffff"] {
+.player-name a:first-of-type[style*="color: #ffffff"], span[style*="color: #ffffff"], strong[style*="color: #ffffff"] {
     text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black; 
 }

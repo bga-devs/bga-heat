@@ -14,6 +14,7 @@ use const Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_64;
 use const Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_65;
 use const Bga\Games\Heat\OPTION_CIRCUIT;
 use const Bga\Games\Heat\OPTION_CIRCUIT_CUSTOM;
+use const Bga\Games\Heat\OPTION_CIRCUIT_DEUTSCHLAND;
 use const Bga\Games\Heat\OPTION_CIRCUIT_ESPANA;
 use const Bga\Games\Heat\OPTION_CIRCUIT_FRANCE;
 use const Bga\Games\Heat\OPTION_CIRCUIT_GB;
@@ -357,8 +358,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
         OPTION_CIRCUIT_MEXICO => 'mexico',
         OPTION_CIRCUIT_NEDERLAND => 'nederland',
         OPTION_CIRCUIT_ESPANA => 'espana',
-        OPTION_CIRCUIT_SOUTH_AFRICA => 'SouthAfrica',
-        OPTION_CIRCUIT_DEUTSCHLAND => 'Deutschland',
+        OPTION_CIRCUIT_SOUTH_AFRICA => 'southafrica',
+        OPTION_CIRCUIT_DEUTSCHLAND => 'deutschland',
 
         OPTION_CIRCUIT_RANDOM => $circuits[0],
         OPTION_CIRCUIT_CUSTOM => 'custom',
@@ -440,8 +441,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
       'mexico' => clienttranslate('Mexico'),
       'nederland' => clienttranslate('Nederland'),
       'espana' => clienttranslate('España'),
-      'SouthAfrica' => clienttranslate('South Africa'),
-      'Deutschland' => clienttranslate('Deutschland'),
+      'deutschland' => clienttranslate('Deutschland'),
+      'southafrica' => clienttranslate('South Africa'),
     ];
     return $map[$circuitId];
   }
@@ -467,8 +468,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
       'mexico' => 'Mexico',
       'nederland' => 'Nederland',
       'espana' => 'Espana',
-      'SouthAfrica' => 'SouthAfrica',
-      'Deutschland' => 'Deutschland',
+      'deutschland' => 'Deutschland',
+      'southafrica' => 'SouthAfrica',
     ];
     $fileName = __DIR__ . '/../Circuits/' . $names[Globals::getCircuit()] . '.php';
     include_once $fileName;

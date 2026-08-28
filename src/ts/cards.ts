@@ -1,4 +1,7 @@
-interface Card {
+import { BgaCards } from './libs';
+import { formatTextIcons } from './text-icons-formatter';
+
+export interface Card {
   id: number;
   location: string;
   state: string;
@@ -10,12 +13,12 @@ interface Card {
   isReshuffled?: boolean;
 }
 
-const CARD_WIDTH = 225;
+export const CARD_WIDTH = 225;
 const CARD_HEIGHT = 363;
 
 //console.log(Object.values(CARDS_DATA).map(card => card.startingSpace));
 
-class CardsManager extends CardManager<Card> {
+export class CardsManager extends BgaCards.CardManager<Card> {
   constructor(public game: HeatGame) {
     super(game, {
       getId: (card) => `personal-card-${card.id}`,

@@ -1,4 +1,4 @@
-class EventCardsManager {
+export class EventCardsManager {
   constructor(public game: HeatGame) {}
 
   public getTexts(card: number): {

@@ -2,12 +2,14 @@
   "name": "heat",
   "version": "1.0.0",
   "description": "",
-  "main": "heat.js",
+  "main": "modules/js/Game.js",
   "scripts": {
-    "build:ts": "tsc",
-    "build:scss": "sass --no-source-map src/heat.scss heat.css",
-    "watch:ts": "tsc --watch",
-    "watch:scss": "sass --watch src/heat.scss heat.css"
+    "build:ts": "rollup -c",
+    "build:scss": "sass --no-source-map src/scss/heat.scss heat.css",
+    "watch:ts": "rollup -c -w",
+    "watch:scss": "sass --watch src/scss/heat.scss heat.css",
+    "watch": "npm run watch:ts && npm run watch:scss",
+    "build": "npm run build:ts && npm run build:scss"
   },
   "author": "",
   "license": "ISC",
@@ -19,7 +21,10 @@
     "bga-zoom": "thoun/bga-zoom#1.0.4"
   },
   "devDependencies": {
-    "sass": "^1.62.1",
-    "typescript": "^5.0.4"
+    "@rollup/plugin-typescript": "^12.3.0",
+    "rollup": "^4.53.3",
+    "sass": "^1.71.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.3.3"
   }
 }

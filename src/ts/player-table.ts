@@ -1,3 +1,7 @@
+import { CARD_WIDTH, type Card } from './cards';
+import { BgaCards } from './libs';
+import type { AddCardSettings, AddCardToDeckSettings, CardAnimation, CardSelectionMode, CardStock, Deck, LineStock, ManualPositionStock, RemoveCardSettings } from '../../bga-cards';
+
 const isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
@@ -25,7 +29,7 @@ function manualPositionFitUpdateDisplay(element: HTMLElement, cards: Card[], las
 }
 
 // new ManualPositionStock(cardsManager, document.getElementById('manual-position-fit-stock'), undefined, manualPositionFitUpdateDisplay);
-class InPlayStock extends ManualPositionStock<Card> {
+class InPlayStock extends BgaCards.ManualPositionStock<Card> {
     private playerId: number;
 
     constructor(game: HeatGame, constructor: Constructor, ) {
@@ -54,7 +58,7 @@ class InPlayStock extends ManualPositionStock<Card> {
     }
 }
 
-class PlayerTable {
+export class PlayerTable {
     public constructorId: number;
     public playerId: number;
     public hand?: LineStock<Card>;
@@ -102,14 +106,14 @@ class PlayerTable {
         document.getElementById('tables').insertAdjacentHTML('beforeend', html);
 
         if (this.currentPlayer) {
-            this.hand = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-hand`), {
+            this.hand = new BgaCards.LineStock(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-hand`), {
                 sort: PERSONAL_CARDS_SORTING,
             }); 
             this.hand.onSelectionChange = (selection: Card[]) => this.game.onHandCardSelectionChange(selection);     
             this.hand.addCards(constructor.hand);
         }
         
-        this.deck = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-deck`), {
+        this.deck = new BgaCards.Deck(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-deck`), {
             cardNumber: constructor.deckCount,
             counter: {
                 extraClasses: 'round',
@@ -117,7 +121,7 @@ class PlayerTable {
         });
         
         const engineCards = Object.values(constructor.engine);
-        this.engine = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-engine`), {
+        this.engine = new BgaCards.Deck(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-engine`), {
             cardNumber: engineCards.length,
             topCard: engineCards[0], // TODO check if ordered
             counter: {
@@ -133,7 +137,7 @@ class PlayerTable {
         });
         
         const discardCards = Object.values(constructor.discard);
-        this.discard = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-discard`), {
+        this.discard = new BgaCards.Deck(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-discard`), {
             cardNumber: discardCards.length,
             topCard: discardCards[0], // TODO check if ordered
             counter: {
@@ -241,7 +245,7 @@ class PlayerTable {
                 await this.moveDiscardToDeckAndShuffle();
             }
             
-            this.deck.addCard({id: card.id } as Card, undefined, <AddCardToDeckSettings>{
+            (this.deck as any).addCard({id: card.id } as Card, undefined, <AddCardToDeckSettings>{
                 autoUpdateCardNumber: false,
                 autoRemovePreviousCards: false,
             });
@@ -262,7 +266,7 @@ class PlayerTable {
             await this.moveDiscardToDeckAndShuffle();
         }
 
-        this.deck.addCard({id: card.id } as Card, undefined, <AddCardToDeckSettings>{
+        (this.deck as any).addCard({id: card.id } as Card, undefined, <AddCardToDeckSettings>{
             autoUpdateCardNumber: false,
             autoRemovePreviousCards: false,
         });
@@ -277,12 +281,12 @@ class PlayerTable {
     
     public async salvageCards(cards: Card[], discardCards: Card[], deckCount?: number): Promise<any> {
         this.discard.setCardNumber(discardCards.length + cards.length, discardCards[0]);
-        cards.forEach(salvagedCard => this.discard.addCard(salvagedCard, undefined, <AddCardToDeckSettings>{
+        cards.forEach(salvagedCard => (this.discard as any).addCard(salvagedCard, undefined, <AddCardToDeckSettings>{
             autoUpdateCardNumber: false,
             autoRemovePreviousCards: false,
         }));
 
-        await this.deck.addCards(cards.map(card => ({id: card.id }) as Card), undefined, undefined, true);
+        await (this.deck as any).addCards(cards.map(card => ({id: card.id }) as Card), undefined, undefined, true);
 
         this.deck.setCardNumber(deckCount ?? this.deck.getCardNumber());
 
@@ -293,7 +297,7 @@ class PlayerTable {
     
     public async superCoolCards(cards: Card[], discardCards: Card[]): Promise<any> {
         this.discard.setCardNumber(discardCards.length + cards.length, discardCards[0]);
-        cards.forEach(heatCard => this.discard.addCard(heatCard, undefined, <AddCardToDeckSettings>{
+        cards.forEach(heatCard => (this.discard as any).addCard(heatCard, undefined, <AddCardToDeckSettings>{
             autoUpdateCardNumber: false,
             autoRemovePreviousCards: false,
         }));
@@ -317,20 +321,20 @@ class PlayerTable {
     public async addCardsFromDeck(cards: Card[], to: CardStock<Card>): Promise<any> {
         const shuffleIndex = cards.findIndex(card => card.isReshuffled)
         if (shuffleIndex === -1) {
-            await to.addCards(cards, { fromStock: this.deck, }, undefined, 250);
+            await (to as any).addCards(cards, { fromStock: this.deck, }, undefined, 250);
         } else {
             const cardsBefore = cards.slice(0, shuffleIndex);
             const cardsAfter = cards.slice(shuffleIndex);
             
-            await to.addCards(cardsBefore, { fromStock: this.deck, }, undefined, 250);
+            await (to as any).addCards(cardsBefore, { fromStock: this.deck, }, undefined, 250);
 
             await this.moveDiscardToDeckAndShuffle();
 
-            this.deck.addCards(cardsAfter.map(card => ({id: card.id }) as Card), undefined, <AddCardToDeckSettings>{
+            (this.deck as any).addCards(cardsAfter.map(card => ({id: card.id }) as Card), undefined, <AddCardToDeckSettings>{
                 autoUpdateCardNumber: false,
                 autoRemovePreviousCards: false,
             });
-            await to.addCards(cardsAfter, { fromStock: this.deck, }, undefined, 250);
+            await (to as any).addCards(cardsAfter, { fromStock: this.deck, }, undefined, 250);
         }
 
         return true;
