@@ -12,6 +12,7 @@ use const Bga\Games\Heat\OPTION_CHAMPIONSHIP_CUSTOM;
 use const Bga\Games\Heat\OPTION_CHAMPIONSHIP_RANDOM;
 use const Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_64;
 use const Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_65;
+use const Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_66;
 use const Bga\Games\Heat\OPTION_CIRCUIT;
 use const Bga\Games\Heat\OPTION_CIRCUIT_CUSTOM;
 use const Bga\Games\Heat\OPTION_CIRCUIT_ESPANA;
@@ -322,6 +323,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
         // Fallback for incompatible gameoptions
         if ($championship == OPTION_CHAMPIONSHIP_SEASON_64) Globals::setHeavyRain(true);
         if ($championship == OPTION_CHAMPIONSHIP_SEASON_65) Globals::setTunnelVision(true);
+        if ($championship == OPTION_CHAMPIONSHIP_SEASON_66) Globals::setRockyRoad(true);
 
         $datas = CHAMPIONSHIP_SEASONS[$championship];
         $datas['index'] = 0;
@@ -419,6 +421,9 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     }
     if (self::isTunnelVision()) {
       $events = array_replace($events, EVENTS_EXP_TV);
+    }
+    if (self::isRockyRoad()) {
+      $events = array_replace($events, EVENTS_EXP_RR);
     }
     return $events;
   }

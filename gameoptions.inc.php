@@ -523,6 +523,10 @@ $game_options = [
         'name' => clienttranslate('Season 1965 (4 races) (Tunnel Vision)'),
         'tmdisplay' => clienttranslate('[1965]'),
       ],
+      OPTION_CHAMPIONSHIP_SEASON_66 => [
+        'name' => clienttranslate('Season 1966 (4 races) (Rocky Road)'),
+        'tmdisplay' => clienttranslate('[1966]'),
+      ],
       OPTION_CHAMPIONSHIP_RANDOM => [
         'name' => clienttranslate('Random championship'),
         'tmdisplay' => clienttranslate('[Random championship]'),

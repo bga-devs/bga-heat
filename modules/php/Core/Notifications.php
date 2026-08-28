@@ -607,6 +607,11 @@ class Notifications
       EVENT_SMILE_WAVE => clienttranslate('Smile and wave'),
       EVENT_TUNNEL_VISION => clienttranslate('Tunnel vision'),
       EVENT_PRESSURE_COOKER => clienttranslate('The pressure cooker'),
+      // ROCKY ROAD
+      EVENT_TIGHT_MANEUVERS => clienttranslate('Tight Maneuvers'),
+      EVENT_SMOOTH_START => clienttranslate('Smooth Start'),
+      EVENT_THE_CROWD_GOES_WILD => clienttranslate('The Crowd Goes Wild'),
+      EVENT_CONSULTING_THE_MECHANICS => clienttranslate('Consulting The Mechanics'),
     ];
 
     $i = $datas['index'];

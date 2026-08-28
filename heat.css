@@ -477,7 +477,6 @@ body > .card {
   width: calc(var(--width) + (var(--tile-count) - 1) * var(--horizontal-shift));
   height: calc(var(--height) + (var(--tile-count) - 1) * var(--vertical-shift));
   transition: width 0.5s ease-in-out, height 0.5s ease-in-out, background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  opacity: var(--tile-count);
 }
 
 .card-stock.all-visible-deck > .card {
@@ -639,6 +638,9 @@ height: 241px; */
 }
 .personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-accelerate {
   height: 80px;
+}
+.personal-card .card-sides .card-side.front .card-symbols .card-symbol.symbol-chain-aspiration {
+  height: 70px;
 }
 .personal-card.bga-cards_selectable-card:not(.bga-cards_disabled-card):not(.bga-cards_selected-card) {
   animation: selectable-card-animation 1s alternate infinite ease-in-out;

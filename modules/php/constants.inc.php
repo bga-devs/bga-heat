@@ -159,6 +159,11 @@ const EVENT_HOLD_TIGHT = 15;
 const EVENT_SMILE_WAVE = 16;
 const EVENT_TUNNEL_VISION = 17;
 const EVENT_PRESSURE_COOKER = 18;
+// Rocky Road expansion events
+const EVENT_TIGHT_MANEUVERS = 19;
+const EVENT_SMOOTH_START = 20;
+const EVENT_THE_CROWD_GOES_WILD = 21;
+const EVENT_CONSULTING_THE_MECHANICS = 22;
 
 const EVENTS = [
   EVENT_INAUGURATION => ['sponsors' => 2, 'press' => [0]],
@@ -171,6 +176,13 @@ const EVENTS = [
   EVENT_FIRST_LIVE_TV => ['sponsors' => 1, 'press' => [1, 3]],
   EVENT_SAFETY_REGULATIONS => ['sponsors' => 1, 'press' => [3]],
   EVENT_FUTURE_UNKNOWN => ['sponsors' => 0, 'press' => [3]],
+];
+
+const EVENTS_EXP_RR = [
+  EVENT_TIGHT_MANEUVERS => ['sponsors' => 1, 'press' => [4]], // Corner E
+  EVENT_SMOOTH_START => ['sponsors' => 1, 'press' => [2]], // Corner C
+  EVENT_THE_CROWD_GOES_WILD => ['sponsors' => 0, 'press' => []], // No press corner
+  EVENT_CONSULTING_THE_MECHANICS => ['sponsors' => 1, 'press' => [1]], // Corner B
 ];
 
 const EVENTS_EXP_HV = [
@@ -230,6 +242,15 @@ const CHAMPIONSHIP_SEASONS = [
       ['circuit' => 'usa', 'event' => EVENT_SMILE_WAVE],
       ['circuit' => 'espana', 'event' => EVENT_TUNNEL_VISION],
       ['circuit' => 'nederland', 'event' => EVENT_PRESSURE_COOKER],
+    ],
+  ],
+  Bga\Games\Heat\OPTION_CHAMPIONSHIP_SEASON_66 => [
+    'name' => 1966,
+    'circuits' => [
+      ['circuit' => 'france', 'event' => EVENT_TIGHT_MANEUVERS],
+      ['circuit' => 'deutschland', 'event' => EVENT_SMOOTH_START],
+      ['circuit' => 'italia', 'event' => EVENT_THE_CROWD_GOES_WILD],
+      ['circuit' => 'southafrica', 'event' => EVENT_CONSULTING_THE_MECHANICS],
     ],
   ],
 ];
