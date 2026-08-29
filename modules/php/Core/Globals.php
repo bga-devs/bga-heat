@@ -123,7 +123,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     'deferredRounds' => 'bool', // Enhanced TB-mode 
     'deferredRoundsActive' => 'bool',
     'pendingNotifications' => 'obj',
-    
+
     // Rocky Road event tracking
     'crowdGoesWildSponsors' => 'obj',
     'consultingMechanicsChoices' => 'obj',
@@ -141,8 +141,16 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
    * Fetch all existings variables from DB
    */
   protected static $data = [];
+  private static $isFetching = false;
+
   public static function fetch($checkDeferred = true)
   {
+    // Prevent re-entry to avoid infinite recursion
+    if (self::$isFetching) {
+      return;
+    }
+    self::$isFetching = true;
+
     // Turn of LOG to avoid infinite loop (Globals::isLogging() calling itself for fetching)
     $tmp = self::$log;
     self::$log = false;
@@ -159,14 +167,23 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     }
     self::$initialized = true;
     self::$log = $tmp;
+    self::$isFetching = false;
     if ($checkDeferred) {
       self::checkDeferredIfNeeded();
     }
   }
 
   private static $recursionPrevention = 0;
+  private static $checkingDeferred = false;
+
   public static function checkDeferredIfNeeded($shouldUseDeferred = null)
   {
+    // Prevent re-entry
+    if (self::$checkingDeferred) {
+      return;
+    }
+    self::$checkingDeferred = true;
+
     self::$recursionPrevention++;
     if (self::$recursionPrevention > 10) {
       die("Too much recursion in Globals, please report as a bug");
@@ -195,6 +212,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
       // Update cards
       Cards::$table = 'cards';
     }
+    self::$checkingDeferred = false;
+    self::$recursionPrevention--;
   }
 
   /*
