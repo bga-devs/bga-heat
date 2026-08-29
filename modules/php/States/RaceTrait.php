@@ -77,7 +77,7 @@ trait RaceTrait
     }
   }
 
-  public function setWeatherAndSetupCards(): void
+  public function setWeatherAndSetupCards(): bool
   {
     // Weather
     if (Globals::isWeatherModule()) {
@@ -114,13 +114,25 @@ trait RaceTrait
     }
 
     // Draw heat and stress cards
+    $event = Globals::getCurrentEvent();
+
+    // Consulting the Mechanics event
+    if ($event == EVENT_CONSULTING_THE_MECHANICS) {
+      Globals::setConsultingMechanicsChoices([]);
+      $this->updateActivePlayersConsultingMechanics();
+      return true;
+    }
     Cards::setupRace();
+
+    return false;
   }
 
   public function stStartRace(): void
   {
+    $isConsultingMechanics = false;
+
     if (Globals::isChampionship()) {
-      $this->setWeatherAndSetupCards();
+      $isConsultingMechanics = $this->setWeatherAndSetupCards();
     }
 
     // Shuffle deck and draw cards
@@ -133,7 +145,11 @@ trait RaceTrait
       Cards::fillHand($constructor);
     }
 
-    $this->gamestate->nextState('startRound');
+    if ($isConsultingMechanics) {
+      $this->gamestate->jumpToState(ST_CONSULTING_MECHANICS);
+    } else {
+      $this->gamestate->nextState('startRound');
+    }
   }
 
   public function stFinishRace(): void
@@ -545,5 +561,91 @@ trait RaceTrait
     }
 
     $this->stFinishDraft();
+  }
+
+
+  //////////////////////////////////////
+  // CONSULTING THE MECHANICS
+  public function argsConsultingMechanics(): array
+  {
+    $choices = Globals::getConsultingMechanicsChoices();
+    $args = ['_private' => []];
+
+    foreach (Constructors::getAll() as $constructor) {
+      if ($constructor->isAI()) {
+        continue;
+      }
+
+      $pId = $constructor->getPId();
+      $args['_private'][$pId] = [
+        'choice' => $choices[$pId] ?? null,
+      ];
+    }
+
+    return $args;
+  }
+
+
+  #[CheckAction(false)]
+  public function actConsultingMechanics(int $choice): void
+  {
+    $this->gamestate->checkPossibleAction('actConsultingMechanics');
+
+    $player = Players::getCurrent();
+    $pId = $player->getId();
+
+    // Validate choice: 0 = +1/+1, 1 = -1/-1
+    if (!in_array($choice, [0, 1])) {
+      throw new \BgaVisibleSystemException("Invalid choice for Consulting The Mechanics");
+    }
+
+    $choices = Globals::getConsultingMechanicsChoices();
+    $choices[$pId] = $choice;
+    Globals::setConsultingMechanicsChoices($choices);
+
+    Notifications::updateConsultingMechanics($player, $this->argsConsultingMechanics());
+
+    $this->updateActivePlayersConsultingMechanics();
+  }
+
+  #[CheckAction(false)]
+  public function actCancelConsultingMechanics(): void
+  {
+    $this->gamestate->checkPossibleAction('actCancelConsultingMechanics');
+
+    $player = Players::getCurrent();
+    $pId = $player->getId();
+
+    $choices = Globals::getConsultingMechanicsChoices();
+    unset($choices[$pId]);
+    Globals::setConsultingMechanicsChoices($choices);
+
+    Notifications::updateConsultingMechanics($player, $this->argsConsultingMechanics());
+
+    $this->updateActivePlayersConsultingMechanics();
+  }
+
+  public function updateActivePlayersConsultingMechanics(): void
+  {
+    $choices = Globals::getConsultingMechanicsChoices();
+    $skipped = Globals::getSkippedPlayers();
+    $ids = [];
+    foreach (Constructors::getAll() as $constructor) {
+      if ($constructor->isAI() || in_array($constructor->getPId(), $skipped)) {
+        continue;
+      }
+      $pId = $constructor->getPId();
+      // Only add if they haven't made a choice (or have cancelled it)
+      if (!array_key_exists($pId, $choices) || $choices[$pId] === null) {
+        $ids[] = $pId;
+      }
+    }
+
+    if (!empty($ids)) {
+      $this->gamestate->setPlayersMultiactive($ids, 'done', true);
+    } else {
+      Cards::setupRace();
+      $this->gamestate->jumpToState(ST_START_ROUND);
+    }
   }
 }

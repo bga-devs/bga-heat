@@ -199,6 +199,13 @@ class Cards extends Pieces
       Notifications::weatherHeats($nHeatToMove, $loc);
     }
 
+    // EVENT : Smooth Start - place all Stress cards into discard pile
+    $event = Globals::getCurrentEvent();
+    $stressLoc = ($event == EVENT_SMOOTH_START) ? 'discard' : 'deck';
+
+    // EVENT : Consulting The Mechanics - apply Heat/Stress adjustments
+    $consultingChoices = Globals::getConsultingMechanicsChoices();
+
     // Create the cards
     $cards = [];
     foreach (Constructors::getAll() as $cId => $constructor) {
@@ -206,9 +213,27 @@ class Cards extends Pieces
         continue;
       }
 
+      $pId = $constructor->getPId();
+      $nStressForPlayer = $nStress;
+      $nHeatForPlayer = $nHeat;
+
+      // Apply Consulting The Mechanics adjustments
+      if ($event == EVENT_CONSULTING_THE_MECHANICS && isset($consultingChoices[$pId])) {
+        $choice = $consultingChoices[$pId];
+        if ($choice === 0) {
+          // +1 Heat & +1 Stress
+          $nStressForPlayer += 1;
+          $nHeatForPlayer += 1;
+        } elseif ($choice === 1) {
+          // -1 Heat & -1 Stress
+          $nStressForPlayer = max(0, $nStressForPlayer - 1);
+          $nHeatForPlayer = max(0, $nHeatForPlayer - 1);
+        }
+      }
+
       // Stress and heats
-      $cards[] = ['type' => 110, 'nbr' => $nStress, 'location' => "deck-$cId"];
-      $cards[] = ['type' => 111, 'nbr' => $nHeat - $nHeatToMove, 'location' => "engine-$cId"];
+      $cards[] = ['type' => 110, 'nbr' => $nStressForPlayer, 'location' => "$stressLoc-$cId"];
+      $cards[] = ['type' => 111, 'nbr' => $nHeatForPlayer - $nHeatToMove, 'location' => "engine-$cId"];
       if (!is_null($loc)) {
         $cards[] = ['type' => 111, 'nbr' => $nHeatToMove, 'location' => "$loc-$cId"];
       }

@@ -63,6 +63,19 @@ trait LegendTrait
         $this->moveCar($constructor, $speed);
       }
       $constructor->setSpeed($speed);
+
+      // The Crowd Goes Wild event: check if corner B (index 1) was crossed
+      $event = Globals::getCurrentEvent();
+      if ($event == EVENT_THE_CROWD_GOES_WILD) {
+        foreach ($cornersCrossed as $cornerInfo) {
+          if ($cornerInfo['cornerPos'] == 1) { // Corner B
+            $crowdGoesWildSponsors = Globals::getCrowdGoesWildSponsors();
+            $crowdGoesWildSponsors[$constructor->getTurn()][] = $constructor->getId();
+            Globals::setCrowdGoesWildSponsors($crowdGoesWildSponsors);
+            break;
+          }
+        }
+      }
     }
     // B => approaching the corner
     else {

@@ -1815,6 +1815,22 @@ class Game {
             playerTable.inplay.selectCard(cards.find((card) => Number(card.id) == Number(args._private.choice)));
         }
     }
+    onEnteringConsultingMechanics(args) {
+        this.bga.statusBar.removeActionButtons();
+        this.bga.statusBar.addActionButton(_('+1 Heat & +1 Stress'), () => this.actConsultingMechanics(0), {
+            id: `actConsultingMechanics_0_button`,
+        });
+        this.bga.statusBar.addActionButton(_('-1 Heat & -1 Stress'), () => this.actConsultingMechanics(1), {
+            id: `actConsultingMechanics_1_button`,
+        });
+        const choice = args?._private?.choice;
+        if (choice === 0 || choice === 1) {
+            this.bga.statusBar.addActionButton(_('Cancel choice'), () => this.actCancelConsultingMechanics(), {
+                id: `actCancelConsultingMechanics_button`,
+                color: 'alert',
+            });
+        }
+    }
     onEnteringPlanification(args) {
         this.circuit.removeMapPaths();
         if (args._private) {
@@ -2160,6 +2176,9 @@ class Game {
         switch (stateName) {
             case 'snakeDiscard':
                 this.onEnteringSnakeDiscard(args);
+                break;
+            case 'consultingMechanics':
+                this.onEnteringConsultingMechanics(args);
                 break;
             case 'planification':
                 this.onEnteringPlanification(args);
@@ -3270,6 +3289,14 @@ class Game {
             cardId: inPlaySelection[0].id,
         });
     }
+    actConsultingMechanics(choice) {
+        this.bga.actions.performAction('actConsultingMechanics', {
+            choice: choice,
+        }, { checkAction: false });
+    }
+    actCancelConsultingMechanics() {
+        this.bga.actions.performAction('actCancelConsultingMechanics', {}, { checkAction: false });
+    }
     actChooseUpgrade() {
         this.bga.actions.performAction('actChooseUpgrade', {
             cardId: this.market.getSelection()[0].id,
@@ -3406,6 +3433,7 @@ class Game {
             'pDraw',
             'mulligan',
             'pMulligan',
+            'updateConsultingMechanics',
             'clearPlayedCards',
             'cooldown',
             'finishTurn',
@@ -3442,7 +3470,7 @@ class Game {
                 let msg = this.bga.gameui.format_string_recursive(notifDetails.log, notifDetails.args);
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
-                    const multiactivestates = ['snakeDiscard', 'planification', 'uploadCircuit', 'confirmEndOfRace'];
+                    const multiactivestates = ['snakeDiscard', 'planification', 'uploadCircuit', 'confirmEndOfRace', 'consultingMechanics'];
                     if (!multiactivestates.includes(this.getGameStateName()) ||
                         (notifDetails.args.constructor_id && notifDetails.args.constructor_id == this.getConstructorId())) {
                         $('pagemaintitletext').innerHTML = msg;
@@ -3569,6 +3597,10 @@ class Game {
         this.updateDiscardDraftCard(args.args._private.choice);
         this.gamedatas.gamestate.args = args.args;
         this.onEnteringSnakeDiscard(args.args);
+    }
+    async notif_updateConsultingMechanics(args) {
+        this.gamedatas.gamestate.args = args.args;
+        this.onEnteringConsultingMechanics(args.args);
     }
     async notif_reveal(args) {
         const { constructor_id, gear, heats } = args;

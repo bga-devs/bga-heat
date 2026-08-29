@@ -843,6 +843,13 @@ class Notifications
     ]);
   }
 
+  public static function updateConsultingMechanics(Player $player, array $args)
+  {
+    self::notify($player->getId(), 'updateConsultingMechanics', '', [
+      'args' => ['_private' => $args['_private'][$player->getId()]],
+    ]);
+  }
+
   public static function snakeDiscard($constructor, $card)
   {
     self::notifyAll(

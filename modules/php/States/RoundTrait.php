@@ -903,6 +903,12 @@ trait RoundTrait
     $event = Globals::getCurrentEvent();
     $constructor = Constructors::getActive();
     $slipstreams = [2];
+
+    // EVENT : Tight Maneuvers, reduce slipstream value by 1
+    if ($event == EVENT_TIGHT_MANEUVERS) {
+      $slipstreams = [1];
+    }
+
     $cards = $constructor->getPlayedCards();
 
     // Weather might change slipstream
@@ -1180,6 +1186,23 @@ trait RoundTrait
     // TITLE SPONSOR => SPIN OUT = out of race
     elseif ($event == \EVENT_FUTURE_UNKNOWN && $spinOut) {
       $constructor->eliminate();
+    }
+    // The Crowd Goes Wild: first 2 drivers to cross B corner line every lap
+    elseif ($event == EVENT_THE_CROWD_GOES_WILD && isset($corners[1])) {
+      // Get current tracking
+      $crowdGoesWildSponsors = Globals::getCrowdGoesWildSponsors();
+      $currentLap = $constructor->getTurn();
+      $crossedConstructorIds = $crowdGoesWildSponsors[$currentLap] ?? [];
+      $constructorId = $constructor->getId();
+      if (!in_array($constructorId, $crossedConstructorIds)) {
+        $crossedConstructorIds[] = $constructorId;
+        $crowdGoesWildSponsors[$currentLap] = $crossedConstructorIds;
+        Globals::setCrowdGoesWildSponsors($crowdGoesWildSponsors);
+
+        if (count($crossedConstructorIds) <= 2) {
+          $sponsorsGained[] = EVENT_THE_CROWD_GOES_WILD;
+        }
+      }
     }
 
     // Draw sponsors into hand

@@ -123,6 +123,10 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     'deferredRounds' => 'bool', // Enhanced TB-mode 
     'deferredRoundsActive' => 'bool',
     'pendingNotifications' => 'obj',
+    
+    // Rocky Road event tracking
+    'crowdGoesWildSponsors' => 'obj',
+    'consultingMechanicsChoices' => 'obj',
   ];
 
   protected static $table = 'global_variables';
@@ -316,6 +320,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     self::setDeferredRounds(count($players) == 1 ? false : ($options[OPTION_TB_MODE] ?? OPTION_TB_STANDARD) == OPTION_TB_ENHANCED);
     self::setMulliganAllowed(($options[OPTION_MULLIGAN] ?? OPTION_DISABLED) == OPTION_ENABLED);
     self::setChampionship($options[OPTION_SETUP] == OPTION_SETUP_CHAMPIONSHIP);
+    self::setCrowdGoesWildSponsors([]);
+    self::setConsultingMechanicsChoices([]);
     if (self::isChampionship()) {
       $championship = $options[OPTION_CHAMPIONSHIP];
       // Pre set seasons

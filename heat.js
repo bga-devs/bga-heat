@@ -3886,6 +3886,9 @@ var Heat = /** @class */ (function (_super) {
             case 'snakeDiscard':
                 this.updateDiscardDraftCard((_k = (_j = args.args._private) === null || _j === void 0 ? void 0 : _j.choice) !== null && _k !== void 0 ? _k : null);
                 break;
+            case 'consultingMechanics':
+                this.onEnteringConsultingMechanics(args.args);
+                break;
             case 'react':
                 this.onEnteringReact(args.args);
                 break;
@@ -4347,6 +4350,9 @@ var Heat = /** @class */ (function (_super) {
             case 'snakeDiscard':
                 this.onEnteringSnakeDiscard(args);
                 break;
+            case 'consultingMechanics':
+                this.onEnteringConsultingMechanics(args);
+                break;
             case 'planification':
                 this.onEnteringPlanification(args);
                 break;
@@ -4372,6 +4378,21 @@ var Heat = /** @class */ (function (_super) {
                         id: "actSnakeDiscard_button",
                     });
                     this.checkSnakeDiscardSelectionState();
+                    break;
+                case 'consultingMechanics':
+                    this.statusBar.addActionButton(_('+1 Heat & +1 Stress'), function () { return _this.actConsultingMechanics(0); }, {
+                        id: "actConsultingMechanics_0_button",
+                    });
+                    this.statusBar.addActionButton(_('-1 Heat & -1 Stress'), function () { return _this.actConsultingMechanics(1); }, {
+                        id: "actConsultingMechanics_1_button",
+                    });
+                    var choice = (args === null || args === void 0 ? void 0 : args.args) && args.args._private && args.args._private[_this.getPlayerId()] ? args.args._private[_this.getPlayerId()].choice : undefined;
+                    if (choice !== undefined) {
+                        this.statusBar.addActionButton(_('Cancel choice'), function () { return _this.actCancelConsultingMechanics(); }, {
+                            id: "actCancelConsultingMechanics_button",
+                            color: 'alert',
+                        });
+                    }
                     break;
                 case 'planification':
                     var planificationArgs = args;
@@ -5269,6 +5290,14 @@ var Heat = /** @class */ (function (_super) {
             cardId: inPlaySelection[0].id,
         });
     };
+    Heat.prototype.actConsultingMechanics = function (choice) {
+        this.actions.performAction('actConsultingMechanics', {
+            choice: choice,
+        });
+    };
+    Heat.prototype.actCancelConsultingMechanics = function () {
+        this.actions.performAction('actCancelConsultingMechanics', {});
+    };
     Heat.prototype.actChooseUpgrade = function () {
         this.actions.performAction('actChooseUpgrade', {
             cardId: this.market.getSelection()[0].id,
@@ -5442,7 +5471,7 @@ var Heat = /** @class */ (function (_super) {
                 var msg = _this.gameui.format_string_recursive(notifDetails.log, notifDetails.args);
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
-                    var multiactivestates = ['snakeDiscard', 'planification', 'uploadCircuit', 'confirmEndOfRace'];
+                    var multiactivestates = ['snakeDiscard', 'planification', 'uploadCircuit', 'confirmEndOfRace', 'consultingMechanics'];
                     if (!multiactivestates.includes(_this.getGameStateName()) ||
                         (notifDetails.args.constructor_id && notifDetails.args.constructor_id == _this.getConstructorId())) {
                         $('pagemaintitletext').innerHTML = msg;
@@ -5588,6 +5617,14 @@ var Heat = /** @class */ (function (_super) {
                 this.updateDiscardDraftCard(args.args._private.choice);
                 this.gamedatas.gamestate.args = args.args;
                 this.onEnteringSnakeDiscard(args.args);
+                return [2 /*return*/];
+            });
+    };
+    Heat.prototype.notif_updateConsultingMechanics = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.gamedatas.gamestate.args = args.args;
+                this.onEnteringConsultingMechanics(args.args);
                 return [2 /*return*/];
             });
         });

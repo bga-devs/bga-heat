@@ -59,13 +59,23 @@ $machinestates = [
   // |_| \_\__,_|\___\___|
   //////////////////////////////
 
+  ST_CONSULTING_MECHANICS => [
+    'name' => 'consultingMechanics',
+    'description' => clienttranslate('All drivers must choose their starting Heat/Stress adjustment'),
+    'descriptionmyturn' => clienttranslate('${you} must choose: +1 Heat & +1 Stress, or -1 Heat & -1 Stress'),
+    'type' => 'multipleactiveplayer',
+    'args' => 'argsConsultingMechanics',
+    'possibleactions' => ['actConsultingMechanics', 'actCancelConsultingMechanics'],
+    'transitions' => ['done' => ST_SETUP_RACE],
+  ],
+
   ST_SETUP_RACE => [
     'name' => 'setupRace',
     'description' => '',
     'type' => 'game',
     'action' => 'stSetupRace',
     'updateGameProgression' => true,
-    'transitions' => ['start' => ST_START_RACE, 'draft' => ST_PREPARE_GARAGE_DRAFT],
+    'transitions' => ['start' => ST_START_RACE, 'draft' => ST_PREPARE_GARAGE_DRAFT, 'consult' => ST_CONSULTING_MECHANICS],
   ],
 
   ST_PREPARE_GARAGE_DRAFT => [
