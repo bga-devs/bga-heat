@@ -448,12 +448,12 @@ class Cards extends Pieces
       59 => $f(ADVANCED_UPGRADE, 4, [DRAFT => 1, REFRESH => 1, SCRAP => 4], clienttranslate('Front Wing'), TV),
       60 => $f(ADVANCED_UPGRADE, 6, [DRAFT => 2, HEAT => 1], clienttranslate('Front Wing'), TV),
       // Rocky Road expansion
-      61 => $f(ADVANCED_UPGRADE, 0, [CHAIN_ASPIRATION => 1, ADJUST => 1, SCRAP => 1], clienttranslate('Sliding Skirts'), RR),
-      62 => $f(ADVANCED_UPGRADE, 0, [CHAIN_ASPIRATION => 1, SLIPSTREAM => 1], clienttranslate('Sliding Skirts'), RR),
-      63 => $f(ADVANCED_UPGRADE, 2, [CHAIN_ASPIRATION => 1, REFRESH => 1], clienttranslate('Sliding Skirts'), RR),
-      64 => $f(ADVANCED_UPGRADE, 3, [CHAIN_ASPIRATION => 1, DIRECT => 1], clienttranslate('Sliding Skirts'), RR),
-      65 => $f(ADVANCED_UPGRADE, 4, [CHAIN_ASPIRATION => 1], clienttranslate('Sliding Skirts'), RR),
-      66 => $f(ADVANCED_UPGRADE, 6, [CHAIN_ASPIRATION => 1, HEAT => 1], clienttranslate('Sliding Skirts'), RR),
+      61 => $f(ADVANCED_UPGRADE, 0, [BOOST => 1, CHAIN_ASPIRATION => 1, ADJUST => 1, SCRAP => 1], clienttranslate('Sliding Skirts'), RR),
+      62 => $f(ADVANCED_UPGRADE, 1, [CHAIN_ASPIRATION => 1, SLIPSTREAM => 1], clienttranslate('Sliding Skirts'), RR),
+      63 => $f(ADVANCED_UPGRADE, 1, [CHAIN_ASPIRATION => 1, REFRESH => 1], clienttranslate('Sliding Skirts'), RR),
+      64 => $f(ADVANCED_UPGRADE, 2, [CHAIN_ASPIRATION => 1, DIRECT => 1], clienttranslate('Sliding Skirts'), RR),
+      65 => $f(ADVANCED_UPGRADE, [2, 3], [CHAIN_ASPIRATION => 1], clienttranslate('Sliding Skirts'), RR),
+      66 => $f(ADVANCED_UPGRADE, [4, 6], [CHAIN_ASPIRATION => 1, HEAT => 1], clienttranslate('Sliding Skirts'), RR),
 
       // SPONSORS
       80 => $f(SPONSOR, [1, 2, 3, 4], [], clienttranslate('Dramdo Brakes')),

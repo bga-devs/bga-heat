@@ -61,7 +61,28 @@ trait RaceTrait
     if (!Globals::isChampionship()) {
       $this->setWeatherAndSetupCards();
     } else {
-      Globals::setWeather([]);
+      // Check if this is Consulting The Mechanics event
+      $event = Globals::getCurrentEvent();
+      if ($event == EVENT_CONSULTING_THE_MECHANICS) {
+        // Initialize choices and jump to consulting mechanics state
+        Globals::setConsultingMechanicsChoices([]);
+        $this->updateActivePlayersConsultingMechanics();
+        $this->gamestate->jumpToState(ST_CONSULTING_MECHANICS);
+        return;
+      } else {
+        // For other championship races, set up weather and cards
+        Globals::setWeather([]);
+        $this->setWeatherAndSetupCards();
+      }
+      
+      // Draw cards for all constructors (for non-Consulting The Mechanics races)
+      foreach (Constructors::getAll() as $cId => $constructor) {
+        if ($constructor->isAI()) {
+          continue;
+        }
+        Cards::shuffle("deck-$cId");
+        Cards::fillHand($constructor);
+      }
     }
 
     Globals::setFinishedConstructors([]);
@@ -73,7 +94,7 @@ trait RaceTrait
       Globals::setDraftRound(1);
       $this->gamestate->nextState('draft');
     } else {
-      $this->gamestate->nextState('start');
+      $this->gamestate->nextState('startRound');
     }
   }
 
@@ -129,27 +150,20 @@ trait RaceTrait
 
   public function stStartRace(): void
   {
-    $isConsultingMechanics = false;
-
-    if (Globals::isChampionship()) {
-      $isConsultingMechanics = $this->setWeatherAndSetupCards();
-    }
-
-    // Shuffle deck and draw cards
-    foreach (Constructors::getAll() as $cId => $constructor) {
-      if ($constructor->isAI()) {
-        continue;
+    if (!Globals::isChampionship()) {
+      $this->setWeatherAndSetupCards();
+      
+      // Draw cards for all constructors
+      foreach (Constructors::getAll() as $cId => $constructor) {
+        if ($constructor->isAI()) {
+          continue;
+        }
+        Cards::shuffle("deck-$cId");
+        Cards::fillHand($constructor);
       }
-
-      Cards::shuffle("deck-$cId");
-      Cards::fillHand($constructor);
     }
-
-    if ($isConsultingMechanics) {
-      $this->gamestate->jumpToState(ST_CONSULTING_MECHANICS);
-    } else {
-      $this->gamestate->nextState('startRound');
-    }
+    
+    $this->gamestate->nextState('startRound');
   }
 
   public function stFinishRace(): void
@@ -645,6 +659,14 @@ trait RaceTrait
       $this->gamestate->setPlayersMultiactive($ids, 'done', true);
     } else {
       Cards::setupRace();
+      // Draw cards for all constructors with the adjusted Heat/Stress counts
+      foreach (Constructors::getAll() as $cId => $constructor) {
+        if ($constructor->isAI()) {
+          continue;
+        }
+        Cards::shuffle("deck-$cId");
+        Cards::fillHand($constructor);
+      }
       $this->gamestate->jumpToState(ST_START_ROUND);
     }
   }

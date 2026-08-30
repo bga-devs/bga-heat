@@ -79,6 +79,9 @@ trait RoundTrait
 
     // Reset legend card
     Globals::setLegendCardDrawn(false);
+    
+    // Reset chain aspiration usage for new round
+    Globals::setChainAspirationUsed([]);
 
     // Compute players that still need to play that round
     $skipped = Globals::getSkippedPlayers();
@@ -910,6 +913,9 @@ trait RoundTrait
     }
 
     $cards = $constructor->getPlayedCards();
+    $cId = $constructor->getId();
+    $chainAspirationUsed = Globals::getChainAspirationUsed();
+    $usedForConstructor = $chainAspirationUsed[$cId] ?? [];
 
     // Weather might change slipstream
     $roadCondition = $constructor->getRoadCondition();
@@ -930,6 +936,13 @@ trait RoundTrait
       $cards[] = [
         'symbols' => [SLIPSTREAM => $slipstreamBonus],
       ];
+    }
+    
+    // Exclude CHAIN_ASPIRATION if already used this turn
+    foreach ($cards as &$card) {
+      if (isset($card['symbols'][CHAIN_ASPIRATION]) && in_array($card['id'] ?? null, $usedForConstructor)) {
+        unset($card['symbols'][CHAIN_ASPIRATION]);
+      }
     }
 
     foreach ($cards as $card) {
@@ -1008,8 +1021,17 @@ trait RoundTrait
       // CHAIN_ASPIRATION: Check if player can chain another slipstream (RockyRoad expansion)
       if (!empty($this->argsSlipstream()['speeds'])) {
         $playedCards = $constructor->getPlayedCards();
+        $cId = $constructor->getId();
+        $chainAspirationUsed = Globals::getChainAspirationUsed();
+        $usedForConstructor = $chainAspirationUsed[$cId] ?? [];
+        
         foreach ($playedCards as $card) {
-          if (isset($card['symbols'][CHAIN_ASPIRATION])) {
+          if (isset($card['symbols'][CHAIN_ASPIRATION]) && !in_array($card['id'], $usedForConstructor)) {
+            // Mark this CHAIN_ASPIRATION as used
+            $usedForConstructor[] = $card['id'];
+            $chainAspirationUsed[$cId] = $usedForConstructor;
+            Globals::setChainAspirationUsed($chainAspirationUsed);
+            
             // Player can chain another slipstream
             Notifications::message(clienttranslate('${constructor_name} can chain another slipstream'), [
               'constructor' => $constructor,
@@ -1188,19 +1210,25 @@ trait RoundTrait
       $constructor->eliminate();
     }
     // The Crowd Goes Wild: first 2 drivers to cross B corner line every lap
-    elseif ($event == EVENT_THE_CROWD_GOES_WILD && isset($corners[1])) {
-      // Get current tracking
-      $crowdGoesWildSponsors = Globals::getCrowdGoesWildSponsors();
-      $currentLap = $constructor->getTurn();
-      $crossedConstructorIds = $crowdGoesWildSponsors[$currentLap] ?? [];
-      $constructorId = $constructor->getId();
-      if (!in_array($constructorId, $crossedConstructorIds)) {
-        $crossedConstructorIds[] = $constructorId;
-        $crowdGoesWildSponsors[$currentLap] = $crossedConstructorIds;
-        Globals::setCrowdGoesWildSponsors($crowdGoesWildSponsors);
+    elseif ($event == EVENT_THE_CROWD_GOES_WILD) {
+      // Get corner B position (index 1 in corners array)
+      $circuitCorners = $this->getCircuit()->getCorners();
+      $cornerBPosition = $circuitCorners[1]['position'] ?? null;
+      
+      if ($cornerBPosition !== null && isset($corners[$cornerBPosition])) {
+        // Get current tracking
+        $crowdGoesWildSponsors = Globals::getCrowdGoesWildSponsors();
+        $currentLap = $constructor->getTurn();
+        $crossedConstructorIds = $crowdGoesWildSponsors[$currentLap] ?? [];
+        $constructorId = $constructor->getId();
+        if (!in_array($constructorId, $crossedConstructorIds)) {
+          $crossedConstructorIds[] = $constructorId;
+          $crowdGoesWildSponsors[$currentLap] = $crossedConstructorIds;
+          Globals::setCrowdGoesWildSponsors($crowdGoesWildSponsors);
 
-        if (count($crossedConstructorIds) <= 2) {
-          $sponsorsGained[] = EVENT_THE_CROWD_GOES_WILD;
+          if (count($crossedConstructorIds) <= 2) {
+            $sponsorsGained[] = EVENT_THE_CROWD_GOES_WILD;
+          }
         }
       }
     }

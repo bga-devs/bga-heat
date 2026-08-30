@@ -127,6 +127,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     // Rocky Road event tracking
     'crowdGoesWildSponsors' => 'obj',
     'consultingMechanicsChoices' => 'obj',
+    'chainAspirationUsed' => 'obj',
   ];
 
   protected static $table = 'global_variables';

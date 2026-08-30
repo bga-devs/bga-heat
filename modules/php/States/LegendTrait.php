@@ -67,8 +67,12 @@ trait LegendTrait
       // The Crowd Goes Wild event: check if corner B (index 1) was crossed
       $event = Globals::getCurrentEvent();
       if ($event == EVENT_THE_CROWD_GOES_WILD) {
+        // Get corner B position (index 1 in corners array)
+        $circuitCorners = $this->getCircuit()->getCorners();
+        $cornerBPosition = $circuitCorners[1]['position'] ?? null;
+        
         foreach ($cornersCrossed as $cornerInfo) {
-          if ($cornerInfo['cornerPos'] == 1) { // Corner B
+          if ($cornerBPosition !== null && $cornerInfo['cornerPos'] == $cornerBPosition) {
             $crowdGoesWildSponsors = Globals::getCrowdGoesWildSponsors();
             $crowdGoesWildSponsors[$constructor->getTurn()][] = $constructor->getId();
             Globals::setCrowdGoesWildSponsors($crowdGoesWildSponsors);
