@@ -79,7 +79,7 @@ trait RoundTrait
 
     // Reset legend card
     Globals::setLegendCardDrawn(false);
-    
+
     // Reset chain aspiration usage for new round
     Globals::setChainAspirationUsed([]);
 
@@ -937,11 +937,11 @@ trait RoundTrait
         'symbols' => [SLIPSTREAM => $slipstreamBonus],
       ];
     }
-    
+
     // Exclude CHAIN_ASPIRATION if already used this turn
-    foreach ($cards as &$card) {
-      if (isset($card['symbols'][CHAIN_ASPIRATION]) && in_array($card['id'] ?? null, $usedForConstructor)) {
-        unset($card['symbols'][CHAIN_ASPIRATION]);
+    foreach ($cards as &$card2) {
+      if (isset($card2['symbols'][CHAIN_ASPIRATION]) && in_array($card2['id'] ?? null, $usedForConstructor)) {
+        unset($card2['symbols'][CHAIN_ASPIRATION]);
       }
     }
 
@@ -1024,14 +1024,14 @@ trait RoundTrait
         $cId = $constructor->getId();
         $chainAspirationUsed = Globals::getChainAspirationUsed();
         $usedForConstructor = $chainAspirationUsed[$cId] ?? [];
-        
+
         foreach ($playedCards as $card) {
           if (isset($card['symbols'][CHAIN_ASPIRATION]) && !in_array($card['id'], $usedForConstructor)) {
             // Mark this CHAIN_ASPIRATION as used
             $usedForConstructor[] = $card['id'];
             $chainAspirationUsed[$cId] = $usedForConstructor;
             Globals::setChainAspirationUsed($chainAspirationUsed);
-            
+
             // Player can chain another slipstream
             Notifications::message(clienttranslate('${constructor_name} can chain another slipstream'), [
               'constructor' => $constructor,
@@ -1214,7 +1214,7 @@ trait RoundTrait
       // Get corner B position (index 1 in corners array)
       $circuitCorners = $this->getCircuit()->getCorners();
       $cornerBPosition = $circuitCorners[1]['position'] ?? null;
-      
+
       if ($cornerBPosition !== null && isset($corners[$cornerBPosition])) {
         // Get current tracking
         $crowdGoesWildSponsors = Globals::getCrowdGoesWildSponsors();
