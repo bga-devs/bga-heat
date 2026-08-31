@@ -1211,12 +1211,19 @@ trait RoundTrait
     }
     // The Crowd Goes Wild: first 2 drivers to cross B corner line every lap
     elseif ($event == EVENT_THE_CROWD_GOES_WILD) {
-      // Get corner B position (index 1 in corners array)
-      $circuitCorners = $this->getCircuit()->getCorners();
-      $cornerBPosition = $circuitCorners[1]['position'] ?? null;
+      // Have we crossed corner B ?
+      $crossedBCorner = false;
+      $circuit = $this->getCircuit();
+      $map = $circuit->getPressCornersMapping();
+      foreach ($corners as $cornerPos => $nHeatsToPay) {
+        if ($map[$cornerPos] == 1) {
+          $crossedBCorner = true;
+          break;
+        }
+      }
 
-      if ($cornerBPosition !== null && isset($corners[$cornerBPosition])) {
-        // Get current tracking
+      // Yes => check how many constructors did on this lap already
+      if ($crossedBCorner) {
         $crowdGoesWildSponsors = Globals::getCrowdGoesWildSponsors();
         $currentLap = $constructor->getTurn();
         $crossedConstructorIds = $crowdGoesWildSponsors[$currentLap] ?? [];
