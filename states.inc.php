@@ -166,7 +166,7 @@ $machinestates = [
     'type' => 'game',
     'action' => 'stStartRound',
     'updateGameProgression' => true,
-    'transitions' => ['planification' => ST_PLANIFICATION],
+    'transitions' => ['planification' => ST_PLANIFICATION, 'privateTurn' => ST_INIT_PRIVATE_TURN],
   ],
 
   ST_PLANIFICATION => [
@@ -262,6 +262,108 @@ $machinestates = [
     'action' => 'stDiscard',
     'possibleactions' => ['actDiscard', 'actRefresh', 'actUndoToStep', 'actRestartTurn'],
   ],
+
+  ///////////////////////////////////////////////////////////////////////
+  //  ____       _            _         ____                       _ 
+  // |  _ \ _ __(_)_   ____ _| |_ ___  |  _ \ ___  _   _ _ __   __| |
+  // | |_) | '__| \ \ / / _` | __/ _ \ | |_) / _ \| | | | '_ \ / _` |
+  // |  __/| |  | |\ V / (_| | ||  __/ |  _ < (_) | |_| | | | | (_| |
+  // |_|   |_|  |_| \_/ \__,_|\__\___| |_| \_\___/ \__,_|_| |_|\__,_|
+  ///////////////////////////////////////////////////////////////////////
+
+  ST_INIT_PRIVATE_TURN => [
+    'name' => 'initPrivateTurn',
+    'description' => clienttranslate('Waiting for other players to end their turn.'),
+    'descriptionmyturn' => '',
+    'type' => 'multipleactiveplayer',
+    'initialprivate' => ST_PLANIFICATION_PRIVATE,
+  ],
+
+  // Private states for deferred mode
+  ST_PLANIFICATION_PRIVATE => [
+    'name' => 'planification',
+    'descriptionmyturn' => clienttranslate('${you} must select the gear and card(s) to play'),
+    'type' => 'private',
+    'args' => 'argsPlanification',
+    'possibleactions' => ['actPlan', 'actCancelSelection', 'actGiveUp', 'actMulligan'],
+  ],
+
+  ST_CHOOSE_SPEED_PRIVATE => [
+    'name' => 'chooseSpeed',
+    'descriptionmyturn' => clienttranslate('${you} must choose your speed'),
+    'descriptionmyturnSingleChoice' => clienttranslate('${you} must move according to your speed'),
+    'type' => 'private',
+    'args' => 'argsChooseSpeed',
+    'action' => 'stChooseSpeed',
+    'possibleactions' => ['actChooseSpeed', 'actUndoToStep', 'actRestartTurn'],
+  ],
+
+  ST_REACT_PRIVATE => [
+    'name' => 'react',
+    'descriptionmyturn' => clienttranslate('${you} may react'),
+    'descriptionmyturnMust' => clienttranslate('${you} must react'),
+    'type' => 'private',
+    'args' => 'argsReact',
+    'action' => 'stReact',
+    'possibleactions' => ['actReact', 'actPassReact', 'actCryCauseNotEnoughHeatToPay', 'actUndoToStep', 'actRestartTurn'],
+    'transitions' => ['zombiePass' => ST_DISCARD_PRIVATE],
+  ],
+
+  ST_SALVAGE_PRIVATE => [
+    'name' => 'salvage',
+    'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} card(s) in your discard to put back in your deck'),
+    'type' => 'private',
+    'args' => 'argsSalvage',
+    'action' => 'stSalvage',
+    'possibleactions' => ['actSalvage', 'actPassReact', 'actUndoToStep', 'actRestartTurn'],
+  ],
+
+  ST_SUPER_COOL_PRIVATE => [
+    'name' => 'superCool',
+    'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} Heat card(s) in your discard to put back in your engine'),
+    'type' => 'private',
+    'args' => 'argsSuperCool',
+    'action' => 'stSuperCool',
+    'possibleactions' => ['actSuperCool', 'actPassReact', 'actUndoToStep', 'actRestartTurn'],
+  ],
+
+  ST_PAY_HEATS_PRIVATE => [
+    'name' => 'payHeats',
+    'descriptionmyturn' => clienttranslate('${you} must choose which card to pay Heat(s) for'),
+    'type' => 'private',
+    'args' => 'argsPayHeats',
+    'action' => 'stPayHeats',
+    'possibleactions' => ['actPayHeats', 'actUndoToStep', 'actRestartTurn'],
+  ],
+
+  ST_SLIPSTREAM_PRIVATE => [
+    'name' => 'slipstream',
+    'descriptionmyturn' => clienttranslate('${you} may slipstream'),
+    'type' => 'private',
+    'args' => 'argsSlipstream',
+    'action' => 'stSlipstream',
+    'possibleactions' => ['actSlipstream', 'actUndoToStep', 'actRestartTurn'],
+  ],
+
+  ST_CHECK_CORNER_PRIVATE => [
+    'name' => 'checkCorner',
+    'descriptionmyturn' => clienttranslate('${you} must pay ${n} heat(s) for the crossed corner(s)'),
+    'type' => 'private',
+    'args' => 'argsCheckCorner',
+    'action' => 'stCheckCorner',
+    'possibleactions' => ['actCheckCorner', 'actUndoToStep', 'actRestartTurn'],
+    'transitions' => ['zombiePass' => ST_DISCARD_PRIVATE],
+  ],
+
+  ST_DISCARD_PRIVATE => [
+    'name' => 'discard',
+    'descriptionmyturn' => clienttranslate('${you} may discard cards from your hand'),
+    'type' => 'private',
+    'args' => 'argsDiscard',
+    'action' => 'stDiscard',
+    'possibleactions' => ['actDiscard', 'actRefresh', 'actUndoToStep', 'actRestartTurn'],
+  ],
+
 
   //////////////////////////////////////////////////////////////////
   //  _____           _    ___   __    ____

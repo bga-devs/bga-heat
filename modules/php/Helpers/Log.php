@@ -68,7 +68,7 @@ class Log extends \APP_DbObject
   // Create a new step to allow undo step-by-step
   public static function step()
   {
-    return self::addEntry(['type' => 'step', 'affected' => ['state' => Game::get()->gamestate->getCurrentMainStateId()]]);
+    return self::addEntry(['type' => 'step', 'affected' => ['state' => Game::get()->getRealCurrentState()]]);
   }
 
   // Find the last checkpoint
@@ -232,7 +232,13 @@ class Log extends \APP_DbObject
     if (is_null($newState)) {
       throw new \BgaVisibleSystemException('No state to undo to');
     }
-    Game::get()->jumpToOrCall($newState);
+
+
+    if (Globals::isDeferredRoundsActive()) {
+      Game::get()->gamestate->setPrivateState($constructor->getPId(), $newState);
+    } else {
+      Game::get()->jumpToOrCall($newState);
+    }
   }
 
   /**

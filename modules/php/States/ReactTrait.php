@@ -396,7 +396,7 @@ trait ReactTrait
         ]);
       } else {
         Globals::setSalvage($n);
-        $this->gamestate->jumpToState(ST_SALVAGE);
+        $this->jumpToNextState(ST_SALVAGE);
         return;
       }
     }
@@ -408,7 +408,7 @@ trait ReactTrait
         ]);
       } else {
         Globals::setSuperCool($n);
-        $this->gamestate->jumpToState(ST_SUPER_COOL);
+        $this->jumpToNextState(ST_SUPER_COOL);
         return;
       }
     }
@@ -457,7 +457,7 @@ trait ReactTrait
 
     // Loop on same state to resolve other pending symbols
     if (!$autoAndNoChangeOfState) {
-      $this->gamestate->jumpToState(ST_REACT);
+      $this->jumpToNextState(ST_REACT);
     }
   }
 
@@ -496,7 +496,7 @@ trait ReactTrait
 
   public function stReactDone()
   {
-    $this->gamestate->jumpToState(ST_SLIPSTREAM);
+    $this->jumpToNextState(ST_SLIPSTREAM);
   }
 
   ///////////////////////////////
@@ -539,7 +539,7 @@ trait ReactTrait
       $cards = Cards::getMany($cardIds);
       Notifications::salvageCards($constructor, $cards);
     }
-    $this->gamestate->jumpToState(ST_REACT);
+    $this->jumpToNextState(ST_REACT);
   }
 
   ///////////////////////////////
@@ -582,7 +582,7 @@ trait ReactTrait
     } else {
       Notifications::superCoolCards($constructor, new Collection([]));
     }
-    $this->gamestate->jumpToState(ST_REACT);
+    $this->jumpToNextState(ST_REACT);
   }
 
   ///////////////////////////////
@@ -602,7 +602,7 @@ trait ReactTrait
 
     Notifications::cryCauseNotEnoughHeatToPay($constructor, $cell, $prevTurn, $constructor->getDistanceToCorner());
 
-    $this->gamestate->jumpToState(ST_PAY_HEATS);
+    $this->jumpToNextState(ST_PAY_HEATS);
   }
 
   public function argsPayHeats()
@@ -705,6 +705,6 @@ trait ReactTrait
     $constructor->setSpeed($speed);
     $this->moveCar($constructor, $speed);
 
-    $this->gamestate->jumpToState(ST_REACT);
+    $this->jumpToNextState(ST_REACT);
   }
 }

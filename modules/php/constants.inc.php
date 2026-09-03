@@ -48,6 +48,18 @@ const ST_END_GAME = 99;
 
 const ST_GENERIC_NEXT_PLAYER = 97;
 
+// Private states for deferred mode
+const ST_INIT_PRIVATE_TURN = 100;
+const ST_PLANIFICATION_PRIVATE = 101;
+const ST_CHOOSE_SPEED_PRIVATE = 102;
+const ST_REACT_PRIVATE = 103;
+const ST_SALVAGE_PRIVATE = 104;
+const ST_SUPER_COOL_PRIVATE = 105;
+const ST_PAY_HEATS_PRIVATE = 106;
+const ST_SLIPSTREAM_PRIVATE = 107;
+const ST_CHECK_CORNER_PRIVATE = 108;
+const ST_DISCARD_PRIVATE = 109;
+
 /*
  * Constructors
  */

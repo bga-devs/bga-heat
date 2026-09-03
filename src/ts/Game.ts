@@ -305,10 +305,11 @@ export class Game {
   }
 
   public changePageTitle(suffix: string = null, save: boolean = false): void {
+    let gamestate = this.gamedatas.gamestate.private_state ?? this.gamedatas.gamestate;
     const title = this.bga.players.isCurrentPlayerActive()
-      ? this.gamedatas.gamestate['descriptionmyturn' + suffix] ?? this.gamedatas.gamestate['descriptionmyturn']
-      : this.gamedatas.gamestate['description' + suffix] ?? this.gamedatas.gamestate['description'];
-    this.bga.statusBar.setTitle(title, this.gamedatas.gamestate.args);
+      ? gamestate['descriptionmyturn' + suffix] ?? gamestate['descriptionmyturn'] ?? ''
+      : gamestate['description' + suffix] ?? gamestate['description'] ?? '';
+    this.bga.statusBar.setTitle(title, gamestate.args);
   }
 
   private onEnteringStateUploadCircuit(args) {
@@ -1413,7 +1414,11 @@ export class Game {
   }
 
   public getGameStateName(): string {
-    return this.gamedatas.gamestate.name;
+    return this.gamedatas.gamestate.private_state?.name ?? this.gamedatas.gamestate.name;
+  }
+
+  public getStateName(): string {
+    return this.getGameStateName();
   }
 
   public getGarageModuleIconTooltipWithIcon(symbol: string, number: number | string): string {
@@ -1872,7 +1877,7 @@ export class Game {
   }
 
   public onHandCardSelectionChange(selection: Card[]): void {
-    if (this.gamedatas.gamestate.name == 'planification') {
+    if (this.getStateName() == 'planification') {
       const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
       const clutteredHand = privateArgs?.clutteredHand;
 
@@ -1917,7 +1922,7 @@ export class Game {
           this.circuit.addMapIndicator(privateArgs.cells[totalSpeed], undefined, totalSpeed, stressCardsSelected)
         );
       }
-    } else if (this.gamedatas.gamestate.name == 'discard') {
+    } else if (this.getStateName() == 'discard') {
       const label = _('Discard ${number} selected cards').replace('${number}', `${selection.length}`);
 
       const buttonDiscard = document.getElementById('actDiscard_button');
@@ -1930,30 +1935,30 @@ export class Game {
         );
       }
       buttonNoDiscard?.classList.toggle('disabled', selection.length > 0);
-    } else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
+    } else if (this.getStateName() == 'swapUpgrade') {
       this.checkSwapUpgradeSelectionState();
-    } else if (this.gamedatas.gamestate.name == 'snakeDiscard') {
+    } else if (this.getStateName() == 'snakeDiscard') {
       this.checkSnakeDiscardSelectionState();
     }
   }
 
   public onInPlayCardSelectionChange(selection: Card[]): void {
-    if (this.gamedatas.gamestate.name == 'payHeats') {
+    if (this.getStateName() == 'payHeats') {
       const args: EnteringPayHeatsArgs = this.gamedatas.gamestate.args;
       const selectionHeats = selection.map((card) => args.payingCards[card.id]).reduce((a, b) => a + b, 0);
 
       document
         .getElementById('actPayHeats_button')
         .classList.toggle('disabled', selectionHeats > args.heatInReserve || selection.length != args.maxPayableCards);
-    } else if (this.gamedatas.gamestate.name == 'snakeDiscard') {
+    } else if (this.getStateName() == 'snakeDiscard') {
       this.checkSnakeDiscardSelectionState();
     }
   }
 
   public onMarketSelectionChange(selection: Card[]): void {
-    if (this.gamedatas.gamestate.name == 'chooseUpgrade') {
+    if (this.getStateName() == 'chooseUpgrade') {
       document.getElementById(`actChooseUpgrade_button`).classList.toggle('disabled', selection.length != 1);
-    } else if (this.gamedatas.gamestate.name == 'swapUpgrade') {
+    } else if (this.getStateName() == 'swapUpgrade') {
       this.checkSwapUpgradeSelectionState();
     }
   }

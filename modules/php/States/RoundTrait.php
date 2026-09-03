@@ -39,6 +39,41 @@ trait RoundTrait
     return $this->circuit;
   }
 
+  /**
+   * Helper to jump to next state, using private states when in deferred mode
+   */
+  protected function jumpToNextState(int $stateId): void
+  {
+    static $privateStateMap = [
+      ST_PLANIFICATION => ST_PLANIFICATION_PRIVATE,
+      ST_CHOOSE_SPEED => ST_CHOOSE_SPEED_PRIVATE,
+      ST_REACT => ST_REACT_PRIVATE,
+      ST_SALVAGE => ST_SALVAGE_PRIVATE,
+      ST_SUPER_COOL => ST_SUPER_COOL_PRIVATE,
+      ST_PAY_HEATS => ST_PAY_HEATS_PRIVATE,
+      ST_SLIPSTREAM => ST_SLIPSTREAM_PRIVATE,
+      ST_CHECK_CORNER => ST_CHECK_CORNER_PRIVATE,
+      ST_DISCARD => ST_DISCARD_PRIVATE,
+    ];
+
+    if (Globals::isDeferredRoundsActive() && isset($privateStateMap[$stateId])) {
+      $stateId = $privateStateMap[$stateId];
+      $constructor = Constructors::getActive();
+      $this->gamestate->setPrivateState($constructor->getPId(), $stateId);
+    } else {
+      $this->gamestate->jumpToState($stateId);
+    }
+  }
+
+  public function getRealCurrentState(): int
+  {
+    $stateId = $this->gamestate->getCurrentMainStateId();
+    if ($stateId === ST_INIT_PRIVATE_TURN) {
+      $stateId = $this->gamestate->getCurrentStateId(Players::getCurrentId());
+    }
+    return $stateId;
+  }
+
   public function getNbrLaps(): int
   {
     $circuit = $this->getCircuit();
@@ -294,6 +329,11 @@ trait RoundTrait
     }
 
     $args['nPlayersLeft'] = count($args['_private']);
+    if (Globals::isDeferredRoundsActive()) {
+      $constructor = Constructors::getActive();
+      $args['_private'] = $args['_private'][$constructor->getPId()];
+    }
+
     return $args;
   }
 
@@ -335,7 +375,10 @@ trait RoundTrait
   {
     $player = Players::getCurrent();
     $constructor = Constructors::getOfPlayer($player->getId());
-    $args = $this->argsPlanification()['_private'][$player->getId()];
+    $args = $this->argsPlanification()['_private'];
+    if (!Globals::isDeferredRoundsActive()) {
+      $args = $args[$player->getId()];
+    }
     $newGear = count($cardIds);
     if ($newGear <= 0 || $newGear > 4) {
       throw new UserException(clienttranslate('Invalid number of cards. Should not happen.'));
@@ -386,11 +429,7 @@ trait RoundTrait
   #[CheckAction(false)]
   public function actCancelSelection()
   {
-    if (Globals::isDeferredRounds()) {
-      throw new UserException('You cant cancel planification in deferred round mode. Should not happen');
-    } else {
-      $this->gamestate->checkPossibleAction('actCancelSelection');
-    }
+    $this->gamestate->checkPossibleAction('actCancelSelection');
 
     $player = Players::getCurrent();
     if (is_null($player)) {
@@ -615,7 +654,7 @@ trait RoundTrait
     if (Players::count() > 1) {
       Log::checkpoint();
     }
-    $this->gamestate->jumpToState(ST_CHOOSE_SPEED);
+    $this->jumpToNextState(ST_CHOOSE_SPEED);
   }
 
   ///////////////////////////////////////
@@ -676,6 +715,7 @@ trait RoundTrait
     unset($infos);
 
     return [
+      '_no_notify' =>  $this->getChooseSpeedAutomatic() !== false,
       'undoableSteps' => Log::getUndoableSteps(),
       'speeds' => $speeds,
       'symbols' => $symbols,
@@ -684,25 +724,31 @@ trait RoundTrait
     ];
   }
 
-  public function stChooseSpeed()
+  public function getChooseSpeedAutomatic()
   {
     $pId = $this->getActivePlayerId();
     if ($this->userPreferences->get($pId, OPTION_AUTO_MOVE_WHEN_SINGLE_SPEED_CHOICE) == OPTION_DISABLED) {
-      return;
+      return false;
     }
 
     $speeds = $this->argsChooseSpeed()['speeds'];
     if (count($speeds) > 1) {
-      return;
+      return false;
     }
 
     $speed = array_keys($speeds)[0];
     if (count($speeds[$speed]['choices']) > 1) {
-      return;
+      return false;
     }
     $choice = $speeds[$speed]['choices'][0];
+    return [$speed, $choice];
+  }
 
-    $this->actChooseSpeed($speed, $choice, true);
+  public function stChooseSpeed()
+  {
+    $t = $this->getChooseSpeedAutomatic();
+    if ($t === false) return;
+    $this->actChooseSpeed($t[0], $t[1], true);
   }
 
   public function actChooseSpeed(int $speed, #[JsonParam] array $choice, bool $auto = false)
@@ -880,7 +926,7 @@ trait RoundTrait
 
     // Save all the symbols and proceed to React phase
     Globals::setCardSymbols($symbols);
-    $this->gamestate->jumpToState(ST_REACT);
+    $this->jumpToNextState(ST_REACT);
   }
 
   ///////////////////////////////////////////
@@ -979,6 +1025,7 @@ trait RoundTrait
     }
 
     return [
+      '_no_notify' => empty($speeds),
       'undoableSteps' => Log::getUndoableSteps(),
       'speeds' => $speeds,
       'heatCosts' => $heatCosts,
@@ -1036,14 +1083,14 @@ trait RoundTrait
             Notifications::message(clienttranslate('${constructor_name} can chain another slipstream'), [
               'constructor' => $constructor,
             ]);
-            $this->gamestate->jumpToState(ST_SLIPSTREAM);
+            $this->jumpToNextState(ST_SLIPSTREAM);
             return;
           }
         }
       }
     }
 
-    $this->gamestate->jumpToState(ST_CHECK_CORNER);
+    $this->jumpToNextState(ST_CHECK_CORNER);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -1067,6 +1114,7 @@ trait RoundTrait
     list('heatCost' => $heatCost, 'spinOut' => $spinOut) = $this->getCircuit()->getCrossedCornersHeatCosts($constructor, $speed, $prevTurn, $prevPosition, $turn, $position, false);
 
     return [
+      '_no_notify' => $heatCost == 0,
       'undoableSteps' => Log::getUndoableSteps(),
       'n' => $heatCost,
       'spinOut' => $spinOut,
@@ -1272,7 +1320,7 @@ trait RoundTrait
       }
     }
 
-    $this->gamestate->jumpToState(ST_DISCARD);
+    $this->jumpToNextState(ST_DISCARD);
   }
 
   /////////////////////////////////////////////////////
@@ -1315,7 +1363,7 @@ trait RoundTrait
       }
     }
 
-    return [
+    $args = [
       'undoableSteps' => Log::getUndoableSteps(),
       '_private' => [
         'active' => [
@@ -1325,6 +1373,16 @@ trait RoundTrait
         ],
       ],
     ];
+
+    if ($constructor->getTurn() >= $this->getNbrLaps()) {
+      $args['no_notify'] = true;
+    }
+
+    if (Globals::isDeferredRoundsActive()) {
+      $args['_private'] = $args['_private']['active'];
+    }
+
+    return $args;
   }
 
   public function stDiscard()
@@ -1351,7 +1409,10 @@ trait RoundTrait
   {
     $this->addNewUndoableStep();
     $constructor = Constructors::getActive();
-    $args = $this->argsDiscard()['_private']['active'];
+    $args = $this->argsDiscard()['_private'];
+    if (!Globals::isDeferredRoundsActive()) {
+      $args = $args['active'];
+    }
 
     // Refresh card
     if (!in_array($cardId, $args['refreshedIds'])) {
@@ -1366,13 +1427,16 @@ trait RoundTrait
     Cards::insertOnTop($cardId, ['deck', $constructor->getId()]);
     Notifications::refresh($constructor, $card);
 
-    $this->gamestate->jumpToState(ST_DISCARD);
+    $this->jumpToNextState(ST_DISCARD);
   }
 
   public function actDiscard(#[JsonParam()] array $cardIds)
   {
     $constructor = Constructors::getActive();
-    $args = $this->argsDiscard()['_private']['active'];
+    $args = $this->argsDiscard()['_private'];
+    if (!Globals::isDeferredRoundsActive()) {
+      $args = $args['active'];
+    }
 
     // Discard cards
     if (count($cardIds) > 0) {

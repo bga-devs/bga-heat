@@ -64,8 +64,9 @@ class Notifications
 
   public static function updatePlanification(Player $player, array $args): void
   {
+    $pArgs = Globals::isDeferredRoundsActive() ? $args['_private'] : $args['_private'][$player->getId()];
     self::notify($player->getId(), 'updatePlanification', '', [
-      'args' => ['_private' => $args['_private'][$player->getId()] ?? []],
+      'args' => ['_private' => $pArgs],
     ]);
   }
 
