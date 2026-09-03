@@ -1309,17 +1309,6 @@ trait RoundTrait
       }
     }
 
-    // Gravel penalty (RockyRoad expansion)
-    if ($constructor->isInGravelSpace()) {
-      $engine = $constructor->getEngine();
-      if ($engine->count() > 0) {
-        // Player has at least one Heat card in engine - must pay 1 Heat
-        $heatCard = $engine->first();
-        Cards::move($heatCard['id'], ['discard', $constructor->getId()]);
-        Notifications::gravelPenalty($constructor, $heatCard);
-      }
-    }
-
     $this->jumpToNextState(ST_DISCARD);
   }
 
@@ -1486,8 +1475,20 @@ trait RoundTrait
 
   public function stReplenish()
   {
-    // Discard played cards (or put them away if sponsors)
     $constructor = Constructors::getActive();
+
+    // Gravel penalty (RockyRoad expansion)
+    if ($constructor->isInGravelSpace()) {
+      $engine = $constructor->getEngine();
+      if ($engine->count() > 0) {
+        // Player has at least one Heat card in engine - must pay 1 Heat
+        $heatCard = $engine->first();
+        Cards::move($heatCard['id'], ['discard', $constructor->getId()]);
+        Notifications::gravelPenalty($constructor, $heatCard);
+      }
+    }
+
+    // Discard played cards (or put them away if sponsors)
     $cardIds = [];
     $sponsorIds = [];
     foreach ($constructor->getPlayedCards() as $cId => $card) {
