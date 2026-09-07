@@ -233,7 +233,6 @@ trait ReactTrait
       'descSuffix' => $canPass ? '' : 'Must',
       'flippedCards' => Globals::getFlippedCards(),
 
-      'symbols' => $symbols,
       'currentHeatCost' => $currentHeatCost,
       'heatCosts' => $currentHeatCosts,
       'spinOut' => $spinOut,
@@ -355,6 +354,7 @@ trait ReactTrait
         'value' => $card['speed'],
         'used' => true,
       ];
+      Globals::setCardSymbols($symbols);
       $constructor->incSpeed($speed);
       $this->moveCar($constructor, $speed);
     }
@@ -702,6 +702,11 @@ trait ReactTrait
     foreach ($symbols[SPEED]['entries'] ?? [] as $entry) {
       $speed += $entry['value'] ?? 0;
     }
+    // Accelerate
+    foreach ($symbols[ACCELERATE]['entries'] ?? [] as $entry) {
+      if ($entry['used']) $speed += Globals::getFlippedCards();
+    }
+
     $constructor->setSpeed($speed);
     $this->moveCar($constructor, $speed);
 

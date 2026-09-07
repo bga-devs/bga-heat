@@ -56,9 +56,9 @@ trait LegendTrait
       if (count($cornersCrossed) <= $maxCornerCrossed) {
         $this->moveCar($constructor, $speed);
       }
-      // Otherwise, stop before second corner
+      // Otherwise, stop before the max allowed corner
       else {
-        $cornerPos = $cornersCrossed[1]['cornerPos'];
+        $cornerPos = $cornersCrossed[$maxCornerCrossed]['cornerPos'];
         $speed = ($cornerPos - 1 - $pos + $length) % $length;
         $this->moveCar($constructor, $speed);
       }

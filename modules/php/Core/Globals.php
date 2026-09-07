@@ -92,6 +92,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     'superCool' => 'int',
     'refreshedCards' => 'obj',
     'usedBoost' => 'bool',
+    'boostSources' => 'obj',  // Map: boostCardId -> sourceCardId for tracking which boost came from which card
     'mulligans' => 'obj',
 
     'skippedPlayers' => 'obj',
@@ -169,7 +170,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     self::$initialized = true;
     self::$log = $tmp;
     self::$isFetching = false;
-    if ($checkDeferred) {
+    if ($checkDeferred && !self::$checkingDeferred) {
       self::checkDeferredIfNeeded();
     }
   }
