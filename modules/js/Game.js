@@ -1530,15 +1530,17 @@ class Game {
         this._notif_uid_to_log_id = [];
         this._notif_uid_to_mobile_log_id = [];
         this.bga = bga;
-        const oldFunction = this.bga.gameui.onPlaceLogOnChannel;
+        const gameui = this.bga.gameui;
+        const oldFunction = gameui.onPlaceLogOnChannel;
         if (oldFunction) {
-            this.bga.gameui.onPlaceLogOnChannel = (msg) => {
-                var currentLogId = this.bga.gameui.notifqueue.next_log_id;
-                var currentMobileLogId = this.bga.gameui.next_log_id;
-                var res = oldFunction(arguments);
-                this._notif_uid_to_log_id[msg.uid] = currentLogId;
-                this._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
-                this._last_notif = {
+            const game = this;
+            gameui.onPlaceLogOnChannel = function (msg) {
+                const currentLogId = this.notifqueue.next_log_id;
+                const currentMobileLogId = this.next_log_id;
+                const res = oldFunction.call(this, msg);
+                game._notif_uid_to_log_id[msg.uid] = currentLogId;
+                game._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
+                game._last_notif = {
                     logId: currentLogId,
                     mobileLogId: currentMobileLogId,
                     msg,

@@ -58,21 +58,23 @@ export class Game {
   constructor(bga: Bga<HeatPlayer, HeatGamedatas>) {
     this.bga = bga;
 
-    const oldFunction = (this.bga.gameui as any).onPlaceLogOnChannel;
+    const gameui = this.bga.gameui as any;
+    const oldFunction = gameui.onPlaceLogOnChannel;
     if (oldFunction) {
-        (this.bga.gameui as any).onPlaceLogOnChannel = (msg) => {
-          var currentLogId = (this.bga.gameui as any).notifqueue.next_log_id;
-          var currentMobileLogId = (this.bga.gameui as any).next_log_id;
-          var res = oldFunction(arguments);
-          this._notif_uid_to_log_id[msg.uid] = currentLogId;
-          this._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
-          this._last_notif = {
-            logId: currentLogId,
-            mobileLogId: currentMobileLogId,
-            msg,
-          };
-          return res;
-        }
+      const game = this;
+      gameui.onPlaceLogOnChannel = function (msg) {
+        const currentLogId = this.notifqueue.next_log_id;
+        const currentMobileLogId = this.next_log_id;
+        const res = oldFunction.call(this, msg);
+        game._notif_uid_to_log_id[msg.uid] = currentLogId;
+        game._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
+        game._last_notif = {
+          logId: currentLogId,
+          mobileLogId: currentMobileLogId,
+          msg,
+        };
+        return res;
+      };
     }
   }
 
