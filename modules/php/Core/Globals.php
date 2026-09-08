@@ -43,6 +43,7 @@ use const Bga\Games\Heat\OPTION_NBR_LAPS;
 use const Bga\Games\Heat\OPTION_SETUP;
 use const Bga\Games\Heat\OPTION_SETUP_CHAMPIONSHIP;
 use const Bga\Games\Heat\OPTION_TB_ENHANCED;
+use const Bga\Games\Heat\OPTION_TB_ENHANCED_PERFECT;
 use const Bga\Games\Heat\OPTION_TB_MODE;
 use const Bga\Games\Heat\OPTION_TB_STANDARD;
 use const Bga\Games\Heat\OPTION_WEATHER_ENABLED;
@@ -121,7 +122,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     'championshipDatas' => 'obj',
     'mulliganAllowed' => 'bool',
 
-    'deferredRounds' => 'bool', // Enhanced TB-mode 
+    'deferredRounds' => 'bool', // Enhanced TB-mode
+    'deferredRoundsPrivate' => 'bool', // Better version of enhanced TB-mode
     'deferredRoundsActive' => 'bool',
     'pendingNotifications' => 'obj',
 
@@ -338,7 +340,8 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     self::setHeavyRain(($options[OPTION_EXPANSION_HEAVY_RAIN] ?? OPTION_EXPANSION_DISABLED) == OPTION_EXPANSION_ENABLED);
     self::setTunnelVision(($options[OPTION_EXPANSION_TUNNEL_VISION] ?? OPTION_EXPANSION_DISABLED) == OPTION_EXPANSION_ENABLED);
     self::setRockyRoad(($options[OPTION_EXPANSION_ROCKY_ROAD] ?? OPTION_EXPANSION_DISABLED) == OPTION_EXPANSION_ENABLED);
-    self::setDeferredRounds(count($players) == 1 ? false : ($options[OPTION_TB_MODE] ?? OPTION_TB_STANDARD) == OPTION_TB_ENHANCED);
+    self::setDeferredRounds(count($players) == 1 ? false : in_array(($options[OPTION_TB_MODE] ?? OPTION_TB_STANDARD), [OPTION_TB_ENHANCED, OPTION_TB_ENHANCED_PERFECT]));
+    self::setDeferredRoundsPrivate(count($players) == 1 ? false : ($options[OPTION_TB_MODE] ?? OPTION_TB_STANDARD) == OPTION_TB_ENHANCED_PERFECT);
     self::setMulliganAllowed(($options[OPTION_MULLIGAN] ?? OPTION_DISABLED) == OPTION_ENABLED);
     self::setChampionship($options[OPTION_SETUP] == OPTION_SETUP_CHAMPIONSHIP);
     self::setCrowdGoesWildSponsors([]);

@@ -95,8 +95,12 @@ trait DeferredRoundTrait
     }
 
     $this->gamestate->setPlayersMultiactive([$constructor->getPId()], '', true);
-    $this->jumpToNextState(ST_INIT_PRIVATE_TURN);
-    $this->gamestate->initializePrivateStateForAllActivePlayers();
+    if (Globals::isDeferredRoundsPrivate()) {
+      $this->jumpToNextState(ST_INIT_PRIVATE_TURN);
+      $this->gamestate->initializePrivateStateForAllActivePlayers();
+    } else {
+      $this->gamestate->jumpToState(ST_PLANIFICATION);
+    }
   }
 
   function stEndOfDeferredPlanification()

@@ -102,7 +102,7 @@ $game_options = [
         'name' => clienttranslate('Standard'),
         'description' => clienttranslate('Everyone is awaken for planification, then every player in turn order is awaken to move their car'),
       ],
-      OPTION_TB_ENHANCED => [
+      OPTION_TB_ENHANCED_PERFECT => [
         'name' => clienttranslate('Enhanced'),
         'description' => clienttranslate('Every player is only awaken once, and all previous players\' actions are hidden until they confirm their planification'),
         'alpha' => true,

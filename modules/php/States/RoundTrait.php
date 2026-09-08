@@ -56,7 +56,7 @@ trait RoundTrait
       ST_DISCARD => ST_DISCARD_PRIVATE,
     ];
 
-    if (Globals::isDeferredRoundsActive() && isset($privateStateMap[$stateId])) {
+    if (Globals::isDeferredRoundsPrivate() && isset($privateStateMap[$stateId])) {
       $stateId = $privateStateMap[$stateId];
       $constructor = Constructors::getActive();
       $this->gamestate->setPrivateState($constructor->getPId(), $stateId);
@@ -329,7 +329,7 @@ trait RoundTrait
     }
 
     $args['nPlayersLeft'] = count($args['_private']);
-    if (Globals::isDeferredRoundsActive()) {
+    if (Globals::isDeferredRoundsPrivate()) {
       $constructor = Constructors::getActive();
       $args['_private'] = $args['_private'][$constructor->getPId()];
     }
@@ -376,7 +376,7 @@ trait RoundTrait
     $player = Players::getCurrent();
     $constructor = Constructors::getOfPlayer($player->getId());
     $args = $this->argsPlanification()['_private'];
-    if (!Globals::isDeferredRoundsActive()) {
+    if (!Globals::isDeferredRoundsPrivate()) {
       $args = $args[$player->getId()];
     }
     $newGear = count($cardIds);
@@ -1367,7 +1367,7 @@ trait RoundTrait
       $args['no_notify'] = true;
     }
 
-    if (Globals::isDeferredRoundsActive()) {
+    if (Globals::isDeferredRoundsPrivate()) {
       $args['_private'] = $args['_private']['active'];
     }
 
@@ -1399,7 +1399,7 @@ trait RoundTrait
     $this->addNewUndoableStep();
     $constructor = Constructors::getActive();
     $args = $this->argsDiscard()['_private'];
-    if (!Globals::isDeferredRoundsActive()) {
+    if (!Globals::isDeferredRoundsPrivate()) {
       $args = $args['active'];
     }
 
@@ -1423,7 +1423,7 @@ trait RoundTrait
   {
     $constructor = Constructors::getActive();
     $args = $this->argsDiscard()['_private'];
-    if (!Globals::isDeferredRoundsActive()) {
+    if (!Globals::isDeferredRoundsPrivate()) {
       $args = $args['active'];
     }
 
