@@ -715,7 +715,7 @@ trait RoundTrait
     unset($infos);
 
     return [
-      '_no_notify' =>  $this->getChooseSpeedAutomatic() !== false,
+      '_no_notify' =>  $this->getChooseSpeedAutomatic($speeds) !== false,
       'undoableSteps' => Log::getUndoableSteps(),
       'speeds' => $speeds,
       'symbols' => $symbols,
@@ -724,14 +724,16 @@ trait RoundTrait
     ];
   }
 
-  public function getChooseSpeedAutomatic()
+  public function getChooseSpeedAutomatic(?array $speeds = null)
   {
     $pId = $this->getActivePlayerId();
     if ($this->userPreferences->get($pId, OPTION_AUTO_MOVE_WHEN_SINGLE_SPEED_CHOICE) == OPTION_DISABLED) {
       return false;
     }
 
-    $speeds = $this->argsChooseSpeed()['speeds'];
+    if (is_null($speeds)) {
+      $speeds = $this->argsChooseSpeed()['speeds'];
+    }
     if (count($speeds) > 1) {
       return false;
     }

@@ -55,15 +55,12 @@ class Game extends Table
     self::initGameStateLabels([
       'logging' => 10,
     ]);
+
     Globals::fetch();
+    Stats::checkExistence();
 
     // EXPERIMENTAL to avoid deadlocks. This locks the global table early in the game constructor.
     $this->bSelectGlobalsForUpdate = true;
-  }
-
-  public function initTable(): void
-  {
-    Stats::checkExistence();
   }
 
   public static function get(): ?Game
