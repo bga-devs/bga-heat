@@ -1733,7 +1733,7 @@ class Game {
         }
     }
     changePageTitle(suffix = null, save = false) {
-        let gamestate = this.gamedatas.gamestate.private_state ?? this.gamedatas.gamestate;
+        let gamestate = this.getGamestate();
         const title = this.bga.players.isCurrentPlayerActive()
             ? gamestate['descriptionmyturn' + suffix] ?? gamestate['descriptionmyturn'] ?? ''
             : gamestate['description' + suffix] ?? gamestate['description'] ?? '';
@@ -2617,8 +2617,11 @@ class Game {
     getCurrentPlayerTable() {
         return this.playersTables.find((playerTable) => playerTable.playerId === this.getPlayerId());
     }
+    getGamestate() {
+        return this.gamedatas.gamestate.private_state ?? this.gamedatas.gamestate;
+    }
     getGameStateName() {
-        return this.gamedatas.gamestate.private_state?.name ?? this.gamedatas.gamestate.name;
+        return this.getGamestate().name;
     }
     getStateName() {
         return this.getGameStateName();
@@ -3029,7 +3032,7 @@ class Game {
     }
     onHandCardSelectionChange(selection) {
         if (this.getStateName() == 'planification') {
-            const privateArgs = this.gamedatas.gamestate.args._private;
+            const privateArgs = this.getGamestate().args._private;
             const clutteredHand = privateArgs?.clutteredHand;
             const table = this.getCurrentPlayerTable();
             const gear = table.getCurrentGear();
@@ -3073,7 +3076,7 @@ class Game {
             const buttonNoDiscard = document.getElementById('actNoDiscard_button');
             if (buttonDiscard) {
                 buttonDiscard.innerHTML = label;
-                buttonDiscard.classList.toggle('disabled', !selection.length || selection.length > this.gamedatas.gamestate.args._private.max);
+                buttonDiscard.classList.toggle('disabled', !selection.length || selection.length > this.getGamestate().args._private.max);
             }
             buttonNoDiscard?.classList.toggle('disabled', selection.length > 0);
         }
@@ -3086,7 +3089,7 @@ class Game {
     }
     onInPlayCardSelectionChange(selection) {
         if (this.getStateName() == 'payHeats') {
-            const args = this.gamedatas.gamestate.args;
+            const args = this.getGamestate().args;
             const selectionHeats = selection.map((card) => args.payingCards[card.id]).reduce((a, b) => a + b, 0);
             document
                 .getElementById('actPayHeats_button')
@@ -3422,18 +3425,18 @@ class Game {
         if (mulliganBtn && !args.args._private.canMulligan) {
             mulliganBtn.remove();
         }
-        this.gamedatas.gamestate.args = args.args;
+        this.getGamestate().args = args.args;
         this.onUpdateActionButtons('planification', args.args);
         this.onEnteringPlanification(args.args);
         this.changePageTitle();
     }
     async notif_updateSnakeDiscard(args) {
         this.updateDiscardDraftCard(args.args._private.choice);
-        this.gamedatas.gamestate.args = args.args;
+        this.getGamestate().args = args.args;
         this.onEnteringSnakeDiscard(args.args);
     }
     async notif_updateConsultingMechanics(args) {
-        this.gamedatas.gamestate.args = args.args;
+        this.getGamestate().args = args.args;
         this.onEnteringConsultingMechanics(args.args);
     }
     async notif_reveal(args) {
@@ -3581,7 +3584,7 @@ class Game {
     async notif_pMulligan(args) {
         const { constructor_id, deckCount, heat } = args;
         const cards = Object.values(args.cards);
-        this.gamedatas.gamestate.args._private.cards = cards;
+        this.getGamestate().args._private.cards = cards;
         const playerTable = this.getCurrentPlayerTable();
         await playerTable.hand.removeAll();
         await this.payHeats(constructor_id, [heat]);

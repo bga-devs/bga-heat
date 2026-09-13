@@ -307,7 +307,7 @@ export class Game {
   }
 
   public changePageTitle(suffix: string = null, save: boolean = false): void {
-    let gamestate = this.gamedatas.gamestate.private_state ?? this.gamedatas.gamestate;
+    let gamestate = this.getGamestate();
     const title = this.bga.players.isCurrentPlayerActive()
       ? gamestate['descriptionmyturn' + suffix] ?? gamestate['descriptionmyturn'] ?? ''
       : gamestate['description' + suffix] ?? gamestate['description'] ?? '';
@@ -1415,8 +1415,12 @@ export class Game {
     return this.playersTables.find((playerTable) => playerTable.playerId === this.getPlayerId());
   }
 
+  public getGamestate(): Gamestate {
+    return this.gamedatas.gamestate.private_state ?? this.gamedatas.gamestate;
+  }
+
   public getGameStateName(): string {
-    return this.gamedatas.gamestate.private_state?.name ?? this.gamedatas.gamestate.name;
+    return this.getGamestate().name;
   }
 
   public getStateName(): string {
@@ -1880,7 +1884,7 @@ export class Game {
 
   public onHandCardSelectionChange(selection: Card[]): void {
     if (this.getStateName() == 'planification') {
-      const privateArgs: EnteringPlanificationPrivateArgs = this.gamedatas.gamestate.args._private;
+      const privateArgs: EnteringPlanificationPrivateArgs = this.getGamestate().args._private;
       const clutteredHand = privateArgs?.clutteredHand;
 
       const table = this.getCurrentPlayerTable();
@@ -1933,7 +1937,7 @@ export class Game {
         buttonDiscard.innerHTML = label;
         buttonDiscard.classList.toggle(
           'disabled',
-          !selection.length || selection.length > this.gamedatas.gamestate.args._private.max
+          !selection.length || selection.length > this.getGamestate().args._private.max
         );
       }
       buttonNoDiscard?.classList.toggle('disabled', selection.length > 0);
@@ -1946,7 +1950,7 @@ export class Game {
 
   public onInPlayCardSelectionChange(selection: Card[]): void {
     if (this.getStateName() == 'payHeats') {
-      const args: EnteringPayHeatsArgs = this.gamedatas.gamestate.args;
+      const args: EnteringPayHeatsArgs = this.getGamestate().args;
       const selectionHeats = selection.map((card) => args.payingCards[card.id]).reduce((a, b) => a + b, 0);
 
       document
@@ -2346,7 +2350,7 @@ export class Game {
     if (mulliganBtn && !args.args._private.canMulligan) {
       mulliganBtn.remove();
     }
-    this.gamedatas.gamestate.args = args.args;
+    this.getGamestate().args = args.args;
     this.onUpdateActionButtons('planification', args.args);
     this.onEnteringPlanification(args.args);
     this.changePageTitle();
@@ -2354,12 +2358,12 @@ export class Game {
 
   async notif_updateSnakeDiscard(args: any) {
     this.updateDiscardDraftCard(args.args._private.choice);
-    this.gamedatas.gamestate.args = args.args;
+    this.getGamestate().args = args.args;
     this.onEnteringSnakeDiscard(args.args);
   }
 
   async notif_updateConsultingMechanics(args: any) {
-    this.gamedatas.gamestate.args = args.args;
+    this.getGamestate().args = args.args;
     this.onEnteringConsultingMechanics(args.args);
   }
 
@@ -2539,7 +2543,7 @@ export class Game {
   async notif_pMulligan(args: NotifPMulliganArgs) {
     const { constructor_id, deckCount, heat } = args;
     const cards = Object.values(args.cards);
-    this.gamedatas.gamestate.args._private.cards = cards;
+    this.getGamestate().args._private.cards = cards;
     const playerTable = this.getCurrentPlayerTable();
     await playerTable.hand.removeAll();
     await this.payHeats(constructor_id, [heat]);
