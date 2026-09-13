@@ -504,10 +504,9 @@ trait ReactTrait
   ///////////////////////////////
   public function argsSalvage()
   {
-    // TODO : remove max
-    $n = max(2, Globals::getSalvage());
+    $n = Globals::getSalvage();
     $constructor = Constructors::getActive();
-    return [
+    $args = [
       'n' => $n,
       'cardIds' => $constructor->getDiscard()->getIds(),
       '_private' => [
@@ -516,6 +515,12 @@ trait ReactTrait
         ],
       ],
     ];
+
+    if (Globals::isDeferredRoundsPrivate()) {
+      $args['_private'] = $args['_private'][$constructor->getPId()];
+    }
+
+    return $args;
   }
 
   public function actSalvage(#[JsonParam()] array $cardIds)
@@ -551,7 +556,7 @@ trait ReactTrait
     $constructor = Constructors::getActive();
     $discard = $constructor->getDiscard();
     $heatCards = $discard->filter(fn($card) => $card['effect'] == HEAT);
-    return [
+    $args = [
       'n' => $n,
       '_private' => [
         $constructor->getPId() => [
@@ -560,6 +565,12 @@ trait ReactTrait
         ],
       ],
     ];
+
+    if (Globals::isDeferredRoundsPrivate()) {
+      $args['_private'] = $args['_private'][$constructor->getPId()];
+    }
+
+    return $args;
   }
 
   public function actSuperCool(int $n)
