@@ -323,7 +323,6 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} Heat card(s) in your discard to put back in your engine'),
     'type' => 'private',
     'args' => 'argsSuperCool',
-    'action' => 'stSuperCool',
     'possibleactions' => ['actSuperCool', 'actPassReact', 'actUndoToStep', 'actRestartTurn'],
   ],
 
