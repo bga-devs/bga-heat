@@ -432,6 +432,7 @@ export class Game {
 
   private onEnteringPlanification(args: EnteringPlanificationArgs) {
     this.circuit.removeMapPaths();
+    this.circuit.removeCornerHeatIndicators();
 
     if (args._private) {
       this.getCurrentPlayerTable().setCurrentGear(args._private.gear);
@@ -497,6 +498,7 @@ export class Game {
 
   private onEnteringChooseSpeed(args: EnteringChooseSpeedArgs) {
     this.circuit.removeMapPaths();
+    this.circuit.removeCornerHeatIndicators();
 
     Object.entries(args.speeds).forEach(([speedStr, speedChoice]) => {
       const speed = Number(speedStr);

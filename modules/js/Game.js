@@ -1833,6 +1833,7 @@ class Game {
     }
     onEnteringPlanification(args) {
         this.circuit.removeMapPaths();
+        this.circuit.removeCornerHeatIndicators();
         if (args._private) {
             this.getCurrentPlayerTable().setCurrentGear(args._private.gear);
             let selection = this.getCurrentPlayerTable()
@@ -1884,6 +1885,7 @@ class Game {
     }
     onEnteringChooseSpeed(args) {
         this.circuit.removeMapPaths();
+        this.circuit.removeCornerHeatIndicators();
         Object.entries(args.speeds).forEach(([speedStr, speedChoice]) => {
             const speed = Number(speedStr);
             this.circuit.addMapIndicator(speedChoice.cell, () => this.actChooseSpeed(speed, speedChoice.choices[0]), speed);
