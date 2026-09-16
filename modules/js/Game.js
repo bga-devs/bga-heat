@@ -1885,7 +1885,6 @@ class Game {
     }
     onEnteringChooseSpeed(args) {
         this.circuit.removeMapPaths();
-        this.circuit.removeCornerHeatIndicators();
         Object.entries(args.speeds).forEach(([speedStr, speedChoice]) => {
             const speed = Number(speedStr);
             this.circuit.addMapIndicator(speedChoice.cell, () => this.actChooseSpeed(speed, speedChoice.choices[0]), speed);
@@ -2178,6 +2177,9 @@ class Game {
                 break;
             case 'planification':
                 this.onEnteringPlanification(args);
+                break;
+            case 'chooseSpeed':
+                this.circuit.removeCornerHeatIndicators();
                 break;
         }
         if (this.bga.players.isCurrentPlayerActive()) {

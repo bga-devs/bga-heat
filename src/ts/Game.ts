@@ -498,7 +498,6 @@ export class Game {
 
   private onEnteringChooseSpeed(args: EnteringChooseSpeedArgs) {
     this.circuit.removeMapPaths();
-    this.circuit.removeCornerHeatIndicators();
 
     Object.entries(args.speeds).forEach(([speedStr, speedChoice]) => {
       const speed = Number(speedStr);
@@ -891,6 +890,10 @@ export class Game {
 
       case 'planification':
         this.onEnteringPlanification(args);
+        break;
+
+      case 'chooseSpeed':
+        this.circuit.removeCornerHeatIndicators();
         break;
     }
 
