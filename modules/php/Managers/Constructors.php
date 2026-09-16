@@ -110,7 +110,7 @@ class Constructors extends \Bga\Games\Heat\Helpers\CachedDB_Manager
     return parent::get($cId);
   }
 
-  public static function getOfPlayer($pId): Constructor
+  public static function getOfPlayer($pId): ?Constructor
   {
     $pId = is_int($pId) ? $pId : $pId->getId();
     return self::getAll()
