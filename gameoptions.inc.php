@@ -82,7 +82,6 @@ $game_options = [
         'name' => clienttranslate('Enabled'),
         'tmdisplay' => clienttranslate('((Rocky Road))'),
         'nobeginner' => true,
-        'alpha' => true,
       ],
     ],
     'displaycondition' => [
@@ -105,7 +104,6 @@ $game_options = [
       OPTION_TB_ENHANCED_PERFECT => [
         'name' => clienttranslate('Enhanced'),
         'description' => clienttranslate('Every player is only awaken once, and all previous players\' actions are hidden until they confirm their planification'),
-        'alpha' => true,
       ],
     ],
     'displaycondition' => [
