@@ -570,8 +570,12 @@ class Circuit
    */
   public function getSlipstreamResult(Constructor $constructor, int $n): array|bool
   {
+    // Finished cars cannot slipstream
+    if ($constructor->isFinished()) {
+        return false;
+    }
+
     $currentPosition = $this->getPosition($constructor);
-    if ($currentPosition === 0) return false;
 
     // Is there a car next to me or in front of me ?
     $currentLane = $this->getLane($constructor);
