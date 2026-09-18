@@ -1033,6 +1033,7 @@ trait RoundTrait
       'heatCosts' => $heatCosts,
       'slipstreamWillCrossNextCorner' => $slipstreamWillCrossNextCorner,
 
+      'currentSpeed' => $constructor->getSpeed(),
       'currentHeatCost' => $currentHeatCost,
       'currentHeatCosts' => $currentHeatCosts,
       'spinOut' => $spinOut,

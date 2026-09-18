@@ -144,6 +144,7 @@ interface EnteringChooseSpeedArgs {
 interface EnteringSlipstreamArgs /*extends EnteringChooseSpeedArgs*/ {
   heatCosts: { [speed: number]: number /*heatCost*/ };
   speeds: { [speed: number]: number /*destination cell*/ };
+  currentSpeed: number;
   currentHeatCost: number;
   currentHeatCosts: { [cornerId: number]: number };
   spinOut: boolean;
@@ -181,6 +182,7 @@ interface EnteringReactArgs {
   symbols: { [symbol: string]: ReactSymbol };
   flippedCards: number;
   adrenalineWillCrossNextCorner: boolean;
+  currentSpeed: number;
   currentHeatCost: number;
   heatCosts: { [cornerId: number]: number };
   spinOut: boolean;
@@ -197,6 +199,7 @@ interface EnteringOldReactArgs {
   doable: string[];
 
   adrenalineWillCrossNextCorner: boolean;
+  currentSpeed: number;
   currentHeatCost: number;
   heatCosts: { [cornerId: number]: number };
   spinOut: boolean;

@@ -236,6 +236,7 @@ trait ReactTrait
       'currentHeatCost' => $currentHeatCost,
       'heatCosts' => $currentHeatCosts,
       'spinOut' => $spinOut,
+      'currentSpeed' => $constructor->getSpeed(),
       'nextCornerSpeedLimit' => $speedLimit,
       'nextCornerExtraHeatCost' => $nextCornerExtraHeatCost,
       'crossedFinishLine' => $constructor->getTurn() >= $this->getCircuit()->getNbrLaps(),

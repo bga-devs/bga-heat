@@ -694,13 +694,14 @@ export class Game {
     adrenalineWillCrossNextCorner: boolean,
     nextCornerSpeedLimit: number,
     nextCornerExtraHeatCost: boolean,
-    boostInfos: { [boostSpeed: number]: { [cornerId: number]: number } }
+    boostInfos: { [boostSpeed: number]: { [cornerId: number]: number } },
+    currentSpeed: number
   ) {
     let confirmationMessage = null;
     adrenalineWillCrossNextCorner = this.cornerCounters[this.getConstructorId()].getValue() == 0 && adrenalineWillCrossNextCorner;
     const adrenalineCostOnCurrentCorner = boostInfos?.[1] ? Object.values(boostInfos[1]).reduce((a, b) => a + b, 0) : 0;
     if (adrenalineWillCrossNextCorner || currentHeatCost > 0 || adrenalineCostOnCurrentCorner > 0) {
-      const newSpeed = this.speedCounters[this.getConstructorId()].getValue() + 1;
+      const newSpeed = currentSpeed + 1;
 
       let newHeatCost = currentHeatCost > 0 ? currentHeatCost + 1 : 0;
       let newCornerCost = 0;
@@ -749,14 +750,15 @@ export class Game {
     nextCornerSpeedLimit: number,
     nextCornerExtraHeatCost: boolean,
     boostInfos: { [boostSpeed: number]: { [cornerId: number]: number } },
-    paid: boolean
+    paid: boolean,
+    currentSpeed: number
   ) {
     const mayCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < 4;
 
     let confirmationMessage = null;
     const boostCostOnCurrentCorner = boostInfos?.[4] ? Object.values(boostInfos[4]).reduce((a, b) => a + b, 0) : 0;
     if (mayCrossCorner || currentHeatCost > 0 || boostCostOnCurrentCorner > 0) {
-      const newSpeedMax = this.speedCounters[this.getConstructorId()].getValue() + 4;
+      const newSpeedMax = currentSpeed + 4;
 
       let newHeatCostMax = boostCostOnCurrentCorner + (paid ? 1 : 0);
       let newCornerCostMax = 0;
@@ -802,14 +804,15 @@ export class Game {
     currentHeatCost: number,
     nextCornerSpeedLimit: number,
     directPlayCosts: { [cardId: number]: { [something: number]: number } },
-    card: Card
+    card: Card,
+    currentSpeed: number
   ) {
     const willCrossCorner = this.cornerCounters[this.getConstructorId()].getValue() < card.speed;
     const newHeatCost = Object.values(directPlayCosts[card.id]).reduce((a, b) => a + b, 0);
 
     let confirmationMessage = null;
     if (currentHeatCost < newHeatCost) {
-      const newSpeed = this.speedCounters[this.getConstructorId()].getValue() + card.speed;
+      const newSpeed = currentSpeed + card.speed;
 
       if (willCrossCorner) {
         confirmationMessage =
@@ -844,7 +847,7 @@ export class Game {
     const slipstreamWillCrossNextCorner =
       this.cornerCounters[this.getConstructorId()].getValue() < slipstream && reactArgs.slipstreamWillCrossNextCorner[slipstream];
     if (slipstreamWillCrossNextCorner) {
-      const speed = this.speedCounters[this.getConstructorId()].getValue();
+      const speed = reactArgs.currentSpeed;
 
       const newHeatCost = reactArgs.heatCosts[slipstream];
 
@@ -1128,7 +1131,8 @@ export class Game {
               args.adrenalineWillCrossNextCorner,
               args.nextCornerSpeedLimit,
               args.nextCornerExtraHeatCost,
-              args.boostInfos
+              args.boostInfos,
+              args.currentSpeed
             );
         break;
       case 'cooldown':
@@ -1168,7 +1172,7 @@ export class Game {
         confirmationMessage =
           args.crossedFinishLine || !directCard
             ? null
-            : this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, symbolInfos.heatCosts, directCard);
+            : this.getDirectPlayConfirmation(args.currentHeatCost, args.nextCornerSpeedLimit, symbolInfos.heatCosts, directCard, args.currentSpeed);
         break;
       case 'heat':
         label = `<div class="icon forced-heat">${number}</div>`;
@@ -1196,7 +1200,8 @@ export class Game {
               args.nextCornerSpeedLimit,
               args.nextCornerExtraHeatCost,
               symbolInfos.heatCosts,
-              paid
+              paid,
+              args.currentSpeed
             );
         break;
       case 'reduce':
