@@ -314,7 +314,6 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} may choose up to ${n} card(s) in your discard to put back in your deck'),
     'type' => 'private',
     'args' => 'argsSalvage',
-    'action' => 'stSalvage',
     'possibleactions' => ['actSalvage', 'actPassReact', 'actUndoToStep', 'actRestartTurn'],
   ],
 
