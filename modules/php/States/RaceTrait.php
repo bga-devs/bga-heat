@@ -262,6 +262,7 @@ trait RaceTrait
     $this->gamestate->nextState();
   }
 
+  #[CheckAction(false)]
   public function actQuitGame(): void
   {
     $pId = (int) $this->getCurrentPId();
