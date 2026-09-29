@@ -66,6 +66,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
     'planification',
     'planificationRevealed',
     'pendingNotifications',
+    'mulligans',
 
     'legendCards',
     'legendCard',

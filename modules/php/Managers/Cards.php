@@ -48,6 +48,23 @@ class Cards extends Pieces
     return self::getInLocation(['hand', $cId]);
   }
 
+  public static function syncMulliganFromDeferred(int $cId): void
+  {
+    if (self::$table != 'cards2') {
+      return;
+    }
+
+    // Mulligan happens before the deferred turn is revealed. Persist this
+    // constructor's cards in the main table before the reveal switches to it.
+    $locations = implode(', ', array_map(
+      fn($location) => "'$location-$cId'",
+      ['deck', 'hand', 'engine', 'discard']
+    ));
+    Game::get()->DbQuery("UPDATE `cards` c JOIN `cards2` d ON c.card_id = d.card_id
+      SET c.card_location = d.card_location, c.card_state = d.card_state
+      WHERE d.card_location IN ($locations)");
+  }
+
   public static function getInPlay($cId)
   {
     return self::getInLocation(['inplay', $cId]);

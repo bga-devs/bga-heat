@@ -354,6 +354,7 @@ trait RoundTrait
     Cards::move($constructor->getHand()->getIds(), "deck-$cId");
     Cards::shuffle("deck-$cId");
     $cards = Cards::fillHand($constructor, false);
+    Cards::syncMulliganFromDeferred($cId);
     Notifications::mulligan($constructor, $cards, $heat);
     // Register
     $mulligans[$player->getId()] = 1;
