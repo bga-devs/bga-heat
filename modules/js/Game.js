@@ -808,7 +808,12 @@ class PlayerTable {
         const cards = this.hand.getCards();
         this.hand.setSelectionMode(selectionMode, selectableCardsIds ? cards.filter(card => selectableCardsIds.includes(Number(card.id))) : undefined);
         this.hand.unselectAll();
-        selectedCardsIds?.forEach(id => this.hand.selectCard(cards.find(card => Number(card.id) == id)));
+        selectedCardsIds?.forEach(id => {
+            const card = cards.find(card => Number(card.id) == id);
+            if (card) {
+                this.hand.selectCard(card);
+            }
+        });
     }
     getCurrentGear() {
         return this.currentGear;
