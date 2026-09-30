@@ -331,7 +331,7 @@ trait RoundTrait
     $args['nPlayersLeft'] = count($args['_private']);
     if (Globals::isDeferredRoundsPrivate()) {
       $constructor = Constructors::getActive();
-      $args['_private'] = $args['_private'][$constructor->getPId()];
+      $args['_private'] = $args['_private'][$constructor->getPId()] ?? [];
     }
 
     return $args;
@@ -479,7 +479,7 @@ trait RoundTrait
   {
     $player = Players::getCurrent();
     $constructor = Constructors::getOfPlayer($player->getId());
-    $args = $this->argsPlanification()['_private'][$player->getId()];
+    $args = $this->argsPlanification()['_private'][$player->getId()] ?? [];
     if (!$args['canSkipEndRace']) {
       throw new UserException('You cant skip the end of the race. Should not happen');
     }
@@ -692,7 +692,7 @@ trait RoundTrait
     foreach ($symbols[SPEED]['entries'] ?? [] as $cardId => $entry) {
       $t = [];
 
-      foreach ($entry['values'] as $cSpeed) {
+      foreach (($entry['values'] ?? []) as $cSpeed) {
         foreach ($speedCombinations as [$speed, $choice]) {
           $choice[$cardId] = $cSpeed;
           $t[] = [$speed + $cSpeed, $choice];

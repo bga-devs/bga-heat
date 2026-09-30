@@ -139,7 +139,7 @@ class Globals extends \Bga\Games\Heat\Helpers\DB_Manager
   protected static function cast($row)
   {
     $val = json_decode(\stripslashes($row['value']), true);
-    return self::$variables[$row['name']] == 'int' ? ((int) $val) : $val;
+    return (self::$variables[$row['name']] ?? '') == 'int' ? ((int) $val) : $val;
   }
 
   /*

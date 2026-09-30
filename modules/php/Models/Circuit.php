@@ -473,7 +473,7 @@ class Circuit
     $isSlipstream = ($flags & FLAG_IS_SLIPSTREAM) == FLAG_IS_SLIPSTREAM;
 
     // Not moving => return
-    if ($speed == 0) {
+    if ($speed == 0 || $constructor->isFinished()) {
       return [
         'cell' => $constructor->getCarCell(),
         'distance' => 0,
@@ -572,7 +572,7 @@ class Circuit
   {
     // Finished cars cannot slipstream
     if ($constructor->isFinished()) {
-        return false;
+      return false;
     }
 
     $currentPosition = $this->getPosition($constructor);
