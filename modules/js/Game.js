@@ -1234,6 +1234,16 @@ class Circuit {
         weatherTokenDiv.style.setProperty('--y', `${y}px`);
         this.circuitDiv.insertAdjacentElement('beforeend', weatherTokenDiv);
         this.game.setTooltip(weatherTokenDiv.id, this.game.getWeatherTokenTooltip(type, cardType));
+        if (type === 0) {
+            const clone = weatherTokenDiv.cloneNode(false);
+            clone.id = `${weatherTokenDiv.id}-old-value`;
+            clone.classList.add('old-value');
+            clone.style.setProperty('--x', `${x - 24}px`);
+            clone.style.setProperty('--y', `${y - 24}px`);
+            this.circuitDiv.appendChild(clone);
+            this.game.setTooltip(clone.id, this.game.getWeatherTokenTooltip(type, cardType));
+            weatherTokenDiv.dataset.cardType = `${cardType}`;
+        }
         if ([2, 3].includes(type)) {
             const cornerDiv = document.getElementById(`corner-${cornerId}`);
             if (cornerDiv) {

@@ -19,6 +19,12 @@
       top: calc(var(--y) - 30px);
       box-shadow: 0 0 5px 5px white;
 
+      &.old-value {
+        z-index: 5;
+        transform: scale(0.6);
+        filter: grayscale(1) contrast(0.5);
+      }
+
       &:hover,
       &:active {
         .sector-indicator {
@@ -269,6 +275,19 @@
   &[data-token-type="2"],
   &[data-token-type="3"] {
     filter: contrast(0.5);
+  }
+
+  // Enlarge the effect symbol in the bottom-right corner of the weather card.
+  &[data-token-type="0"][data-card-type] {
+    $scale: calc(60 / 42);
+    background-image: url("img/weather-cards.jpg");
+    background-size: #{167px * $scale} #{765px * $scale};
+
+    @for $type from 0 through 5 {
+      &[data-card-type="#{$type}"] {
+        background-position: #{-114px * $scale} #{-(75px + $type * 127.5px) * $scale};
+      }
+    }
   }
 }
 

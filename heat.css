@@ -901,6 +901,11 @@ height: 241px; */
   top: calc(var(--y) - 30px);
   box-shadow: 0 0 5px 5px white;
 }
+#table-center #circuit .weather-token.old-value {
+  z-index: 5;
+  transform: scale(0.6);
+  filter: grayscale(1) contrast(0.5);
+}
 #table-center #circuit .weather-token:hover .sector-indicator, #table-center #circuit .weather-token:active .sector-indicator {
   display: block;
 }
@@ -1147,6 +1152,28 @@ height: 241px; */
 }
 .weather-token[data-token-type="2"], .weather-token[data-token-type="3"] {
   filter: contrast(0.5);
+}
+.weather-token[data-token-type="0"][data-card-type] {
+  background-image: url("img/weather-cards.jpg");
+  background-size: 238.5714285714px 1092.8571428571px;
+}
+.weather-token[data-token-type="0"][data-card-type][data-card-type="0"] {
+  background-position: -162.8571428571px -107.1428571429px;
+}
+.weather-token[data-token-type="0"][data-card-type][data-card-type="1"] {
+  background-position: -162.8571428571px -289.2857142857px;
+}
+.weather-token[data-token-type="0"][data-card-type][data-card-type="2"] {
+  background-position: -162.8571428571px -471.4285714286px;
+}
+.weather-token[data-token-type="0"][data-card-type][data-card-type="3"] {
+  background-position: -162.8571428571px -653.5714285714px;
+}
+.weather-token[data-token-type="0"][data-card-type][data-card-type="4"] {
+  background-position: -162.8571428571px -835.7142857143px;
+}
+.weather-token[data-token-type="0"][data-card-type][data-card-type="5"] {
+  background-position: -162.8571428571px -1017.8571428571px;
 }
 
 .car-path {
