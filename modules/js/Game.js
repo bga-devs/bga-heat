@@ -275,7 +275,9 @@ class CardsManager extends BgaCards.CardManager {
     }
 }
 
-const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321', '811b8f', 'ffffff'];
+const CONSTRUCTORS_COLORS = ['12151a', '376bbe', '26a54e', 'e52927', '979797', 'face0d', 'f37321', '811b8f', 'ffffff', '6dc3c2'];
+// Includes prepared artwork; playable colors are controlled by the PHP setup lists.
+const CONSTRUCTOR_SPRITE_COUNT = CONSTRUCTORS_COLORS.length;
 
 class ChampionshipTable {
     constructor(game, gamedatas) {
@@ -689,8 +691,6 @@ class LegendTable {
     }
 }
 
-const isDebug$1 = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
-const log$1 = isDebug$1 ? console.log.bind(window.console) : function () { };
 const PERSONAL_CARDS_SORTING = (a, b) => Number(a.type) - Number(b.type);
 function manualPositionFitUpdateDisplay(element, cards, lastCard, stock) {
     const MARGIN = 8;
@@ -740,7 +740,7 @@ class PlayerTable {
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         this.currentGear = constructor.gear;
         let html = `
-        <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color};${player.color === 'ffffff' ? '--player-color-text-shadow: #000000;' : ''} --personal-card-background-y: ${constructor.id * 100 / 8}%;">
+        <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color};${player.color === 'ffffff' ? '--player-color-text-shadow: #000000;' : ''} --personal-card-background-y: ${constructor.id * 100 / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;">
             <div id="player-table-${this.playerId}-name" class="name-wrapper">${player.name}</div>
         `;
         if (this.currentPlayer) {
@@ -1520,19 +1520,10 @@ class Circuit {
 }
 
 /// <reference path="../../bga-framework.d.ts" />
-const ANIMATION_MS = 500;
 const MIN_NOTIFICATION_MS = 1200;
-const ACTION_TIMER_DURATION = 5;
 const LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 const LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
-const SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce', 'scrap'];
-const HAND_CARD_TYPE_FOR_EFFECT = {
-    reduce: 'stress',
-    cooldown: 'heat',
-};
-const isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
-const log = isDebug ? console.log.bind(window.console) : function () { };
 class Game {
     constructor(bga) {
         this.playersTables = [];
@@ -1588,7 +1579,7 @@ class Game {
       </div>
       <div id="tables"></div>  
     `);
-        log('Starting game setup');
+        console.log('Starting game setup');
         this.gamedatas = gamedatas;
         // Create a new div for buttons to avoid BGA auto clearing it
         // @ts-ignore
@@ -1602,7 +1593,7 @@ class Game {
         // Create a new div for buttons to avoid BGA auto clearing it
         dojo.place("<div id='customActions' style='display:inline-block'></div>", 'generalactions', 'after');
         dojo.place("<div id='restartAction' style='display:inline-block'></div>", 'customActions', 'after');
-        log('gamedatas', gamedatas);
+        console.log('gamedatas', gamedatas);
         this.animationManager = new BgaAnimations.AnimationManager(this);
         this.cardsManager = new CardsManager(this);
         this.legendCardsManager = new LegendCardsManager(this);
@@ -1666,7 +1657,7 @@ class Game {
         });
         this.setupNotifications();
         BgaAutofit.init();
-        log('Ending game setup');
+        console.log('Ending game setup');
     }
     ///////////////////////////////////////////////////
     //// Game & client states
@@ -1678,7 +1669,7 @@ class Game {
     //                  You can use this method to perform some user interface changes at this moment.
     //
     onEnteringState(stateName, args) {
-        log('Entering state: ' + stateName, args.args);
+        console.log('Entering state: ' + stateName, args.args);
         if (args.args?.descSuffix) {
             this.changePageTitle(args.args.descSuffix);
         }
@@ -1799,7 +1790,7 @@ class Game {
         if (!this.market) {
             const constructor = Object.values(this.gamedatas.constructors).find((constructor) => constructor.pId == this.getPlayerId());
             document.getElementById('top').insertAdjacentHTML('afterbegin', `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 8}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;"></div>
             `);
             this.market = new BgaCards.LineStock(this.cardsManager, document.getElementById(`market`));
             this.market.onSelectionChange = (selection) => this.onMarketSelectionChange(selection);
@@ -1924,7 +1915,7 @@ class Game {
         if (!this.market) {
             const constructor = Object.values(this.gamedatas.constructors).find((constructor) => constructor.pId == this.getPlayerId());
             document.getElementById('top').insertAdjacentHTML('afterbegin', `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 8}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;"></div>
             `);
             this.market = new BgaCards.LineStock(this.cardsManager, document.getElementById(`market`));
             this.market.onSelectionChange = (selection) => {
@@ -1939,7 +1930,7 @@ class Game {
         if (!this.market) {
             const constructor = Object.values(this.gamedatas.constructors).find((constructor) => constructor.pId == this.getPlayerId());
             document.getElementById('top').insertAdjacentHTML('afterbegin', `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 8}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;"></div>
             `);
             this.market = new BgaCards.LineStock(this.cardsManager, document.getElementById(`market`));
         }
@@ -1948,7 +1939,7 @@ class Game {
         this.market.setSelectionMode('none');
     }
     onLeavingState(stateName) {
-        log('Leaving state: ' + stateName);
+        console.log('Leaving state: ' + stateName);
         this.bga.statusBar.removeActionButtons();
         document.getElementById('customActions').innerHTML = '';
         document.getElementById('restartAction').innerHTML = '';
@@ -2182,7 +2173,7 @@ class Game {
     //                        action status bar (ie: the HTML links in the status bar).
     //
     onUpdateActionButtons(stateName, args) {
-        log('onUpdateActionButtons: ' + stateName, args);
+        console.log('onUpdateActionButtons: ' + stateName, args);
         switch (stateName) {
             case 'snakeDiscard':
                 this.onEnteringSnakeDiscard(args);
@@ -3316,7 +3307,7 @@ class Game {
         ];
         notifs.forEach((notifName) => {
             dojo.subscribe(notifName, this, (notifDetails) => {
-                log(`notif_${notifName}`, notifDetails.args);
+                console.log(`notif_${notifName}`, notifDetails.args);
                 if (notifName === 'playerEliminated') {
                     return;
                 }
@@ -3348,21 +3339,22 @@ class Game {
                 this.bga.gameui.notifqueue.setSynchronous(notifName, undefined);
             }
         });
-        if (isDebug) {
-            notifs.forEach((notifName) => {
-                if (!this[`notif_${notifName}`]) {
-                    console.warn(`notif_${notifName} function is not declared, but listed in setupNotifications`);
-                }
+        /*if (isDebug) {
+          notifs.forEach((notifName) => {
+            if (!this[`notif_${notifName}`]) {
+              console.warn(`notif_${notifName} function is not declared, but listed in setupNotifications`);
+            }
+          });
+    
+          Object.getOwnPropertyNames(Game.prototype)
+            .filter((item) => item.startsWith('notif_'))
+            .map((item) => item.slice(6))
+            .forEach((item) => {
+              if (!notifs.some((notifName) => notifName == item)) {
+                console.warn(`notif_${item} function is declared, but not listed in setupNotifications`);
+              }
             });
-            Object.getOwnPropertyNames(Game.prototype)
-                .filter((item) => item.startsWith('notif_'))
-                .map((item) => item.slice(6))
-                .forEach((item) => {
-                if (!notifs.some((notifName) => notifName == item)) {
-                    console.warn(`notif_${item} function is declared, but not listed in setupNotifications`);
-                }
-            });
-        }
+        }*/
         /*this.bga.gameui.notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) =>
                 this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
             );*/
@@ -3879,7 +3871,7 @@ class Game {
     cardImageHtml(card, args) {
         const constructorId = args.constructor_id ??
             Object.values(this.gamedatas.constructors).find((constructor) => constructor.pId == this.getPlayerId())?.id;
-        return `<div class="log-card-image" style="--personal-card-background-y: ${(constructorId * 100) / 8}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
+        return `<div class="log-card-image" style="--personal-card-background-y: ${(constructorId * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
     }
     cardsImagesHtml(cards, args) {
         return Object.values(cards)

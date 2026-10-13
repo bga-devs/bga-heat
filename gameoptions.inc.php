@@ -211,6 +211,12 @@ $game_options = [
         'tmdisplay' => clienttranslate('[legends: fill to 9]'),
         'description' => clienttranslate('Add legends up to 9 cars in total'),
       ],
+      // Narrow Streets: keep the ten-car option hidden until turquoise is enabled.
+      // 10 => [
+      //   'name' => clienttranslate('Fill to 10 cars'),
+      //   'tmdisplay' => clienttranslate('[legends: fill to 10]'),
+      //   'description' => clienttranslate('Add legends up to 10 cars in total'),
+      // ],
     ],
     'default' => 6,
     // 'displaycondition' => [

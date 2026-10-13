@@ -2,7 +2,7 @@
 
 import { CardsManager, type Card } from './cards';
 import { ChampionshipTable } from './championship-table';
-import { CONSTRUCTORS_COLORS } from './constants';
+import { CONSTRUCTORS_COLORS, CONSTRUCTOR_SPRITE_COUNT } from './constants';
 import { EventCardsManager } from './event-cards';
 import { LegendCardsManager } from './legend-cards';
 import { LegendTable } from './legend-table';
@@ -12,21 +12,12 @@ import { Circuit } from './table-center';
 import { formatTextIcons } from './text-icons-formatter';
 import type { AddCardToDeckSettings, LineStock } from '../../bga-cards';
 
-const ANIMATION_MS = 500;
 const MIN_NOTIFICATION_MS = 1200;
-const ACTION_TIMER_DURATION = 5;
 
 const LOCAL_STORAGE_ZOOM_KEY = 'Heat-zoom';
 const LOCAL_STORAGE_CIRCUIT_ZOOM_KEY = 'Heat-circuit-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Heat-jump-to-folded';
 
-const SYMBOLS_WITH_POSSIBLE_HALF_USAGE = ['cooldown', 'reduce', 'scrap'];
-const HAND_CARD_TYPE_FOR_EFFECT = {
-  reduce: 'stress',
-  cooldown: 'heat',
-};
-const isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
-const log = isDebug ? console.log.bind(window.console) : function () { };
 export class Game {
   public bga: Bga<HeatPlayer, HeatGamedatas>;
   public animationManager: InstanceType<typeof BgaAnimations.Manager>;
@@ -107,7 +98,7 @@ export class Game {
     `
     );
 
-    log('Starting game setup');
+    console.log('Starting game setup');
 
     this.gamedatas = gamedatas;
 
@@ -126,7 +117,7 @@ export class Game {
     dojo.place("<div id='customActions' style='display:inline-block'></div>", 'generalactions', 'after');
     dojo.place("<div id='restartAction' style='display:inline-block'></div>", 'customActions', 'after');
 
-    log('gamedatas', gamedatas);
+    console.log('gamedatas', gamedatas);
 
     this.animationManager = new BgaAnimations.AnimationManager(this);
     this.cardsManager = new CardsManager(this);
@@ -202,7 +193,7 @@ export class Game {
 
     BgaAutofit.init();
 
-    log('Ending game setup');
+    console.log('Ending game setup');
   }
 
   ///////////////////////////////////////////////////
@@ -216,7 +207,7 @@ export class Game {
   //                  You can use this method to perform some user interface changes at this moment.
   //
   public onEnteringState(stateName: string, args: any) {
-    log('Entering state: ' + stateName, args.args);
+    console.log('Entering state: ' + stateName, args.args);
 
     if (args.args?.descSuffix) {
       this.changePageTitle(args.args.descSuffix);
@@ -373,7 +364,7 @@ export class Game {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 8}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;"></div>
             `
       );
       this.market = new BgaCards.LineStock(this.cardsManager, document.getElementById(`market`));
@@ -542,7 +533,7 @@ export class Game {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 8}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;"></div>
             `
       );
       this.market = new BgaCards.LineStock(this.cardsManager, document.getElementById(`market`));
@@ -562,7 +553,7 @@ export class Game {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / 8}%;"></div>
+                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;"></div>
             `
       );
       this.market = new BgaCards.LineStock(this.cardsManager, document.getElementById(`market`));
@@ -574,7 +565,7 @@ export class Game {
   }
 
   public onLeavingState(stateName: string) {
-    log('Leaving state: ' + stateName);
+    console.log('Leaving state: ' + stateName);
 
     this.bga.statusBar.removeActionButtons();
     document.getElementById('customActions').innerHTML = '';
@@ -881,7 +872,7 @@ export class Game {
   //                        action status bar (ie: the HTML links in the status bar).
   //
   public onUpdateActionButtons(stateName: string, args: any) {
-    log('onUpdateActionButtons: ' + stateName, args);
+    console.log('onUpdateActionButtons: ' + stateName, args);
     switch (stateName) {
       case 'snakeDiscard':
         this.onEnteringSnakeDiscard(args);
@@ -2202,7 +2193,7 @@ export class Game {
 
     notifs.forEach((notifName) => {
       dojo.subscribe(notifName, this, (notifDetails: Notif<any>) => {
-        log(`notif_${notifName}`, notifDetails.args);
+        console.log(`notif_${notifName}`, notifDetails.args);
 
         if (notifName === 'playerEliminated') {
           return;
@@ -2240,7 +2231,7 @@ export class Game {
       }
     });
 
-    if (isDebug) {
+    /*if (isDebug) {
       notifs.forEach((notifName) => {
         if (!this[`notif_${notifName}`]) {
           console.warn(`notif_${notifName} function is not declared, but listed in setupNotifications`);
@@ -2255,7 +2246,7 @@ export class Game {
             console.warn(`notif_${item} function is declared, but not listed in setupNotifications`);
           }
         });
-    }
+    }*/
 
     /*this.bga.gameui.notifqueue.setIgnoreNotificationCheck('discard', (notif: Notif<any>) => 
             this.getPlayerIdFromConstructorId(notif.args.constructor_id) == this.getPlayerId() && notif.args.n
@@ -2894,7 +2885,7 @@ export class Game {
     const constructorId =
       args.constructor_id ??
       Object.values(this.gamedatas.constructors).find((constructor) => constructor.pId == this.getPlayerId())?.id;
-    return `<div class="log-card-image" style="--personal-card-background-y: ${(constructorId * 100) / 8}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
+    return `<div class="log-card-image" style="--personal-card-background-y: ${(constructorId * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
   }
 
   private cardsImagesHtml(cards: Card[], args: any) {

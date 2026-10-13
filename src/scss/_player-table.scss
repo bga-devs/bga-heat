@@ -101,7 +101,7 @@
       @each $playerColor in $playerColors {
         $i: index($playerColors, $playerColor) - 1;
         &[data-color="#{$playerColor}"] { 
-          background-position-x: #{$i * 100% / 8};
+          background-position-x: #{$i * 100% / ($constructorSpriteCount - 1)};
         }
       }
   

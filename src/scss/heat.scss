@@ -1,4 +1,6 @@
-$playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f37321", "811b8f", "ffffff";
+$playerColors: "12151a", "376bbe", "26a54e", "e52927", "979797", "face0d", "f37321", "811b8f", "ffffff", "6dc3c2";
+// Sprite sheets include the prepared turquoise set even while gameplay keeps it disabled.
+$constructorSpriteCount: length($playerColors);
 
 @import "../../node_modules/bga-help/bga-help";
 @import "../../node_modules/bga-zoom/bga-zoom";
@@ -211,7 +213,7 @@ html[data-theme="dark"] {
   &.legend {
     background: url("img/legend-icons.png");
     background-size: 100% auto;
-    background-position-y: calc(var(--constructor-id) * 100% / 8);
+    background-position-y: calc(var(--constructor-id) * 100% / #{$constructorSpriteCount - 1});
   }
 
   &.player {

@@ -59,6 +59,7 @@ class Constructors extends \Bga\Games\Heat\Helpers\CachedDB_Manager
       \CONSTRUCTOR_ORANGE => clienttranslate('Orange legend'),
       \CONSTRUCTOR_PURPLE => clienttranslate('Purple legend'),
       \CONSTRUCTOR_WHITE => clienttranslate('White legend'),
+      // \CONSTRUCTOR_TURQUOISE => clienttranslate('Turquoise legend'), // Narrow Streets disabled.
     ];
     $name = $names[$cId];
 

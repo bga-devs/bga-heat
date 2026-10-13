@@ -108,8 +108,8 @@
   height: 34px;
   z-index: 3;
   background: url("img/cars.png");
-  background-position-y: calc(var(--constructor-id) * 100% / 8);
-  background-size: 200% 900%;
+  background-position-y: calc(var(--constructor-id) * 100% / #{$constructorSpriteCount - 1});
+  background-size: 200% ($constructorSpriteCount * 100%);
   transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 

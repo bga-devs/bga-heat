@@ -77,5 +77,5 @@ html[data-theme="dark"] {
 .legend_avatar {
   background: url('img/legend-icons.png');
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 100% / 8);
+  background-position-y: calc(var(--constructor-id) * 100% / #{$constructorSpriteCount - 1});
 }
