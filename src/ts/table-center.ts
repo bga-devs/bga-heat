@@ -382,13 +382,11 @@ export class Circuit {
       if (constructor.pId === this.game.getPlayerId()) {
         car.classList.add('current');
       }
-      car.style.setProperty('--constructor-id', `${constructor.id}`);
+      car.dataset.playerColor = CONSTRUCTORS_COLORS[constructor.id];
       this.circuitDiv.insertAdjacentElement('beforeend', car);
 
-      let html = `<div class="constructor-avatar ${constructor.ai ? 'legend' : 'player'}" style="`;
-      if (constructor.ai) {
-        html += `--constructor-id: ${constructor.id};`;
-      } else {
+      let html = `<div class="constructor-avatar ${constructor.ai ? 'legend' : 'player'}" data-player-color="${CONSTRUCTORS_COLORS[constructor.id]}" style="`;
+      if (!constructor.ai) {
         // ? Custom image : Bga Image
         //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
         html += `background-image: url('${(document.getElementById(`avatar_${constructor.pId}`) as HTMLImageElement).src}');`;

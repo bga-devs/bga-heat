@@ -1,3 +1,4 @@
+import { CONSTRUCTORS_COLORS } from './constants';
 import { BgaCards } from './libs';
 
 export type LegendCard = {
@@ -29,7 +30,7 @@ export class LegendCardsManager extends BgaCards.CardManager<LegendCard> {
         let html = `<div class="table">`;
         [0,1,2,3].forEach((cornerBonus, index) => {
             html += `<div>${
-                Object.entries(card[index]).map(([color, number]) => `<div class="legend-icon" style="--color: ${color}">${number}</div>`).join('')
+                Object.entries(card[index]).map(([color, number]) => `<div class="legend-icon" data-player-color="${CONSTRUCTORS_COLORS[Number(color)]}">${number}</div>`).join('')
             }</div>`;
         });
         html += `</div>`;

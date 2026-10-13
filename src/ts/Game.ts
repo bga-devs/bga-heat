@@ -2,7 +2,7 @@
 
 import { CardsManager, type Card } from './cards';
 import { ChampionshipTable } from './championship-table';
-import { CONSTRUCTORS_COLORS, CONSTRUCTOR_SPRITE_COUNT } from './constants';
+import { CONSTRUCTORS_COLORS } from './constants';
 import { EventCardsManager } from './event-cards';
 import { LegendCardsManager } from './legend-cards';
 import { LegendTable } from './legend-table';
@@ -111,7 +111,12 @@ export class Game {
     if (gamedatas.circuitDatas?.jpgUrl && !gamedatas.circuitDatas.jpgUrl.startsWith('http')) {
       this.bga.images.preloadImage(gamedatas.circuitDatas.jpgUrl);
     }
-    //this.bga.images.preloadImages(Object.values(gamedatas.players).map(player => `mats/player-board-${player.color}.jpg`));
+    //this.bga.images.preloadImages(Object.values(gamedatas.players).map(player => `players/${player.color}/mat.webp`));
+    this.bga.images.preloadImages(Object.values(gamedatas.players).map(player => `players/${player.color}/cards.webp`));
+    this.bga.images.preloadImages(Object.values(gamedatas.players).map(player => `players/${player.color}/stick.webp`));
+    // Cars also belong to legends, so preload every participating constructor.
+    this.bga.images.preloadImages(Object.values(gamedatas.constructors).map(constructor => `players/${CONSTRUCTORS_COLORS[constructor.id]}/cars.webp`));
+    this.bga.images.preloadImages(Object.values(gamedatas.constructors).filter(constructor => constructor.ai).map(constructor => `players/${CONSTRUCTORS_COLORS[constructor.id]}/legend-icon.webp`));
 
     // Create a new div for buttons to avoid BGA auto clearing it
     dojo.place("<div id='customActions' style='display:inline-block'></div>", 'generalactions', 'after');
@@ -364,7 +369,7 @@ export class Game {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;"></div>
+                <div id="market" data-player-color="${CONSTRUCTORS_COLORS[constructor?.id ?? 0]}"></div>
             `
       );
       this.market = new BgaCards.LineStock(this.cardsManager, document.getElementById(`market`));
@@ -533,7 +538,7 @@ export class Game {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;"></div>
+                <div id="market" data-player-color="${CONSTRUCTORS_COLORS[constructor?.id ?? 0]}"></div>
             `
       );
       this.market = new BgaCards.LineStock(this.cardsManager, document.getElementById(`market`));
@@ -553,7 +558,7 @@ export class Game {
       document.getElementById('top').insertAdjacentHTML(
         'afterbegin',
         `
-                <div id="market" style="--personal-card-background-y: ${((constructor?.id ?? 0) * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;"></div>
+                <div id="market" data-player-color="${CONSTRUCTORS_COLORS[constructor?.id ?? 0]}"></div>
             `
       );
       this.market = new BgaCards.LineStock(this.cardsManager, document.getElementById(`market`));
@@ -1648,7 +1653,7 @@ export class Game {
                 <div class="player_board_inner" id="player_board_inner_982fff">
                     
                     <div class="emblemwrap" id="avatar_active_wrap_${constructor.id}">
-                        <div src="img/gear.png" alt="" class="avatar avatar_active legend_avatar" id="avatar_active_${constructor.id}" style="--constructor-id: ${constructor.id}"></div>
+                        <div src="img/gear.png" alt="" class="avatar avatar_active legend_avatar" id="avatar_active_${constructor.id}" data-player-color="${CONSTRUCTORS_COLORS[constructor.id]}"></div>
                     </div>
                                                
                     <div class="player-name" id="player_name_${constructor.id}">
@@ -2885,7 +2890,7 @@ export class Game {
     const constructorId =
       args.constructor_id ??
       Object.values(this.gamedatas.constructors).find((constructor) => constructor.pId == this.getPlayerId())?.id;
-    return `<div class="log-card-image" style="--personal-card-background-y: ${(constructorId * 100) / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
+    return `<div class="log-card-image" data-player-color="${CONSTRUCTORS_COLORS[constructorId ?? 0]}" data-symbols="${card.type < 100 ? Object.keys(card.symbols).length : 0}">${this.cardsManager.getHtml(card)}</div>`;
   }
 
   private cardsImagesHtml(cards: Card[], args: any) {

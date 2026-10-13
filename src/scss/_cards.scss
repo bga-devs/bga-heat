@@ -1,3 +1,9 @@
+@each $playerColor in $playerColors {
+    [data-player-color="#{$playerColor}"] {
+        --personal-card-background-image: url("img/players/#{$playerColor}/cards.webp");
+    }
+}
+
 .personal-card {
     position: relative;
     width: 225px;
@@ -14,8 +20,8 @@
     .card-sides {
         .card-side {
             border-radius: 8px;
-            background-image: url("img/personal-cards.jpg");
-            background-size: auto ($constructorSpriteCount * 100%);
+            background-image: var(--personal-card-background-image);
+            background-size: auto 100%;
 
             & > * {
                 pointer-events: all !important;
@@ -38,10 +44,6 @@
                     background-image: url("img/common-cards.jpg");
                     background-size: auto 100%;
                     background-position-x: 50%;
-                }
-
-                &:not(.stress):not(.heat) {
-                    background-position-y: var(--personal-card-background-y);
                 }
 
                 @for $col from 0 through 6 {

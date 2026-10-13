@@ -518,6 +518,46 @@ body > .card {
   display: none;
 }
 
+[data-player-color="12151a"] {
+  --personal-card-background-image: url("img/players/12151a/cards.webp");
+}
+
+[data-player-color="376bbe"] {
+  --personal-card-background-image: url("img/players/376bbe/cards.webp");
+}
+
+[data-player-color="26a54e"] {
+  --personal-card-background-image: url("img/players/26a54e/cards.webp");
+}
+
+[data-player-color=e52927] {
+  --personal-card-background-image: url("img/players/e52927/cards.webp");
+}
+
+[data-player-color="979797"] {
+  --personal-card-background-image: url("img/players/979797/cards.webp");
+}
+
+[data-player-color=face0d] {
+  --personal-card-background-image: url("img/players/face0d/cards.webp");
+}
+
+[data-player-color=f37321] {
+  --personal-card-background-image: url("img/players/f37321/cards.webp");
+}
+
+[data-player-color="811b8f"] {
+  --personal-card-background-image: url("img/players/811b8f/cards.webp");
+}
+
+[data-player-color=ffffff] {
+  --personal-card-background-image: url("img/players/ffffff/cards.webp");
+}
+
+[data-player-color="6dc3c2"] {
+  --personal-card-background-image: url("img/players/6dc3c2/cards.webp");
+}
+
 .personal-card {
   position: relative;
   width: 225px;
@@ -533,8 +573,8 @@ height: 241px; */
 }
 .personal-card .card-sides .card-side {
   border-radius: 8px;
-  background-image: url("img/personal-cards.jpg");
-  background-size: auto 1000%;
+  background-image: var(--personal-card-background-image);
+  background-size: auto 100%;
 }
 .personal-card .card-sides .card-side > * {
   pointer-events: all !important;
@@ -554,9 +594,6 @@ height: 241px; */
   background-image: url("img/common-cards.jpg");
   background-size: auto 100%;
   background-position-x: 50%;
-}
-.personal-card .card-sides .card-side.front:not(.stress):not(.heat) {
-  background-position-y: var(--personal-card-background-y);
 }
 .personal-card .card-sides .card-side.front[data-col="0"] {
   background-position-x: 0%;
@@ -706,9 +743,7 @@ height: 241px; */
 .legend-card .card-sides .card-side.front .legend-icon {
   width: 48px;
   height: 48px;
-  background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--color) * 100% / 9);
   color: white;
   text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
   text-align: center;
@@ -975,9 +1010,39 @@ height: 241px; */
   width: 61.08px;
   height: 34px;
   z-index: 3;
-  background: url("img/cars.png");
-  background-position-y: calc(var(--constructor-id) * 100% / 9);
-  background-size: 200% 1000%;
+  background-size: 200% 100%;
+}
+.car[data-player-color="12151a"] {
+  background-image: url("img/players/12151a/cars.webp");
+}
+.car[data-player-color="376bbe"] {
+  background-image: url("img/players/376bbe/cars.webp");
+}
+.car[data-player-color="26a54e"] {
+  background-image: url("img/players/26a54e/cars.webp");
+}
+.car[data-player-color=e52927] {
+  background-image: url("img/players/e52927/cars.webp");
+}
+.car[data-player-color="979797"] {
+  background-image: url("img/players/979797/cars.webp");
+}
+.car[data-player-color=face0d] {
+  background-image: url("img/players/face0d/cars.webp");
+}
+.car[data-player-color=f37321] {
+  background-image: url("img/players/f37321/cars.webp");
+}
+.car[data-player-color="811b8f"] {
+  background-image: url("img/players/811b8f/cars.webp");
+}
+.car[data-player-color=ffffff] {
+  background-image: url("img/players/ffffff/cars.webp");
+}
+.car[data-player-color="6dc3c2"] {
+  background-image: url("img/players/6dc3c2/cars.webp");
+}
+.car {
   transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
   transform-origin: center center;
 }
@@ -1256,9 +1321,67 @@ html[data-theme=dark] .player-board.finished {
 }
 
 .legend_avatar {
-  background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 100% / 9);
+}
+
+.legend_avatar[data-player-color="12151a"],
+.constructor-avatar.legend[data-player-color="12151a"],
+.legend-icon[data-player-color="12151a"] {
+  background-image: url("img/players/12151a/legend-icon.webp");
+}
+
+.legend_avatar[data-player-color="376bbe"],
+.constructor-avatar.legend[data-player-color="376bbe"],
+.legend-icon[data-player-color="376bbe"] {
+  background-image: url("img/players/376bbe/legend-icon.webp");
+}
+
+.legend_avatar[data-player-color="26a54e"],
+.constructor-avatar.legend[data-player-color="26a54e"],
+.legend-icon[data-player-color="26a54e"] {
+  background-image: url("img/players/26a54e/legend-icon.webp");
+}
+
+.legend_avatar[data-player-color=e52927],
+.constructor-avatar.legend[data-player-color=e52927],
+.legend-icon[data-player-color=e52927] {
+  background-image: url("img/players/e52927/legend-icon.webp");
+}
+
+.legend_avatar[data-player-color="979797"],
+.constructor-avatar.legend[data-player-color="979797"],
+.legend-icon[data-player-color="979797"] {
+  background-image: url("img/players/979797/legend-icon.webp");
+}
+
+.legend_avatar[data-player-color=face0d],
+.constructor-avatar.legend[data-player-color=face0d],
+.legend-icon[data-player-color=face0d] {
+  background-image: url("img/players/face0d/legend-icon.webp");
+}
+
+.legend_avatar[data-player-color=f37321],
+.constructor-avatar.legend[data-player-color=f37321],
+.legend-icon[data-player-color=f37321] {
+  background-image: url("img/players/f37321/legend-icon.webp");
+}
+
+.legend_avatar[data-player-color="811b8f"],
+.constructor-avatar.legend[data-player-color="811b8f"],
+.legend-icon[data-player-color="811b8f"] {
+  background-image: url("img/players/811b8f/legend-icon.webp");
+}
+
+.legend_avatar[data-player-color=ffffff],
+.constructor-avatar.legend[data-player-color=ffffff],
+.legend-icon[data-player-color=ffffff] {
+  background-image: url("img/players/ffffff/legend-icon.webp");
+}
+
+.legend_avatar[data-player-color="6dc3c2"],
+.constructor-avatar.legend[data-player-color="6dc3c2"],
+.legend-icon[data-player-color="6dc3c2"] {
+  background-image: url("img/players/6dc3c2/legend-icon.webp");
 }
 
 .player-table {
@@ -1295,34 +1418,34 @@ html[data-theme=dark] .player-board.finished {
   background-size: contain;
 }
 .player-table .player-board[data-color="12151a"] {
-  background-image: url("img/mats/player-board-12151a.jpg");
+  background-image: url("img/players/12151a/mat.webp");
 }
 .player-table .player-board[data-color="376bbe"] {
-  background-image: url("img/mats/player-board-376bbe.jpg");
+  background-image: url("img/players/376bbe/mat.webp");
 }
 .player-table .player-board[data-color="26a54e"] {
-  background-image: url("img/mats/player-board-26a54e.jpg");
+  background-image: url("img/players/26a54e/mat.webp");
 }
 .player-table .player-board[data-color=e52927] {
-  background-image: url("img/mats/player-board-e52927.jpg");
+  background-image: url("img/players/e52927/mat.webp");
 }
 .player-table .player-board[data-color="979797"] {
-  background-image: url("img/mats/player-board-979797.jpg");
+  background-image: url("img/players/979797/mat.webp");
 }
 .player-table .player-board[data-color=face0d] {
-  background-image: url("img/mats/player-board-face0d.jpg");
+  background-image: url("img/players/face0d/mat.webp");
 }
 .player-table .player-board[data-color=f37321] {
-  background-image: url("img/mats/player-board-f37321.jpg");
+  background-image: url("img/players/f37321/mat.webp");
 }
 .player-table .player-board[data-color="811b8f"] {
-  background-image: url("img/mats/player-board-811b8f.jpg");
+  background-image: url("img/players/811b8f/mat.webp");
 }
 .player-table .player-board[data-color=ffffff] {
-  background-image: url("img/mats/player-board-ffffff.jpg");
+  background-image: url("img/players/ffffff/mat.webp");
 }
 .player-table .player-board[data-color="6dc3c2"] {
-  background-image: url("img/mats/player-board-6dc3c2.jpg");
+  background-image: url("img/players/6dc3c2/mat.webp");
 }
 .player-table .player-board .bga-cards_deck-counter {
   --bga-cards-deck-counter-size: 40px;
@@ -1353,7 +1476,6 @@ html[data-theme=dark] .player-board.finished {
   top: 198px;
   right: 52px;
   transition: top 0.5s;
-  background-image: url("img/stick.png");
   background-size: auto 100%;
   box-shadow: 2px 2px 8px 5px black;
   /*&::after {
@@ -1381,34 +1503,34 @@ html[data-theme=dark] .player-board.finished {
   top: 657px;
 }
 .player-table .player-board .gear[data-color="12151a"] {
-  background-position-x: 0%;
+  background-image: url("img/players/12151a/stick.webp");
 }
 .player-table .player-board .gear[data-color="376bbe"] {
-  background-position-x: 11.1111111111%;
+  background-image: url("img/players/376bbe/stick.webp");
 }
 .player-table .player-board .gear[data-color="26a54e"] {
-  background-position-x: 22.2222222222%;
+  background-image: url("img/players/26a54e/stick.webp");
 }
 .player-table .player-board .gear[data-color=e52927] {
-  background-position-x: 33.3333333333%;
+  background-image: url("img/players/e52927/stick.webp");
 }
 .player-table .player-board .gear[data-color="979797"] {
-  background-position-x: 44.4444444444%;
+  background-image: url("img/players/979797/stick.webp");
 }
 .player-table .player-board .gear[data-color=face0d] {
-  background-position-x: 55.5555555556%;
+  background-image: url("img/players/face0d/stick.webp");
 }
 .player-table .player-board .gear[data-color=f37321] {
-  background-position-x: 66.6666666667%;
+  background-image: url("img/players/f37321/stick.webp");
 }
 .player-table .player-board .gear[data-color="811b8f"] {
-  background-position-x: 77.7777777778%;
+  background-image: url("img/players/811b8f/stick.webp");
 }
 .player-table .player-board .gear[data-color=ffffff] {
-  background-position-x: 88.8888888889%;
+  background-image: url("img/players/ffffff/stick.webp");
 }
 .player-table .player-board .gear[data-color="6dc3c2"] {
-  background-position-x: 100%;
+  background-image: url("img/players/6dc3c2/stick.webp");
 }
 .player-table .player-board .gear[data-color="12151a"] {
   box-shadow: 0px 0px 8px 10px white;
@@ -1903,9 +2025,7 @@ html[data-theme=dark] {
   vertical-align: middle;
 }
 .constructor-avatar.legend {
-  background: url("img/legend-icons.png");
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 100% / 9);
 }
 .constructor-avatar.player {
   border-radius: 50%;

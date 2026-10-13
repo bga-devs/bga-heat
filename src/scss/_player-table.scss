@@ -36,7 +36,7 @@
 
     @each $playerColor in $playerColors {
       &[data-color="#{$playerColor}"] { 
-        background-image: url('img/mats/player-board-#{$playerColor}.jpg');
+        background-image: url('img/players/#{$playerColor}/mat.webp');
       }
     } 
 
@@ -77,7 +77,6 @@
       right: 52px;
       transition: top 0.5s;
       
-      background-image: url('img/stick.png');
       background-size: auto 100%;
       box-shadow: 2px 2px 8px 5px black;
 
@@ -99,9 +98,8 @@
       &[data-gear="1"] { top: 657px; }
 
       @each $playerColor in $playerColors {
-        $i: index($playerColors, $playerColor) - 1;
         &[data-color="#{$playerColor}"] { 
-          background-position-x: #{$i * 100% / ($constructorSpriteCount - 1)};
+          background-image: url('img/players/#{$playerColor}/stick.webp');
         }
       }
   

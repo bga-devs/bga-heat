@@ -75,7 +75,13 @@ html[data-theme="dark"] {
 }
 
 .legend_avatar {
-  background: url('img/legend-icons.png');
   background-size: 100% auto;
-  background-position-y: calc(var(--constructor-id) * 100% / #{$constructorSpriteCount - 1});
+}
+
+@each $playerColor in $playerColors {
+  .legend_avatar[data-player-color="#{$playerColor}"],
+  .constructor-avatar.legend[data-player-color="#{$playerColor}"],
+  .legend-icon[data-player-color="#{$playerColor}"] {
+    background-image: url('img/players/#{$playerColor}/legend-icon.webp');
+  }
 }

@@ -89,10 +89,8 @@ export class ChampionshipTable {
         constructors.forEach(constructor => {
             html += `<td>`;
             if (constructor) {
-                html += `<div class="name"><div class="constructor-avatar ${constructor.ai ? 'legend' : 'player'}" style="`;
-                if (constructor.ai) {
-                    html += `--constructor-id: ${constructor.id};`;
-                } else {
+                html += `<div class="name"><div class="constructor-avatar ${constructor.ai ? 'legend' : 'player'}" data-player-color="${CONSTRUCTORS_COLORS[constructor.id]}" style="`;
+                if (!constructor.ai) {
                     // ? Custom image : Bga Image
                     //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
                     html += `background-image: url('${(document.getElementById(`avatar_${constructor.pId}`) as HTMLImageElement).src}');`;

@@ -1,4 +1,3 @@
-import { CONSTRUCTOR_SPRITE_COUNT } from './constants';
 import { CARD_WIDTH, type Card } from './cards';
 import { BgaCards } from './libs';
 import type { AddCardSettings, AddCardToDeckSettings, CardAnimation, CardSelectionMode, CardStock, Deck, LineStock, ManualPositionStock, RemoveCardSettings } from '../../bga-cards';
@@ -73,7 +72,7 @@ export class PlayerTable {
         this.currentGear = constructor.gear;
 
         let html = `
-        <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color};${player.color === 'ffffff' ? '--player-color-text-shadow: #000000;' : ''} --personal-card-background-y: ${constructor.id * 100 / (CONSTRUCTOR_SPRITE_COUNT - 1)}%;">
+        <div id="player-table-${this.playerId}" class="player-table" data-player-color="${player.color}" style="--player-color: #${player.color};${player.color === 'ffffff' ? '--player-color-text-shadow: #000000;' : ''}">
             <div id="player-table-${this.playerId}-name" class="name-wrapper">${player.name}</div>
         `;
         if (this.currentPlayer) {
